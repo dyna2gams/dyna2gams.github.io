@@ -150,13 +150,13 @@ pre {
   tf = 40
 
 <font color="red"><b>fun:</b></font>
-  §wd = PolyDX
+  &sect;wd = PolyDX
      0 -4e-11        6e-8         0            0          -50
    500  0            0            0            0.025      -45
   4100  4e-11       -2e-8        -3e-5         0.025       45
   4600  0            0            0            0           50
 
-  §wh = PolyDX
+  &sect;wh = PolyDX
      0  6.2808e-11  -8.0288e-08   0.0000e+00   0.0000e+00   0.0000e+00
    500  0.0000e+00   2.1622e-08  -3.4949e-05  -3.1127e-02  -6.1105e+00
    700  0.0000e+00   1.6377e-07  -6.7702e-05  -4.2512e-02  -1.3561e+01
@@ -222,20 +222,20 @@ pre {
   T == beta(<font color="green">Time</font>) * (A_0 + A_1*v + A_2*v*v)
   D == 0.5 * (B_0 + B_1*alpha + B_2*alpha*alpha) * rho * S * v * v
   L == 0.5 * cl_p(alpha) * rho * S * v * v
-  wd == §wd(pos)
-  wh == §wh(pos) * h/1000
-  <font color="#808080"><i># wd_dot == §wd(pos+pos_dot) - §wd(pos)</i></font>
-  <font color="#808080"><i># wh_dot == §wh(pos+pos_dot) * (h+h_dot)/1000 - §wh(pos) * h/1000</i></font>
+  wd == Â§wd(pos)
+  wh == Â§wh(pos) * h/1000
+  <font color="#808080"><i># wd_dot == Â§wd(pos+pos_dot) - Â§wd(pos)</i></font>
+  <font color="#808080"><i># wh_dot == Â§wh(pos+pos_dot) * (h+h_dot)/1000 - Â§wh(pos) * h/1000</i></font>
   wd_dot == <font color="green">slope</font>(wd)
   wh_dot == <font color="green">slope</font>(wh)
   pos_dot == v*<font color="blue">cos</font>(fpa) + wd
   h_dot == v*<font color="blue">sin</font>(fpa) + wh
 
 <font color="red"><b>equ:</b></font>
-  pos´ == pos_dot
-  h´ == h_dot
-  v´ == T/m*<font color="blue">cos</font>(alpha+delta) - D/m - g*<font color="blue">sin</font>(fpa) - wd_dot*<font color="blue">cos</font>(fpa) - wh_dot*<font color="blue">sin</font>(fpa)
-  fpa´ == T/m/v*<font color="blue">sin</font>(alpha+delta) + L/m/v - g/v*<font color="blue">cos</font>(fpa) + wd_dot*<font color="blue">sin</font>(fpa)/v - wh_dot*<font color="blue">cos</font>(fpa)/v
+  posÂ´ == pos_dot
+  hÂ´ == h_dot
+  vÂ´ == T/m*<font color="blue">cos</font>(alpha+delta) - D/m - g*<font color="blue">sin</font>(fpa) - wd_dot*<font color="blue">cos</font>(fpa) - wh_dot*<font color="blue">sin</font>(fpa)
+  fpaÂ´ == T/m/v*<font color="blue">sin</font>(alpha+delta) + L/m/v - g/v*<font color="blue">cos</font>(fpa) + wd_dot*<font color="blue">sin</font>(fpa)/v - wh_dot*<font color="blue">cos</font>(fpa)/v
   h &gt;= hmin
   <font color="green">deg2rad</font>(-3) &lt;= <font color="green">slope</font>(alpha) &lt;= <font color="green">deg2rad</font>(3)
   alpha :: <font color="limegreen">Spline3</font>
