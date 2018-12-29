@@ -1,0 +1,54 @@
+<!-- Dyna-to-Html Version 1.0 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">The bouncing ball problem</h1>
+<pre>
+<font color="red"><b>rem:</b></font> The bouncing ball problem
+</pre>
+<p>
+  Calculate and plot the path of a rubber ball for several bounces along
+  a level floor, given its initial location and velocity. Assume that
+  the only external force is gravity and that the acceleration due to
+  gravity is 9.8 m/s².  The bouncing characteristics of the ball follow
+  the rule that 80% of the vertical velocity is lost when the ball
+  bounces, but no loss in horizontal velocity occurs.
+<p>
+  From "System simulation : Programming Style and Language" W. Kreutzer
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  tf = 20
+  g = -9.81	<font color="#808080"><i># the gravity acceleration</i></font>
+  a = 0.8	<font color="#808080"><i># the loss of vertical velocity</i></font>
+
+<font color="red"><b>mac:</b></font>
+  @SimEventProc y = 0; vy = a*<font color="#2ECC40">abs</font>(vy)
+
+<font color="red"><b>dyn:</b></font>
+  x y		<font color="#808080"><i># co-ordinates of the ball</i></font>
+  vx vy		<font color="#808080"><i># the velocity components in the x and y directions</i></font>
+
+<font color="red"><b>t=t0:</b></font>
+  vx = 1; vy = 0
+  x = 0; y = 10
+
+<font color="red"><b>sim:</b></font>
+  vx&acute; := 0; x&acute; := vx
+  vy&acute; := g; y&acute; := vy
+  <font color="#8A2BE2">@SimEvent</font>(y &lt; 0)
+</pre>
+</body>
+</html>

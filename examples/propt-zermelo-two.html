@@ -1,0 +1,68 @@
+<!-- Dyna-to-Html Version 1.0 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Zermelo Ferry trajectory optimization</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Zermelo Ferry trajectory optimization
+</pre>
+<p>
+  Time-optimal crossing by boat of a river with a position dependent current stream.
+<p>
+  Reference:
+  <ol>
+  <li>Bryson, A. E. and Ho, Y.-C.,
+  <em>Applied Optimal Control</em>, 
+  Hemisphere Publishing, New York, 1975, p. 77.
+  </ol>
+<p>
+  Source: PROPT - Matlab Optimal Control Software, User Manual, April 26, 2010
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  v = 9
+
+<font color="red"><b>var:</b></font>
+  tf
+
+<font color="red"><b>dyn:</b></font>
+  x1 x2	<font color="#808080"><i># state variables</i></font>
+  u	<font color="#808080"><i># control variables</i></font>
+
+<font color="red"><b>lim:</b></font>
+  1 &lt;= tf &lt;= 10
+
+<font color="red"><b>t=t0:</b></font>
+  x1 = 0
+  x2 = 0
+
+<font color="red"><b>t=tf:</b></font>
+  x1 = 31
+  x2 = 0
+
+<font color="red"><b>ini:</b></font>
+  x1 = 0
+  x2 = 0
+  u = 0
+
+<font color="red"><b>equ:</b></font>
+  x1&acute; == v*<font color="#2ECC40">cos</font>(u)			<font color="#808080"><i># No water motion in x1 direction</i></font>
+  x2&acute; == v*<font color="#2ECC40">sin</font>(u)+5*<font color="#2ECC40">sin</font>(pi*x1/31)	<font color="#808080"><i># Water motion in x2 direction: 5*sin(pi*x1/31)</i></font>
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> tf <font color="#8A2BE2">using</font> nlp
+</pre>
+</body>
+</html>
