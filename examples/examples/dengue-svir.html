@@ -1,0 +1,117 @@
+<!-- Dyna-to-Html Version 1.0 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Dengue in Cape Verde: vector control and vaccination</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Dengue in Cape Verde: vector control and vaccination
+</pre>
+<p>
+  In 2009, for the first time in Cape Verde, an outbreak of dengue was reported and over
+  twenty thousand people were infected. Only a few prophylactic measures were taken. The
+  effects of vector control on disease spreading, such as insecticide (larvicide and
+  adulticide) and mechanical control, as well as an hypothetical vaccine, are estimated
+  through simulations with the Cape Verde data.
+<p>
+  The more vaccinated people, the less likely a susceptible person will come into contact
+  with the infection. With the introduction of a vaccine, the SIR model related to the
+  human population is augmented into the SVIR model, where \(V_h\) represents the total
+  number of vaccinated people. Vaccination is continuous with a constant proportion \(p\)
+  of vaccinated new born. A fraction of the susceptible is vaccinated. The vaccination
+  reduces but does not eliminate susceptibility to infection. For this reason we consider
+  the infection rate \(\sigma\) of vaccinated people: when \(\sigma=0\) the vaccine is
+  perfect and when \(\sigma=1\) the vaccine has no effect at all. The vaccination loses
+  efficacy at a rate \(w\).
+<p>
+  Reference: 
+  <ol>
+  <li>Helena Sofia Rodrigues, M. Teresa T. Monteiro, Delfim F. M. Torres,
+  <em>Dengue in Cape Verde: vector control and vaccination</em>,
+  Mathematical Population Studies, October 2013, Vol.20(4), pp.208-223.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  tf = 365
+  k = 3			<font color="#808080"><i># total number of larvae per human</i></font>
+  m = 3			<font color="#808080"><i># female mosquitoes per human</i></font>
+  B = 0.8		<font color="#808080"><i># average daily biting (per day)</i></font>
+  betamh = 0.375	<font color="#808080"><i># transmission probability from Im (per bite)</i></font>
+  betahm = 0.375	<font color="#808080"><i># transmission probability from Ih (per bite)</i></font>
+  muh = 1/(71*365)	<font color="#808080"><i># 1 / average lifespan of humans (in days)</i></font>
+  etah = 1/3		<font color="#808080"><i># 1 / mean viremic period (in days)</i></font>
+  mum = 1/10		<font color="#808080"><i># 1 / average lifespan of adult mosquitoes (in days)</i></font>
+  muA = 0.25		<font color="#808080"><i># 1 / mua natural mortality of larvae (per day)</i></font>
+  etaA = 0.08		<font color="#808080"><i># maturation rate from larvae to adult (per day)</i></font>
+  phi = 6		<font color="#808080"><i># number of eggs at each deposit per capita (per day)</i></font>
+  p = 0.80		<font color="#808080"><i># proportion of the vaccinated new born</i></font>
+  sigma = 0.20		<font color="#808080"><i># infection rate of vaccinated people</i></font>
+  w = 0.85		<font color="#808080"><i># rate at which vaccination loses effect</i></font>
+  psi = 0.85		<font color="#808080"><i># fraction of the vaccinated susceptible</i></font>
+  gammaD = 0.25
+  gammaS = 0.25
+  gammaL = 0.25
+  gammaE = 0.25
+
+<font color="red"><b>dyn:</b></font>
+  Sh		<font color="#808080"><i># Susceptible Human Population</i></font>
+  Vh            <font color="#808080"><i># Vaccinated</i></font>
+  Ih		<font color="#808080"><i># Infected</i></font>
+  Rh		<font color="#808080"><i># Resistant</i></font>
+  Am		<font color="#808080"><i># Aquatic phase Mosquito</i></font>
+  Sm		<font color="#808080"><i># Susceptible</i></font>
+  Im		<font color="#808080"><i># Infected</i></font>
+  cm		<font color="#808080"><i># control: alduticide</i></font>
+  cA		<font color="#808080"><i># control: larvicide</i></font>
+  alpha		<font color="#808080"><i># control: mechanical control</i></font>
+  cost
+
+<font color="red"><b>lim:</b></font>
+  0 &lt;= Sh &lt;= 1
+  0 &lt;= Vh &lt;= 1
+  0 &lt;= Ih &lt;= 1
+  0 &lt;= Rh &lt;= 1
+  0 &lt;= Am &lt;= 1
+  0 &lt;= Sm &lt;= 1
+  0 &lt;= Im &lt;= 1
+  0 &lt;= cm &lt;= 1
+  0 &lt;= cA &lt;= 1
+  0.1 &lt;= alpha &lt;= 1
+
+<font color="red"><b>t=t0:</b></font>
+  Sh = 0.9999
+  Vh = 0
+  Ih = 0.0001
+  Rh = 0
+  Am = 1
+  Sm = 1
+  Im = 0
+  cost = 0
+
+<font color="red"><b>equ:</b></font>
+  Sh&acute; == (1-p)*muh + w*Vh - (B*betamh*Im*m+psi+muh)*Sh
+  Vh&acute; == p*muh + psi*Sh - (w+sigma*B*betamh*Im+muh)*Vh
+  Ih&acute; == B*betamh*Im*(m*Sh+sigma*Vh) - (etah+muh)*Ih
+  Rh&acute; == etah*Ih - muh*Rh
+  Am&acute; == phi*(1-Am/alpha)*(Sm+Im)*(m/k) - (etaA+muA+cA)*Am
+  Sm&acute; == etaA*Am*(k/m) - (B*betahm*Ih+mum+cm)*Sm
+  Im&acute; == B*betahm*Ih*Sm - (mum+cm)*Im
+  cost&acute; == gammaD*<font color="#2ECC40">sqr</font>(Ih) + gammaS*<font color="#2ECC40">sqr</font>(cm) + gammaL*<font color="#2ECC40">sqr</font>(cA) + gammaE*<font color="#2ECC40">sqr</font>(1-alpha)
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(cost) <font color="#8A2BE2">using</font> nlp
+</pre>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!-- Dyna-to-Html Version 1.0 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Hang glider (COPS Problem 11)</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Hang glider (COPS Problem 11)
+</pre>
+<p>
+  See: <a href="http://www.mcs.anl.gov/~more/cops/">COPS: Large-Scale Optimization Problems</a>
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  rho = 1.13
+  r_0 = 100
+  u_c = 2.5
+  c0 = 0.034
+  c1 = 0.069662
+  S = 14
+  g = 9.81
+  m = 100
+
+<font color="red"><b>dyn:</b></font>
+  x y vx vy	<font color="#808080"><i># state variables</i></font>
+  cL		<font color="#808080"><i># control variable</i></font>
+
+<font color="red"><b>var:</b></font>
+  tf
+
+<font color="red"><b>lim:</b></font>
+  0 &lt;= cL &lt;= 1.4
+  0 &lt;= tf &lt;= 200
+  0 &lt;= x &lt;= +<font color="#3D9970">inf</font>
+  0 &lt;= vx &lt;= +<font color="#3D9970">inf</font>
+
+<font color="red"><b>t=t0:</b></font>
+  x = 0
+  y = 1000
+  vx = 13.23
+  vy = -1.288
+
+<font color="red"><b>t=tf:</b></font>
+  y = 900
+  vx = 13.23
+  vy = -1.288
+
+<font color="red"><b>ini:</b></font>
+  tf = 100
+  x = <font color="#0074D9">linspace</font>(0,1323)
+  y = <font color="#0074D9">linspace</font>(1000,900)
+  vx = 13.23
+  vy = -1.288
+  cL = 0.7
+
+<font color="red"><b>exp:</b></font>
+  r == <font color="#2ECC40">sqr</font>(x/r_0 - 2.5)
+  u == u_c*(1-r)*<font color="#2ECC40">exp</font>(-r)
+  w == vy - u
+  v == <font color="#2ECC40">sqrt</font>(vx*vx+w*w)
+  D == 0.5*(c0+c1*cL*cL)*rho*S*v*v
+  L == 0.5*cL*rho*S*v*v
+  ax == (-L*w-D*vx)/v/m
+  ay == (L*vx-D*w)/v/m - g
+
+<font color="red"><b>equ:</b></font>
+  x&acute; == vx
+  y&acute; == vy
+  vx&acute; == ax
+  vy&acute; == ay
+  cL :: <font color="#7FDBFF">spline3</font>
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">maximize</font> <font color="#0074D9">final</font>(x) <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>set:</b></font>
+  rep = [r,u,w,v,D,L,vx_dot,vy_dot]
+
+<font color="red"><b>tpa:</b></font>
+  report(rep)
+
+<font color="red"><b>gms:</b></font>
+  <font color="#8B0000">$$ondotL</font>
+  report('r') = r;
+  report('u') = u;
+  report('w') = w;
+  report('v') = v;
+  report('D') = D;
+  report('L') = L;
+  report('vx_dot') = ax;
+  report('vy_dot') = ay;
+  <font color="#3D9970">display</font> <font color="#8A2BE2">%MODEL%</font>.objval;
+  <font color="#8A2BE2">@csvsave</font> report(rep)
+</pre>
+</body>
+</html>

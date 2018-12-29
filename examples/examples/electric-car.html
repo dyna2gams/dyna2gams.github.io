@@ -1,0 +1,114 @@
+<!-- Dyna-to-Html Version 1.0 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Electric Car</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Electric Car
+</pre>
+<p>
+  The Electric car problem tries to find an optimal driving policy for an electric car. The
+  goal is to use minimal energy to finish a given distance. As the car can be driven in two
+  discrete modes, which either cause acceleration (and thereby consumption of energy) or the
+  recharging of the battery, the control variable \(u(t)\) is supposed to be integer.
+  Additionally the model for the electric car itself contains nonlinearities.
+<p>
+  The mixed-integer optimal control problem is given by
+<p>
+  \[
+  \min_{x,u} x_3(t_f)
+  \]
+  subject to:
+  \[
+  \dot{x}_0 = (V_{alim} \ u - R_m \ x_0 - K_m \ x_1) / L_m  \\
+  \dot{x}_1 = \frac{K_r^2}{Mr^2} (K_m \ x_0 - \frac{r}{K_r} ( M \ g \ K_f + \frac{1}{2} \rho \ S \ C_x \frac{r^2}{K_r^2} x_1^2)) \\
+  \dot{x}_2 = \frac{r}{K_r} x_1 \\
+  \dot{x}_3 = V_{alim} \ u \ x_0 + R_{bat} \ x_0^2 \\
+  x(t_0) = (0,0,0,0)^T \\
+  x(t_f) \in \mathcal{T} \subseteq \mathbb{R}^4 \\
+  x_0(t) \in [-i_{max}, i_{max}] \\
+  u(t) \in \{-1, 1\}.
+  \]
+<p>
+  Here the four differential states stand for the electrical current (\(x_0\)), the angular
+  velocity (\(x_1\)), the position of the car \((x_2)\), and the consumed energy \((x_3)\).
+  The objective function  \(x_3(t_f)\) is just a reformulation of the Lagrange-type objective
+  function tracking the used energy over time.
+<p>
+  There are several alternative formulations and variants of the above problem, in particular
+  <ul>
+  <li>fixed final velocity,  \(t_f = 10s\)
+  <li>bounded velocity, \(t_f = 10s, x_2(t) \leq 45 \frac{K_r}{3.6r} \forall t\)
+  <li>fixed final velocity, bounded velocity, longer time horizon, \(x_2(t) \leq 30 \frac{K_r}{3.6r} \forall t\).
+  </ul>
+<p>
+  Reference:
+  <ol>
+  <li>S. Sager, M. Claeys, F. Messine,
+  <em>Efficient upper and lower bounds for global mixed-integer optimal control</em>,
+  Journal of Global Optimization, 61, 721--743, 2015.
+  </ol>
+<p>
+  See: <a href="https://mintoc.de/index.php/Electric_Car">mintoc.de</a>
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  R_bat = 0.05	<font color="#808080"><i># Resistance of the battery	Ohms </i></font>
+  V_alim = 150	<font color="#808080"><i># Battery voltage		V</i></font>
+  R_m = 0.03	<font color="#808080"><i># Inductor resistance		Ohms</i></font>
+  K_m = 0.27	<font color="#808080"><i># Coefficient of the motor torque	[-]</i></font>
+  L_m = 0.05	<font color="#808080"><i># inductance of the rotor	[-]</i></font>
+  r = 0.33	<font color="#808080"><i># Radius of the wheel		m</i></font>
+  K_r = 10	<font color="#808080"><i># Coefficient of reduction	[-]</i></font>
+  M = 250	<font color="#808080"><i># Mass				kg</i></font>
+  g = 9.81	<font color="#808080"><i># Gravity constant		[-]</i></font>
+  K_f = 0.03	<font color="#808080"><i># Constant representing the friction of the wheels on the road	[-]</i></font>
+  rho = 1.293	<font color="#808080"><i># Air density			kg/m^3</i></font>
+  S = 2		<font color="#808080"><i># Area in the front of the vehicle	m^2</i></font>
+  C_x = 0.4	<font color="#808080"><i># Aerodynamic coefficient	[-]</i></font>
+  tf = 10
+
+<font color="red"><b>dyn:</b></font>
+  x{0:3}
+  w
+
+<font color="red"><b>lim:</b></font>
+  -150 &lt;= x0 &lt;= 150
+  -<font color="#3D9970">inf</font> &lt;= x{1:3} &lt;= +<font color="#3D9970">inf</font>
+  -1 &lt;= w &lt;= 1
+
+<font color="red"><b>t=t0:</b></font>
+  x{0:3} = 0
+
+<font color="red"><b>t=tf:</b></font> 
+  x2 = 100
+ 
+<font color="red"><b>ini:</b></font>
+  x0 = 0
+  x1 = 0
+  x2 = <font color="#0074D9">linspace</font>(<font color="#0074D9">initial</font>(x2),<font color="#0074D9">final</font>(x2))
+  w = 1
+   
+<font color="red"><b>equ:</b></font>
+  x0&acute; == (w*V_alim - R_m*x0 - K_m*x1) / L_m
+  x1&acute; == K_r*K_r/(M*r*r) * (K_m*x0 - r/K_r*(M*g*K_f+0.5*rho*S*C_x*x1*x1*r*r/(K_r*K_r)))
+  x2&acute; == x1*r / K_r
+  x3&acute; == w*x0*V_alim + R_bat*x0*x0
+ 
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(x3) <font color="#8A2BE2">using</font> nlp
+</pre>
+</body>
+</html>

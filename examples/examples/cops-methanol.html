@@ -1,0 +1,95 @@
+<!-- Dyna-to-Html Version 1.0 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Methanol-to-Hydrocarbons (COPS Problem 13)</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Methanol-to-Hydrocarbons (COPS Problem 13)
+</pre>
+<p>
+  Determine the reaction coefficients for the conversion of methanol into various hydrocarbons.
+<p>
+  The nonlinear model that describes the process is
+<p>
+  \[
+  \dot{x}_1 = - \big(2\theta_2 - \frac{\theta_1 x_2}{(\theta_2+\theta_5)x_1+x_2} + \theta_3 + \theta_4 \big) x_1 \\
+  \dot{x}_2 = \frac{\theta_1 x_1(\theta_2 x_1-x_2)}{(\theta_2+\theta_5)x_1+x_2} + \theta_3 x_1 \\
+  \dot{x}_3 = \frac{\theta_1 x_1(x_2+\theta_5 x_1)}{(\theta_2+\theta_5)x_1+x_2} + \theta_4 x_1 \\
+  \]
+<p>
+  with coefficients \(\theta_i \geq 0\). Initial conditions are known.
+<p>
+  See: <a href="http://www.mcs.anl.gov/~more/cops/">COPS: Large-Scale Optimization Problems</a>
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  tf = 1.122
+
+<font color="red"><b>var:</b></font>
+  theta{1:5}
+
+<font color="red"><b>dyn:</b></font>
+  x{1:3}
+
+<font color="red"><b>obs:</b></font>
+  <font color="#0074D9">Time</font>       x1        x2        x3
+  0.000  1.0000    0.0000    0.0000
+  0.050  0.7085    0.1621    0.0811
+  0.065  0.5971    0.1855    0.0965
+  0.080  0.5537    0.1989    0.1198
+  0.123  0.3684    0.2845    0.1535
+  0.233  0.1712    0.3491    0.2097
+  0.273  0.1198    0.3098    0.2628
+  0.354  0.0747    0.3576    0.2467
+  0.397  0.0529    0.3347    0.2884
+  0.418  0.0415    0.3388    0.2757
+  0.502  0.0261    0.3557    0.3167
+  0.553  0.0208    0.3483    0.2954
+  0.681  0.0085    0.3836    0.2950
+  0.750  0.0053    0.3611    0.2937
+  0.916  0.0019    0.3609    0.2831
+  0.937  0.0018    0.3485    0.2846
+  1.122  0.0006    0.3698    0.2899
+
+<font color="red"><b>lim:</b></font>
+  0 &lt;= theta{1:5} &lt;= 3
+  0 &lt;= x{1:3} &lt;= 2
+
+<font color="red"><b>t=t0:</b></font>
+  x1 = 1.0
+  x{2:3} = 0.0
+
+<font color="red"><b>ini:</b></font>
+  x{1:3} = <font color="#0074D9">ObservedVal</font>(x{1:3})
+  theta{1:5} = 1
+
+<font color="red"><b>equ:</b></font>
+  x1&acute; == -(2*theta2-(theta1*x2)/((theta2+theta5)*x1+x2)+theta3+theta4)*x1
+  x2&acute; == (theta1*x1*(theta2*x1-x2))/((theta2+theta5)*x1+x2)+theta3*x1
+  x3&acute; == (theta1*x1*(x2+theta5*x1))/((theta2+theta5)*x1+x2)+theta4*x1
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#3D9970">sum</font>{1:3, <font color="#0074D9">ObservedErr</font>(x{:})} <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#3D9970">parameter</font> report(*,*);
+  <font color="#3D9970">set</font> o(<font color="#0074D9">Observation</font>);
+  <font color="#0074D9">ObservedSet</font>(x{1:3},o); 
+  <font color="#8B0000">$$ondotL</font>
+  report(o,'x{1:3}') = <font color="#0074D9">ObservedGap</font>(x{1:3},o);
+  <font color="#3D9970">display</font> report; 
+</pre>
+</body>
+</html>
