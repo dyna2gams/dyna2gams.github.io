@@ -1,0 +1,199 @@
+<!-- Dyna-to-Html Version 1.0 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Robust PID Design</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Robust PID Design
+</pre>
+<p>
+  The objective of the proposed PID design method is to find the PID controller giving the least
+  integrated absolute error (IAE) value when a desired output \(y_d\), modelled as a step, is
+  acting on the closed loop system. The optimization is done under the constraints that the closed
+  loop system is stable and that the open loop Nyquist curve is tangent to one or two prespecified
+  circles in the complex plane without entering either of them, thus maximizing the gain. These
+  two circles are called the \(M_s\)- and \(M_t\)-circles, which sizes and positions are given by
+  \[
+  M_s = \max_{\substack w} |S(i w)| \\
+  M_t = \max_{\substack w} |T(i w)|
+  \]
+  where the sensitivity function and the complementarity sensitivity function are
+  defined as
+  \[
+  S(s) = \dfrac{1}{1+L(s)}, \; T(s) = \dfrac{L(s)}{1+L(s)}
+  \]
+  and \(L(s) = C(s) P(s)\) is the loop transfer function.
+<p>
+  The resulting, non-convex, optimization problem can be written as  
+  \[
+  \min_{\substack K,T_i,T_d \in \mathbb{R}^+} \int_0^{\infty} |e(t)|  \ \mathrm{d}t = IAE_{step}
+  \]
+  subject to  
+  \[
+  r_s - |L(i \omega) - c_s| \leq 0 \;\; \forall \ \omega \in \mathbb{R}^+ \\
+  r_t - |L(i \omega) - c_t| \leq 0 \;\; \forall \ \omega \in \mathbb{R}^+
+  \]
+  with  
+  \[
+  c_s = -1, \; r_s = \dfrac{1}{M_s} \\
+  c_t = \dfrac{-M_t^2}{M_t^2-1}, \; r_t = \dfrac{M_t}{M_t^2-1}
+  \]
+<p>
+  The robustness constraints can be generalized to settings with process uncertainties. Consider a
+  process \(\tilde{P}\) with uncertainties such that for each frequency point the Nyquist plot is
+  known to lie within a circle with a frequency dependent radius \(\rho\), i.e.,
+  \[
+  \tilde{P}(i \omega) = P(i \omega) + \Delta P(i \omega), \; |\Delta P(i \omega))| \leq \rho(\omega)
+  \]
+  Hence, the robustness constraints can be formulated as  
+  \[
+  r_s - |L(i \omega) - c_s| + \rho(\omega) |C(i \omega)| \leq 0 \;\; \forall \ \omega \in \mathbb{R}^+ \\
+  r_t - |L(i \omega) - c_t| + \rho(\omega) |C(i \omega)| \leq 0 \;\; \forall \ \omega \in \mathbb{R}^+
+  \]
+<p>
+  In this example, the transfer functions are 
+  \[
+  P(s) = \dfrac{1}{s+1} e^{-s} \\
+  C(s) = K (1 + \dfrac{1}{s T_i})
+  \]
+  with a measurement filter \(F(s)\) defined as
+  \[
+  F(s) = \dfrac{1}{(s \theta)^2/2 + s \theta + 1}
+  \]
+<p>
+  References:
+  <ol>
+  <li>O. Garpinger and T. Hägglund,
+  <em>A software tool for robust PID design</em>,
+  Proc. 17th IFAC World Congress, Seoul, Korea, 2008.  
+  <li>M. Hast, K.J. Aström, B. Bernhardsson, S. Boyd,
+  <em>PID Design by Convex-Concave Optimization</em>,
+  2013 European Control Conference (ECC), Zürich, Switzerland, July 17-19, 2013.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>set:</b></font>
+  f = F0*F1000
+
+<font color="red"><b>par:</b></font>
+  tf = 10
+  Th = 0.1
+  yd = 1
+  Ms = 1.8
+  Mt = 1.8
+  w(f) = 10^(-2+4*(<font color="#3D9970">ord</font>(f)-1)/(<font color="#3D9970">card</font>(f)-1))
+
+<font color="red"><b>var:</b></font>
+  K Ti Td
+
+<font color="red"><b>dyn:</b></font>
+  y yf J
+
+<font color="red"><b>lim:</b></font>
+  0 &lt;= K &lt;= 1
+  0.01 &lt;= Ti &lt;= 5
+  0 &lt;= Td &lt;= 0
+
+<font color="red"><b>t=t0:</b></font>
+  J = 0
+
+<font color="red"><b>ini:</b></font>
+  K = 0
+  Ti = 5
+  Td = 0
+
+<font color="#8B0000">$macro</font> g(w,c) sqrt(sqr(-sin(w)*K/(Ti*w^3*sqr(1-Th^2*w^2/2)+Ti*w*sqr(1-Th^2*w^2/2)+Th^2*Ti*w^5+Th^\
+  2*Ti*w^3)+Th^2*w*<font color="#2ECC40">sin</font>(w)*K/(2*Ti*w^2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+2*Ti*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+2*Th^2*Ti*w^4+2*\
+  Th^2*Ti*w^2)+Th*w*<font color="#2ECC40">sin</font>(w)*K/(Ti*w^2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+Ti*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+Th^2*Ti*w^4+Th^2*Ti*\
+  w^2)-Td*Th^2*w^3*<font color="#2ECC40">sin</font>(w)*K/(2*w^2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+2*Th^2*w^4+2*Th^2*w^2)\
+  +Th^2*w^3*<font color="#2ECC40">sin</font>(w)*K/(2*w^2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+2*Th^2*w^4+2*Th^2*w^2)-Td*Th*\
+  w^3*<font color="#2ECC40">sin</font>(w)*K/(w^2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+Th^2*w^4+Th^2*w^2)-Th*w*<font color="#2ECC40">sin</font>(w)*K/(w^2*<font color="#2ECC40">sqr</font>(\
+  1-Th^2*w^2/2)+<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+Th^2*w^4+Th^2*w^2)+Td*w*<font color="#2ECC40">sin</font>(w)*K/(w^2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+<font color="#2ECC40">sqr</font>(1-\
+  Th^2*w^2/2)+Th^2*w^4+Th^2*w^2)-w*<font color="#2ECC40">sin</font>(w)*K/(w^2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+Th^2*w^4+Th^\
+  2*w^2)+Th^2*w^2*<font color="#2ECC40">cos</font>(w)*K/(2*Ti*w^2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+2*Ti*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+2*Th^2*Ti*w^4+2*\
+  Th^2*Ti*w^2)-Th*<font color="#2ECC40">cos</font>(w)*K/(Ti*w^2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+Ti*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+Th^2*Ti*w^4+Th^2*Ti*w^\
+  2)-<font color="#2ECC40">cos</font>(w)*K/(Ti*w^2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+Ti*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+Th^2*Ti*w^4+Th^2*Ti*w^2)-Td*Th^2*\
+  w^4*<font color="#2ECC40">cos</font>(w)*K/(2*w^2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+2*Th^2*w^4+2*Th^2*w^2)-Th^2*w^2*<font color="#2ECC40">cos</font>(\
+  w)*K/(2*w^2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+2*Th^2*w^4+2*Th^2*w^2)+Td*Th*w^2*<font color="#2ECC40">cos</font>(w)*K/(\
+  w^2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+Th^2*w^4+Th^2*w^2)-Th*w^2*<font color="#2ECC40">cos</font>(w)*K/(w^2*<font color="#2ECC40">sqr</font>(1-Th^2*w^\
+  2/2)+<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+Th^2*w^4+Th^2*w^2)+Td*w^2*<font color="#2ECC40">cos</font>(w)*K/(w^2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+<font color="#2ECC40">sqr</font>(1-Th^2*w^\
+  2/2)+Th^2*w^4+Th^2*w^2)+<font color="#2ECC40">cos</font>(w)*K/(w^2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+Th^2*w^4+Th^2*w^2)-\
+  (c))+<font color="#2ECC40">sqr</font>(-Th^2*w^2*<font color="#2ECC40">sin</font>(w)/(2*Ti*w^2+2*Ti)+Th*<font color="#2ECC40">sin</font>(w)/(Ti*w^2+Ti)+<font color="#2ECC40">sin</font>(w)/(Ti*w^2+Ti)+Td*Th^2*w^\
+  4*<font color="#2ECC40">sin</font>(w)/(2*w^2+2)+Th^2*w^2*<font color="#2ECC40">sin</font>(w)/(2*w^2+2)-Td*Th*w^2*<font color="#2ECC40">sin</font>(w)/(w^2+1)+Th*w^2*<font color="#2ECC40">sin</font>(w)/(w^2+1)-Td*\
+  w^2*<font color="#2ECC40">sin</font>(w)/(w^2+1)-<font color="#2ECC40">sin</font>(w)/(w^2+1)-<font color="#2ECC40">cos</font>(w)/(Ti*w^3+Ti*w)+Th^2*w*<font color="#2ECC40">cos</font>(w)/(2*Ti*w^2+2*Ti)+Th*w*<font color="#2ECC40">cos</font>(\
+  w)/(Ti*w^2+Ti)-Td*Th^2*w^3*<font color="#2ECC40">cos</font>(w)/(2*w^2+2)+Th^2*w^3*<font color="#2ECC40">cos</font>(w)/(2*w^2+2)-Td*Th*w^3*<font color="#2ECC40">cos</font>(w)/(w^2+1)\
+  -Th*w*<font color="#2ECC40">cos</font>(w)/(w^2+1)+Td*w*<font color="#2ECC40">cos</font>(w)/(w^2+1)-w*<font color="#2ECC40">cos</font>(w)/(w^2+1))*K^2/<font color="#2ECC40">sqr</font>(<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+Th^2*w^\
+  2))
+<font color="#8B0000">$macro</font> circle(w,radius,center) (radius - g(w,center))
+
+<font color="red"><b>exp:</b></font>
+  e == yd$(<font color="#0074D9">Time</font>&gt;0) - yf
+
+<font color="red"><b>equ:</b></font>
+  <font color="#8A2BE2">@tfm</font> Num=K*(Td 1 1/Ti), Den=(1 0)*(1 1), Delay=1, In=e, Out=y		<font color="#808080"><i># C(s)*P(s)</i></font>
+  <font color="#8A2BE2">@tfm</font> Num=2/Th/Th, Den=(1 2/Th 2/Th/Th), In=y, Out=yf			<font color="#808080"><i># F(s)</i></font>
+  J&acute; == <font color="#2ECC40">sqrt</font>(1e-6+<font color="#2ECC40">sqr</font>(e))
+  robust_s(f).. circle(w(f),1/Ms,-1) &lt;= 0
+  robust_t(f).. circle(w(f),Mt/(Mt*Mt-1),-Mt*Mt/(Mt*Mt-1)) &lt;= 0
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp <font color="#8A2BE2">with</font> conopt|snopt
+
+<font color="#8B0000">$macro</font> sc2(w) (K^2*(sqr(Td*w-1/(Ti*w))+1)/((sqr(-sin(w)*K/(Ti*w^3*sqr(1-Th^2*w^2/2)+Ti*w*sqr(1-Th^2*w^2/2)+Th^2*Ti*w^5+Th^2*Ti*w^3)\
+  +Th^2*w*<font color="#2ECC40">sin</font>(w)*K/(2*Ti*w^2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+2*Ti*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+2*Th^2*Ti*w^4+2*Th^2*Ti*w^2)\
+  +Th*w*<font color="#2ECC40">sin</font>(w)*K/(Ti*w^2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+Ti*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+Th^2*Ti*w^4+Th^2*Ti*w^2)\
+  -Td*Th^2*w^3*<font color="#2ECC40">sin</font>(w)*K/(2*w^2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+2*Th^2*w^4+2*Th^2*w^2)\
+  +Th^2*w^3*<font color="#2ECC40">sin</font>(w)*K/(2*w^2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+2*Th^2*w^4+2*Th^2*w^2) \
+  -Td*Th*w^3*<font color="#2ECC40">sin</font>(w)*K/(w^2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+Th^2*w^4+Th^2*w^2)-Th*w*<font color="#2ECC40">sin</font>(w)*K/(w^2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+Th^2*w^4+Th^2*w^2)\
+  +Td*w*<font color="#2ECC40">sin</font>(w)*K/(w^2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+Th^2*w^4+Th^2*w^2)-w*<font color="#2ECC40">sin</font>(w)*K/(w^2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+Th^2*w^4+Th^2*w^2)\
+  +Th^2*w^2*<font color="#2ECC40">cos</font>(w)*K/(2*Ti*w^2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+2*Ti*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+2*Th^2*Ti*w^4+2*Th^2*Ti*w^2)\
+  -Th*<font color="#2ECC40">cos</font>(w)*K/(Ti*w^2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+Ti*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+Th^2*Ti*w^4+Th^2*Ti*w^2)\
+  -<font color="#2ECC40">cos</font>(w)*K/(Ti*w^2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+Ti*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+Th^2*Ti*w^4+Th^2*Ti*w^2)\
+  -Td*Th^2*w^4*<font color="#2ECC40">cos</font>(w)*K/(2*w^2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+2*Th^2*w^4+2*Th^2*w^2)\
+  -Th^2*w^2*<font color="#2ECC40">cos</font>(w)*K/(2*w^2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+2*Th^2*w^4+2*Th^2*w^2)\
+  +Td*Th*w^2*<font color="#2ECC40">cos</font>(w)*K/(w^2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+Th^2*w^4+Th^2*w^2)-Th*w^2*<font color="#2ECC40">cos</font>(w)*K/(w^2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+Th^2*w^4+Th^2*w^2)\
+  +Td*w^2*<font color="#2ECC40">cos</font>(w)*K/(w^2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+Th^2*w^4+Th^2*w^2)+<font color="#2ECC40">cos</font>(w)*K/(w^2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+Th^2*w^4+Th^2*w^2)+1)\
+  +<font color="#2ECC40">sqr</font>(-Th^2*w^2*<font color="#2ECC40">sin</font>(w)/(2*Ti*w^2+2*Ti)+Th*<font color="#2ECC40">sin</font>(w)/(Ti*w^2+Ti)+<font color="#2ECC40">sin</font>(w)/(Ti*w^2+Ti)+Td*Th^2*w^4*<font color="#2ECC40">sin</font>(w)/(2*w^2+2)+Th^2*w^2*<font color="#2ECC40">sin</font>(w)/(2*w^2+2)-Td*Th*w^2*<font color="#2ECC40">sin</font>(w)/(w^2+1)\
+  +Th*w^2*<font color="#2ECC40">sin</font>(w)/(w^2+1)-Td*w^2*<font color="#2ECC40">sin</font>(w)/(w^2+1)-<font color="#2ECC40">sin</font>(w)/(w^2+1)-<font color="#2ECC40">cos</font>(w)/(Ti*w^3+Ti*w)+Th^2*w*<font color="#2ECC40">cos</font>(w)/(2*Ti*w^2+2*Ti)\
+  +Th*w*<font color="#2ECC40">cos</font>(w)/(Ti*w^2+Ti)-Td*Th^2*w^3*<font color="#2ECC40">cos</font>(w)/(2*w^2+2)+Th^2*w^3*<font color="#2ECC40">cos</font>(w)/(2*w^2+2)-Td*Th*w^3*<font color="#2ECC40">cos</font>(w)/(w^2+1)\
+  -Th*w*<font color="#2ECC40">cos</font>(w)/(w^2+1)+Td*w*<font color="#2ECC40">cos</font>(w)/(w^2+1)-w*<font color="#2ECC40">cos</font>(w)/(w^2+1))*K^2\
+  /(<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+Th^2*w^2)^2)\
+  *(<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+Th^2*w^2)))
+
+<font color="red"><b>gms:</b></font>
+  <font color="#3D9970">scalar</font> sc 'Noise sensitivity proxy';
+  <font color="#8B0000">$$ondotL</font>
+  sc = <font color="#3D9970">sum</font>(f$(<font color="#3D9970">ord</font>(f)=1), sc2(w(f))*(w(f+1)-w(f))/2)
+     + <font color="#3D9970">sum</font>(f$(<font color="#3D9970">ord</font>(f)&gt;1 and <font color="#3D9970">ord</font>(f)&lt;<font color="#3D9970">card</font>(f)), sc2(w(f))*(w(f+1)-w(f-1))/2)
+     + <font color="#3D9970">sum</font>(f$(<font color="#3D9970">ord</font>(f)=<font color="#3D9970">card</font>(f)), sc2(w(f))*(w(f)-w(f-1))/2);
+  sc = <font color="#2ECC40">sqrt</font>(sc/2/pi);
+  <font color="#3D9970">display</font> sc;
+
+<font color="#808080"><i>###:</i></font><font color="#808080"><i> Maxima program</i></font>
+<font color="#808080"><i>  display2d:false;</i></font>
+<font color="#808080"><i>  assume(w&gt;0);</i></font>
+<font color="#808080"><i>  P(s):=exp(-s)/(s+1);</i></font>
+<font color="#808080"><i>  C(s):=K*(1+1/(s*Ti)+s*Td);</i></font>
+<font color="#808080"><i>  F(s):=1/(1+s*Th+(s*Th)^2/2);</i></font>
+<font color="#808080"><i>  L(w):=P(%i*w)*C(%i*w)*F(%i*w);</i></font>
+<font color="#808080"><i>  S(w):=cabs(1/(1+L(w)));</i></font>
+<font color="#808080"><i>  T(w):=cabs(L(w)/(1+L(w)));</i></font>
+<font color="#808080"><i>  g(w):=cabs(L(w)-c);</i></font>
+<font color="#808080"><i>  g(w);</i></font>
+<font color="#808080"><i>  sc2(w):=cabs(C(%i*w)*F(%i*w)/(1+L(w)))^2;</i></font>
+<font color="#808080"><i>  sc2(w);</i></font>
+</pre>
+</body>
+</html>

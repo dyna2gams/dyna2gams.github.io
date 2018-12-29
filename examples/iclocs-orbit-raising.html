@@ -1,0 +1,80 @@
+<!-- Dyna-to-Html Version 1.0 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Orbit-raising optimal control</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Orbit-raising optimal control
+</pre>
+<p>
+  This problem is taken from the examples implemented in ICLOCS2
+  (<a href="http://www.ee.ic.ac.uk/ICLOCS/">www.ee.ic.ac.uk/ICLOCS/</a>).
+<p>
+  References: 
+  <ol>
+  <li>Bryson, A. E. and Ho, Y.-C.,
+  <em>Applied Optimal Control</em>, 
+  Hemisphere Publishing, New York, 1975, p. 68.
+  <li>P. Falugi, E. Kerrigan, E. van Wyk,
+  <em>Imperial College London Optimal Control Software User Guide (ICLOCS)</em>,
+  <a href="http://www.ee.ic.ac.uk/ICLOCS/user_guide.pdf">http://www.ee.ic.ac.uk/ICLOCS/user_guide.pdf</a>
+  </ol>
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  tf = 3.32
+  mu = 1
+  T = 0.1405
+  m0 = 1
+  mdot = 0.0749
+
+<font color="red"><b>dyn:</b></font>
+  r theta vr vtheta	<font color="#808080"><i># states</i></font>
+  beta			<font color="#808080"><i># control (replaces u1 and u2 with u1^2 + u2^2 = 1)</i></font>
+
+<font color="red"><b>lim:</b></font>
+  0 &lt;= r &lt;= 2
+  0 &lt;= theta &lt;= Pi
+  0 &lt;= vr &lt;= 2
+  0 &lt;= vtheta &lt;= 2
+  0 &lt;= beta &lt;= 2*Pi
+  
+<font color="red"><b>t=t0:</b></font>
+  r = 1
+  theta = 0
+  vr = 0
+  vtheta = 1
+  
+<font color="red"><b>t=tf:</b></font>
+  vr = 0
+
+<font color="red"><b>exp:</b></font>
+  a == T / (m0 - mdot*<font color="#0074D9">Time</font>)
+  
+<font color="red"><b>equ:</b></font>
+  r&acute; == vr
+  theta&acute; == vtheta / r
+  vr&acute; == <font color="#2ECC40">sqr</font>(vtheta)/r - mu/<font color="#2ECC40">sqr</font>(r) + a*<font color="#2ECC40">sin</font>(beta)
+  vtheta&acute; == -vr*vtheta/r + a*<font color="#2ECC40">cos</font>(beta)
+  0 == <font color="#0074D9">final</font>(vtheta) - <font color="#2ECC40">sqrt</font>(mu/<font color="#0074D9">final</font>(r))
+  
+<font color="red"><b>obj:</b></font> 
+  <font color="#8A2BE2">maximize</font> <font color="#0074D9">final</font>(r) <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#8A2BE2">@solveloop</font> Method=movavg, Paraml=2 1, Varl=beta
+</pre>
+</body>
+</html>

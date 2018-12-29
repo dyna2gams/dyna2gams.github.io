@@ -1,0 +1,113 @@
+<!-- Dyna-to-Html Version 1.0 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Dynamic Soaring Problem</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Dynamic Soaring Problem
+</pre>
+<p>
+  This example is taken from the following reference:
+  <ol>
+  <li>Zhao, Y. J.,
+  <em>Optimal Pattern of Glider Dynamic Soaring</em>,
+  Optimal Control Applications and Methods, Vol. 25, 2004, pp. 67-89.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  rho = 0.002378
+  CD0 = 0.00873
+  K = 0.045
+  g = 32.2
+  m = 5.6   <font color="#808080"><i># the glider mass</i></font>
+  S = 45.09703
+  W0 = 0
+  CLmax = 1.5
+
+<font color="red"><b>var:</b></font>
+  tf
+  beta      <font color="#808080"><i># the average wind gradient slope</i></font>
+
+<font color="red"><b>dyn:</b></font>
+  <font color="#808080"><i># state variables</i></font>
+  x y       <font color="#808080"><i># (East,North) position  </i></font>
+  z         <font color="#808080"><i># the altitude</i></font>
+  v         <font color="#808080"><i># the air-relative speed </i></font>
+  gamma     <font color="#808080"><i># the air-relative flight path angle  </i></font>
+  psi       <font color="#808080"><i># the azimuth angle (measured clockwise from the North)</i></font>
+  <font color="#808080"><i># control variables</i></font>
+  CL        <font color="#808080"><i># the coefficient of lift</i></font>
+  sigma     <font color="#808080"><i># the glider bank angle           </i></font>
+
+<font color="red"><b>lim:</b></font>
+  1 &lt;= tf &lt;= 30
+  -1000 &lt;= x &lt;= +1000
+  -1000 &lt;= y &lt;= +1000
+  0 &lt;= z &lt;= +1000
+  +10 &lt;= v &lt;= +350
+  -75/180*pi &lt;= gamma &lt;= 75/180*pi
+  -3*pi &lt;= psi &lt;= +pi/2
+  0.005 &lt;= beta &lt;= 0.15
+  -0.5 &lt;= CL &lt;= CLmax
+  -75/180*pi &lt;= sigma &lt;= 75/180*pi
+
+<font color="red"><b>t=t0:</b></font>
+  x = 0
+  y = 0
+  z = 0
+
+<font color="red"><b>t=tf:</b></font>
+  x = 0
+  y = 0
+  z = 0
+  
+<font color="red"><b>ini:</b></font>
+  tf = 24
+  x = 500*<font color="#2ECC40">cos</font>(2*pi*<font color="#0074D9">linspace</font>(0,1))-500
+  y = 300*<font color="#2ECC40">sin</font>(2*pi*<font color="#0074D9">linspace</font>(0,1))
+  z = -400*<font color="#2ECC40">cos</font>(2*pi*<font color="#0074D9">linspace</font>(0,1))+400
+  v = 160*(0.375+<font color="#2ECC40">cos</font>(2*pi*<font color="#0074D9">linspace</font>(0,1)))
+  gamma = pi/6*<font color="#2ECC40">sin</font>(2*pi*<font color="#0074D9">linspace</font>(0,1))
+  psi = -1-6*<font color="#0074D9">linspace</font>(0,1)
+  CL = CLmax/3 
+  sigma = -0.6
+  beta = 0.08
+
+<font color="red"><b>exp:</b></font>
+  Wx == (beta*z+W0)                     <font color="#808080"><i># the wind component along the East direction</i></font>
+  Wxdot == beta*v*<font color="#2ECC40">sin</font>(gamma)            <font color="#808080"><i># dWx/dt</i></font>
+                                        <font color="#808080"><i># rho*v^2/2 is the dynamic pressure</i></font>
+                                        <font color="#808080"><i># S is the vehicle reference area</i></font>
+                                        <font color="#808080"><i># CD0+K*CL^2 is the coefficient of drag</i></font>
+                                        <font color="#808080"><i># CL is the coefficient of lift</i></font>
+  D == 0.5*rho*v*v * S * (CD0+K*CL*CL)  <font color="#808080"><i># the drag force</i></font>
+  L == 0.5*rho*v*v * S * CL             <font color="#808080"><i># the lift force</i></font>
+
+<font color="red"><b>equ:</b></font>
+  x&acute; == v*<font color="#2ECC40">cos</font>(gamma)*<font color="#2ECC40">sin</font>(psi) + Wx
+  y&acute; == v*<font color="#2ECC40">cos</font>(gamma)*<font color="#2ECC40">cos</font>(psi)
+  z&acute; == v*<font color="#2ECC40">sin</font>(gamma)
+  m*v&acute; == - D - m*g*<font color="#2ECC40">sin</font>(gamma) - m*Wxdot*<font color="#2ECC40">cos</font>(gamma)*<font color="#2ECC40">sin</font>(psi)
+  m*gamma&acute; == 1/v * (L*<font color="#2ECC40">cos</font>(sigma) - m*g*<font color="#2ECC40">cos</font>(gamma) + m*Wxdot*<font color="#2ECC40">sin</font>(gamma)*<font color="#2ECC40">sin</font>(psi))
+  m*psi&acute; == 1/(v*<font color="#2ECC40">cos</font>(gamma)) * (L*<font color="#2ECC40">sin</font>(sigma) - m*Wxdot*<font color="#2ECC40">cos</font>(psi))
+  0 == <font color="#0074D9">final</font>(v) - <font color="#0074D9">initial</font>(v)
+  0 == <font color="#0074D9">final</font>(gamma) - <font color="#0074D9">initial</font>(gamma)
+  0 == <font color="#0074D9">final</font>(psi) + 2*pi - <font color="#0074D9">initial</font>(psi)
+
+<font color="red"><b>obj:</b></font> <font color="#8A2BE2">minimize</font> beta <font color="#8A2BE2">using</font> nlp
+</pre>
+</body>
+</html>

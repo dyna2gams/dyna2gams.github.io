@@ -1,0 +1,71 @@
+<!-- Dyna-to-Html Version 1.0 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Innate Immune Response</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Innate Immune Response
+</pre>
+<p>
+  Reference:
+  <ol>
+  <li>Stengel RF, Ghigliazza R, Kulkarni N, Laplace O,
+  <em>Optimal control of innate immune response</em>,
+  Optimal Control Applications and Methods 23, pp. 91-104 (2002).
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  tau = 1	<font color="#808080"><i># 0 - 1</i></font>
+  tf = 10
+
+<font color="red"><b>dyn:</b></font>
+  <font color="#808080"><i># state variables</i></font>
+  x1	<font color="#808080"><i># concentration of pathogen (i.e. concentration of associated antigen)</i></font>
+  x2	<font color="#808080"><i># concentration of plasma cells which are carriers and producers of antibodies</i></font>
+  x3	<font color="#808080"><i># concentration of antibodies, which kill the pathogen (i.e. concentration of immunoglobulins)</i></font>
+  x4	<font color="#808080"><i># relative characteristic of a damaged organ (0 = healthy, 1 = dead)</i></font>
+  x5	<font color="#808080"><i># criterion</i></font>
+  <font color="#808080"><i># control variables</i></font>
+  u1	<font color="#808080"><i># pathogen killer</i></font>
+  u2	<font color="#808080"><i># plasma cell enhancer</i></font>
+  u3	<font color="#808080"><i># antibody enhancer</i></font>
+  u4	<font color="#808080"><i># organ healing factor</i></font>
+
+<font color="red"><b>lim:</b></font>
+  0 &lt;= x{1:3} &lt;= 10
+  0 &lt;= x4 &lt;= 0.2
+
+<font color="red"><b>t=t0:</b></font>
+  x1 = 3	<font color="#808080"><i># 1.5 - 2.0 - 3.0</i></font>
+  x2 = 2
+  x3 = 4/3
+  x4 = 0
+  x5 = 0
+
+<font color="red"><b>exp:</b></font>
+  A == <font color="#2ECC40">ifthen</font>(x4&lt;=0.5,<font color="#2ECC40">cos</font>(pi*x4),0)
+  
+<font color="red"><b>equ:</b></font>
+  x1&acute; == (1-x3)*x1 - u1
+  x2&acute; == 3*A*<font color="#0074D9">delay</font>(x1,tau)*<font color="#0074D9">delay</font>(x3,tau) - (x2-2) + u2
+  x3&acute; == x2 - (1.5+0.5*x1)*x3 + u3
+  x4&acute; == x1 - x4 - u4
+  x5&acute; == <font color="#2ECC40">sqr</font>(x1) + <font color="#2ECC40">sqr</font>(x4) + <font color="#2ECC40">sqr</font>(u1) + <font color="#2ECC40">sqr</font>(u2) + <font color="#2ECC40">sqr</font>(u3) + <font color="#2ECC40">sqr</font>(u4)
+  
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(<font color="#2ECC40">sqr</font>(x1)) + <font color="#0074D9">final</font>(<font color="#2ECC40">sqr</font>(x4)) + <font color="#0074D9">final</font>(x5) <font color="#8A2BE2">using</font> dnlp
+</pre>
+</body>
+</html>

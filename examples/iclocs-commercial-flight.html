@@ -1,0 +1,347 @@
+<!-- Dyna-to-Html Version 1.0 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Minimum Time Flight Profile for a Commercial Aircraft</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Minimum Time Flight Profile for a Commercial Aircraft
+</pre>
+<p>
+  This problem is taken from the examples implemented in ICLOCS2
+  (<a href="http://www.ee.ic.ac.uk/ICLOCS/">www.ee.ic.ac.uk/ICLOCS/</a>).
+  The description is reproduced here below.
+<p>
+   The aerodynamic and propulsion data are obtained from [1].
+<p>
+   Consider the flight mission of a commercial aircraft illustrated below.
+<p>
+   <center><img src="iclocs-commercial-flight.jpg" alt="" width="75%"/></center>
+<p>
+   The objective is find the optimal control profile such that the aircraft reach the destination in shortest time: 
+<p>
+  \[
+  \min t_f
+  \]
+<p>
+  subject to dynamics constraints
+<p>
+  \[
+  \dot{h} = v_{TAS} \sin(\gamma)\\
+  \dot{x} = v_{TAS} \cos(\gamma) \cos(\chi)\\
+  \dot{y} = v_{TAS} \cos(\gamma) \sin(\chi)\\
+  \dot{v}_{TAS} = \dfrac{1}{m} \Big(T(v_{CAS},h,\Gamma) - D(v_{TAS},h,\alpha) - m g \sin(\gamma)\Big)\\
+  \dot{\gamma} = \dfrac{1}{m v_{TAS}} \Big(L(v_{TAS},h,\alpha) \cos(\phi) + T(v_{CAS},h,\Gamma) \sin(\alpha_T) - m g \cos(\gamma)\Big)\\
+  \dot{\chi} = \frac{L(v_{TAS},h,\alpha) \sin(\phi)}{\cos(\gamma) m v_{TAS}}\\
+  \dot{m} = FF(h,v_{CAS},\Gamma)
+  \]
+<p>
+  where \(h\), \(x\), \(y\), \(v_{TAS}\), \(\gamma\), \(\chi\) and \(m\) stand for 
+  the altitude [m], 
+  the North position [m],
+  the East position [m],
+  the true airspeed [m/s],
+  the flight path angle [deg],
+  the tracking angle [deg] and
+  the aircraft mass [kg] respectively.  The control variables 
+  \(\alpha\),
+  \(\phi\) and
+  \(\Gamma\) are 
+  the angle of attack [rad],
+  the roll angle [rad] and
+  the throttle setting [-].
+<p>
+  The conversion between true and calibrated airspeeds is given by
+<p>
+  \[
+  v_{TAS} = \sqrt{
+  \dfrac{2 \kappa}{\kappa-1}
+  \dfrac{p}{\rho}
+  {
+  \Bigg[
+  \bigg[
+  1 + \dfrac{p_0}{p}
+  \Big[
+  {(1 + \dfrac{\kappa-1}{2 \kappa} \dfrac{\rho_0}{p_0} v_{CAS}^2)}^{\tiny \dfrac{\kappa}{\kappa-1}}-1
+  \Big]
+  \bigg]
+  }^{\tiny \dfrac{\kappa-1}{\kappa}}
+  - 1
+  \Bigg]
+  }
+  \]
+<p>
+  For this scenario, we have path constraint for avoiding the no flight zone (NFZ):
+<p>
+  \[
+  (x - x_{NFZ})^2 + (y - y_{NFZ})^2 \ge r^2_{NFZ}
+  \]
+<p>
+  Additionally, there are simple bounds on variables and boundary conditions.
+<p>
+  Details about the aerodynamic and propulsion modelling are available in the reference.
+  For this problem, a simple atmospheric model is used:
+<p>
+  \[
+  \tilde{T}_h = \tilde{T}_0 + h \dfrac{d\tilde{T}}{dh}\\
+  p_h = p_0 {\left(\dfrac{\tilde{T}_h}{\tilde{T}_0}\right)}^{\tiny -\dfrac{g}{\dfrac{d\tilde{T}}{dh} R}}\\
+  {\rho}_h = {\rho}_0 {\left(\dfrac{\tilde{T}_h}{\tilde{T}_0}\right)}^{-({\tiny \dfrac{g}{\dfrac{d\tilde{T}}{dh} R}}+1)}
+  \]
+<p>
+  References:
+  <ol>
+  <li>
+  <em>Performance model Fokker 50</em>, Delft University of Technology, 2010.
+  <li>P. Falugi, E. Kerrigan, E. van Wyk,
+  <em>Imperial College London Optimal Control Software User Guide (ICLOCS)</em>,
+  <a href="http://www.ee.ic.ac.uk/ICLOCS/user_guide.pdf">http://www.ee.ic.ac.uk/ICLOCS/user_guide.pdf</a>
+  </ol>
+<p>
+<p>
+<pre>
+<font color="#8B0000">$macro</font> TAS2CAS(kappa,p,rho,p0,rho0,V) sqrt(p0/rho0*2*kappa/(kappa-1)*((p/p0*((sqr(V)*(kappa-1)/2/kappa*rho/p+1)^(kappa/(kappa-1))-1)+1)^((kappa-1)/kappa)-1))
+<font color="#8B0000">$macro</font> CAS2TAS(kappa,p,rho,p0,rho0,V) sqrt(2*kappa*p/(kappa-1)/rho*((1+p0/p*((1+(kappa-1)/2/kappa*rho0/p0*sqr(V))^(kappa/(kappa-1))-1))^((kappa-1)/kappa)-1))
+</pre>
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  g = 9.81
+  ktomps = 0.514444
+  ftom = 0.3048
+  R = 287.15
+  ps = 101325
+  rhos = 1.225
+  Ts = 288.15
+  dTdH = -0.0065
+  nprop = 1020
+  Dprop = 3.66
+  kappa = 1.4
+  alpha0 = <font color="#0074D9">deg2rad</font>(-2.32)
+  clalpha = 0.095
+  k_cd = 0.033
+  cd0 = 0.0233
+  S = 70
+  alphat = 0
+
+  <font color="#808080"><i># Look up tables</i></font>
+  a1p = 1.5456e-9
+  a2p = -3.1176e-7
+  a3p = 1.9477e-5
+  b1p = -2.0930e-5
+  b2p = 4.1670e-3
+  b3p = -0.40739
+  c1p = 0.088835
+  c2p = -12.855
+  c3p = 3077.7
+  Pidle = 75
+
+  <font color="#808080"><i># Initial conditions</i></font>
+  W0 = 18000*g
+  H0 = 1600*ftom
+  T0 = Ts+H0*dTdH
+  p0 = ps*(T0/Ts)^(-g/dTdH/R)
+  rho0 = rhos*(T0/Ts)^(-(g/dTdH/R+1))
+  Vtas0 = CAS2TAS(kappa,p0,rho0,ps,rhos,190*ktomps)
+  x0 = 0
+  y0 = 0
+  chi0 = 0
+  gamma0 = <font color="#0074D9">deg2rad</font>(8)
+
+  <font color="#808080"><i># Variable bounds</i></font>
+  W_min = (18000-4000)*g
+  H_min = H0
+  H_max = 25000*ftom
+  T_Hmax = Ts+H_max*dTdH
+  p_Hmax = ps*(T_Hmax/Ts)^(-g/dTdH/R)
+  rho_Hmax = rhos*(T_Hmax/Ts)^(-(g/dTdH/R+1))
+  Vtas_max = CAS2TAS(kappa,p_Hmax,rho_Hmax,ps,rhos,227*ktomps)
+  Vtas_min = Vtas0
+  alpha_max = <font color="#0074D9">deg2rad</font>(10)
+  gamma_max = <font color="#0074D9">deg2rad</font>(60)
+  throttle_max = 1
+  throttle_min = 0
+  chi_max =  <font color="#0074D9">deg2rad</font>(180)
+  chi_min = -<font color="#0074D9">deg2rad</font>(180)
+  phi_0 = 0
+  phi_max = <font color="#0074D9">deg2rad</font>(45)
+  x_max = 1200000
+  y_max = 1200000
+
+  <font color="#808080"><i># Terminal conditions</i></font>
+  Hf = 2000*ftom
+  T_Hf = Ts+Hf*dTdH
+  p_Hf = ps*(T_Hf/Ts)^(-g/dTdH/R)
+  rho_Hf = rhos*(T_Hf/Ts)^(-(g/dTdH/R+1))
+  Vtasf = CAS2TAS(kappa,p_Hf,rho_Hf,ps,rhos,190*ktomps)
+  xf = 800000
+  yf = 900000
+  chif = <font color="#0074D9">deg2rad</font>(-135)
+  gammaf = <font color="#0074D9">deg2rad</font>(-3)
+
+  <font color="#808080"><i># Parameters for the no flight zone</i></font>
+  obs_x = 745000
+  obs_y = 842000
+  obs_r = 30000
+
+  <font color="#808080"><i># Coefficients for maximum throttle setting</i></font>
+  am1 = -1.5374e-13
+  am2 = 2.3875e-11
+  am3 = -5.7989e-10
+  bm1 = 2.1483e-9
+  bm2 = -3.2731e-7
+  bm3 = -9.1353e-7
+  cm1 = -5.8602e-6
+  cm2 = 9.7605e-4
+  cm3 = 0.11389
+
+  <font color="#808080"><i># Coefficients for minimum throttle setting (i for idle)</i></font>
+  ai1 = 4.2242e-15
+  ai2 = -9.0868e-13
+  ai3 = 1.6801e-10
+  bi1 = -4.8122e-11
+  bi2 = 1.0818e-8
+  bi3 = -2.7199e-6
+  ci1 = 2.5788e-8
+  ci2 = -6.8894e-6
+  ci3 = 0.025804
+
+  <font color="#808080"><i># No flight zone penalty parameter [0,+inf]</i></font>
+  <font color="#808080"><i># 0    = hard constraint - no penalty</i></font>
+  <font color="#808080"><i># +inf = soft constraint - penalty</i></font>
+  penalty_max = +<font color="#3D9970">inf</font>
+
+<font color="red"><b>var:</b></font>
+  tf
+  penalty
+
+<font color="red"><b>dyn:</b></font>
+  <font color="#808080"><i># state variables</i></font>
+  V_tas         <font color="#808080"><i># true airspeed [m/s]</i></font>
+  gamma         <font color="#808080"><i># flight path angle [deg]</i></font>
+  H             <font color="#808080"><i># altitude [m]</i></font>
+  x             <font color="#808080"><i># North position [m]</i></font>
+  y             <font color="#808080"><i># East position [m]</i></font>
+  chi           <font color="#808080"><i># tracking angle [deg]</i></font>
+  W             <font color="#808080"><i># weight [kg*m/s^2]</i></font>
+  <font color="#808080"><i># control variables</i></font>
+  alpha         <font color="#808080"><i># angle of attack [rad]</i></font>
+  phi           <font color="#808080"><i># roll angle [rad]</i></font>
+  throttle      <font color="#808080"><i># throttle setting [-]</i></font>
+
+<font color="red"><b>lim:</b></font>
+  0 &lt;= tf &lt;= 15000
+  Vtas_min &lt;= V_tas &lt;= Vtas_max
+  -gamma_max &lt;= gamma &lt;= gamma_max
+  H_min &lt;= H &lt;= H_max
+  x0 &lt;= x &lt;= x_max
+  y0 &lt;= y &lt;= y_max
+  chi_min &lt;= chi &lt;= chi_max
+  W_min &lt;= W &lt;= W0
+  -alpha_max &lt;= alpha &lt;= alpha_max
+  -phi_max &lt;= phi &lt;= phi_max
+  throttle_min &lt;= throttle &lt;= throttle_max
+  0 &lt;= penalty &lt;= penalty_max
+
+<font color="red"><b>t=t0:</b></font>
+  H = H0
+  x = x0
+  y = y0
+  V_tas = Vtas0
+  gamma = gamma0
+  chi = chi0
+  W = W0
+
+<font color="red"><b>t=tf:</b></font>
+  H = Hf
+  x = xf
+  y = yf
+  V_tas = Vtasf
+  gamma = gammaf
+  chi = chif
+
+<font color="red"><b>ini:</b></font>
+  tf = 10000
+  H = H_max
+  x = xf/2
+  y = yf/2
+  V_tas = Vtas_max
+  gamma = gammaf
+  chi = chi0
+  W = (18000-2000)*g
+  penalty = 1e3
+
+<font color="red"><b>exp:</b></font>
+  Temp == Ts + H*dTdH
+  pressure == ps*(Temp/Ts)^(-g/dTdH/R)
+  rho == rhos*(Temp/Ts)^(-(g/dTdH/R+1))
+  V_cas == CAS2TAS(kappa,pressure,rho,ps,rhos,V_tas)
+
+  ap == <font color="#0074D9">Poly2</font>(V_cas,a1p,a2p,a3p)
+  bp == <font color="#0074D9">Poly2</font>(V_cas,b1p,b2p,b3p)
+  cp == <font color="#0074D9">Poly2</font>(V_cas,c1p,c2p,c3p)
+  Pmax == <font color="#0074D9">Poly2</font>(H,ap,bp,cp)
+
+  P == (Pmax-Pidle)*throttle + Pidle
+  J == 60*V_tas/nprop/Dprop
+  ita == <font color="#0074D9">Poly6</font>(J,-0.13289,1.2536,-4.8906,10.146,-11.918,7.6740,-1.3452)
+  Thrust == 2*745.6*ita*P/V_tas
+
+  cl == <font color="#0074D9">rad2deg</font>(clalpha*(alpha-alpha0))
+  L == 0.5*cl*rho*<font color="#2ECC40">sqr</font>(V_tas)*S
+  cd == cd0 + k_cd*<font color="#2ECC40">sqr</font>(cl)
+  Drag == 0.5*cd*rho*<font color="#2ECC40">sqr</font>(V_tas)*S
+
+  <font color="#808080"><i># Maximum fuel flow</i></font>
+  am == <font color="#0074D9">Poly2</font>(V_cas,am1,am2,am3)
+  bm == <font color="#0074D9">Poly2</font>(V_cas,bm1,bm2,bm3)
+  cm == <font color="#0074D9">Poly2</font>(V_cas,cm1,cm2,cm3)
+  Fmax == <font color="#0074D9">Poly2</font>(H,am,bm,cm)			<font color="#808080"><i># maximum fuel flow [kg/s]</i></font>
+
+  <font color="#808080"><i># Minimum fuel flow (idle throttle setting)</i></font>
+  ai == <font color="#0074D9">Poly2</font>(V_cas,ai1,ai2,ai3)
+  bi == <font color="#0074D9">Poly2</font>(V_cas,bi1,bi2,bi3)
+  ci == <font color="#0074D9">Poly2</font>(V_cas,ci1,ci2,ci3)
+  Fidle == <font color="#0074D9">Poly2</font>(H,ai,bi,ci)			<font color="#808080"><i># minimum fuel flow [kg/s]</i></font>
+
+  <font color="#808080"><i># Interpolation</i></font>
+  FF == Fidle + (Fmax-Fidle)*(throttle-0)/(1-0)	<font color="#808080"><i># Current fuel flow [kg/s]</i></font>
+
+  <font color="#808080"><i># No flight zone penalty</i></font>
+  nfzp == <font color="#2ECC40">sqr</font>(x-obs_x) + <font color="#2ECC40">sqr</font>(y-obs_y) - <font color="#2ECC40">sqr</font>(obs_r)
+
+<font color="red"><b>equ:</b></font>
+  <font color="#808080"><i># Aircraft dynamics</i></font>
+  V_tas&acute; == (Thrust-Drag-W*<font color="#2ECC40">sin</font>(gamma))*g/W
+  gamma&acute; == (L*<font color="#2ECC40">cos</font>(phi)+Thrust*<font color="#2ECC40">sin</font>(alphat)-W*<font color="#2ECC40">cos</font>(gamma))*g/W/V_tas
+  H&acute; == V_tas*<font color="#2ECC40">sin</font>(gamma)
+  x&acute; == V_tas*<font color="#2ECC40">cos</font>(gamma)*<font color="#2ECC40">cos</font>(chi)
+  y&acute; == V_tas*<font color="#2ECC40">cos</font>(gamma)*<font color="#2ECC40">sin</font>(chi)
+  chi&acute; == L*<font color="#2ECC40">sin</font>(phi)/<font color="#2ECC40">cos</font>(gamma)*g/W/V_tas
+  W&acute; == -2*FF*g
+  <font color="#808080"><i># No flight zone</i></font>
+  (<font color="#2ECC40">sqr</font>(x-obs_x) + <font color="#2ECC40">sqr</font>(y-obs_y)) / <font color="#2ECC40">sqr</font>(obs_r) &gt;= 1 - penalty
+  <font color="#808080"><i># Rate of control variables</i></font>
+  <font color="#0074D9">deg2rad</font>(-2) &lt;= <font color="#0074D9">slope</font>(alpha) &lt;= <font color="#0074D9">deg2rad</font>(2)
+  <font color="#0074D9">deg2rad</font>(-10) &lt;= <font color="#0074D9">slope</font>(phi) &lt;= <font color="#0074D9">deg2rad</font>(10)
+  -0.2 &lt;= <font color="#0074D9">slope</font>(throttle) &lt;= 0.2
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> tf+1e3*penalty <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  penalty_max = 0
+  <font color="#8A2BE2">@solve</font>
+</pre>
+</body>
+</html>

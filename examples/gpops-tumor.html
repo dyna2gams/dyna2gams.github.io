@@ -1,0 +1,69 @@
+<!-- Dyna-to-Html Version 1.0 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Tumor Anti-Angiogenesis Problem</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Tumor Anti-Angiogenesis Problem
+</pre>
+<p>
+  This example is taken from the following reference:
+  <ol>
+  <li>Ledzewicz, U. and Schattler, H.,
+  <em>Analysis of Optimal Controls for a Mathematical Model of Tumour Anti-angiogenesis</em>,
+  Optimal Control Applications and Methods, Vol. 29, 2008, pp. 41-57.
+  </ol>
+<p>
+  This problem describes a treatment process called anti-angiogenesis
+  where it is desired to reverse the direction of growth of a tumor by
+  cutting of the blood supply to the tumor.
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  zeta = 0.084 <font color="#808080"><i># per day</i></font>
+  b = 5.85     <font color="#808080"><i># per day</i></font>
+  d = 0.00873  <font color="#808080"><i># per mm^2 per day</i></font>
+  G = 0.15     <font color="#808080"><i># per mg of dose per day</i></font>
+  mu = 0.02    <font color="#808080"><i># per day</i></font>
+  a = 75
+  AA = 15
+  tf = 1.2
+
+<font color="red"><b>dyn:</b></font>
+  p q 
+  u y
+
+<font color="red"><b>lim:</b></font>
+  0.1 &lt;= p &lt;= ((b-mu)/d)^(3/2)
+  p.lo &lt;= q &lt;= p.up
+  0 &lt;= y &lt;= AA
+  0 &lt;= u &lt;= a
+
+<font color="red"><b>t=t0:</b></font>
+  p = p.up/2
+  q = q.up/4
+  y = 0
+
+<font color="red"><b>equ:</b></font>
+  p&acute; == -zeta * p * <font color="#2ECC40">log</font>(p/q)
+  q&acute; == q * (b - mu - d * p^(2/3) - G * u)
+  y&acute; == u
+  A &gt;= <font color="#0074D9">final</font>(y)
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(p) <font color="#8A2BE2">using</font> nlp
+</pre>
+</body>
+</html>

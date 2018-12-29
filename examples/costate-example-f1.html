@@ -1,0 +1,159 @@
+<!-- Dyna-to-Html Version 1.0 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Infinite Horizon Optimal Control Problem</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Infinite Horizon Optimal Control Problem
+</pre>
+<p>
+  Consider the following optimal control problem taken from [1]. Denoting \(x(t) = [x_1(t) \ x_2(t)]^T
+  \in \mathbb{R}^2\) as the state and \(u(t) \in \mathbb{R}\) as the control, minimize the cost functional
+  \[
+  J = \frac{1}{2} \int_0^{\infty} (x^TQx + u^TRu) \ \mathrm{d}t
+  \]
+  subject to the dynamic constraint
+  \[
+  \dot x = Ax + Bu
+  \]
+  and the initial condition
+  \[
+  x(0) = \begin{bmatrix}
+  -4 \\
+  4
+  \end{bmatrix}
+  \]
+  The matrices \(A, B, Q,\) and \(R\) for this problem are given as
+  \[
+  A = \begin{bmatrix}
+  0 & 1 \\
+  2 & -1
+  \end{bmatrix}
+  \quad,\quad
+  B = \begin{bmatrix}
+  0 \\
+  1
+  \end{bmatrix}
+  \quad,\quad
+  Q = \begin{bmatrix}
+  2 & 0 \\
+  0 & 1
+  \end{bmatrix}
+  \quad,\quad
+  R = \frac{1}{2}
+  \]
+  The exact solution to this problem is
+  \[
+  x(t) = \exp([A-BK]t) \ x(0) \\
+  u(t) = -Kx(t) \\
+  \lambda(t) = Sx(t)
+  \]
+  where \(K\) is the optimal feedback gain and \(S\) is the solution to the algebraic Riccati equation. In
+  this case \(K\) and \(S\) are given, respectively, as
+  \[
+  K = \begin{bmatrix}
+  4.8284 & 2.5576
+  \end{bmatrix} \\
+  S = \begin{bmatrix}
+  6.0313 & 2.4142 \\
+  2.4142 & 1.2788
+  \end{bmatrix}
+  \]
+<p>
+  References:
+  <ol>
+  <li>Fahroo, F. and Ross, I.M.,
+  <em>Pseudospectral Methods for Infinite-Horizon Nonlinear Optimal Control Problems</em>,
+  Journal of Guidance, Control, and Dynamics, Vol. 31, No. 4, 2008, pp. 927-936.
+  <li>Divya Garg, William W. Hager, Anil V. Rao,
+  <em>Gauss Pseudospectral Method for Solving Infinite-Horizon Optimal Control Problems</em>,
+  AIAA Guidance, Navigation, and Control Conference 2 - 5 August 2010, Toronto, Ontario Canada
+  </ol>
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  A{11 12 21 22} = {0 1 2 -1}
+  B{1 2} = {0 1}
+  Q{11 12 21 22} = {2 0 0 1}
+  R = 0.5
+  K{1 2} = {4.8284 2.5576}
+  S{11 12 21 22} = {6.0313 2.4142 2.4142 1.2788}
+  t{1:2} = {0.83378 0.42404}
+  Y{11 12 21 22} = {-4.68805 0.68805 5.62263 -1.62263}
+  tf = 99
+
+<font color="red"><b>var:</b></font>
+  uK{1:2}
+
+<font color="red"><b>dyn:</b></font>
+  t
+  x{1:2}
+  u
+  J
+  lambda{1:2}
+  y{1:2}
+  v
+  mu{1:2}
+
+<font color="red"><b>lim:</b></font>
+  1 &lt;= uK{1:2} &lt;= 10
+  0 &lt;= t &lt;= +<font color="#3D9970">inf</font>
+
+<font color="red"><b>t=t0:</b></font>
+  t = 0
+  x{1:2} = {-4 4}
+  J = 0
+
+<font color="red"><b>t=tf:</b></font>
+  lambda{1:2} = 0
+
+<font color="red"><b>equ:</b></font>
+  t&acute; == 1
+  <font color="#808080"><i># numerical solution follows</i></font>
+  e1.. x1&acute; == (A11*x1 + A12*x2 + B1*u)
+  e2.. x2&acute; == (A21*x1 + A22*x2 + B2*u)
+  J&acute; == 0.5*(Q11*<font color="#2ECC40">sqr</font>(x1) + (Q12+Q21)*x1*x2 + Q22*<font color="#2ECC40">sqr</font>(x2) + R*<font color="#2ECC40">sqr</font>(u))
+  u == - uK1*x1 - uK2*x2
+  lambda1&acute; == - Q11*x1 - Q12*x2 - A11*lambda1 - A21*lambda2
+  lambda2&acute; == - Q21*x1 - Q22*x2 - A12*lambda1 - A22*lambda2
+  <font color="#808080"><i># analytical solution follows</i></font>
+  y1 == Y11*<font color="#2ECC40">exp</font>(-t/t1) + Y12*<font color="#2ECC40">exp</font>(-t/t2)
+  y2 == Y21*<font color="#2ECC40">exp</font>(-t/t1) + Y22*<font color="#2ECC40">exp</font>(-t/t2)
+  v == - K1*y1 - K2*y2
+  mu1 == S11*y1 + S12*y2
+  mu2 == S21*y1 + S22*y2
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#8A2BE2">@costates</font>
+  <font color="#8A2BE2">@tpa</font> eta1 = <font color="#0074D9">costate</font>(e1)
+  <font color="#8A2BE2">@tpa</font> eta2 = <font color="#0074D9">costate</font>(e2)
+  <font color="#8A2BE2">@csvsave</font> eta1 eta2
+
+<font color="#808080"><i>###:</i></font><font color="#808080"><i></i></font>
+<font color="#808080"><i>  % Octave/Matlab program to calculate the parameters</i></font>
+<font color="#808080"><i>  pkg load control</i></font>
+<font color="#808080"><i>  A=[0 1;2 -1]; B=[0;1]; Q=[2 0;0 1]; R=0.5; x0=[-4;4];</i></font>
+<font color="#808080"><i>  [K,S,~]=lqr(A,B,Q,R)</i></font>
+<font color="#808080"><i>  [v,d]=eig(A-B*K);</i></font>
+<font color="#808080"><i>  d</i></font>
+<font color="#808080"><i>  y=v.*(inv(v)*x0*[1 1])'</i></font>
+<font color="#808080"><i>  z=y'*(Q+K'*R*K)*y;</i></font>
+<font color="#808080"><i>  j=-0.5*(z(1,1)/2/d(1,1)+(z(1,2)+z(2,1))/(d(1,1)+d(2,2))+z(2,2)/2/d(2,2))</i></font>
+</pre>
+</body>
+</html>

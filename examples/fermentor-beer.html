@@ -1,0 +1,119 @@
+<!-- Dyna-to-Html Version 1.0 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">A Batch Beer Fermentation Process</h1>
+<pre>
+<font color="red"><b>rem:</b></font> A Batch Beer Fermentation Process
+</pre>
+<p>
+  The mathematical model chosen to be part of the simulation (and subsequently the
+  optimisation process) is the kinetic model by Andres-Toro et al. [2] since it has
+  been obtained from many experimental studies at laboratory scale showing good
+  results. It takes into account realistic aspects of the process such as
+  characteristics of the wort and yeast, and also two important by- products of the
+  fermentation: ethyl acetate and diacetyl.
+<p>
+  Biomass is segregated into three different types of cells: lag, active and dead.
+  The whole process can be divided in two successive phases: a lag phase and a
+  fermentation phase.
+<p>
+  The enunciation of the corresponding model is given here below.
+<p>
+  Reference:
+  <ol>
+  <li>G.E. Carrillo-Ureta, P.D. Roberts, V.M. Becerra,
+  <em>Optimal Control Of A Fermentation Process</em>,
+  City University, London, UK (2003).
+  <li>B. Andres-Toro, J.M. Girón-Sierra, J.A. Lopez-Orozco, C. Fernandez-Conde,
+  J.M. Peinado, F. Garcia-Ochoa,
+  <em>A Kinetic Model For Beer Production Under Industrial Operational Conditions</em>,
+  Mathematics and Computers in Simulation 48, pp. 65-74, Elsevier Science B.V., (1998).
+  </ol>
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  ln10 = <font color="#2ECC40">log</font>(10)
+  k_dc = 0.000127672	<font color="#808080"><i># Diacetyl appearance rate</i></font>
+  k_dm = 0.00113864	<font color="#808080"><i># Diacetyl reduction rate</i></font>
+  s0 = 130		<font color="#808080"><i># Initial concentration of sugar (g/l)</i></font>
+  tf = 160		<font color="#808080"><i># Time (h)</i></font>
+
+<font color="red"><b>dyn:</b></font>
+  x_active	<font color="#808080"><i># Suspended active biomass (g/l)</i></font>
+  x_lag		<font color="#808080"><i># Suspended latent biomass (g/l)</i></font>
+  <font color="#808080"><i># x_dead	# Suspended dead biomass (g/l)</i></font>
+  s		<font color="#808080"><i># Concentration of sugar (g/l)</i></font>
+  <font color="#808080"><i># acet	# Ethyl acetate concentration (ppm)</i></font>
+  <font color="#808080"><i># diac	# Diacetyl concentration (ppm)</i></font>
+  e		<font color="#808080"><i># Ethanol concentration (g/l)</i></font>
+  J
+  T		<font color="#808080"><i># Temperature (°C)</i></font>
+
+<font color="red"><b>lim:</b></font>
+  0 &lt;= x_active &lt;= 20
+  0 &lt;= x_lag &lt;= 2
+  0 &lt;= s &lt;= 130
+  0 &lt;= e &lt;= 100
+  9 &lt;= T &lt;= 16
+
+<font color="red"><b>t=t0:</b></font>
+  x_active = 0.5
+  x_lag = 2
+  s = s0
+  e = 0
+  J = 0
+
+<font color="red"><b>ini:</b></font>
+  x_active = 0.5
+  x_lag = 2
+  s = s0
+  e = 0
+  T = 14.5
+
+<font color="red"><b>exp:</b></font>
+  TT == 1.99536*(T+273.15)
+  f == 1 - e / 0.5 / s0				<font color="#808080"><i># Fermentation inhibitor factor (g/l)</i></font>
+  mu_D == 0.5 * s0 * mu_D0 / (0.5*s0+e)		<font color="#808080"><i># Specific yeast settling down rate  (g/l)</i></font>
+  mu_a == mu_a0 * s / (k_s + s)			<font color="#808080"><i># Ethanol production rate (h^-1)</i></font>
+  mu_eas == 1.129 * <font color="#2ECC40">exp</font>(39*ln10-53056/TT)	<font color="#808080"><i># Ethyl acetate coefficient rate (g/l)</i></font>
+  mu_s == mu_s0 * s / (k_s + s)			<font color="#808080"><i># Substrate consumption rate (h^-1)</i></font>
+  mu_x == mu_x0 * s / (0.5*s0+e)		<font color="#808080"><i># Specific yeast growth rate (h^-1)</i></font>
+  mu_D0 == 4.889 * <font color="#2ECC40">exp</font>(14*ln10-20020/TT)
+  mu_a0 == 26.3865 * <font color="#2ECC40">exp</font>(-2528.6/TT)
+  mu_lag == 2.2041 * <font color="#2ECC40">exp</font>(13*ln10-18959/TT)	<font color="#808080"><i># Specific rate of latent formation (h^-1)</i></font>
+  mu_s0 == 6.232 * <font color="#2ECC40">exp</font>(-19*ln10+23254/TT)
+  mu_x0 == 1.095 * <font color="#2ECC40">exp</font>(47*ln10-63720/TT)
+  k_m == 3.373 * <font color="#2ECC40">exp</font>(56*ln10-76450/TT)		<font color="#808080"><i># Yeast growth inhibition parameter (g/l)</i></font>
+  k_s == 1.1081 * <font color="#2ECC40">exp</font>(-52*ln10+68249.2/TT)	<font color="#808080"><i># Sugar inhibition parameter (g/l)</i></font>
+
+<font color="red"><b>equ:</b></font>
+  x_lag&acute; == -mu_lag*x_lag
+  x_active&acute; == mu_x*x_active - k_m*x_active + mu_lag*x_lag
+  <font color="#808080"><i># x_dead&acute; == k_m*x_active - mu_D*x_dead</i></font>
+  s&acute; == -mu_s*x_active
+  e&acute; == mu_a*f*x_active
+  <font color="#808080"><i># acet&acute; == mu_eas*mu_s*x_active</i></font>
+  <font color="#808080"><i># diac&acute; == k_dc*s*x_active - k_m*diac*e</i></font>
+  J&acute; == 9.91 * <font color="#2ECC40">exp</font>(-17*ln10+2.31*T)
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">maximize</font> <font color="#0074D9">final</font>(10*e-J) <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#8A2BE2">@solveloop</font> Method=movavg, Paraml=3 0.95, Varl=T
+</pre>
+</body>
+</html>

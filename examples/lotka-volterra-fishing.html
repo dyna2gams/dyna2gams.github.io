@@ -1,0 +1,80 @@
+<!-- Dyna-to-Html Version 1.0 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Lotka Volterra fishing problem</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Lotka Volterra fishing problem
+</pre>
+<p>
+  The Lotka Volterra fishing problem looks for an optimal fishing strategy to be performed on a fixed
+  time horizon to bring the biomasses of both predator as prey fish to a prescribed steady state. The
+  problem was set up as a small-scale benchmark problem. The well known Lotka Volterra equations for a
+  predator-prey system have been augmented by an additional linear term, relating to fishing by man.
+  The control can be regarded both in a relaxed, as in a discrete manner, corresponding to a part of
+  the fleet, or the full fishing fleet.
+<p>
+  The mixed-integer optimal control problem is given by
+<p>
+  \begin{array}{llclr} 
+  \displaystyle \min_{x, w} & x_2(t_f) \\
+  \mbox{s.t.} & \dot{x}_0 & = & x_0 - x_0 x_1 - \; c_0 x_0 \; w, \\ & \dot{x}_1 & = & - x_1 + x_0 x_1 - \; c_1 x_1 \; w, \\
+  & \dot{x}_2 & = & (x_0 - 1)^2 + (x_1 - 1)^2, \\[1.5ex] & x(0) &=& (0.5, 0.7, 0)^T, \\ & w(t) &\in& \{0, 1\}.
+  \end{array}
+<p>
+  Here the differential states \((x_0, x_1)\) describe the biomasses of prey and predator, respectively.
+  The third differential state is used here to transform the objective, an integrated deviation, into 
+  the Mayer formulation \(\min \; x_2(t_f)\). The decision, whether the fishing fleet is actually fishing at
+  time \(t\) is denoted by \(w(t)\). 
+<p>
+  See: <a href="https://mintoc.de/index.php/Lotka_Volterra_fishing_problem">mintoc.de</a>
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  p0 = 0.4
+  p1 = 0.2
+  ref0 = 1.0
+  ref1 = 1.0
+  tf = 12
+
+<font color="red"><b>dyn:</b></font> xd0 xd1 dev u:<font color="#3D9970">binary</font>
+
+<font color="red"><b>lim:</b></font>
+  0 &lt;= xd0 &lt;= 20
+  0 &lt;= xd1 &lt;= 20
+  0 &lt;= dev &lt;= 25
+  0 &lt;= u &lt;= 1
+
+<font color="red"><b>t=t0:</b></font>
+  xd0 = 0.5
+  xd1 = 0.7
+  dev = 0.0
+
+<font color="red"><b>ini:</b></font>
+  xd0 = 0.5
+  xd1 = 0.7
+  dev = 0.0
+  u = 1
+
+<font color="red"><b>equ:</b></font>
+  xd0&acute; == xd0 - xd0*xd1 - p0*u*xd0
+  xd1&acute; == -xd1 + xd0*xd1 - p1*u*xd1
+  dev&acute; == <font color="#2ECC40">sqr</font>(xd0-ref0) + <font color="#2ECC40">sqr</font>(xd1-ref1)
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(dev) <font color="#8A2BE2">using</font> minlp
+</pre>
+</body>
+</html>

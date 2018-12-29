@@ -1,0 +1,115 @@
+<!-- Dyna-to-Html Version 1.0 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Methanol-to-Hydrocarbons (COPS Problem 13)</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Methanol-to-Hydrocarbons (COPS Problem 13)
+</pre>
+<p>
+  See: <a href="http://www.mcs.anl.gov/~more/cops/">COPS: Large-Scale Optimization Problems</a>
+<p>
+<pre>
+<font color="red"><b>set:</b></font>
+  ne = e1:e3    <font color="#808080"><i># set of differential equations</i></font>
+  np = p1:p5    <font color="#808080"><i># set of ODE parameters</i></font>
+  nm = m1:m17   <font color="#808080"><i># set of measurements</i></font>
+
+<font color="red"><b>par:</b></font> bc[ne]; tau[nm]; z[nm,ne]
+
+<font color="red"><b>gms:</b></font>
+  <font color="#808080"><i># Boundary conditions</i></font>
+  <font color="#3D9970">parameter</font> bc(ne)
+  /
+  e1   1.0
+  e2   0.0
+  e3   0.0
+  /;
+
+  <font color="#808080"><i># Times at which observations are made</i></font>
+  <font color="#3D9970">parameter</font> tau(nm)
+  /
+   m1  0
+   m2  0.050
+   m3  0.065
+   m4  0.080
+   m5  0.123
+   m6  0.233
+   m7  0.273
+   m8  0.354
+   m9  0.397
+  m10  0.418
+  m11  0.502
+  m12  0.553
+  m13  0.681
+  m14  0.750
+  m15  0.916
+  m16  0.937
+  m17  1.122
+  /;
+
+  <font color="#808080"><i># Concentrations (observations)</i></font>
+  <font color="#3D9970">table</font> z(nm,ne)
+           e1        e2        e3
+   m1    1.0000    0.0000    0.0000
+   m2    0.7085    0.1621    0.0811
+   m3    0.5971    0.1855    0.0965
+   m4    0.5537    0.1989    0.1198
+   m5    0.3684    0.2845    0.1535
+   m6    0.1712    0.3491    0.2097
+   m7    0.1198    0.3098    0.2628
+   m8    0.0747    0.3576    0.2467
+   m9    0.0529    0.3347    0.2884
+  m10    0.0415    0.3388    0.2757
+  m11    0.0261    0.3557    0.3167
+  m12    0.0208    0.3483    0.2954
+  m13    0.0085    0.3836    0.2950
+  m14    0.0053    0.3611    0.2937
+  m15    0.0019    0.3609    0.2831
+  m16    0.0018    0.3485    0.2846
+  m17    0.0006    0.3698    0.2899;
+
+<font color="red"><b>par:</b></font> tf = <font color="#3D9970">smax</font>(nm, tau[nm])
+
+<font color="red"><b>var:</b></font> theta[np]
+
+<font color="red"><b>dyn:</b></font> x[ne]
+
+<font color="red"><b>lim:</b></font>
+  0 &lt;= theta[np] &lt;= 3
+  0 &lt;= x[ne] &lt;= 2
+
+<font color="red"><b>t=t0:</b></font>
+  x[ne] = bc[ne]
+
+<font color="red"><b>ini:</b></font>
+  x[ne] = 1
+  theta[np] = 1
+
+<font color="red"><b>equ:</b></font>
+  x&acute;['e1'] == -(2*theta['p2']-(theta['p1']*x['e2'])/((theta['p2']+theta['p5'])*x['e1']+x['e2'])+theta['p3']+theta['p4'])*x['e1']
+  x&acute;['e2'] == (theta['p1']*x['e1']*(theta['p2']*x['e1']-x['e2']))/((theta['p2']+theta['p5'])*x['e1']+x['e2'])+theta['p3']*x['e1']
+  x&acute;['e3'] == (theta['p1']*x['e1']*(x['e2']+theta['p5']*x['e1']))/((theta['p2']+theta['p5'])*x['e1']+x['e2'])+theta['p4']*x['e1']
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#3D9970">sum</font>(nm, <font color="#3D9970">sum</font>(ne, <font color="#2ECC40">sqr</font>(<font color="#0074D9">eval</font>(x[ne],tau[nm]) - z[nm,ne]))) <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#3D9970">parameter</font> report(nm,ne);
+  report(nm,ne) = <font color="#0074D9">eval</font>(x.l[ne],tau[nm]) - z(nm,ne);
+  <font color="#3D9970">display</font> report;
+</pre>
+</body>
+</html>
