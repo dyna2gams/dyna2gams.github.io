@@ -1,0 +1,133 @@
+<!-- Dyna-to-Html Version 1.0 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Continuously Stirred Tank Reactor (CSTR)</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Continuously Stirred Tank Reactor (CSTR)
+</pre>
+<p>
+  The Continuously Stirred Tank Reactor problem considers a chemical reaction that
+  produces cyclopentanol while using up cyclopentadiene "by an acid-catalyzed
+  electrophilic hydration in aqueous solution", an exothermal reaction which needs
+  to be cooled.
+<p>
+  Reference:
+  <ol>
+  <li>M. Diehl,
+  <em>Real-Time Optimization for Large Scale Nonlinear Processes</em>,
+  Ph.D. thesis, Universität Heidelberg, 2001.
+  <a href="http://www.ub.uni-heidelberg.de/archiv/1659">http://www.ub.uni-heidelberg.de/archiv/1659</a>
+  </ol>
+<p>
+  See: <a href="https://mintoc.de/index.php/Continuously_Stirred_Tank_Reactor_(TACO)">mintoc.de</a>
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  tf = 1500
+  <font color="#808080"><i># pre-set deviation of initial state from steady state</i></font>
+  <font color="#808080"><i># set this to something different from 1.0</i></font>
+  alpha = 0.8
+  <font color="#808080"><i># various chemistry parameters</i></font>
+  k10 =      1.287E+12	<font color="#808080"><i># Arrhenius coefficient		[1/h]</i></font>
+  k20 =      1.287E+12	<font color="#808080"><i># Arrhenius coefficient		[1/h]</i></font>
+  k30 =      9.043E+09	<font color="#808080"><i># Arrhenius coefficient		[1/h]</i></font>
+  cA0 =      5.1	<font color="#808080"><i># Starting concentration of subs. A	[mol/l]</i></font>
+  E1  =  -9758.3	<font color="#808080"><i># Arrhenius coefficient		[-]</i></font>
+  E2  =  -9758.3	<font color="#808080"><i># Arrhenius coefficient		[-]</i></font>
+  E3  =  -8560.0	<font color="#808080"><i># Arrhenius coefficient		[-]</i></font>
+  theta0 = 104.9	<font color="#808080"><i># Inflow temperature		[°C]</i></font>
+  rho =      0.9342	<font color="#808080"><i># Solution density		[kg/l]</i></font>
+  Cp  =      3.01	<font color="#808080"><i># Capacity of aqueous solution	[kJ / kg K]</i></font>
+  H1  =      4.2	<font color="#808080"><i># Reaction enthalpy		[kJ/mol]</i></font>
+  H2  =    -11.0	<font color="#808080"><i># Reaction enthalpy		[kJ/mol]</i></font>
+  H3  =    -41.85	<font color="#808080"><i># Reaction enthalpy		[kJ/mol]</i></font>
+  kw  =   4032.0	<font color="#808080"><i># Heat transfer coefficient for cooling jacket	[kJ / h m^2 K]</i></font>
+  AR  =      0.215	<font color="#808080"><i># Reactor surface area		[m^2]</i></font>
+  VR  =     10.0	<font color="#808080"><i># Reactor volume		[l]</i></font>
+  mK  =      5.0	<font color="#808080"><i># Coolant mass			[kg]</i></font>
+  CPK =      2.0	<font color="#808080"><i># Capacity of coolant solution	[kJ / kg K]</i></font>
+  <font color="#808080"><i># steady state values</i></font>
+  cAs      =     2.14021053017
+  cBs      =     1.09030436131
+  theta_s  =     1.14191084421E+02
+  theta_Ks =     1.12906592910E+02
+  FFs      =    14.19
+  Qdot_Ks  = -1113.5
+  <font color="#808080"><i>#  objective weights</i></font>
+  Q11 = <font color="#2ECC40">sqrt</font>(0.2)
+  Q22 = <font color="#2ECC40">sqrt</font>(1.0)
+  Q33 = <font color="#2ECC40">sqrt</font>(0.5)
+  Q44 = <font color="#2ECC40">sqrt</font>(0.2)
+  R11 = <font color="#2ECC40">sqrt</font>(0.5)
+  R22 = <font color="#2ECC40">sqrt</font>(5.0E-7)
+
+<font color="red"><b>dyn:</b></font>
+  cA   <font color="#808080"><i># molar concentration of species A [mol/l]</i></font>
+  cB   <font color="#808080"><i># molar concentration of species B [mol/l]</i></font>
+  Tr   <font color="#808080"><i># reactor temperature [°C]</i></font>
+  Tj   <font color="#808080"><i># jacket temperature [°C]</i></font>
+  ff   <font color="#808080"><i># feed flow control [1/h]</i></font>
+  cr   <font color="#808080"><i># cooling rate control [kJ/h]</i></font>
+  Deviation
+
+<font color="red"><b>lim:</b></font>
+  -0.02 &lt;= cA &lt;= 6.0
+  -0.02 &lt;= cB &lt;= 4.0
+  50.0 &lt;= Tr &lt;= 160.0
+  50.0 &lt;= Tj &lt;= 160.0
+  3.0 &lt;= ff &lt;= 35.0
+  -9000.0 &lt;= cr &lt;= 0.0
+
+<font color="red"><b>t=t0:</b></font>
+  cA = (1-alpha)*cAs
+  cB = (1-alpha)*cBs
+  Tr = alpha*85 + (1-alpha)*theta_s
+  Tj = alpha*85 + (1-alpha)*theta_Ks
+  Deviation = 0
+
+<font color="red"><b>ini:</b></font>
+  cA = 2.14
+  cB = 1.09
+  Tr = 114.2
+  Tj = 112.9
+  ff = 14.19
+  cr = -1113.5
+
+<font color="red"><b>exp:</b></font>
+  k1 == k10*<font color="#2ECC40">exp</font>(E1/(273.15+Tr))
+  k2 == k20*<font color="#2ECC40">exp</font>(E2/(273.15+Tr))
+  k3 == k30*<font color="#2ECC40">exp</font>(E3/(273.15+Tr))
+
+<font color="red"><b>equ:</b></font>
+  cA&acute; == (1/3600) * (ff*(cA0 - cA) - k1*cA - k3*cA**2)
+  cB&acute; == (1/3600) * (-ff*cB + k1*cA - k2*cB)
+  Tr&acute; == (1/3600) * (ff*(theta0 - Tr) \
+         - 1/(rho*Cp) * (k1*cA*H1 + k2*cB*H2 + k3*cA**2*H3) \
+         + kw*AR / (rho*Cp*VR)*(Tj - Tr) )
+  Tj&acute; == (1/3600) * ( 1/(mK*CPK) * (cr + kw*AR*(Tr - Tj)) )
+  <font color="#808080"><i># least-squares deviation from steady-state</i></font>
+  Deviation&acute; == <font color="#2ECC40">sqr</font>((cA - cAs)*Q11) \
+              + <font color="#2ECC40">sqr</font>((cB - cBs)*Q22) \
+              + <font color="#2ECC40">sqr</font>((Tr - theta_s)*Q33) \
+              + <font color="#2ECC40">sqr</font>((Tj - theta_Ks)*Q44) \
+              + <font color="#2ECC40">sqr</font>((ff - FFs)*R11) \
+              + <font color="#2ECC40">sqr</font>((cr - Qdot_Ks)*R22)
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(Deviation) <font color="#8A2BE2">using</font> nlp
+</pre>
+</body>
+</html>
