@@ -1,0 +1,149 @@
+<!-- Dyna-to-Html Version 1.0 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Contrast in magnetic resonance imaging (MRI)</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Contrast in magnetic resonance imaging (MRI)
+</pre>
+<p>
+  Magnetic Resonance Imaging (MRI) is a medical imagery technique that does not expose the body
+  to ionizing radiation (such as X-ray). Instead, it relies on a strong magnetic field to excite
+  atoms in the tissues, more  specifically hydrogen atoms present in water (water accounts for
+  70% of the human body mass). Measuring the rate at which the atoms go back to their equilibrium
+  state allows to reconstruct the spatial distribution of water, and by extension to
+  differentiate tissue types. Finding the magnetic field that maximizes the contrast between two
+  types of tissue can be written as an optimal control problem, studied for instance in [1,2].
+  The magnetization vector \(q=(x,y,z) \in B(0,1)\) for each 1/2 spin particle follows the Bloch
+  equation (here in the 3D, bi-input case)
+<p>
+  \[
+  \begin{array}{l}
+  \dot{x}=-\Gamma x+u_2 z\\
+  \dot{y}=-\Gamma y-u_1 z\\
+  \dot{z}=\gamma (1-z)+u_1 y-u_2 x
+  \end{array}
+  \]
+<p>
+  with \(u\) the magnetic field (control) and \(\gamma\), \(\Gamma\) relaxation parameters
+  depending on the tissue. In the simplified, 2D, mono-input case, we get
+<p>
+  \[
+  \begin{array}{l}
+  \dot{y}=-\Gamma y -u_1 z \\
+  \dot{z}=\gamma (1-z) + u_1 y
+  \end{array}
+  \]
+<p>
+  Considering two different particles with spins \(q_1, q_2\), the contrast is  linked to 
+  \(|\|q_1\| - \|q_2\| |\) at the end of the excitation phase. The classical "contrast by
+  saturation" method consists in bringing one  spin to the origin (saturation) and the other as
+  far as possible. Assuming both spins start from the equilibrium point at the north pole, the
+  optimal control problem is
+<p>
+  \[
+  \begin{array}{l}
+  \max \ |q_2(t_f)|\\
+  \dot q = f(q,u)\\
+  |u(\cdot)| \le 1\\
+  q_1(0) = q_2(0) = (0,1)\\
+  q_1(t_f) = 0
+  \end{array}
+  \]
+<p>
+  with the final time set to a multiple of the minimum time \(T_{min}\) for the saturation of
+  \(q_1\), ie \(t_f = \lambda T_{min}, \lambda \ge 1\). The Hamiltonian is linear in the control,
+  and it can be shown that the optimal control is a sequence of Bang and Singular arcs, noted nBS
+  (ie 2BS denotes a bang-singular-bang- singular structure).
+<p>
+  A comprehensive study using indirect shooting and differential continuation methods (HAMPATH,[3])
+  indicates the existence of numerous families of local solutions with  different structures, and
+  shows that the optimal structure depends on the final time.
+<p>
+  References:
+  <ol>
+  <li>B. Bonnard, M. Claeys, O. Cots and P. Martinon,
+  <em>Comparison of Numerical Methods in the Contrast Imaging Problem in NMR</em>,
+  In 52nd IEEE Conference on Decision and Control, Firenze, Italy, 2013.
+  <li>B. Bonnard, M. Claeys, O. Cots and P. Martinon,
+  <em>Geometric and numerical methods in the contrast imaging problem in the contrast imaging problem</em>,
+  In nuclear magnetic resonance. Acta Applicandae Mathematicae, pages 1-41, 2015.
+  <li>O. Cots,
+  <em>Contrôle optimal géométrique: méthodes homotopiques et applications</em>,
+  PhD thesis, 2012.
+  </ol>
+<p>
+  See:
+  <a href="https://project.inria.fr/bocop/anaerobic-digestion-of-micro-algae-for-bio-gaz-production/">
+  BOCOP - The optimal control solver</a>
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  omegamax = 202.946885422 
+  T11 = 2
+  T12 = 0.3
+  T21 = 2.5
+  T22 = 2.5
+  Tmin = 26.1704
+  tmincoeff = 2
+  regcoeff = 3
+  biggamma1 = 1 / (T12 * omegamax)
+  smallgamma1 = 1 / (T11 * omegamax)
+  biggamma2 = 1 / (T22 * omegamax)
+  smallgamma2 = 1 / (T21 * omegamax)
+  tf = 1
+
+<font color="red"><b>dyn:</b></font>
+  y1 z1 y2 z2
+  reg
+  ux
+
+<font color="red"><b>lim:</b></font>
+  -1.1 &lt;= {y1 z1 y2 z2} &lt;= 1.1
+  -1 &lt;= ux &lt;= 1
+
+<font color="red"><b>t=t0:</b></font>
+  y1 = 0
+  z1 = 1
+  y2 = 0 
+  z2 = 1
+  reg = 0
+  
+<font color="red"><b>t=tf:</b></font>
+  y1 = 0
+  z1 = 0
+
+<font color="red"><b>ini:</b></font>
+  y1 = 0
+  z1 = 1
+  y2 = 0 
+  z2 = 1
+  reg = 0
+  ux = <font color="#2ECC40">uniform</font>(-1,1)
+
+<font color="red"><b>equ:</b></font>
+  <font color="#808080"><i># dynamics for 1st and 2nd spin</i></font>
+  y1&acute; == - (biggamma1 * y1 - ux * z1) * Tmin * tmincoeff * 2 * pi
+  z1&acute; == (smallgamma1 * (1 - z1) + ux * y1) * Tmin * tmincoeff * 2 * pi
+  y2&acute; == - (biggamma2 * y2 - ux * z2)  * Tmin * tmincoeff * 2 * pi
+  z2&acute; == (smallgamma2 * (1 - z2) + ux * y2) * Tmin * tmincoeff * 2 * pi	
+  <font color="#808080"><i># quadratic regularization</i></font>
+  reg&acute; == 10**(-regcoeff) * <font color="#2ECC40">sqr</font>(ux) * Tmin * tmincoeff * 2 * pi
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">maximize</font> <font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(y2))+<font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(z2)))-<font color="#0074D9">final</font>(reg) <font color="#8A2BE2">using</font> nlp
+</pre>
+</body>
+</html>

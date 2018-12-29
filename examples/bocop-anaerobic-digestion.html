@@ -1,0 +1,115 @@
+<!-- Dyna-to-Html Version 1.0 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Anaerobic digestion of micro-algae for biogas production</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Anaerobic digestion of micro-algae for biogas production
+</pre>
+<p>
+  Coupling microalgae culture and anaerobic digestion is a promising process to convert solar
+  energy into methane. In [1,2] we consider a dual tank reactor: a first one in which microalgae
+  are cultivated and a second one where the microalgae are converted into biogas. Our first aim
+  is to find an optimal feeding strategy in order to maximize the production of biogas in the
+  second reactor during one day.
+<p>
+  The dual-tank bioreactor can be modeled as a 3-dimensional dynamical system. The state
+  variables are the concentration of micro-algae \(y\), biomass \(x\) and substrate \(s\). The control
+  variable is the input flow \(u\) throughout the whole reactor. The system dynamics is given by
+<p>
+  \[
+  \dot{y}=\mu(t)\dfrac{y}{1+y} - ry - uy\\  
+  \dot{s}=-\mu_2(s)x + u\beta(\gamma y-s)\\  
+  \dot{x}=(\mu_2(s)-u\beta)x  
+  \]
+<p>
+  where \(\mu\) is the light model, \(\mu_2(s)=\mu_2^m \frac{ s}{ K_s + s}\) the growth function in 
+  reactor 2 (Monod), and \(\beta\) the volume ratio between the two tanks.
+<p>
+  The optimal control problem is written as
+<p>
+  \[
+  \max \frac{1}{\beta+c} \int_0^{t_f} \mu_2(s(t)) x(t) \ \mathrm{d}t\\
+  (\dot{y},\dot{s},\dot{x}) = f(t,y,s,x,u) \quad \text{(see here above)}\\
+  u \in [0,1]\\
+  (y(0),s(0),x(0)) \in Z_0\\
+  (y(t_f),s(t_f),x(t_f)) = (y(0),s(0),x(0)) \quad \text{(optional)}
+  \]
+<p>
+  References:
+  <ol>
+  <li>T. Bayen, F. Mairet, P. Martinon, and M. Sebbah,
+  <em>Optimizing the anaerobic digestion of microalgae in a coupled process</em>,
+  In 13th European Control Conference, Zurich, Switzerland, 2013.
+  <li>T. Bayen, F. Mairet, P. Martinon, and M. Sebbah,
+  <em>Analysis of a periodic optimal control problem connected to microalgae anaerobic digestion</em>,
+  Optimal Control Applications and Methods, 2014.
+  </ol>
+<p>
+  See: <a href="https://project.inria.fr/bocop/anaerobic-digestion-of-micro-algae-for-bio-gaz-production/">BOCOP - The optimal control solver</a>
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  mubar = 1		<font color="#808080"><i># day growth</i></font>
+  r = 0.005
+  beta = 1
+  gamma = 1
+  mu2m = 0.1
+  Ks = 0.05
+  halfperiod = 5	<font color="#808080"><i># day duration</i></font>
+  c = 2
+  tf = 10
+
+<font color="red"><b>dyn:</b></font>
+  y s x
+  J
+  u
+
+<font color="red"><b>lim:</b></font>
+  0 &lt;= y &lt;= +<font color="#3D9970">inf</font>
+  0 &lt;= s &lt;= +<font color="#3D9970">inf</font>
+  0 &lt;= x &lt;= +<font color="#3D9970">inf</font>
+  0 &lt;= u &lt;= 1
+
+<font color="red"><b>t=t0:</b></font>
+  J = 0
+
+<font color="red"><b>ini:</b></font>
+  y = 5.6
+  s = 0
+  x = 6.4
+  J = 0
+  
+<font color="red"><b>exp:</b></font>
+  mu2 == mu2m * s / (s+Ks)		<font color="#808080"><i># biomass growth</i></font>
+  days == <font color="#0074D9">Time</font> / (halfperiod*2)
+  tau == 2 * pi * (days - <font color="#2ECC40">floor</font>(days))
+  mu == mubar * <font color="#2ECC40">sqr</font>(<font color="#2ECC40">max</font>(0,<font color="#2ECC40">sin</font>(tau)))	<font color="#808080"><i># algae growth function of light model</i></font>
+
+<font color="red"><b>equ:</b></font>
+  y&acute; == mu*y/(1+y) - (r+u)*y
+  s&acute; == -mu2*x + u*beta*(y*gamma-s)
+  x&acute; == (mu2-u*beta)*x
+  J&acute; == mu2*x / (beta+c)
+  0 == <font color="#0074D9">final</font>(y) - <font color="#0074D9">initial</font>(y)
+  0 == <font color="#0074D9">final</font>(s) - <font color="#0074D9">initial</font>(s)
+  0 == <font color="#0074D9">final</font>(x) - <font color="#0074D9">initial</font>(x)
+  u :: <font color="#7FDBFF">spline3</font>(-6)
+  
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">maximize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp <font color="#8A2BE2">with</font> ipopt
+</pre>
+</body>
+</html>

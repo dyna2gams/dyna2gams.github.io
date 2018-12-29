@@ -1,0 +1,64 @@
+<!-- Dyna-to-Html Version 1.0 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Wave Energy</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Wave Energy
+</pre>
+<p>
+  Source: ACADO Toolkit - A Toolkit for Automatic Control and Dynamic Optimization.
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  h_hw = 10	<font color="#808080"><i># water level</i></font>
+  A_hw = 1	<font color="#808080"><i># amplitude of the waves</i></font>
+  T_hw = 5	<font color="#808080"><i># duration of a wave</i></font>
+  h_b = 3	<font color="#808080"><i># height of the buoy</i></font>
+  rho = 1000	<font color="#808080"><i># density of water</i></font>
+  A = 1		<font color="#808080"><i># bottom area of the buoy</i></font>
+  m = 100	<font color="#808080"><i># mass of the buoy</i></font>
+  g = 9.81	<font color="#808080"><i># gravitational constant</i></font>
+  tf = 15
+
+<font color="red"><b>dyn:</b></font>
+  u	<font color="#808080"><i># Resistance</i></font>
+  h	<font color="#808080"><i># Position of the buoy</i></font>
+  v	<font color="#808080"><i># Velocity of the buoy</i></font>
+  w	<font color="#808080"><i># Produced wave energy</i></font>
+
+<font color="red"><b>exp:</b></font>
+  hw == h_hw + A_hw*<font color="#2ECC40">sin</font>(2*pi*<font color="#0074D9">Time</font>/T_hw)		<font color="#808080"><i># Wave height</i></font>
+
+<font color="red"><b>lim:</b></font>
+  hw-h_b &lt;= h &lt;= hw
+  0 &lt;= u &lt;= 100
+
+<font color="red"><b>t=t0:</b></font>
+  h = h_hw - A_hw
+  v = 0
+  w = 0
+
+<font color="red"><b>equ:</b></font>
+  h&acute; == v
+  v&acute; == rho*A*(hw-h)/m - g - u
+  w&acute; == u*v
+  u :: <font color="#7FDBFF">spline3</font>
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">maximize</font> <font color="#0074D9">final</font>(w) <font color="#8A2BE2">using</font> nlp
+</pre>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!-- Dyna-to-Html Version 1.0 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">3-link Micro-swimmer (Purcell)</h1>
+<pre>
+<font color="red"><b>rem:</b></font> 3-link Micro-swimmer (Purcell)
+</pre>
+<p>
+  The study of optimal swimming strategies at the microscopic scale draws interest
+  from both fields of biological and robotic systems. In [2,3] we study the
+  particular model of the so-called N-link swimmer, more precisely the 3-link
+  swimmer introduced by Purcell in [1].
+<p>
+  <center><img src="bocop-micro-swimmer.png" alt="" width="40%"/></center>
+<p>
+  <b>Swimming at low Reynolds number, Resistive Force Theory</b>
+  <br>
+  At the microscopic scale, the situation is the one of low Reynolds  numbers, with
+  inertial forces neglected with respect to viscosity. Therefore the hydrodynamics
+  of the system are governed by the Stokes equation, and the dynamics of the
+  swimmer follow the Newton laws without inertia. The Resistive Force Theory provides a
+  local drag approximation, assuming that the force exerted on the swimmer by the
+  fluid is linear with respect to velocity. In this framework, the dynamics of the
+  N-link swimmer in a plane can be expressed as follows, noting (\(x,y,\theta\)) the
+  position and orientation of the swimmer, and \(\beta_i\) the shape angles
+  between two adjacent links:
+<p>
+  \[
+  \left(
+  \begin{matrix}
+  \dot{x}_1 \\
+  \dot{y}_1 \\
+  \dot{\theta}_1 
+  \end{matrix}  
+  \right) = \sum_{i=1}^{N-1} \big(g_i(\theta_1,\beta_2,\dotsc,\beta_N)\big) \dot{\beta}_{i+1}
+  \]
+<p>
+  The dynamics has no drift term, meaning that without deformation of its shape,
+  the swimmer remains motionless.
+<p>
+  <b>Optimal swimming problem</b>
+  <br>
+  Noting the state \(z=(x,y,\theta)\) and the control \(u = \dot{\beta}\), we can formulate
+  the optimal swimming problem for different objective functions (maximal
+  displacement, minimum time, minimum work, ...).
+<p>
+  \[
+  \min J(z,u)\\
+  \dot{z} = f(z,u)\\
+  \dot{\beta} = u \in [-b,b]^N\\
+  \beta \in [-a,a]^N
+  \]
+<p>
+  References:
+  <ol>  
+  <li>E. M. Purcell,
+  <em>Life at low reynolds number</em>,
+  American Journal of Physics, 45:3-11,1977.
+  <li>L. Giraldi, P. Martinon, and M. Zoppello,
+  <em>Controllability and   Optimal Strokes for N-link Micro-swimmer</em>,
+  In 52nd IEEE Conference on Decision and Control, Firenze, Italy, 2013.
+  <li>L. Giraldi, P. Martinon, and M. Zoppello,
+  <em>Optimal design of Purcell&rsquo;s three-link swimmer</em>,
+  Phys. Rev. E, 91:023012, 2015.
+  </ol>
+<p>
+  See:
+  <a href="https://www.bocop.org/micro-swimmer-in-low-reynolds-number-fluid/">
+  BOCOP - The optimal control solver</a>
+<p>
+<pre>
+<font color="red"><b>var:</b></font>
+  tf
+
+<font color="red"><b>dyn:</b></font>
+  x y th	<font color="#808080"><i># position of the swimmer</i></font>
+  b1 b3		<font color="#808080"><i># the shape angles between two adjacent links</i></font>
+  E		<font color="#808080"><i># energy</i></font>
+  u1 u2		<font color="#808080"><i># control variables</i></font>
+
+<font color="red"><b>lim:</b></font>
+  0 &lt;= tf &lt;= 25
+  -Pi/2 &lt;= b1 &lt;= Pi/2
+  -Pi/2 &lt;= b3 &lt;= Pi/2
+  0 &lt;= E &lt;= +<font color="#3D9970">inf</font>
+  -1 &lt;= u1 &lt;= 1
+  -1 &lt;= u2 &lt;= 1
+  
+<font color="red"><b>t=t0:</b></font>
+  x = 0
+  y = 0
+  -Pi/2 &lt;= th &lt;= 0  
+  E = 0
+  -Pi/2 &lt;= b1 &lt;= 0	<font color="#808080"><i># set sign to break symmetries</i></font>
+  
+<font color="red"><b>t=tf:</b></font>
+  -<font color="#3D9970">inf</font> &lt;= x &lt;= -0.0001
+  y = 0
+
+<font color="red"><b>ini:</b></font>
+  x = 0
+  y = 0
+  th = -0.1
+
+<font color="red"><b>exp:</b></font>
+  <font color="#808080"><i># Purcell: central stick length 2; side sticks length 1</i></font>
+  g00 == 543+186*<font color="#2ECC40">cos</font>(b1)+37*<font color="#2ECC40">cos</font>(2*b1)+12*<font color="#2ECC40">cos</font>(b1-2*b3)+30*<font color="#2ECC40">cos</font>(b1-b3)+2*<font color="#2ECC40">cos</font>(2*(b1-b3))+12*<font color="#2ECC40">cos</font>(2*b1-b3)+186*<font color="#2ECC40">cos</font>(b3)+37*<font color="#2ECC40">cos</font>(2*b3)-6*<font color="#2ECC40">cos</font>(b1+b3)-3*<font color="#2ECC40">cos</font>(2*(b1+b3))-6*<font color="#2ECC40">cos</font>(2*b1+b3)-6*<font color="#2ECC40">cos</font>(b1+2*b3)
+  g11 == (-42*<font color="#2ECC40">sin</font>(b1-th)-2*<font color="#2ECC40">sin</font>(2*b1-th)-24*<font color="#2ECC40">sin</font>(th)-300*<font color="#2ECC40">sin</font>(b1+th)-12*<font color="#2ECC40">sin</font>(2*b1+th)-6*<font color="#2ECC40">sin</font>(b1-th-2*b3)-<font color="#2ECC40">sin</font>(2*b1-th-2*b3)+4*<font color="#2ECC40">sin</font>(th-2*b3)-12*<font color="#2ECC40">sin</font>(b1+th-2*b3)-<font color="#2ECC40">sin</font>(2*b1+th-2*b3)+18*<font color="#2ECC40">sin</font>(b1-th-b3)+8*<font color="#2ECC40">sin</font>(th-b3)-54*<font color="#2ECC40">sin</font>(b1+th-b3)-2*<font color="#2ECC40">sin</font>(2*b1+th-b3)-18*<font color="#2ECC40">sin</font>(b1-th+b3)-38*<font color="#2ECC40">sin</font>(th+b3)-90*<font color="#2ECC40">sin</font>(b1+th+b3)-6*<font color="#2ECC40">sin</font>(b1-th+2*b3)-18*<font color="#2ECC40">sin</font>(th+2*b3)-30*<font color="#2ECC40">sin</font>(b1+th+2*b3))/(4*g00)
+  g12 == (-42*<font color="#2ECC40">cos</font>(b1-th)-2*<font color="#2ECC40">cos</font>(2*b1-th)+24*<font color="#2ECC40">cos</font>(th)+300*<font color="#2ECC40">cos</font>(b1+th)+12*<font color="#2ECC40">cos</font>(2*b1+th)-6*<font color="#2ECC40">cos</font>(b1-th-2*b3)-<font color="#2ECC40">cos</font>(2*b1-th-2*b3)-4*<font color="#2ECC40">cos</font>(th-2*b3)+12*<font color="#2ECC40">cos</font>(b1+th-2*b3)+<font color="#2ECC40">cos</font>(2*b1+th-2*b3)+18*<font color="#2ECC40">cos</font>(b1-th-b3)-8*<font color="#2ECC40">cos</font>(th-b3)+54*<font color="#2ECC40">cos</font>(b1+th-b3)+2*<font color="#2ECC40">cos</font>(2*b1+th-b3)-18*<font color="#2ECC40">cos</font>(b1-th+b3)+38*<font color="#2ECC40">cos</font>(th+b3)+90*<font color="#2ECC40">cos</font>(b1+th+b3)-6*<font color="#2ECC40">cos</font>(b1-th+2*b3)+18*<font color="#2ECC40">cos</font>(th+2*b3)+30*<font color="#2ECC40">cos</font>(b1+th+2*b3))/(4*g00)
+  g13 == -(105+186*<font color="#2ECC40">cos</font>(b1)+2*<font color="#2ECC40">cos</font>(2*b1)+12*<font color="#2ECC40">cos</font>(b1-2*b3)+30*<font color="#2ECC40">cos</font>(b1-b3)+<font color="#2ECC40">cos</font>(2*(b1-b3))-4*<font color="#2ECC40">cos</font>(2*b3)-6*<font color="#2ECC40">cos</font>(b1+b3)-6*<font color="#2ECC40">cos</font>(b1+2*b3))/(2*g00)
+  g21 == (8*<font color="#2ECC40">sin</font>(b1-th)+4*<font color="#2ECC40">sin</font>(2*b1-th)+24*<font color="#2ECC40">sin</font>(th)+38*<font color="#2ECC40">sin</font>(b1+th)+18*<font color="#2ECC40">sin</font>(2*b1+th)-2*<font color="#2ECC40">sin</font>(b1-th-2*b3)-<font color="#2ECC40">sin</font>(2*b1-th-2*b3)-2*<font color="#2ECC40">sin</font>(th-2*b3)-<font color="#2ECC40">sin</font>(2*b1+th-2*b3)-54*<font color="#2ECC40">sin</font>(b1-th-b3)-12*<font color="#2ECC40">sin</font>(2*b1-th-b3)-42*<font color="#2ECC40">sin</font>(th-b3)+18*<font color="#2ECC40">sin</font>(b1+th-b3)-6*<font color="#2ECC40">sin</font>(2*b1+th-b3)+18*<font color="#2ECC40">sin</font>(b1-th+b3)+6*<font color="#2ECC40">sin</font>(2*b1-th+b3)+300*<font color="#2ECC40">sin</font>(th+b3)+90*<font color="#2ECC40">sin</font>(b1+th+b3)+30*<font color="#2ECC40">sin</font>(2*b1+th+b3)+12*<font color="#2ECC40">sin</font>(th+2*b3))/(4*g00)
+  g22 == (8*<font color="#2ECC40">cos</font>(b1-th)+4*<font color="#2ECC40">cos</font>(2*b1-th)-24*<font color="#2ECC40">cos</font>(th)-38*<font color="#2ECC40">cos</font>(b1+th)-18*<font color="#2ECC40">cos</font>(2*b1+th)-2*<font color="#2ECC40">cos</font>(b1-th-2*b3)-<font color="#2ECC40">cos</font>(2*b1-th-2*b3)+2*<font color="#2ECC40">cos</font>(th-2*b3)+<font color="#2ECC40">cos</font>(2*b1+th-2*b3)-54*<font color="#2ECC40">cos</font>(b1-th-b3)-12*<font color="#2ECC40">cos</font>(2*b1-th-b3)+42*<font color="#2ECC40">cos</font>(th-b3)-18*<font color="#2ECC40">cos</font>(b1+th-b3)+6*<font color="#2ECC40">cos</font>(2*b1+th-b3)+18*<font color="#2ECC40">cos</font>(b1-th+b3)+6*<font color="#2ECC40">cos</font>(2*b1-th+b3)-300*<font color="#2ECC40">cos</font>(th+b3)-90*<font color="#2ECC40">cos</font>(b1+th+b3)-30*<font color="#2ECC40">cos</font>(2*b1+th+b3)-12*<font color="#2ECC40">cos</font>(th+2*b3))/(4*g00)
+  g23 == -(105-4*<font color="#2ECC40">cos</font>(2*b1)+30*<font color="#2ECC40">cos</font>(b1-b3)+<font color="#2ECC40">cos</font>(2*(b1-b3))+12*<font color="#2ECC40">cos</font>(2*b1-b3)+186*<font color="#2ECC40">cos</font>(b3)+2*<font color="#2ECC40">cos</font>(2*b3)-6*<font color="#2ECC40">cos</font>(b1+b3)-6*<font color="#2ECC40">cos</font>(2*b1+b3))/(2*g00)
+
+<font color="red"><b>equ:</b></font>
+  x&acute;  == g11*u1 + g21*u2
+  y&acute;  == g12*u1 + g22*u2
+  th&acute; == g13*u1 + g23*u2
+  b1&acute; == u1
+  b3&acute; == u2
+  E&acute;  == u1*u1 + u2*u2
+  0 == <font color="#0074D9">final</font>(th) - <font color="#0074D9">initial</font>(th)
+  0 == <font color="#0074D9">final</font>(b1) - <font color="#0074D9">initial</font>(b1)
+  0 == <font color="#0074D9">final</font>(b3) - <font color="#0074D9">initial</font>(b3)
+  
+<font color="red"><b>obj:</b></font>
+  <font color="#808080"><i># maximal displacement along x-axis (with x(tf) &lt; 0)</i></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(x) <font color="#8A2BE2">using</font> nlp
+
+  <font color="#808080"><i># max displacement /  final time</i></font>
+  <font color="#808080"><i># minimize final(x) / tf using nlp</i></font>
+
+  <font color="#808080"><i># max displacement / energy</i></font>
+  <font color="#808080"><i># minimize final(x) / final(E) using nlp</i></font>
+
+  <font color="#808080"><i># min "energy"</i></font>
+  <font color="#808080"><i># minimize final(E) using nlp</i></font>
+</pre>
+</body>
+</html>

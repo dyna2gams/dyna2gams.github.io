@@ -1,0 +1,1342 @@
+<!DOCTYPE HTML>
+<!--
+	Prologue by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Dyna2Gams &#8211; Optimization Control with GAMS</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<meta property="og:type" content="website" />
+		<meta property="og:title" content="Dyna2Gams" />
+		<meta property="og:description" content="Optimization Control with GAMS" />
+		<meta property="og:url" content="https://dyna2gams.github.io/" />
+		<meta property="og:site_name" content="Dyna2Gams" />
+		<meta property="og:image" content="https://dyna2gams.github.io/images/dyna-sts-9-launch.jpg" />
+		<meta property="og:image:width" content="2048" />
+		<meta property="og:image:height" content="963" />
+		<meta property="og:locale" content="en_US" />
+		<meta name="twitter:text:title" content="Home" />
+		<meta name="twitter:image" content="https://dyna2gams.github.io/images/dyna-sts-9-launch.jpg?w=640" />
+		<meta name="twitter:card" content="summary_large_image" />
+		<link rel="icon" href="images/dyna2gams-32x32.jpg" sizes="32x32" />
+		<link rel="icon" href="images/dyna2gams-192x192.jpg" sizes="192x192" />
+		<link rel="apple-touch-icon-precomposed" href="images/dyna2gams-180x180.jpg" />
+		<meta name="msapplication-TileImage" content="images/dyna2gams-270x270.jpg" />
+		<!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js" type="text/javascript"></script><![endif]-->
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
+		<!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
+		<style>
+		pre.syntax {
+			border: 1px solid #C4CFE5;
+			background-color: white;
+			padding: 4px 6px;
+			margin: 4px 8px 4px 2px;
+			overflow: auto;
+			word-wrap: break-word;
+			font-size: 16px;
+			line-height: 125%;
+			font-family: Courier, "Courier New", monospace, fixed;
+			font-weight: normal;
+			font-style: normal;
+			color: black;
+			}
+		b {
+			font-weight: bold;
+			color: red;
+			}
+		ul.compact, ol.compact {
+			margin-top: -2em;
+			margin-bottom: 0em;
+			}
+		pre.console {
+			border: 1px solid #C4CFE5;
+			background-color: #012456;
+			padding: 4px 6px;
+			margin: 4px 8px 4px 2px;
+			overflow: auto;
+			word-wrap: break-word;
+			font-size: 16px;
+			line-height: 125%;
+			font-family: Courier, "Courier New", monospace, fixed;
+			font-weight: normal;
+			font-style: normal;
+			color: white
+			}
+		</style>
+	</head>
+	<body class="is-preload">
+
+		<!-- Header -->
+			<div id="header">
+			<section class="bannerv">
+
+				<div class="top">
+
+					<!-- Logo -->
+						<div id="logo">
+							<!--span class="image avatar48"><img src="images/avatar.jpg" alt="" /></span-->
+							<h1 id="title">DYNA2GAMS</h1>
+							<p>optimization control with GAMS</p>
+						</div>
+
+					<!-- Nav -->
+						<nav id="nav">
+							<ul>
+								<li><a href="index.html" id="home-link">Home</a></li>
+								<li><a href="features.html" id="features-link">Features</a></li>
+								<li><a href="#top" id="features-link" class="scrolly active">Tutorial</a></li>
+								<li><a href="examples.html" id="examples-link">Examples</a></li>
+								<li><a href="download.html" id="download-link">Download</a></li>
+								<li><a href="contact.html" id="contact-link">Contact</a></li>
+								<li><a href="blog.html" id="blog-link">Blog</a></li>
+							</ul>
+						</nav>
+
+				</div>
+
+				<div class="bottom">
+
+					<!-- Social Icons -->
+						<ul class="icons">
+							<!--li><a href="#" class="icon fa-twitter"><span class="label">Twitter</span></a></li-->
+							<!--li><a href="#" class="icon fa-facebook"><span class="label">Facebook</span></a></li-->
+							<li><a href="https://github.com/dyna2gams" class="icon fa-github"><span class="label">Github</span></a></li>
+							<!--li><a href="#" class="icon fa-dribbble"><span class="label">Dribbble</span></a></li-->
+							<li><a href="https://www.linkedin.com/in/alain-jean-michiels/" class="icon fa-linkedin"><span class="label">LinkedIn</span></a></li>
+							<li><a href="mailto:dyna2gams@outlook.com" class="icon fa-envelope"><span class="label">Email</span></a></li>
+						</ul>
+
+				</div>
+
+			</section>
+			</div>
+
+		<!-- Main -->
+			<div id="main">
+
+				<!-- Intro -->
+
+				<!-- Tutorial -->
+					<section id="features" class="two">
+						<div class="container">
+
+							<header>
+								<h2>Tutorial</h2>
+							</header>
+
+							<div align="left">
+
+							<p>Formulating an optimal control problem in DYNA is straightforward, and this guide will assist you in setting up the
+							problem correctly and efficiently.
+
+							<p>A general purpose optimal control problem can be formulated in the following form
+							\[
+							\min_{\substack{x,u,p,t_0,t_f}}
+							\Phi\big(x(t_0),t_0,x(t_f),t_f,p\big) +
+							\int_{t_0}^{t_f} L\big(x(t),u(t),t,p\big) \ \mathrm{d}t
+							\]
+							(named Bolza form) subject to
+							\[
+							\dot{x}(t) = f\big(x(t),u(t),t,p\big), \ \forall \ t \in [t_0,t_f]\\
+							c_{\text{min}}(t) \leq c\big(x(t),u(t),t,p\big) \ \leq c_{\text{max}}(t), \ \forall \ t \in [t_0,t_f]\\
+							b_{\text{min}} \leq b\big(x(t_0),t_0,x(t_f),t_f,p\big) \leq b_{\text{max}}\\
+							p_{\text{min}} \leq p \leq p_{\text{max}}
+							\]
+							with
+							<ul class="compact">
+								<li>\(x(t) \in \mathbb{R}^n\) the state of the system,</li>
+								<li>\(u(t) \in \mathbb{R}^m\) the control input,</li>
+								<li>\(p \in \mathbb{R}^p\) the static parameters,</li>
+								<li>\(t_0 \in \mathbb{R}\) and \(t_f \in \mathbb{R}\) the initial and terminal time,</li>
+								<li>\(\Phi\) is the Mayer cost functional (\(\Phi: \mathbb{R}^n \times \mathbb{R} \times \mathbb{R}^n \times \mathbb{R} \times \mathbb{R}^p \rightarrow \mathbb{R} \)),</li>
+								<li>\(L\) is the Lagrange cost functional (\(L: \mathbb{R}^n \times \mathbb{R}^m \times \mathbb{R} \times \mathbb{R}^p \rightarrow \mathbb{R} \)),</li>
+								<li>\(f\) is the dynamic constraint (\(f: \mathbb{R}^n \times  \mathbb{R}^m \times \mathbb{R} \times \mathbb{R}^p \rightarrow \mathbb{R}^n\)),</li>
+								<li>\(c\) is the path constraint (\(c: \mathbb{R}^n \times  \mathbb{R}^m \times \mathbb{R} \times \mathbb{R}^p \rightarrow \mathbb{R}^c\)) and</li>
+								<li>\(b\) is the boundary condition (\(b: \mathbb{R}^n \times \mathbb{R} \times \mathbb{R}^n \times \mathbb{R} \rightarrow \mathbb{R}^b\))</li>
+							</ul>
+							and can be directly implemented in DYNA as explained here below.
+
+<!-- table of content ---------------------------------><p>
+							<h3 id="tofc">Table of content</h3>
+							<ul>
+							<li><a href="#inst">Installation</a></li>
+							<li><a href="#tuta">Tutorial A: Closed Loop Control for a Sliding Mass System</a></li>
+							<li><a href="#tutb">Tutorial B: Car Problem</a></li>
+							<li><a href="#tutc">Tutorial C: Goddard Rocket</a></li>
+							<li><a href="#tutd">Tutorial D: Infinite Horizon Optimal Control Problem</a></li>
+							<li><a href="#tute">Tutorial E: Minimum Time-to-Climb of a Supersonic Aircraft</a></li>
+							<li><a href="#tutf">Tutorial F: Methanol to Hydrocarbons Conversion</a></li>
+							<li><a href="#tutg">Tutorial G: Optimal Control of a Jojo (Multi-stage OCP)</a></li>
+							<li><a href="#tuth">Tutorial H: Binary Variant of the Van der Pol Oscillator (MIOCP)</a></li>
+							<li><a href="#tuti">Tutorial I: Heat Equation (PDE)</a></li>
+							<li><a href="#tutj">Tutorial J: A Two Reach River Pollution Control (Discrete time OCP)</a></li>
+							<li><a href="#tutk">Tutorial K: Three Body Problem (ODE Simulation)</a></li>
+							<li><a href="#refr">Reference Manual</a></li>
+							</ul>
+
+<!-- installation -------------------------------------><p>
+							<h3 id="inst">Installation</h3>
+							<p>Unzip the package and copy all the files preserving the folder structure.
+							<p>Edit the file <em>.\bin\dyna-setinv.cmd</em> and customize the environment variables (path to GAMS, path to GNUPLOT, etc.).
+<pre class="syntax">
+:: --- Begin of customization -----------------------------------------
+
+:: --- Character set
+
+chcp 1252 > nul
+
+:: --- Optional components (for development)
+
+set rexx=
+set SevenZ="c:\Program Files\7-Zip\7z.exe"
+set delphi=
+set fpc=
+
+:: --- Recommended components
+
+set gnuplot="c:\wgnuplot506\bin\wgnuplot.exe"
+
+:: --- Mandatory components
+
+set gamsp=C:\GAMS\win64\25.1
+set dyna2gams_work=D:\DYNA2GAMS
+set dyna2gams_home=D:\DYNA2GAMS
+set dyna-to-gams="%dyna2gams_home%\bin\dyna-to-gams.exe"
+set dyna-to-html="%dyna2gams_home%\bin\dyna-to-html.exe"
+set dyna-csv-reshape="%dyna2gams_home%\bin\dyna-csv-reshape.exe"
+set dyna-csv-plot="%dyna2gams_home%\bin\dyna-csv-plot.exe"
+set dyna-csv-splot="%dyna2gams_home%\bin\dyna-csv-splot.exe"
+
+:: --- End of customization -------------------------------------------
+</pre>
+							<p><p>Execute either <em>.\bin\dyna-setinv.cmd</em> from the Windows command-line environment or <em>.\bin\dyna-shell.cmd</em> from Windows File Explorer.
+							In the console windows, key in <em>dyna-check-install</em> to check everything is fine.
+							<p>Congratulations ! DYNA2GAMS is now installed.
+							<p>In all the examples here after, we assume that <em>D:\DYNA2GAMS</em> is the home folder for DYNA2GAMS and the work folder as well.
+							<p>In the work folder, you can also have a <em>dyna-config.ini</em> file to customize DYNA2GAMS.  This is explained in the reference manual.
+
+<!-- Tutorial A ---------------------------------------><p>
+							<h3 id="tuta">Tutorial A: Closed Loop Control for a Sliding Mass System</h3>
+							<p>Find \(u\) over \(t \in [0,t_f]\) to minimize
+							\[
+							J = \int_0^{t_f} (y_1^2 + y_2^2 + u^2) \ \mathrm{d}t
+							\]
+							subject to:
+							\[
+							\dot{y}_1 = y_2 \\
+							\dot{y}_2 = u - y_2 |y_2| \\
+							y_1(0) = 2, \ \ y_2(0) = -2
+							\]
+							The DYNA implementation is as follows:
+<pre class="syntax">
+<font color="red"><b>par:</b></font>	<font color="#808080"><i># declare parameters: here the final time</i></font>
+  tf = 1
+
+<font color="red"><b>dyn:</b></font>	<font color="#808080"><i># declare the dynamic variables</i></font>
+  y{1:2}
+  J u
+
+<font color="red"><b>t=t0:</b></font>	<font color="#808080"><i># set the initial conditions</i></font>
+  y{1:2} = {2 -2}
+  J = 0
+
+<font color="red"><b>equ:</b></font>	<font color="#808080"><i># define the equations</i></font>
+  y1&acute; == y2	<font color="#808080"><i># character &acute; (hexadecimal B4, decimal 180) denotes the derivative</i></font>
+  y2&acute; == u - y2*y2*<font color="#2ECC40">sign</font>(y2)
+  J&acute; == 0.5 * (<font color="#2ECC40">sqr</font>(y1) + <font color="#2ECC40">sqr</font>(y2) + <font color="#2ECC40">sqr</font>(u))
+
+<font color="red"><b>obj:</b></font>	<font color="#808080"><i># set the objective and select the solver to use</i></font>
+	<font color="#808080"><i># (in this case a discontinuous NLP solver)</i></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> dnlp
+</pre>
+							<p><p>How to run this model ?  First check that the model syntax is fine, both for DYNA and GAMS.
+<pre class="console">
+[Dyna2Gams] D:\DYNA2GAMS>dyna-compile .\examples\tutor-a.dyn
+Dyna-to-Gams Version 1.0 - Copyright (c) 2018 Alain J. Michiels. All rights reserved.
+Translating '.\examples\tutor-a.dyn'...
+Model name: tutor_a
+Model type: DNLP
+Number of parameters: 1
+Number of dynamic variables: 4
+Number of equations: 3
+List of parameters: tf
+List of dynamic variables: y1 y2 J u
+Calling Gams...
+<font color="#808080"><i>*** Status: Normal completion</i></font>
+[Dyna2Gams] D:\DYNA2GAMS>dir /w *tutor-a* | find "."
+$tutor-a.gms        $tutor-a.log        $tutor-a.lst
+</pre>
+							<p><p>The "compilation" checks that the model syntax is fine, both for DYNA and GAMS.  It should end by "Normal completion".
+							<p>Three files have been created: a <em>.gms</em> file with the model translated in the GAMS language as well as a <em>.log</em> and
+							a <em>.lst</em> created by GAMS during the compilation phase.  The compilation step is optional: the sole purpose is to check
+							that the syntax is correct.
+							<p>The real job is carried out by <em>dyna-execute</em>.
+							By default, four steps are accomplished with a progressive refinement of the mesh grid: 48, 96, 192 and 384 time steps.
+<pre class="console">
+[Dyna2Gams] D:\DYNA2GAMS>dyna-execute .\examples\tutor-a.dyn
+Dyna-to-Gams Version 1.0 - Copyright (c) 2018 Alain J. Michiels. All rights reserved.
+Translating '.\examples\tutor-a.dyn'...
+Model name: tutor_a
+Model type: DNLP
+Number of parameters: 1
+Number of dynamic variables: 4
+Number of equations: 3
+List of parameters: tf
+List of dynamic variables: y1 y2 J u
+Calling Gams...
+Optimization launched (N=48|CM=L3A4|CF=IL)
+<font color="#808080"><i>**** SOLVER STATUS     1 Normal Completion</i></font>
+<font color="#808080"><i>**** MODEL STATUS      2 Locally Optimal</i></font>
+<font color="#808080"><i>**** OBJECTIVE VALUE                1.6173</i></font>
+Optimization launched (N=96|CM=L3A4|CF=IL)
+<font color="#808080"><i>**** SOLVER STATUS     1 Normal Completion</i></font>
+<font color="#808080"><i>**** MODEL STATUS      2 Locally Optimal</i></font>
+<font color="#808080"><i>**** OBJECTIVE VALUE                1.6173</i></font>
+Optimization launched (N=192|CM=L3A4|CF=IL)
+<font color="#808080"><i>**** SOLVER STATUS     1 Normal Completion</i></font>
+<font color="#808080"><i>**** MODEL STATUS      2 Locally Optimal</i></font>
+<font color="#808080"><i>**** OBJECTIVE VALUE                1.6173</i></font>
+Optimization launched (N=384|CM=L3A4|CF=IL)
+<font color="#808080"><i>**** SOLVER STATUS     1 Normal Completion</i></font>
+<font color="#808080"><i>**** MODEL STATUS      2 Locally Optimal</i></font>
+<font color="#808080"><i>**** OBJECTIVE VALUE                1.6173</i></font>
+</pre>
+							<p><p>Let&rsquo;s have a look at the results.
+							Many files are produced, the user familiar with GAMS will recognize the file types. The one of uttermost
+							interest is the <em>.csv</em> that holds the results.
+<pre class="console">
+[Dyna2Gams] D:\DYNA2GAMS>dir /w *tutor-a* | find "."
+$$tutor-a.192.csv   $$tutor-a.192.gdx   $$tutor-a.192.log   $$tutor-a.192.lst
+$$tutor-a.192.nfo   $$tutor-a.384.csv   $$tutor-a.384.gdx   $$tutor-a.384.log
+$$tutor-a.384.lst   $$tutor-a.384.nfo   $$tutor-a.48.csv    $$tutor-a.48.log
+$$tutor-a.48.lst    $$tutor-a.48.nfo    $$tutor-a.768.gdx   $$tutor-a.96.csv
+$$tutor-a.96.gdx    $$tutor-a.96.log    $$tutor-a.96.lst    $$tutor-a.96.nfo
+$tutor-a.gms        $tutor-a.log        $tutor-a.lst
+[Dyna2Gams] D:\DYNA2GAMS>%gamsp%\gbin\head $$tutor-a.48.csv
+"_N_","Time","y1","y2","J","u"
+"N0", 0.000000E+00, 2.000000E+00,-2.000000E+00, 0.000000E+00, 1.548745E-01
+"N1", 1.727458E-02, 1.966057E+00,-1.930623E+00, 6.752117E-02, 1.547967E-01
+"N2", 4.522542E-02, 1.913558E+00,-1.827664E+00, 1.697485E-01, 1.550753E-01
+"N3", 6.250000E-02, 1.882497E+00,-1.769126E+00, 2.289988E-01, 1.554874E-01
+"N4", 7.977458E-02, 1.852417E+00,-1.714051E+00, 2.855201E-01, 1.560419E-01
+"N5", 1.077254E-01, 1.805679E+00,-1.631507E+00, 3.716928E-01, 1.571662E-01
+"N6", 1.250000E-01, 1.777908E+00,-1.584138E+00, 4.219597E-01, 1.579831E-01
+"N7", 1.422746E-01, 1.750934E+00,-1.539277E+00, 4.701264E-01, 1.588597E-01
+"N8", 1.702254E-01, 1.708870E+00,-1.471503E+00, 5.439556E-01, 1.603422E-01
+</pre>
+
+<!-- Tutorial B ---------------------------------------><p>
+							<h3 id="tutb">Tutorial B: Car Problem</h3>
+							<p>The classical optimal control example, the car problem, is considered. The objective
+							is to find an optimal acceleration strategy for a car to travel a predetermined
+							distance in minimum time. The car starts and stops at zero velocity and it is
+							assumed that there is no traveling speed limit.
+							<p>The problem is to find \(u\) over \(t \in [0,t_f]\) that minimizes
+							\[
+							J = t_f
+							\]
+							subject to:
+							\[
+							\dot{x}_1 = u \\
+							\dot{x}_2 = x_1 \\
+							-2 \leq u \leq 1 \\
+							x_1(0) = 0, \ \ x_2(0) = 0 \\
+							x_1(t_f) = 0, \ \ x_2(t_f) = 300
+							\]
+							The model can be solved analytically and gives the optimal solution \(t_f^* = 30\).
+							<p>The DYNA implementation reads as follows:
+<pre class="syntax">
+<font color="red"><b>var:</b></font>	<font color="#808080"><i># declare the time horizon as a static variable</i></font>
+  tf
+
+<font color="red"><b>dyn:</b></font>	<font color="#808080"><i># declare the dynamic variables</i></font>
+  x1 x2
+  u
+
+<font color="red"><b>lim:</b></font>	<font color="#808080"><i># define lower and upper limits</i></font>
+  -2 &lt;= u &lt;= 1
+  0 &lt;= tf &lt;= 50
+
+<font color="red"><b>t=t0:</b></font>	<font color="#808080"><i># set the initial conditions</i></font>
+  x1 = 0
+  x2 = 0
+
+<font color="red"><b>t=tf:</b></font>	<font color="#808080"><i># set the final conditions</i></font>
+  x1 = 0
+  x2 = 300
+
+<font color="red"><b>equ:</b></font>	<font color="#808080"><i># define the equations of motion</i></font>
+  x1&acute; == u
+  x2&acute; == x1
+
+<font color="red"><b>obj:</b></font>	<font color="#808080"><i># set the objective and select the solver to</i></font>
+	<font color="#808080"><i># use (in this case the non linear solver IPOPT)</i></font>
+  <font color="#8A2BE2">minimize</font> tf <font color="#8A2BE2">using</font> nlp <font color="#8A2BE2">with</font> ipopt
+</pre>
+							<p><p>A reasonable upper limit is set on \(t_f\) for practical reasons.  We could define \(t_f\) on the
+							interval \([0, +\infty)\), in which case we need to provide the solver with a somewhat appropriate
+							initial guess of its optimal value.
+							By default, DYNA uses the bounds on the variables to generate initial guesses. If an upper and a lower bound is given,
+							the initial guess will be the arithmetic mean. If only one of these bounds is specified (while the other one is \(\pm
+							\infty\)) the initial guess will be equal to this bound. If there is a variable for which no bounds are specified, the
+							initial guess will simply be 0.
+<pre class="syntax">
+<font color="red"><b>var:</b></font>	<font color="#808080"><i># declare the time horizon as a static variable</i></font>
+  tf
+
+<font color="red"><b>dyn:</b></font>	<font color="#808080"><i># declare the dynamic variables</i></font>
+  x1 x2
+  u
+
+<font color="red"><b>lim:</b></font>	<font color="#808080"><i># define lower and upper limits</i></font>
+  -2 &lt;= u &lt;= 1
+  0 &lt;= tf &lt;= +<font color="#3D9970">inf</font>
+
+<font color="red"><b>t=t0:</b></font>	<font color="#808080"><i># set the initial conditions</i></font>
+  x1 = 0
+  x2 = 0
+
+<font color="red"><b>t=tf:</b></font>	<font color="#808080"><i># set the final conditions</i></font>
+  x1 = 0
+  x2 = 300
+
+<font color="red"><b>ini:</b></font>	<font color="#808080"><i># guess an appropriate starting point</i></font>
+  tf = 25
+
+<font color="red"><b>equ:</b></font>	<font color="#808080"><i># define the equations of motion</i></font>
+  x1&acute; == u
+  x2&acute; == x1
+
+<font color="red"><b>obj:</b></font>	<font color="#808080"><i># set the objective and select the solver to</i></font>
+	<font color="#808080"><i># use (in this case the non linear solver IPOPT)</i></font>
+  <font color="#8A2BE2">minimize</font> tf <font color="#8A2BE2">using</font> nlp <font color="#8A2BE2">with</font> ipopt
+</pre>
+
+<!-- Tutorial C ---------------------------------------><p>
+							<h3 id="tutc">Tutorial C: Goddard Rocket</h3>
+							<p>Maximize the final altitude of a vertically launched rocket, using the
+							thrust as a control and given the initial mass, the fuel mass, and the
+							drag characteristics of the rocket.
+							<p>Find \(T\) over \(t \in [0,t_f]\) to maximize
+							\[
+							J = h(t_f)
+							\]
+							subject to:
+							\[
+							\dot{h} = v \\
+							m \ \dot{v} = T - D(v,h) - m \ g(h) \\
+							\dot{m} = \frac{-T}{c} \\
+							D(v,h) = D_c v^2 e^{-h_c \big(\frac{h-h_0}{h_0}\big)} \\
+							g(h) = g_0 \big(\frac{h_0}{h}\big)^2 \\
+							h(0) = h_0, \ \ v(0) = v_0, \ \ m(0) = m_0 \\
+							m(t_f) = m_f
+							\]
+<pre class="syntax">
+<font color="red"><b>par:</b></font>	<font color="#808080"><i># define the parameters of the model</i></font>
+  v0 = 0.0
+  m0 = 1.0
+  g0 = 1.0
+  h0 = 1.0
+  hc = 500.0
+  vc = 620.0
+  mc = 0.6
+  Tmax = 3.5*g0*m0
+  c = 0.5*<font color="#2ECC40">sqrt</font>(g0*h0)
+  mf = mc*m0
+  Dc = 0.5*vc*m0/g0
+
+<font color="red"><b>var:</b></font>	<font color="#808080"><i># the time horizon is an endogenous variable</i></font>
+  tf
+
+<font color="red"><b>dyn:</b></font>	<font color="#808080"><i># declare the dynamic variables</i></font>
+  h v m T
+
+<font color="red"><b>lim:</b></font>	<font color="#808080"><i># box constraint the variables</i></font>
+  0.01 &lt;= tf &lt;= 1
+  h0 &lt;= h &lt;= +<font color="#3D9970">inf</font>
+  v0 &lt;= v &lt;= +<font color="#3D9970">inf</font>
+  mf &lt;= m &lt;= m0
+  0 &lt;= T &lt;= Tmax
+
+<font color="red"><b>t=t0:</b></font>	<font color="#808080"><i># set the initial conditions</i></font>
+  h = h0
+  v = v0
+  m = m0
+
+<font color="red"><b>ini:</b></font>	<font color="#808080"><i># provide the solver with own initial guesses</i></font>
+  tf = 1.0
+  h = h0
+  v = v0
+  m = m0
+  T = Tmax/2
+
+<font color="red"><b>exp:</b></font>	<font color="#808080"><i># define the symbolic variables</i></font>
+  D == Dc*<font color="#2ECC40">sqr</font>(v)*<font color="#2ECC40">exp</font>(-hc*(h-h0)/h0)
+  g == g0*<font color="#2ECC40">sqr</font>(h0/h)
+
+<font color="red"><b>equ:</b></font>	<font color="#808080"><i># define the equations</i></font>
+  h&acute; == v
+  v&acute; == (T - D)/m - g
+  m&acute; == -T/c
+
+<font color="red"><b>obj:</b></font>	<font color="#808080"><i># set the objective and select the solver to</i></font>
+	<font color="#808080"><i># use (in this case a continuous NLP solver)</i></font>
+  <font color="#8A2BE2">maximize</font> <font color="#0074D9">final</font>(h) <font color="#8A2BE2">using</font> nlp
+</pre>
+
+<!-- Tutorial D ---------------------------------------><p>
+							<h3 id="tutd">Tutorial D: Infinite Horizon Optimal Control Problem</h3>
+							<p>Consider the following optimal control problem taken from [1]. Denoting \(x(t) = [x_1(t) \ x_2(t)]^T
+							\in \mathbb{R}^2\) as the state and \(u(t) \in \mathbb{R}\) as the control, minimize the cost functional
+							\[
+							J = \frac{1}{2} \int_0^{\infty} (x^TQx + u^TRu) \ \mathrm{d}t
+							\]
+							subject to the dynamic constraint
+							\[
+							\dot x = Ax + Bu
+							\]
+							and the initial condition
+							\[
+							x(0) = \begin{bmatrix}
+							-4 \\
+							4
+							\end{bmatrix}
+							\]
+							The matrices \(A, B, Q,\) and \(R\) for this problem are given as
+							\[
+							A = \begin{bmatrix}
+							0 & 1 \\
+							2 & -1
+							\end{bmatrix}
+							\quad,\quad
+							B = \begin{bmatrix}
+							0 \\
+							1
+							\end{bmatrix}
+							\quad,\quad
+							Q = \begin{bmatrix}
+							2 & 0 \\
+							0 & 1
+							\end{bmatrix}
+							\quad,\quad
+							R = \frac{1}{2}
+							\]
+							The exact solution to this problem is
+							\[
+							x(t) = \exp([A-BK]t) \ x(0) \\
+							u(t) = -Kx(t) \\
+							\lambda(t) = Sx(t)
+							\]
+							where \(K\) is the optimal feedback gain and \(S\) is the solution to the algebraic Riccati equation. In
+							this case \(K\) and \(S\) are given, respectively, as
+							\[
+							K = \begin{bmatrix}
+							4.8284 & 2.5576
+							\end{bmatrix} \\
+							S = \begin{bmatrix}
+							6.0313 & 2.4142 \\
+							2.4142 & 1.2788
+							\end{bmatrix}
+							\]
+							<p>References:
+							<ol class="compact">
+							<li>Fahroo, F. and Ross, I.M.,
+							<em>Pseudospectral Methods for Infinite-Horizon Nonlinear Optimal Control Problems</em>,
+							Journal of Guidance, Control, and Dynamics, Vol. 31, No. 4, 2008, pp. 927-936.
+							<li>Divya Garg, William W. Hager, Anil V. Rao,
+							<em>Gauss Pseudospectral Method for Solving Infinite-Horizon Optimal Control Problems</em>,
+							AIAA Guidance, Navigation, and Control Conference 2 - 5 August 2010, Toronto, Ontario Canada
+							</ol><p>
+<pre class="syntax">
+<font color="red"><b>par:</b></font>	<font color="#808080"><i># define the parameters</i></font>
+  A{11 12 21 22} = {0 1 2 -1}
+  B{1 2} = {0 1}
+  Q{11 12 21 22} = {2 0 0 1}
+  R = 0.5
+  K{1 2} = {4.8284 2.5576}
+  S{11 12 21 22} = {6.0313 2.4142 2.4142 1.2788}
+  t{1:2} = {0.83378 0.42404}
+  Y{11 12 21 22} = {-4.68805 0.68805 5.62263 -1.62263}
+  tf = 99
+
+<font color="red"><b>var:</b></font>	<font color="#808080"><i># define the static variables</i></font>
+  uK{1:2}
+
+<font color="red"><b>dyn:</b></font>	<font color="#808080"><i># declare the dynamic variables</i></font>
+  t
+  x{1:2}
+  u
+  J
+  lambda{1:2}
+  y{1:2}
+  v
+  mu{1:2}
+
+<font color="red"><b>lim:</b></font>	<font color="#808080"><i># set lower and upper bounds</i></font>
+  1 &lt;= uK{1:2} &lt;= 10
+  0 &lt;= t &lt;= +<font color="#3D9970">inf</font>
+
+<font color="red"><b>t=t0:</b></font>	<font color="#808080"><i># set the initial conditions</i></font>
+  t = 0
+  x{1:2} = {-4 4}
+  J = 0
+
+<font color="red"><b>t=tf:</b></font>	<font color="#808080"><i># set the final conditions</i></font>
+  lambda{1:2} = 0
+
+<font color="red"><b>equ:</b></font>	<font color="#808080"><i># define the equations of the system</i></font>
+  t&acute; == 1
+  <font color="#808080"><i># numerical solution follows</i></font>
+  e1.. x1&acute; == (A11*x1 + A12*x2 + B1*u)
+  e2.. x2&acute; == (A21*x1 + A22*x2 + B2*u)
+  J&acute; == 0.5*(Q11*<font color="#2ECC40">sqr</font>(x1) + (Q12+Q21)*x1*x2 + Q22*<font color="#2ECC40">sqr</font>(x2) + R*<font color="#2ECC40">sqr</font>(u))
+  u == - uK1*x1 - uK2*x2
+  lambda1&acute; == - Q11*x1 - Q12*x2 - A11*lambda1 - A21*lambda2
+  lambda2&acute; == - Q21*x1 - Q22*x2 - A12*lambda1 - A22*lambda2
+  <font color="#808080"><i># analytical solution follows</i></font>
+  y1 == Y11*<font color="#2ECC40">exp</font>(-t/t1) + Y12*<font color="#2ECC40">exp</font>(-t/t2)
+  y2 == Y21*<font color="#2ECC40">exp</font>(-t/t1) + Y22*<font color="#2ECC40">exp</font>(-t/t2)
+  v == - K1*y1 - K2*y2
+  mu1 == S11*y1 + S12*y2
+  mu2 == S21*y1 + S22*y2
+
+<font color="red"><b>obj:</b></font>	<font color="#808080"><i># set the objective and select the solver to use</i></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>	<font color="#808080"><i># a bit of GAMS code that will be generated by DYNA</i></font>
+  <font color="#8A2BE2">@costates</font>			<font color="#808080"><i># calculate the costates from the duals</i></font>
+  <font color="#8A2BE2">@tpa</font> eta1 = <font color="#0074D9">costate</font>(e1)	<font color="#808080"><i># retrieve costate 1</i></font>
+  <font color="#8A2BE2">@tpa</font> eta2 = <font color="#0074D9">costate</font>(e2)	<font color="#808080"><i># retrieve costate 2</i></font>
+  <font color="#8A2BE2">@csvsave</font> eta1 eta2		<font color="#808080"><i># save them in the results file</i></font>
+
+<font color="red"><b>gpl:</b></font>	<font color="#808080"><i># visualize the results with GNUPLOT</i></font>
+  set multiplot layout 2,2 rowsfirst
+  <font color="#8A2BE2">@plotYYT</font> 2, x1, y1, "States 1 vs. Time"
+  <font color="#8A2BE2">@plotYYT</font> 2, x2, y2, "States 2 vs. Time"
+  <font color="#8A2BE2">@plotYYT</font> 3, eta1, lambda1, mu1, "Costates 1 vs. Time"
+  <font color="#8A2BE2">@plotYYT</font> 3, eta2, lambda2, mu2, "Costates 2 vs. Time"
+  unset multiplot
+</pre>
+							<p><p>Now, using GNUPLOT...
+<pre class="console">
+[Dyna2Gams] D:\DYNA2GAMS>dyna-gnuplot tutor-d 384
+Invoking Gnuplot...
+Press any key to continue...
+</pre>
+
+<!-- Tutorial E ---------------------------------------><p>
+							<h3 id="tute">Tutorial E: Minimum Time-to-Climb of a Supersonic Aircraft</h3>
+							<p>In this example, we will introduce the tabulated functions.
+							The main purpose of tabulated functions is to represent functions that don&rsquo;t have an algebraic form.
+							DYNA will perform an interpolation using various schemes ranging from linear interpolation to cubic splines,
+							preserving shapes or not, smooth or non-smooth.
+							<p>The minimum time-to-climb of a supersonic aircraft optimal control problem is stated as follows.
+							<p>Minimize the cost functional
+							\[
+							J = t_f
+							\]
+							subject to the dynamic constraints
+							\[
+							\dot{h}(t) = v(t)\sin\alpha(t) \\
+							\dot{v}(t) = \frac{T\cos\alpha(t)-D}{m(t)} \\
+							\dot{\gamma}(t) = \frac{T\sin\alpha(t)+L}{m(t)v(t)} + \big(\frac{v(t)}{r(t)} - \frac{\mu}{v(t)r^2(t)}\big) \cos\gamma(t) \\
+							\dot{m}(t) = -\frac{T}{g_0 I_{sp}}
+							\]
+							and the boundary conditions
+							\[
+							h(0)=0, \ h(t_f)=19994.88 \\
+							v(0)=129.314, \ v(t_f)=295.092 \\
+							\gamma(0)=0, \ \gamma(t_f)=0 \\
+							m(0)=19050.864
+							\]
+							This example is taken verbatim from the following reference:
+							<ol class="compact">
+							<li>Bryson, A. E., Desai, M. N. and Hoffman, W. C.,
+							<em>Energy-State Approximation in Performance Optimization of Supersonic Aircraft</em>,
+							Journal of Aircraft, Vol. 6, No. 6, November-December, 1969, pp. 481-488.
+							</ol><p>
+<pre class="syntax">
+<font color="red"><b>fun:</b></font>	<font color="#808080"><i># character &sect; (hexadecimal A7, decimal 167) denotes a DYNA tabulated function</i></font>
+  <font color="#808080"><i># Bryson Minimum Time To Climb Aero Data</i></font>
+  <font color="#808080"><i># U.S. 1976 Standard Atmosphere</i></font>
+  <font color="#808080"><i># Column 1: Altitude (m)</i></font>
+  <font color="#808080"><i># Column 2: Atmospheric Density (kg/m^3)</i></font>
+  <font color="#808080"><i># Column 3: Speed of Sound (m/s)</i></font>
+    ALT       &sect;AD       &sect;SS
+  -2000 1.478e+00 3.479e+02
+      0 1.225e+00 3.403e+02
+   2000 1.007e+00 3.325e+02
+   4000 8.193e-01 3.246e+02
+   6000 6.601e-01 3.165e+02
+   8000 5.258e-01 3.081e+02
+  10000 4.135e-01 2.995e+02
+  12000 3.119e-01 2.951e+02
+  14000 2.279e-01 2.951e+02
+  16000 1.665e-01 2.951e+02
+  18000 1.216e-01 2.951e+02
+  20000 8.891e-02 2.951e+02
+  22000 6.451e-02 2.964e+02
+  24000 4.694e-02 2.977e+02
+  26000 3.426e-02 2.991e+02
+  28000 2.508e-02 3.004e+02
+  30000 1.841e-02 3.017e+02
+  32000 1.355e-02 3.030e+02
+  34000 9.887e-03 3.065e+02
+  36000 7.257e-03 3.101e+02
+  38000 5.366e-03 3.137e+02
+  40000 3.995e-03 3.172e+02
+  42000 2.995e-03 3.207e+02
+  44000 2.259e-03 3.241e+02
+  46000 1.714e-03 3.275e+02
+  48000 1.317e-03 3.298e+02
+  50000 1.027e-03 3.298e+02
+  52000 8.055e-04 3.288e+02
+  54000 6.389e-04 3.254e+02
+  56000 5.044e-04 3.220e+02
+  58000 3.962e-04 3.186e+02
+  60000 3.096e-04 3.151e+02
+  62000 2.407e-04 3.115e+02
+  64000 1.860e-04 3.080e+02
+  66000 1.429e-04 3.044e+02
+  68000 1.091e-04 3.007e+02
+  70000 8.281e-05 2.971e+02
+  72000 6.236e-05 2.934e+02
+  74000 4.637e-05 2.907e+02
+  76000 3.430e-05 2.880e+02
+  78000 2.523e-05 2.853e+02
+  80000 1.845e-05 2.825e+02
+  82000 1.341e-05 2.797e+02
+  84000 9.690e-06 2.769e+02
+  86000 6.955e-06 2.741e+02
+
+  <font color="#808080"><i># Propulsion Data for Bryson Aircraft</i></font>
+  <font color="#808080"><i># The thrust for the aircraft considered by Bryson in 1969 depends</i></font>
+  <font color="#808080"><i># upon the Mach number and the altitude. This data is taken verbatim</i></font>
+  <font color="#808080"><i># from the 1969 Journal of Aircraft paper (see reference above) and</i></font>
+  <font color="#808080"><i># is copied for use in this example. The data are stored in the</i></font>
+  <font color="#808080"><i># following table:</i></font>
+  <font color="#808080"><i># Column 1: Mach number</i></font>
+  <font color="#808080"><i># Row 1   : altitude (meters)</i></font>
+  <font color="#808080"><i># Data    : Thrust (Newton)</i></font>
+  &sect;Thrust = <font color="#7FDBFF">GridXY</font>
+      	     0		  1524		  3048		  4572		  6096		  7620		  9144		12192		15240		21336
+  0 	107646.9724	106757.328	 90298.9066	 76954.2406	 64499.219	 54268.3084	 45371.8644	25354.8654	15123.9548	  444.8222
+  0.2	124550.216	109426.2612	 93857.4842	 80512.8182	 67612.9744	 56937.2416	 47595.9754	28913.443	17348.0658	  889.6444
+  0.4	125884.6826	112095.1944	 97416.0618	 83181.7514	 70726.7298	 59606.1748	 49820.0864	32472.0206	19572.1768	 1779.2888
+  0.6	137005.2376	120991.6384	105867.6836	 91188.551	 76954.2406	 65388.8634	 54713.1306	36030.5982	21796.2878	 3558.5776
+  0.8	153463.659	134781.1266	118322.7052	103198.7504	 88074.7956	 74730.1296	 62719.9302	41813.2868	24910.0432	 4893.0442
+  1	168587.6138	152574.0146	135225.9488	119212.3496	103643.5726	 88074.7956	 74730.1296	49820.0864	30247.9096	 6227.5108
+  1.2	160580.8142	169032.436	155242.9478	139229.3486	121436.4606	104978.0392	 89409.2622	59606.1748	36920.2426	 7561.9774
+  1.4	160580.8142	162804.9252	171256.547	160580.8142	140563.8152	124995.0382	107646.9724	72061.1964	44482.22	 9786.0884
+  1.6	160580.8142	156577.4144	187270.1462	172146.1914	158801.5254	142343.104	124995.0382	85850.6846	52933.8418	12899.8438
+  1.8	160580.8142	150349.9036	203283.7454	183711.5686	177039.2356	153908.4812	138339.7042	96526.4174	59161.3526	13789.4882
+
+  <font color="#808080"><i># Aerodynamic Data for Bryson Aircraft</i></font>
+  <font color="#808080"><i># M: Mach number values</i></font>
+  <font color="#808080"><i># Clalpha: coefficient of lift values</i></font>
+  <font color="#808080"><i># CD0: zero-lift coefficient of drag values</i></font>
+  <font color="#808080"><i># eta: load factors</i></font>
+    M &sect;CLalpha  &sect;CD0   &sect;eta
+  0.0   3.44   0.013   0.54
+  0.4   3.44   0.013   0.54
+  0.8   3.44   0.013   0.54
+  0.9   3.58   0.014   0.75
+  1.0   4.44   0.031   0.79
+  1.2   3.44   0.041   0.78
+  1.4   3.01   0.039   0.89
+  1.6   2.86   0.036   0.93
+  1.8   2.44   0.035   0.93
+
+<font color="red"><b>par:</b></font>
+  Re = 6378145
+  mu = 3.986e14
+  S = 49.2386
+  g0 = 9.80665
+  Isp = 1600
+
+<font color="red"><b>var:</b></font>
+  tf
+
+<font color="red"><b>dyn:</b></font>
+  h v fpa m                     <font color="#808080"><i># state variables</i></font>
+  alpha                         <font color="#808080"><i># control variable</i></font>
+
+<font color="red"><b>lim:</b></font>
+  100 &lt;= tf &lt;= 600
+  0 &lt;= h &lt;= 21031.2
+  5 &lt;= v &lt;= 1000
+  -40/180*pi &lt;= fpa &lt;= +40/180*pi
+  22 &lt;= m &lt;= 20410
+  -45/180*pi &lt;= alpha &lt;= +45/180*pi
+
+<font color="red"><b>t=t0:</b></font>
+  h = 0           <font color="#808080"><i># Initial altitude (meters)</i></font>
+  v = 129.314     <font color="#808080"><i># Initial speed (m/s)</i></font>
+  fpa = 0         <font color="#808080"><i># Initial flight path angle (rad)</i></font>
+  m = 19050.864   <font color="#808080"><i># Initial mass (kg)</i></font>
+
+<font color="red"><b>t=tf:</b></font>
+  h = 19994.88    <font color="#808080"><i># Final altitude (meters)</i></font>
+  v = 295.092     <font color="#808080"><i># Final speed (m/s)</i></font>
+  fpa = 0         <font color="#808080"><i># Final flight path angle (rad)</i></font>
+
+<font color="red"><b>exp:</b></font>
+  CD == CD0 + eta * CLalpha * alpha * alpha
+  CL == CLalpha * alpha
+  q == 0.5 * rho * v * v
+  D == q * S * CD     <font color="#808080"><i># D is the magnitude of the drag force</i></font>
+  L == q * S * CL     <font color="#808080"><i># L is the magnitude of the lift force</i></font>
+  r == h + Re
+  rho == &sect;AD(h)
+  sos == &sect;SS(h)
+  Mach    == v / sos
+  CD0     == &sect;CD0(Mach)
+  CLalpha == &sect;CLalpha(Mach)
+  eta     == &sect;eta(Mach)
+  Thrust  == &sect;Thrust(Mach,h)
+
+<font color="red"><b>ini:</b></font>
+  tf = 300
+  h = <font color="#0074D9">linspace</font>(<font color="#0074D9">initial</font>(h),<font color="#0074D9">final</font>(h))
+  v = <font color="#0074D9">linspace</font>(<font color="#0074D9">initial</font>(v),<font color="#0074D9">final</font>(v))
+  fpa = <font color="#0074D9">linspace</font>(<font color="#0074D9">initial</font>(fpa),<font color="#0074D9">final</font>(fpa))
+  m = <font color="#0074D9">initial</font>(m)
+  alpha = <font color="#0074D9">linspace</font>(45/180*pi,-45/180*pi)
+
+<font color="red"><b>equ:</b></font>
+  h&acute;   == v * <font color="#2ECC40">sin</font>(fpa)
+  v&acute;   == (Thrust * <font color="#2ECC40">cos</font>(alpha) - D) / m - mu * <font color="#2ECC40">sin</font>(fpa) / (r * r)
+  fpa&acute; == (Thrust * <font color="#2ECC40">sin</font>(alpha) + L) / (m * v) + <font color="#2ECC40">cos</font>(fpa) * (v / r - mu / (v * r * r))
+  m&acute;   == -Thrust / (g0 * Isp)
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> tf <font color="#8A2BE2">using</font> nlp
+</pre>
+
+<!-- Tutorial F ---------------------------------------><p>
+							<h3 id="tutf">Tutorial F: Methanol to Hydrocarbons Conversion</h3>
+							<p>In this example, we introduce tabulated observations for a dynamic system to identify its parameters.
+							<p>Determine the reaction coefficients for the conversion of methanol into various hydrocarbons.
+							<p>The nonlinear model that describes the process is
+							\[
+							\dot{x}_1 = - \big(2\theta_2 - \frac{\theta_1 x_2}{(\theta_2+\theta_5)x_1+x_2} + \theta_3 + \theta_4 \big) x_1 \\
+							\dot{x}_2 = \frac{\theta_1 x_1(\theta_2 x_1-x_2)}{(\theta_2+\theta_5)x_1+x_2} + \theta_3 x_1 \\
+							\dot{x}_3 = \frac{\theta_1 x_1(x_2+\theta_5 x_1)}{(\theta_2+\theta_5)x_1+x_2} + \theta_4 x_1 \\
+							\]
+							with coefficients \(\theta_i \geq 0\). Initial conditions are known.
+							<p>Source: <a href="http://www.mcs.anl.gov/~more/cops/">COPS - Large-Scale Optimization Problems</a>
+							<p>Reference:
+							<ol class="compact">
+							<li id="cops">E. D. Dolan, J. J. Mor&eacute; and T. S. Munson,
+							<em>Benchmarking Optimization Software with COPS 3.0</em>,
+							Argonne National Laboratory, Technical Report ANL/MCS-TM-273, February 2004.
+							</ol><p>
+<pre class="syntax">
+<font color="red"><b>par:</b></font>
+  tf = 1.122
+
+<font color="red"><b>var:</b></font>
+  theta{1:5}
+
+<font color="red"><b>dyn:</b></font>
+  x{1:3}
+
+<font color="red"><b>obs:</b></font>	<font color="#808080"><i># tabulation of the observations</i></font>
+  <font color="#0074D9">Time</font>       x1        x2        x3
+  0.000  1.0000    0.0000    0.0000
+  0.050  0.7085    0.1621    0.0811
+  0.065  0.5971    0.1855    0.0965
+  0.080  0.5537    0.1989    0.1198
+  0.123  0.3684    0.2845    0.1535
+  0.233  0.1712    0.3491    0.2097
+  0.273  0.1198    0.3098    0.2628
+  0.354  0.0747    0.3576    0.2467
+  0.397  0.0529    0.3347    0.2884
+  0.418  0.0415    0.3388    0.2757
+  0.502  0.0261    0.3557    0.3167
+  0.553  0.0208    0.3483    0.2954
+  0.681  0.0085    0.3836    0.2950
+  0.750  0.0053    0.3611    0.2937
+  0.916  0.0019    0.3609    0.2831
+  0.937  0.0018    0.3485    0.2846
+  1.122  0.0006    0.3698    0.2899
+
+<font color="red"><b>lim:</b></font>
+  0 &lt;= theta{1:5} &lt;= 3
+  0 &lt;= x{1:3} &lt;= 2
+
+<font color="red"><b>t=t0:</b></font>
+  x1 = 1.0
+  x{2:3} = 0.0
+
+<font color="red"><b>ini:</b></font>
+  x{1:3} = <font color="#0074D9">ObservedVal</font>(x{1:3})	<font color="#808080"><i># a dedicated function to get access to the data</i></font>
+  theta{1:5} = 1
+
+<font color="red"><b>equ:</b></font>
+  x1&acute; == -(2*theta2-(theta1*x2)/((theta2+theta5)*x1+x2)+theta3+theta4)*x1
+  x2&acute; == (theta1*x1*(theta2*x1-x2))/((theta2+theta5)*x1+x2)+theta3*x1
+  x3&acute; == (theta1*x1*(x2+theta5*x1))/((theta2+theta5)*x1+x2)+theta4*x1
+
+<font color="red"><b>obj:</b></font>	<font color="#808080"><i># a dedicated function for the lack-of-fit</i></font>
+  <font color="#8A2BE2">minimize</font> <font color="#3D9970">sum</font>{1:3, <font color="#0074D9">ObservedErr</font>(x{:})} <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>	<font color="#808080"><i># dedicated keywords to build a customized report</i></font>
+  <font color="#3D9970">parameter</font> report(*,*);
+  <font color="#3D9970">set</font> o(<font color="#0074D9">Observation</font>);
+  <font color="#0074D9">ObservedSet</font>(x{1:3},o);
+  <font color="#8B0000">$$ondotL</font>
+  report(o,'x{1:3}') = <font color="#0074D9">ObservedGap</font>(x{1:3},o);
+  <font color="#3D9970">display</font> report;
+</pre>
+
+<!-- Tutorial G ---------------------------------------><p>
+							<h3 id="tutg">Tutorial G: Optimal Control of a Jojo (Multi-stage OCP)</h3>
+							<p>As an example for a multi-stage optimization problem, we consider the simple jojo
+							described in [1].
+							Here, the altitude of the jojo is denoted by the state variable \(y\), while \(w =
+							dy/dt\) is the associated velocity. The hand playing with the jojo is described by
+							the altitude \(x\), while \(v = dx/dt\) is the velocity of the hand. The distance
+							\(l\) between hand and jojo is defined as \(l = x - y\). As soon as the jojo is
+							released from the hand, the equations of motion are given by
+							\[
+							\dot{x}(t) = v(t) \\
+							\dot{v}(t) = u(t) \\
+							\dot{y}(t) = w(t) \\
+							\dot{w}(t) = -\mu g + k u + a(w-v)
+							\]
+							Here, we define the jojo&rsquo;s damping ratio \(k  =  J / (m r^2 + J)\) as well as
+							the effective mass ratio \(\mu = 1 - k\), which depend on the inertia \(J\), the
+							mass \(m\) and the (inner) coiling radius \(r\) of the jojo. Moreover, \(g\) denotes
+							the acceleration due to gravity while \(a\) is the jojo&rsquo;s coiling friction. Note
+							that we assume here that the hand can directly be controlled by the input function
+							\(u\).
+							<p>Let us assume that the sum of \(r\) and the total length of the rope is given by
+							\(L\). When the distance \(l = x - y\) happens to be equal to this length \(L\), the
+							kinetic energy of the jojo is suddenly absorbed, while for the rotational energy a
+							conservation law is satisfied. Thus, the jump is given by
+							\[
+							x(t^+_j) = x(t^-_j) \\
+							v(t^+_j) = v(t^-_j) \\
+							y(t^+_j) = y(t^-_j) \\
+							w(t^+_j) = k v(t^-_j) + \sqrt{k^2 v^2(t^-_j) + k(w^2(t^-_j) - 2 w(t^-_j) v(t^-_j))}
+							\]
+							In order to understand this expression, it is helpful to remark that for the passive
+							case  \(v = 0\) (i.e. for the case that the hand is at rest during the jump) the
+							jump condition simplifies to
+							\[
+							w(t^+_j) = \sqrt{k} \ w(t^-_j)
+							\]
+							i.e. the damping ratio \(k\) measures the loss of kinetic energy for a passive jump.
+							After the jump, the equations of motion are again given by the above dynamic system.
+							Now, our aim is to minimize the control action of the hand defined as
+							\[
+							\Phi = \int_0^{t_f} u^2(t) \ \textrm{d}t
+							\]
+							while starting and stopping the jojo under the following conditions:
+							\[
+							x(0) = y(0) = 0 \ \textrm{m}\\
+							v(0) = w(0) = 0\ \textrm{m}\backslash\textrm{s} \\
+							x(t_j) - y(t_j) = L \\
+							x(t_f) = y(t_f) = -0.1\ \textrm{m} \\
+							v(t_f) = w(t_f) = 0\ \textrm{m}\backslash\textrm{s}
+							\]
+							i.e. we start both the hand and the jojo at rest at the position 0. Moreover at the
+							time \(t_j\) we require that the length of the rope is equal to \(L = 1\) m. Finally,
+							the jojo should be stopped when softly touching the hand \(-10\) cm below the
+							starting point. Note that the durations of the two phases, represented by the time
+							variables \(t_j\) and \(t_f-t_j\), are optimized, too.
+							<p>Note that the velocity of the hand has a peek at the time, where the jump is.
+							The velocity of the jojo is discontinuous at this time. One interpretation of this
+							result is that the energy loss during the jump can be reduced by moving the hand
+							quickly upwards during this phase.
+							<p>Reference:
+							<ol class="compact">
+							<li>B. Houska, H.J. Ferreau and M. Diehl,
+							<em>ACADO Toolkit - An open-source framework for automatic control and dynamic optimization</em>,
+							Optimal Control Applications and Methods 32.3, pg. 298-312, 2011.
+							</ol><p>
+<pre class="syntax">
+<font color="red"><b>set:</b></font>
+  phase = ph1*ph2
+
+<font color="red"><b>par:</b></font>
+  m = 0.200	<font color="#808080"><i>the mass of the jojo (200g)</i></font>
+  J = 1e-4	<font color="#808080"><i>the inertia of the jojo (1e-4kg*m^2)</i></font>
+  r = 0.010	<font color="#808080"><i>the coiling radius of the jojo (1cm)</i></font>
+  g = 9.81	<font color="#808080"><i>the gravitational constant (9.81m/s^2)</i></font>
+  a = 1e-2	<font color="#808080"><i>the coiling friction (1e-2/s)</i></font>
+  L = 1.00	<font color="#808080"><i>the length of the rope (1m)</i></font>
+  k  = J/(m*r*r+J)	<font color="#808080"><i>the jojo&rsquo;s damping ratio</i></font>
+  mu = 1.0 - k	<font color="#808080"><i>the effective mass ratio</i></font>
+  tf = 1	<font color="#808080"><i>simulation time</i></font>
+
+<font color="red"><b>var:</b></font>
+  tlen[phase]	<font color="#808080"><i>the duration of the phases</i></font>
+
+<font color="red"><b>dyn:</b></font>
+  t[phase]	<font color="#808080"><i>the real time</i></font>
+  x[phase]	<font color="#808080"><i>the position of the "hand"</i></font>
+  v[phase]	<font color="#808080"><i>the velocity of the "hand"</i></font>
+  y[phase]	<font color="#808080"><i>the position of the jojo</i></font>
+  w[phase]	<font color="#808080"><i>the velocity of the jojo</i></font>
+  u[phase]	<font color="#808080"><i>the control action of the "hand"</i></font>
+  phi[phase]	<font color="#808080"><i>the cost functional</i></font>
+
+<font color="red"><b>lim:</b></font>
+  0.1 &lt;= tlen[phase] &lt;= 2
+  -10 &lt;= u[phase] &lt;= 10
+
+<font color="red"><b>t=t0:</b></font>
+  t['ph1'] = 0
+  x['ph1'] = 0
+  v['ph1'] = 0
+  y['ph1'] = 0
+  w['ph1'] = 0
+  phi['ph1'] = 0
+
+<font color="red"><b>t=tf:</b></font>
+  x['ph2'] = -0.1
+  v['ph2'] = 0
+  y['ph2'] = -0.1
+  w['ph2'] = 0
+
+<font color="red"><b>exp:</b></font>
+  TimeDot == tlen[phase] / tf
+
+<font color="red"><b>mac:</b></font>
+  @ssqrt(x) <font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqr</font>(&x)))
+
+<font color="red"><b>equ:</b></font>
+  t&acute;[phase] / TimeDot == 1
+  x&acute;[phase] / TimeDot == v[phase]
+  v&acute;[phase] / TimeDot == u[phase]
+  y&acute;[phase] / TimeDot == w[phase]
+  w&acute;[phase] / TimeDot == -mu*g + k*u[phase] + a*(v[phase]-w[phase])
+  phi&acute;[phase] == <font color="#2ECC40">sqr</font>(u[phase])
+  <font color="#8A2BE2">@linkphases</font> -x w	<font color="#808080"><i>link final and initial conditions across phases for state variables, except for variable w, which is given here after</i></font>
+  [phase]$((<font color="#3D9970">ord</font>(phase)&lt;<font color="#3D9970">card</font>(phase))<font color="#8A2BE2">$once</font>).. <font color="#0074D9">initial</font>(w[phase+1]) == <font color="#0074D9">final</font>(k*v[phase] + @ssqrt(<font color="#2ECC40">sqr</font>(k*v[phase]) + k*(<font color="#2ECC40">sqr</font>(w[phase])-2*w[phase]*v[phase])))
+  <font color="#8A2BE2">$once</font>.. <font color="#0074D9">final</font>(x['ph1'])-<font color="#0074D9">final</font>(y['ph1']) == L
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(phi['ph2']) <font color="#8A2BE2">using</font> nlp
+</pre>
+							<p><p>Postprocess the csv file so as to stack the results vertically.
+<pre class="console">
+[Dyna2Gams] D:\DYNA2GAMS>dyna-csv-phases tutor-g 384 -2
+Dyna-CSV-Reshape Version 1.0 - Copyright (c) 2018 Alain J. Michiels. All rights reserved.
+Reshaping '$$tutor-g.384.csv'...
+   Header: "_N_","Time","t[ph1] ... phi[ph1]","phi[ph2]"
+  Phase 1: "_N_","t[ph1]","x[ph ... ,"u[ph1]","phi[ph1]"
+  Phase 2: "_N_","t[ph2]","x[ph ... ,"u[ph2]","phi[ph2]"
+File '$$tutor-g.384.rsh.csv' created.
+</pre>
+
+<!-- Tutorial H ---------------------------------------><p>
+							<h3 id="tuth">Tutorial H: Binary Variant of the Van der Pol Oscillator (MIOCP)</h3>
+							<p>This case describes a Van der Pol Oscillator variant with three binary
+							controls instead of only one continuous control.
+							<p>The mixed-integer optimal control problem is given by
+							\[
+							\min\limits_{x,y,w} \int_{t_0}^{t_f} \big(x^2(t)+y^2(t)\big) \ \mathrm{d}t \\
+							\]
+							subject to
+							\[
+							\dot x = y \\
+							\dot y = \sum\limits_{i=1}^{3} c_{i} \; w_i \; (1-x^2) y-x \\
+							x(t_0) = 1 \\
+							y(t_0) = 0 \\
+							1 = \sum\limits_{i=1}^{3}w_i(t) \\
+							w_i(t) \in \{0,1\} \quad i=1 \ldots 3
+							\]
+							Source: <a href="https://mintoc.de/index.php/Van_der_Pol_Oscillator_(binary_variant)">mintoc.de</a>
+							<p>Reference:
+							<ol class="compact">
+							<li>S. Sager, M. Jung, C. Kirches,
+							<em>Combinatorial integral approximation</em>,
+							Mathematical Methods of Operations Research June 2011, 73:363
+							</ol><p>
+<pre class="syntax">
+<font color="red"><b>set:</b></font>
+  i = i1:i3
+
+<font color="red"><b>par:</b></font>
+  c[i] = /i1 -1, i2 0.75, i3 -2/
+  tf = 20
+
+<font color="red"><b>dyn:</b></font>
+  x y w[i] J
+
+<font color="red"><b>lim:</b></font>
+  0 &lt;= w[i] &lt;= 1
+
+<font color="red"><b>t=t0:</b></font>
+  x = 1
+  y = 0
+  J = 0
+
+<font color="red"><b>ini:</b></font>
+  x = 1
+  y = 0
+
+<font color="red"><b>equ:</b></font>
+  x&acute; == y
+  y&acute; == <font color="#3D9970">sum</font>(i, c[i]*w[i])*(1-x*x)*y - x
+  J&acute; == x*x + y*y
+  <font color="#8A2BE2">$all</font>.. 1 == <font color="#3D9970">sum</font>(i, w[i])	<font color="#808080"><i># enforce the constraint on all time steps of the horizon</i></font>
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>	<font color="#808080"><i># Combinatorial Integral Approximation</i></font>
+  <font color="#8B0000">$$ifthen</font> <font color="#8A2BE2">%ITER%</font>==<font color="#8A2BE2">%ITERMAX%</font>
+  <font color="#8A2BE2">@seekcia</font> ControlVar=w[i], Optcr=0.5, Method=plain
+  <font color="#8B0000">$$endif</font>
+</pre>
+
+<!-- Tutorial I ---------------------------------------><p>
+							<h3 id="tuti">Tutorial I: Heat Equation (PDE)</h3>
+							<p>The heat equation is a parabolic partial differential equation that describes the
+							distribution of heat (or variation in temperature) in a given region over time.
+							<p>In this example, we seek \(u(x,t)\) over \(x \in [0,1]\) and \(t \in [0,1]\) such that
+							\[
+							\frac{\partial{u}}{\partial{t}} = D \ \nabla^2 u \\
+							u(0,t) = 0 \\
+							u(1,t) = 0 \\
+							u(x,0) = a \sin \pi x
+							\]
+<pre class="syntax">
+<font color="red"><b>set:</b></font>
+  x = x0*x20
+  xl(x) = x0
+  xx(x) = x1*x19
+  xr(x) = x20
+
+<font color="red"><b>par:</b></font>
+  DeltaX = 1/(<font color="#3D9970">card</font>(x)-1)
+  TickX[x] = DeltaX*(<font color="#3D9970">ord</font>(x)-1)
+  D = 1
+  a = 1
+  tf = 1
+
+<font color="red"><b>dyn:</b></font>
+  u[x]
+
+<font color="red"><b>t=t0:</b></font>
+  u[x]$xx(x) = a*<font color="#2ECC40">sin</font>(pi*TickX[x])
+
+<font color="red"><b>equ:</b></font>
+  $xl(x).. u[x] == 0
+  $xx(x).. u&acute;[x] == D * (u[x-1]-2*u[x]+u[x+1])/<font color="#2ECC40">sqr</font>(DeltaX)
+  $xr(x).. u[x] == 0
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">initial</font>(u['x0']) <font color="#8A2BE2">using</font> lp	<font color="#808080"><i># dummy objective</i></font>
+
+<font color="red"><b>gpl:</b></font>
+  <font color="#8A2BE2">@splotZXT</font> u, TickX, "<font color="#FF4500">@TITLE@</font>", "u[x,t]", "x"
+</pre>
+							<p><p>Visualizing the results
+<pre class="console">
+[Dyna2Gams] D:\DYNA2GAMS>dyna-gnuplot tutor-i 384
+Dyna-CSV-SPlot Version 1.0 - Copyright (c) 2018 Alain J. Michiels. All rights reserved.
+Reading '$tutor-i.gpl'...
+Reading '$$tutor-i.384.gpl'...
+Reading '$$tutor-i.384.csv'...
+   Header: "_N_","Time","u[x0]" ... ]","u[x19]","u[x20]"
+File 'gnuplot.csv' created.
+File 'gnuplot.gpl' created.
+Invoking Gnuplot...
+Press any key to continue...
+</pre>
+
+<!-- Tutorial J ---------------------------------------><p>
+							<h3 id="tutj">Tutorial J: A Two Reach River Pollution Control (Discrete time OCP)</h3>
+							<p>Simulation of a two reach river pollution control model. The control
+							problem is to maintain the instream biochemical demand (B.O.D.) and the
+							dissolved oxygen (D.O.) at prescribed levels for a river with multiple
+							polluters using the percentage of the B.O.D. treated at the sewage works
+							as the control variable.
+							<p>Reference:
+							<ol class="compact">
+							<li>Singh M.G.,
+							<em>Dynamical Hierarchical Control</em>,
+							North-Holland, pp. 135-137 (1980).
+							</ol><p>
+<pre class="syntax">
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">time-model</font> = Discrete
+  <font color="#39CCCC">N</font> = 20
+
+<font color="red"><b>par:</b></font>
+  ts = 1
+
+<font color="red"><b>var:</b></font>
+  k11 k12 k13 k14 d1
+  k21 k22 k23 k24 d2
+
+<font color="red"><b>dyn:</b></font>
+  x1 x3   <font color="#808080"><i># B.O.D. concentration (mg/l) in the stream</i></font>
+  x2 x4   <font color="#808080"><i># D.O. concentration (mg/l)</i></font>
+  u1 u2   <font color="#808080"><i># control variables</i></font>
+  J
+
+<font color="red"><b>k=k0:</b></font>
+  x{1:3} = 0
+  x4 = 1
+  J = 0
+
+<font color="red"><b>equ:</b></font>
+  <font color="#808080"><i># state variables</i></font>
+  x1&acute; ==  0.18 * x1                                     + 2.0 * u1 + 4.50
+  x2&acute; == -0.25 * x1 + 0.27 * x2                                    + 6.15
+  x3&acute; ==  0.55 * x1             + 0.18 * x3             - 2.0 * u2 + 2.00
+  x4&acute; ==              0.55 * x2 - 0.25 * x3 + 0.27 * x4            + 2.65
+  <font color="#808080"><i># control law</i></font>
+  u1 == k11 * x1 + k12 * x2 + k13 * x3 + k14 * x4 + d1
+  u2 == k21 * x1 + k22 * x2 + k23 * x3 + k24 * x4 + d2
+  <font color="#808080"><i># criterion</i></font>
+  J&acute; == J + 0.5 * (<font color="#2ECC40">sqr</font>(x1-5) + <font color="#2ECC40">sqr</font>(x2-7) + <font color="#2ECC40">sqr</font>(x3-5) + <font color="#2ECC40">sqr</font>(x4-7) + 100*<font color="#2ECC40">sqr</font>(u1) + 100*<font color="#2ECC40">sqr</font>(u2))
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp
+</pre>
+
+<!-- Tutorial K ---------------------------------------><p>
+							<h3 id="tutk">Tutorial K: Three Body Problem (ODE Simulation)</h3>
+							<p>We illustrate the ODE simulation with an example from Astronomy, the restricted
+							three body problem. One considers two bodies of masses \(1-\mu\) and \(\mu\) in
+							circular rotation in a plane and a third body of negligible mass moving around in
+							the same plane. The equations are as follows:
+							\[
+							\ddot{y}_1 = y_1 + 2 \dot{y}_2 - \mu'\ \frac{y_1+\mu}{D_1} - \mu\ \frac{y_1-\mu'}{D_2} \\
+							\ddot{y}_2 = y_2 - 2 \dot{y}_1 - \mu'\ \frac{y_2}{D_1} - \mu\ \frac{y_2}{D_2} \\
+							D_1 = ((y_1+\mu)^2 + y_2^2)^{3/2} \\
+							D_2 = ((y_1-\mu')^2+y_2^2)^{3/2} \\
+							\mu = 0.012277471 \\
+							\mu' =1-\mu
+							\]
+							<p>Reference:
+							<ol class="compact">
+							<li>Hairer Norsett Wanner,
+							<em>Solving Ordinary Differential Equations I - Nonstiff Problems</em>,
+							Springer Series in Computational Mathematics, page 129.
+							</ol><p>
+<pre class="syntax">
+<font color="red"><b>par:</b></font>
+  mu = 0.012277471
+  muc = 1 - mu
+  tf = 2*17.06521656016
+
+<font color="red"><b>dyn:</b></font>
+  y{1:4}
+
+<font color="red"><b>t=t0:</b></font>
+  y1 = 0.994
+  y2 = 0.0
+  y3 = 0.0
+  y4 = -2.001585106379
+
+<font color="red"><b>exp:</b></font>
+  D1 == (<font color="#2ECC40">sqr</font>(y1+mu) + <font color="#2ECC40">sqr</font>(y2))^(3/2)
+  D2 == (<font color="#2ECC40">sqr</font>(y1-muc) + <font color="#2ECC40">sqr</font>(y2))^(3/2)
+
+<font color="red"><b>sim:</b></font>	<font color="#808080"><i># Section to describe the ODE problem</i></font>
+  y1&acute; := y3
+  y2&acute; := y4
+  y3&acute; := y1 + 2*y4 - muc*(y1+mu)/D1 - mu*(y1-muc)/D2
+  y4&acute; := y2 - 2*y3 - muc*y2/D1 - mu*y2/D2
+</pre>
+							<p><p>Let&rsquo;s run this model.
+<pre class="console">
+[Dyna2Gams] D:\DYNA2GAMS>dyna-compile .\examples\tutor-k.dyn
+Dyna-to-Gams Version 1.0 - Copyright (c) 2018 Alain J. Michiels. All rights reserved.
+Translating '.\examples\tutor-k.dyn'...
+Model name: tutor_k
+Number of parameters: 3
+Number of symbolic variables: 2
+Number of dynamic variables: 4
+List of parameters: mu muc tf
+List of symbolic variables: D1 D2
+List of dynamic variables: y1 y2 y3 y4
+Calling Gams...
+Simulation launched (N=48|SM=DP853|SF=SH)
+<font color="#808080"><i>**** SIMULATION STATUS    1 Solving looks successful</i></font>
+<font color="#808080"><i>**** BENCHMARK VALUE               -1.8770</i></font>
+<font color="#808080"><i>**** MODEL EVALUATIONS                2922</i></font>
+Simulation launched (N=96|SM=DP853|SF=SH)
+<font color="#808080"><i>**** SIMULATION STATUS    1 Solving looks successful</i></font>
+<font color="#808080"><i>**** BENCHMARK VALUE                1.9880</i></font>
+<font color="#808080"><i>**** MODEL EVALUATIONS                2991</i></font>
+Simulation launched (N=192|SM=DP853|SF=SH)
+<font color="#808080"><i>**** SIMULATION STATUS    1 Solving looks successful</i></font>
+<font color="#808080"><i>**** BENCHMARK VALUE                0.5990</i></font>
+<font color="#808080"><i>**** MODEL EVALUATIONS                3564</i></font>
+Simulation launched (N=384|SM=DP853|SF=SH)
+<font color="#808080"><i>**** SIMULATION STATUS    1 Solving looks successful</i></font>
+<font color="#808080"><i>**** BENCHMARK VALUE                0.0260</i></font>
+<font color="#808080"><i>**** MODEL EVALUATIONS                5904</i></font>
+[Dyna2Gams] D:\DYNA2GAMS>dir /w *tutor-k* | find "."
+$$tutor-k.192.csv   $$tutor-k.192.log   $$tutor-k.192.lst   $$tutor-k.192.nfs
+$$tutor-k.384.csv   $$tutor-k.384.log   $$tutor-k.384.lst   $$tutor-k.384.nfs
+$$tutor-k.48.csv    $$tutor-k.48.log    $$tutor-k.48.lst    $$tutor-k.48.nfs
+$$tutor-k.96.csv    $$tutor-k.96.log    $$tutor-k.96.lst    $$tutor-k.96.nfs
+$tutor-k.gms        $tutor-k.log        $tutor-k.lst
+</pre>
+							<p><p>The "benchmark value" is the sum of the end values of the state variables. It allows to compare the accuracy of the
+							integration across the simulations. By using finer time grids, we expect that the benchmark values would converge to some
+							number, which is not the case and unfortunately denotes some inaccuracy in the integration.
+
+<!-- reference manual ---------------------------------><p>
+							<h3 id="refr">Reference Manual</h3>
+							<p>DYNA language comprises a fairly rich set of statements to simplify the description and the solve of optimal control problems.
+							DYNA syntax can be browsed here below along with the description of the DYNA2GAMS suite of tools.
+							<div id="iframe" align="center">
+							<iframe
+								id="myIframe"
+								style="width: 100%; overflow: hidden;"
+								src="help.html"
+								width="300"
+								height="350"
+								scrolling="yes"
+								frameborder="1"
+								style="border:solid"
+								allowfullscreen="allowfullscreen">
+							</iframe>
+							<a href="#" onclick="javascript:window.open(document.getElementById('myIframe').src);" class="button scrolly">Fullscreen</a>
+							</div>
+
+							</div>
+						</div>
+					</section>
+
+			</div>
+
+		<!-- Footer -->
+			<div id="footer">
+
+				<!-- Copyright -->
+					<ul class="copyright">
+						<li>&copy; Alain J. Michiels. All rights reserved.</li>
+						<li>Original design: <a href="http://html5up.net">HTML5 UP</a></li>
+						<li>Banner: <a href="https://www.flickr.com/people/44494372@N05">NASA on The Commons</a></li>
+					</ul>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+			<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript" async=""></script>
+
+	</body>
+</html>

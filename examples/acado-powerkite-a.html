@@ -1,0 +1,199 @@
+<!-- Dyna-to-Html Version 1.0 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Powerkite</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Powerkite
+</pre>
+<p>
+  Source: ACADO Toolkit - A Toolkit for Automatic Control and Dynamic Optimization.
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  tf = 18
+
+  <font color="#808080"><i># Parameters of the kite</i></font>
+  mk = 850.0	<font color="#808080"><i># mass of the kite		[kg]</i></font>
+  A = 500.0	<font color="#808080"><i># effective area		[m^2]</i></font>
+  V = 720.0	<font color="#808080"><i># volume			[m^3]</i></font>
+  cd0 = 0.04	<font color="#808080"><i># aerodynamic drag coefficient	[ ] (cd0: without downwash)</i></font>
+  K = 0.04      <font color="#808080"><i># induced drag constant		[ ]</i></font>
+
+  <font color="#808080"><i># Physical constants</i></font>
+  g = 9.81	<font color="#808080"><i># gravitational constant	[m /s^2]</i></font>
+  rho = 1.23	<font color="#808080"><i># density of the air		[kg/m^3]</i></font>
+
+  <font color="#808080"><i># Parameters of the cable</i></font>
+  rhoc = 1450.0	<font color="#808080"><i># density of the cable		[kg/m^3]</i></font>
+  cc = 1.00	<font color="#808080"><i># frictional constant		[ ]</i></font>
+  dc = 0.05614	<font color="#808080"><i># diameter			[m]</i></font>
+
+  <font color="#808080"><i># Parameters of the wind</i></font>
+  w0 = 10.0	<font color="#808080"><i># wind velocity at altitude h0	[m/s]</i></font>
+  h0 = 100.0	<font color="#808080"><i># the altitude h0		[m]</i></font>
+  hr = 0.10	<font color="#808080"><i># roughness length		[m]</i></font>
+
+  <font color="#808080"><i># Cross area of the cable</i></font>
+  AQ = pi*dc*dc/4
+
+<font color="red"><b>dyn:</b></font>
+
+  <font color="#808080"><i># State variables</i></font>
+  r		<font color="#808080"><i># the length r of the cable</i></font>
+  phi		<font color="#808080"><i># the angle phi</i></font>
+  theta		<font color="#808080"><i># the angle theta</i></font>
+  dr		<font color="#808080"><i># first derivative of r0 with respect to t</i></font>
+  dphi		<font color="#808080"><i># first derivative of phi with respect to t</i></font>
+  dtheta	<font color="#808080"><i># first derivative of theta with respect to t</i></font>
+  E		<font color="#808080"><i># integral over the power at the generator (= energy)</i></font>
+
+  <font color="#808080"><i># Control</i></font>
+  ddr0		<font color="#808080"><i># second derivative of r0 with respect to t</i></font>
+  Psi 		<font color="#808080"><i># the roll angle Psi</i></font>
+  CL		<font color="#808080"><i># the aerodynamic lift coefficient</i></font>
+
+  power		<font color="#808080"><i># the power at the generator</i></font>
+  eta
+
+<font color="red"><b>lim:</b></font>
+  -0.34  &lt;= phi   &lt;= 0.34
+   0.85  &lt;= theta &lt;= 1.45
+  -40.0  &lt;= dr    &lt;= 10.0
+  -0.29  &lt;= Psi   &lt;= 0.29
+   0.1   &lt;= CL    &lt;= 1.50
+  -25.0  &lt;= ddr0  &lt;= 25.0
+
+<font color="red"><b>t=t0:</b></font>
+  r = 1.226e+3
+  phi = -5.750e-2
+  theta = 1.147
+  dr = 4.507
+  dphi = -5.547e-2
+  dtheta = -3.431e-2
+  Psi = 5.576e-2
+  CL = 1.500
+  E = 0
+
+<font color="red"><b>t=tf:</b></font>
+  r = 1.226e+3
+  phi = -5.750e-2
+  theta = 1.147
+  dr = 4.507
+  dphi = -5.547e-2
+  dtheta = -3.431e-2
+  Psi = 5.576e-2
+  CL = 1.500
+
+<font color="red"><b>ini:</b></font>
+  r = 1.226e+3
+  phi = -5.750e-2
+  theta = 1.147
+  dr = 4.507
+  dphi = -5.547e-2
+  dtheta = -3.431e-2
+  Psi = 5.576e-2
+  CL = 1.500
+  power = 1e+6
+  eta = 0
+
+<font color="red"><b>exp:</b></font>
+  <font color="#808080"><i># The effective mass</i></font>
+  mc == rhoc*AQ*r	<font color="#808080"><i># mass of the cable</i></font>
+  m  == mk + mc/3	<font color="#808080"><i># effective inertial mass</i></font>
+  m_ == mk + mc/2	<font color="#808080"><i># effective gravitational mass</i></font>
+  dm == (rhoc*AQ/3)*dr	<font color="#808080"><i># time derivative of the mass</i></font>
+
+  <font color="#808080"><i># Wind shear model</i></font>
+  h == r*<font color="#2ECC40">cos</font>(theta)	<font color="#808080"><i># altitude of the kite</i></font>
+  w == <font color="#2ECC40">log</font>(h/hr)/<font color="#2ECC40">log</font>(h0/hr)*w0	<font color="#808080"><i># the wind at altitude h</i></font>
+
+  <font color="#808080"><i># Effective wind in the kite&rsquo;s system</i></font>
+  we1 ==  w*<font color="#2ECC40">sin</font>(theta)*<font color="#2ECC40">cos</font>(phi) - dr
+  we2 == -w*<font color="#2ECC40">sin</font>(phi) - r*<font color="#2ECC40">sin</font>(theta)*dphi
+  we3 == -w*<font color="#2ECC40">cos</font>(theta)*<font color="#2ECC40">cos</font>(phi) + r*dtheta
+
+  <font color="#808080"><i># Calculation of the kite&rsquo;s transversal axis</i></font>
+  nwep == <font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqr</font>(we2) + <font color="#2ECC40">sqr</font>(we3))
+  nwe == <font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqr</font>(we1) + <font color="#2ECC40">sqr</font>(we2) + <font color="#2ECC40">sqr</font>(we3))	<font color="#808080"><i># norm of the effective wind vector</i></font>
+  eta_ == <font color="#2ECC40">arcsin</font>( we1*<font color="#2ECC40">tan</font>(Psi)/nwep )
+  <font color="#808080"><i># ewep1 == 0.0				# projection of ewe</i></font>
+  ewep2 == we2 / nwep
+  ewep3 == we3 / nwep
+  et1 == <font color="#2ECC40">sin</font>(Psi)				<font color="#808080"><i># unit vector from the left to the right wing tip</i></font>
+  et2 == -<font color="#2ECC40">cos</font>(Psi)*<font color="#2ECC40">sin</font>(eta)*ewep2 - <font color="#2ECC40">cos</font>(Psi)*<font color="#2ECC40">cos</font>(eta)*ewep3
+  et3 == -<font color="#2ECC40">cos</font>(Psi)*<font color="#2ECC40">sin</font>(eta)*ewep3 + <font color="#2ECC40">cos</font>(Psi)*<font color="#2ECC40">cos</font>(eta)*ewep2
+
+  <font color="#808080"><i># Constants for several forces</i></font>
+  Cg == (V*rho-m_)*g
+  Caer == (rho*A/2)*nwe
+  Cf == (rho*dc/8)*r*nwe
+
+  <font color="#808080"><i># The drag-coefficient</i></font>
+  CD == cd0 + K*CL*CL
+
+  <font color="#808080"><i># Sum of gravitational and lifting force</i></font>
+  Fg1 == Cg*<font color="#2ECC40">cos</font>(theta)
+  <font color="#808080"><i># Fg2 == Cg*0.0</i></font>
+  Fg3 == Cg*<font color="#2ECC40">sin</font>(theta)
+
+  <font color="#808080"><i># Sum of the aerodynamic forces</i></font>
+  Faer1 == Caer*( CL*(we2*et3-we3*et2) + CD*we1 )
+  Faer2 == Caer*( CL*(we3*et1-we1*et3) + CD*we2 )
+  Faer3 == Caer*( CL*(we1*et2-we2*et1) + CD*we3 )
+
+  <font color="#808080"><i># The friction of the cable</i></font>
+  <font color="#808080"><i># Ff1 == Cf*cc*we1</i></font>
+  Ff2 == Cf*cc*we2
+  Ff3 == Cf*cc*we3
+
+  <font color="#808080"><i># The total force</i></font>
+  F1 == Fg1 + Faer1
+  F2 ==       Faer2 + Ff2
+  F3 == Fg3 + Faer3 + Ff3
+
+  <font color="#808080"><i># The pseudo acceleration</i></font>
+  a_pseudo1 == - ddr0 + r*(<font color="#2ECC40">sqr</font>(dtheta)+<font color="#2ECC40">sqr</font>(<font color="#2ECC40">sin</font>(theta)*dphi)) - dm/m*dr
+  a_pseudo2 == - 2*<font color="#2ECC40">cos</font>(theta)/<font color="#2ECC40">sin</font>(theta)*dphi*dtheta - 2*dr/r*dphi - dm/m*dphi
+  a_pseudo3 == <font color="#2ECC40">cos</font>(theta)*<font color="#2ECC40">sin</font>(theta)*<font color="#2ECC40">sqr</font>(dphi) - 2*dr/r*dtheta - dm/m*dtheta
+
+  <font color="#808080"><i># The equations of motion</i></font>
+  ddr     ==  F1/m                + a_pseudo1
+  ddphi   ==  F2/(m*r*<font color="#2ECC40">sin</font>(theta)) + a_pseudo2
+  ddtheta == -F3/(m*r           ) + a_pseudo3
+
+  <font color="#808080"><i># The power at the generator</i></font>
+  power_  == m*ddr*dr
+
+<font color="red"><b>equ:</b></font>
+  <font color="#2ECC40">sin</font>(eta) == we1*<font color="#2ECC40">tan</font>(Psi)/nwep
+  power   == power_
+  r&acute;      == dr
+  phi&acute;    == dphi
+  theta&acute;  == dtheta
+  dr&acute;     == ddr0
+  dphi&acute;   == ddphi
+  dtheta&acute; == ddtheta
+  E&acute;      == 1e-6*(power \
+             - 5.0e2 * <font color="#2ECC40">sqr</font>(ddr0) \
+             - 2.5e7 * <font color="#2ECC40">sqr</font>(ddphi) \
+             - 2.5e7 * <font color="#2ECC40">sqr</font>(ddtheta) \
+             - 2.5e6 * <font color="#2ECC40">sqr</font>(dtheta))
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">maximize</font> <font color="#0074D9">final</font>(E) <font color="#8A2BE2">using</font> nlp
+</pre>
+</body>
+</html>

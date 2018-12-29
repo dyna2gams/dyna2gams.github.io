@@ -1,0 +1,78 @@
+<!-- Dyna-to-Html Version 1.0 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Catalytic Cracking of Gas Oil (COPS Problem 12)</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Catalytic Cracking of Gas Oil (COPS Problem 12)
+</pre>
+<p>
+  See: <a href="http://www.mcs.anl.gov/~more/cops/">COPS: Large-Scale Optimization Problems</a>
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  tf = 0.95
+
+<font color="red"><b>var:</b></font>
+  theta{1:3}
+
+<font color="red"><b>dyn:</b></font>
+  x{1:2}
+
+<font color="red"><b>obs:</b></font>
+  <font color="#0074D9">Time</font>       x1        x2
+  0      1.0000    0.0000
+  0.02   0.8105    0.20005
+  0.05   0.6208    0.2886
+  0.07   0.5258    0.30105
+  0.10   0.4345    0.3215
+  0.12   0.3903    0.31235
+  0.15   0.3342    0.27160
+  0.17   0.3034    0.25515
+  0.20   0.2735    0.2258
+  0.22   0.2405    0.19595
+  0.25   0.2283    0.17890
+  0.30   0.2071    0.1457
+  0.35   0.1669    0.1198
+  0.40   0.1530    0.0909
+  0.45   0.1339    0.0719
+  0.50   0.1265    0.0561
+  0.55   0.1200    0.0460
+  0.65   0.0990    0.0280
+  0.75   0.0870    0.0190
+  0.85   0.0770    0.0140
+  0.95   0.0690    0.0100
+
+<font color="red"><b>lim:</b></font>
+  0 &lt;= theta{1:3} &lt;= 20
+
+<font color="red"><b>t=t0:</b></font>
+  x1 = 1
+  x2 = 0
+
+<font color="red"><b>ini:</b></font>
+  x{1:2} = <font color="#0074D9">ObservedVal</font>(x{1:2})
+  theta{1:3} = 2
+
+<font color="red"><b>equ:</b></font>
+  x1&acute; == - (theta1+theta3)*<font color="#2ECC40">sqr</font>(x1)
+  x2&acute; == theta1*<font color="#2ECC40">sqr</font>(x1) - theta2*x2
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#3D9970">sum</font>{1:2,<font color="#0074D9">ObservedErr</font>(x{:})} <font color="#8A2BE2">using</font> nlp
+
+</pre>
+</body>
+</html>

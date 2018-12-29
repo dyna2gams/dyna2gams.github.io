@@ -1,0 +1,62 @@
+<!-- Dyna-to-Html Version 1.0 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Active Damping</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Active Damping
+</pre>
+<p>
+  Source: ACADO Toolkit - A Toolkit for Automatic Control and Dynamic Optimization.
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  mBody = 350
+  mWheel = 50
+  kSpring = 20000
+  kTire = 200000
+  roadExcitation = 0	<font color="#808080"><i># Road Excitation [m]</i></font>
+  tf = 1
+
+<font color="red"><b>dyn:</b></font>
+  xBody		<font color="#808080"><i># Body Position [m]</i></font>
+  xWheel	<font color="#808080"><i># Wheel Position [m]</i></font>
+  vBody		<font color="#808080"><i># Body Velocity [m/s]</i></font>
+  vWheel	<font color="#808080"><i># Wheel Velocity [m/s]</i></font>
+  dampingForce	<font color="#808080"><i># Damping Force [N]</i></font>
+  J
+
+<font color="red"><b>lim:</b></font>
+  -500 &lt;= dampingForce &lt;= 500
+
+<font color="red"><b>t=t0:</b></font>
+  xBody = 0.01
+  xWheel = 0
+  vBody = 0
+  vWheel = 0
+  J = 0
+
+<font color="red"><b>equ:</b></font>
+  xBody&acute; == vBody
+  xWheel&acute; == vWheel
+  vBody&acute; == ( -kSpring*xBody + kSpring*xWheel + dampingForce ) / mBody
+  vWheel&acute; == ( -kTire*xBody - (kTire+kSpring)*xWheel + kTire*roadExcitation - dampingForce ) / mWheel
+  J&acute; == 0.5*(10*xBody*xBody + 10*xWheel*xWheel + vBody*vBody + vWheel*vWheel)  
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp
+</pre>
+</body>
+</html>

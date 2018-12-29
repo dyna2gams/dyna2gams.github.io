@@ -1,0 +1,73 @@
+<!-- Dyna-to-Html Version 1.0 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Direct current (DC) motor</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Direct current (DC) motor
+</pre>
+<p>
+  See: <a href="http://www.apmonitor.com">APMonitor Modeling Language</a>
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  <font color="#808080"><i># motor parameters (dc motor)</i></font>
+  v   = 36        <font color="#808080"><i># input voltage to the motor (volts)</i></font>
+  rm  = 0.1       <font color="#808080"><i># motor resistance (ohms)</i></font>
+  lm  = 0.01      <font color="#808080"><i># motor inductance (henrys)</i></font>
+  kb  = 6.5e-4    <font color="#808080"><i># back emf constant (volt·s/rad)</i></font>
+  kt  = 0.1       <font color="#808080"><i># torque constant (N·m/a)</i></font>
+  jm  = 1.0e-4    <font color="#808080"><i># rotor inertia (kg m²)</i></font>
+  bm  = 1.0e-5    <font color="#808080"><i># mechanical damping (linear model of friction: bm * dth)</i></font>
+  <font color="#808080"><i># load parameters</i></font>
+  jl  = 1000*jm   <font color="#808080"><i># load inertia (1000 times the rotor)</i></font>
+  bl  = 1.0e-3    <font color="#808080"><i># load damping (friction)</i></font>
+  k   = 1.0e2     <font color="#808080"><i># spring constant for motor shaft to load</i></font>
+  b   = 0.1       <font color="#808080"><i># spring damping for motor shaft to load</i></font>
+  <font color="#808080"><i># simulation parameter</i></font>
+  tf  = 500
+
+<font color="red"><b>dyn:</b></font>
+  i               <font color="#808080"><i># motor electric current (amperes)</i></font>
+  dth_m           <font color="#808080"><i># rotor angular velocity sometimes called omega (radians/sec)</i></font>
+  th_m            <font color="#808080"><i># rotor angle, theta (radians)</i></font>
+  dth_l           <font color="#808080"><i># wheel angular velocity (rad/s)</i></font>
+  th_l            <font color="#808080"><i># wheel angle (radians)</i></font>
+
+<font color="red"><b>t=t0:</b></font>
+  i     = 0
+  dth_m = 0
+  th_m  = 0
+  dth_l = 0
+  th_l  = 0
+
+<font color="red"><b>ini:</b></font>
+  i     = v/rm
+  dth_m = 0
+  th_m  = 0
+  dth_l = 0
+  th_l  = 0
+
+<font color="red"><b>equ:</b></font>
+  lm*i&acute;     == v - rm*i -    kb *dth_m
+  jm*dth_m&acute; ==     kt*i - (bm+b)*dth_m - k*th_m +     b *dth_l + k*th_l
+  jl*dth_l&acute; ==                b *dth_m + k*th_m - (b+bl)*dth_l - k*th_l
+  th_m&acute; == dth_m
+  th_l&acute; == dth_l
+
+<font color="red"><b>obj:</b></font> <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(i) <font color="#8A2BE2">using</font> lp
+</pre>
+</body>
+</html>

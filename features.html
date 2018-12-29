@@ -1,0 +1,188 @@
+<!DOCTYPE HTML>
+<!--
+	Prologue by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Dyna2Gams &#8211; Optimization Control with GAMS</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<meta property="og:type" content="website" />
+		<meta property="og:title" content="Dyna2Gams" />
+		<meta property="og:description" content="Optimization Control with GAMS" />
+		<meta property="og:url" content="https://dyna2gams.github.io/" />
+		<meta property="og:site_name" content="Dyna2Gams" />
+		<meta property="og:image" content="https://dyna2gams.github.io/images/dyna-sts-9-launch.jpg" />
+		<meta property="og:image:width" content="2048" />
+		<meta property="og:image:height" content="963" />
+		<meta property="og:locale" content="en_US" />
+		<meta name="twitter:text:title" content="Home" />
+		<meta name="twitter:image" content="https://dyna2gams.github.io/images/dyna-sts-9-launch.jpg?w=640" />
+		<meta name="twitter:card" content="summary_large_image" />
+		<link rel="icon" href="images/dyna2gams-32x32.jpg" sizes="32x32" />
+		<link rel="icon" href="images/dyna2gams-192x192.jpg" sizes="192x192" />
+		<link rel="apple-touch-icon-precomposed" href="images/dyna2gams-180x180.jpg" />
+		<meta name="msapplication-TileImage" content="images/dyna2gams-270x270.jpg" />
+		<!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js" type="text/javascript"></script><![endif]-->
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
+		<!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
+		<style>
+		ul.compact, ol.compact {
+			margin-top: -2em;
+			margin-bottom: 0em;
+			}
+		</style>
+	</head>
+	<body class="is-preload">
+
+		<!-- Header -->
+			<div id="header">
+			<section class="bannerv">
+
+				<div class="top">
+
+					<!-- Logo -->
+						<div id="logo">
+							<!--span class="image avatar48"><img src="images/avatar.jpg" alt="" /></span-->
+							<h1 id="title">DYNA2GAMS</h1>
+							<p>optimization control with GAMS</p>
+						</div>
+
+					<!-- Nav -->
+						<nav id="nav">
+							<ul>
+								<li><a href="index.html" id="home-link">Home</a></li>
+								<li><a href="#top" id="features-link" class="scrolly active">Features</a></li>
+								<li><a href="tutorial.html" id="examples-link">Tutorial</a></li>
+								<li><a href="examples.html" id="examples-link">Examples</a></li>
+								<li><a href="download.html" id="download-link">Download</a></li>
+								<li><a href="contact.html" id="contact-link">Contact</a></li>
+								<li><a href="blog.html" id="blog-link">Blog</a></li>
+							</ul>
+						</nav>
+
+				</div>
+
+				<div class="bottom">
+
+					<!-- Social Icons -->
+						<ul class="icons">
+							<!--li><a href="#" class="icon fa-twitter"><span class="label">Twitter</span></a></li-->
+							<!--li><a href="#" class="icon fa-facebook"><span class="label">Facebook</span></a></li-->
+							<li><a href="https://github.com/dyna2gams" class="icon fa-github"><span class="label">Github</span></a></li>
+							<!--li><a href="#" class="icon fa-dribbble"><span class="label">Dribbble</span></a></li-->
+							<li><a href="https://www.linkedin.com/in/alain-jean-michiels/" class="icon fa-linkedin"><span class="label">LinkedIn</span></a></li>
+							<li><a href="mailto:dyna2gams@outlook.com" class="icon fa-envelope"><span class="label">Email</span></a></li>
+						</ul>
+
+				</div>
+
+			</section>
+			</div>
+
+		<!-- Main -->
+			<div id="main">
+
+				<!-- Intro -->
+
+				<!-- Features -->
+					<section id="features" class="two">
+						<div class="container">
+
+							<header>
+								<h2>Features</h2>
+							</header>
+
+							<div align="left">
+
+							<p>Besides being easy to use, DYNA2GAMS structure is general and allows many complex situations to be explored.
+
+							<h3 id="ocps">OCP Solving</h3>
+							<ul>
+								<li>Time models: problems can be described by continuous time model (differential equations) or
+								discrete time model (difference equations).
+								<li>Nonlinear path constraints (equalities or inequalities) on states and/or control variables.
+								<li>Fixed or free final time.
+								<li>General initial point and endpoint constraints.
+								<li>Direct transcription methods: optimal control problems are transcribed into large but
+								sparse nonlinear programming problems. A wide choice of numerical discretization methods are
+								provided ranging from simple schemes (Euler and trapezoidal discretizations) to Legendre
+								orthogonal collocation of various orders (up to 14th) with various sets of collocation points
+								(Gauss, Radau, Lobatto...).
+								<li>Mesh refinement: fixed mesh refinement schemes to solve the problems to the required
+								accuracy.
+								<li>Integral vs Differential way: for any trajectory optimization problem, the dynamics constraint can be written
+								either in their derivative or integral forms.
+								<li>Adjoint estimation: costate variables are made available at the end of the optimization at (almost) no extra effort.
+								<li>Multi-phase optimal control: the user can connect phases of arbitrary length with state jumps (such as a sudden mass drop).
+								<li>Binary and integer support: any control or parameter can be a binary or integer variable.
+								Various state-of-the-art heuristics are proposed to efficiently solve mixed integer optimal control problems
+								(rounding, progressive rounding, sum up rounding, progressive sum up rounding, combinatorial integral approximation).
+								<li>Built-in parameter estimation with sampled measurements: dynamic systems can be modeled and problem coefficients and
+								expressions can be obtained.
+								<li>Optimization of static parameters.
+							</ul>
+
+							<h3 id="modf">Problem Modeling</h3>
+							<ul>
+								<li>Compact notation: one-page formulation close to the mathematical description of the problem
+								<li>Rich set of algebraic functions to ease the modeling
+								<li>Tabulated user's functions which will be interpolated
+								<li>Useful functions related to the dynamic variables (delay, slope, initial, final...)
+								<li>Dynamic systems can be described by their transfer functions (Laplace-transform and z-transform)
+								<li>Some pred-defined transfer functions (e.g., PID)
+								<li>Manipulation of transfer function (product, closed-loop...)
+								<li>Embedding GAMS code for pre or post data processing
+								<li>Results available as CSV files
+								<li>Interface to GNUPLOT with functions to generate single or multi-plots in 2D or 3D
+								<li>Extensive problem set now with well over 300 cases
+								<li>Tutorial: it is easy to get started
+							</ul>
+
+							<h3 id="nlps">NLP Solving</h3>
+							<p>The NLP problem approximating the optimal control problem is modeled and solved in GAMS, which offers some benefits.
+							<ul class="compact">
+								<li>A whole bunch of solvers are available for local and global optimization
+								<li>Treatment of non-smooth problems
+								<li>At the user's request, scaling the problem to avoid convergence issues for space-related problems
+							</ul><p>
+
+							<h3 id="odes">ODE Solving</h3>
+							<ul>
+								<li>Integrators for ordinary differential equations (explicit Runge-Kutta methods with and without step-size selection,
+								e.g. classic RK, Fehlberg, Dormand-Prince, Verner to name a few).
+							</ul>
+
+							</div>
+
+						</div>
+					</section>
+
+			</div>
+
+		<!-- Footer -->
+			<div id="footer">
+
+				<!-- Copyright -->
+					<ul class="copyright">
+						<li>&copy; Alain J. Michiels. All rights reserved.</li>
+						<li>Original design: <a href="http://html5up.net">HTML5 UP</a></li>
+						<li>Banner: <a href="https://www.flickr.com/people/44494372@N05">NASA on The Commons</a></li>
+					</ul>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+</html>
