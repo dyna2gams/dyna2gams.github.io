@@ -1,6 +1,6 @@
 # DYNA2GAMS - optimization control with GAMS
 
-The DYNA2GAMS project aims at solving optimal control problems with the help of the [GAMS](http://www.gams.com)
+The __DYNA2GAMS__ project aims at solving optimal control problems with the help of the [GAMS](http://www.gams.com)
 modeling language.
 
 Optimal control deals with the problem of finding a control law for a given dynamical system
@@ -17,20 +17,20 @@ mathematical programming and optimization. It consists of a language compiler an
 of integrated high-performance solvers. GAMS is specifically designed for modeling linear,
 nonlinear and mixed integer optimization problems.
 
-In a nutshell, optimal control problems (OCP) are usually described by: 
+In a nutshell, optimal control problems (OCP) are usually described by:
 - A state-space model of a system. This can be either a set of ordinary differential
   equations or differential algebraic equations.
-- Initial and/or final conditions (sometimes also conditions at other points). 
+- Initial and/or final conditions (sometimes also conditions at other points).
 - A cost functional, i.e. a scalar value that depends on the state trajectories and the
   control function which has to be minimized or maximized.
 - Some times, additional equations and variables that, for example, relate the initial and
   final conditions to each other or constraint the control or state path.
-The goal of DYNA2GAMS suite is to make it possible to input such problem descriptions as
+The goal of __DYNA2GAMS__ suite is to make it possible to input such problem descriptions as
 simply as possible, without having to worry about the mathematics of the actual solver. Once
-a problem has been properly modeled, DYNA2GAMS suite will take care of all the steps
+a problem has been properly modeled, __DYNA2GAMS__ suite will take care of all the steps
 necessary in order to return a solution.
 
-DYNA2GAMS translates a model written in DYNA dialect to a GAMS file, which can be further
+__DYNA2GAMS__ translates a model written in DYNA dialect to a GAMS file, which can be further
 processed by GAMS. In other words, it transcribes optimal control problems (OCP) into large
 but sparse nonlinear programming problems. In doing so, it allies the power of a
 mathematical programming tool with a set of high level features dedicated to optimal control
@@ -40,15 +40,14 @@ DYNA dialect allows to formulate optimal control problems in a way that is very 
 their mathematical description. Take a look at the Tutorial to grasp the basic structure and
 characteristics of a DYNA model and how it relates to the mathematical formulation.
 
-DYNA2GAMS has been developed in the course of the year 2018. A first prototype is available
+__DYNA2GAMS__ has been developed in the course of the year 2018. A first prototype is available
 for download on this web site. On top, it comes with a very large set of examples borrowed
 from the literature and various academic or commercial OCP solvers.
 
-DYNA2GAMS is free software for 2019. It is licensed under a Creative Commons Attribution-
-NonCommercial-ShareAlike 4.0 International Public License. It is based on {Regina Rexx
-Interpreter}. Regina is distributed under the terms of the GNU Library General Public
-License Version 2.
+__DYNA2GAMS__ is free software for 2019. It is licensed under a Creative Commons Attribution-
+NonCommercial-ShareAlike 4.0 International Public License. It is based on [Regina Rexx Interpreter](https://regina-rexx.sourceforge.io/).
+Regina is distributed under the terms of the GNU Library General Public License Version 2.
 
-Feel free to contact us for any questions you might have (dyna2gams@outlook.com). 
+Feel free to contact us for any questions you might have (dyna2gams@outlook.com).
 
-Copyright (c) 2018 Alain J. Michiels. All rights reserved. 
+Copyright (c) 2018 Alain J. Michiels. All rights reserved.
