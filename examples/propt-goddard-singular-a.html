@@ -1,0 +1,89 @@
+<!-- Dyna-to-Html Version 1.0 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Goddard Rocket</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Goddard Rocket
+</pre>
+<p>
+  Example 7.2 (i) from the paper here after: 
+  Goddard Rocket, maximum ascent, final time free, singular solution.
+<p>
+  Reference:
+  <ol>
+  <li>H. Maurer,
+  <em>Numerical solution of singular control problems using multiple shooting techniques</em>,
+  Journal of Optimization Theory and Applications, Vol. 18, No. 2, 1976, pp. 235-257.
+  </ol>
+<p>
+  Source: PROPT - Matlab Optimal Control Software, User Manual, April 26, 2010
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  alpha = 0.01227
+  beta = 0.145e-3
+  c = 2060
+  g0 = 9.81
+  r0 = 6.371e6
+  r02 = r0*r0
+  m0 = 214.839
+  mf = 67.9833
+  Fm = 9.525515
+  g = g0
+
+<font color="red"><b>var:</b></font>
+  tf
+
+<font color="red"><b>dyn:</b></font>
+  h v m	<font color="#808080"><i># state variables</i></font>
+  F	<font color="#808080"><i># control variables</i></font>
+
+<font color="red"><b>lim:</b></font>
+  100 &lt;= tf &lt;= 300
+  0 &lt;= v &lt;= +<font color="#3D9970">inf</font>
+  0 &lt;= h &lt;= +<font color="#3D9970">inf</font>
+  mf &lt;= m &lt;= m0
+  0 &lt;= F &lt;= Fm
+
+<font color="red"><b>t=t0:</b></font>
+  v = 0
+  h = 0
+  m = m0
+
+<font color="red"><b>t=tf:</b></font>
+  v=0
+  m = mf
+
+<font color="red"><b>ini:</b></font>
+  tf = 250
+  v = 0
+  h = 0
+  m = m0
+  F = Fm
+
+<font color="red"><b>exp:</b></font>
+  D == alpha*<font color="#2ECC40">sqr</font>(v)*<font color="#2ECC40">exp</font>(-beta*h)
+
+<font color="red"><b>equ:</b></font>
+  h&acute; == v
+  v&acute; == (F*c-D)/m - g
+  m&acute; == -F
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">maximize</font> 1e-4*<font color="#0074D9">final</font>(h) <font color="#8A2BE2">using</font> nlp
+</pre>
+</body>
+</html>

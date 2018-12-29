@@ -1,0 +1,102 @@
+<!-- Dyna-to-Html Version 1.0 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Egerstedt problem with switching constraints</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Egerstedt problem with switching constraints
+</pre>
+<p>
+  The Egerstedt standard problem is the problem is of an academic nature and
+  was proposed by Egerstedt to highlight the features of an Hybrid System
+  algorithm in 2006 [1]. It has been used since then in many MIOCP research
+  studies (e.g. [2]) for benchmarking of MIOCP algorithms.
+<p>
+  The mixed-integer optimal control problem after partial outer convexification is given by
+<p>
+  \[ 
+  \min_{x,\omega} x_3(t_f) \\
+  \]
+<p>
+  subject to
+<p>
+  \[
+  \dot{x}_1 = -x_1\omega_1 + (x_1+x_2)\omega_2+(x_1-x_2)\omega_3 \\
+  \dot{x}_2 = (x_1+2x_2)\omega_1+(x_1-2x_2)\omega_2+(x_1+x_2)\omega_3 \\
+  \dot{x}_3 = x_1^2+x_2^2 \\
+  x(0) = (0.5, 0.5, 0)^T \\
+  x_2(t) \geq 0.4 \\
+  1 = \sum\limits_{i=1}^3\omega_i(t) \\
+  \sigma_i(t) = \mid \dot{\omega}_i(t) \mid \\
+  \sum\limits_{i=1}^3\sigma_i(t) \leq \sigma_{max} \\
+  \omega(t) \in \{0,1\}
+  \]
+<p>
+  for \(t \in [t_0,t_f]=[0,1]\).
+<p>
+  See: <a href="https://mintoc.de/index.php/Egerstedt_standard_problem">mintoc.de</a>
+<p>
+  References:
+  <ol>
+  <li>M. Egerstedt, Y. Wardi, H. Axelsson,
+  <em>Transition-time optimization for switched-mode dynamical systems</em>,
+  IEEE Transactions on Automatic Control, 51, 110--115 (2006).
+  <li>M. Jung, C. Kirches, S. Sager,
+  <em>On Perspective Functions and Vanishing Constraints in Mixed-Integer Nonlinear Optimal Control. Facets of Combinatorial Optimization</em>,
+  Festschrift for Martin Grötschel (2013).
+  </ol>
+<p>
+<pre>
+<font color="red"><b>set:</b></font>
+  i = 1:3
+
+<font color="red"><b>par:</b></font>
+  tf = 1
+  sigmax = 5
+
+<font color="red"><b>dyn:</b></font>
+  x{0:2}
+  w[i]
+  sigma
+
+<font color="red"><b>lim:</b></font>
+  0.4 &lt;= x1 &lt;= +<font color="#3D9970">inf</font>
+  0 &lt;= w[i] &lt;= 1
+  0 &lt;= sigma &lt;= +<font color="#3D9970">inf</font>
+
+<font color="red"><b>t=t0:</b></font>
+  x{0:2} = {0.5 0.5 0}
+
+<font color="red"><b>ini:</b></font>
+  x{0:2} = {0 0 0}
+
+<font color="red"><b>equ:</b></font>
+  x0&acute; == -x0      *w[1] + (x0+x1)  *w[2] + (x0-x1)*w[3]
+  x1&acute; == (x0+2*x1)*w[1] + (x0-2*x1)*w[2] + (x0+x1)*w[3]
+  x2&acute; == x0*x0 + x1*x1
+  <font color="#8A2BE2">$all</font>.. 1 == <font color="#3D9970">sum</font>(i, w[i])
+  -sigma &lt;= w[i] - <font color="#0074D9">pred</font>(w[i]) &lt;= sigma
+  sigmax &gt;= <font color="#0074D9">AllTimeSum</font>(sigma) - 1
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(x2) <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#8B0000">$$ifthen</font> <font color="#8A2BE2">%ITER%</font>==<font color="#8A2BE2">%ITERMAX%</font>
+  <font color="#8A2BE2">@seekcia</font> ControlVar=w[i], SwitchVar=sigma, SwitchMax=sigmax, Method=plain
+  <font color="#8B0000">$$endif</font>
+</pre>
+</body>
+</html>

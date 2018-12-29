@@ -1,0 +1,102 @@
+<!-- Dyna-to-Html Version 1.0 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Isomerization of alpha pinene</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Isomerization of alpha pinene
+</pre>
+<p>
+  Find \(\theta\) over \(t \in [0,40000]\) to minimize
+  \[
+  J = \sum_{i=1}^4 \sum_{j=1}^8 (y_{j,i} - y_{j,i}^{meas})^2
+  \]
+  subject to:
+  \[
+  \dot{y}_1 = -(\theta_1+\theta_2) \ y_1 \\
+  \dot{y}_2 = \theta_1 \ y_1 \\
+  \dot{y}_3 = \theta_2 \ y_1-(\theta_3+\theta_4) \ y_3+\theta_5 \ y_5 \\
+  \dot{y}_4 = \theta_3 \ y_3 \\
+  \dot{y}_5 = \theta_4 \ y_3-\theta_5 \ y_5 \\
+  \theta \geq 0 \\
+  t^{meas} = [1230 \ 3060 \ 4920 \ 7800 \ 10680 \ 15030 \ 22620 \ 36420] \\
+  y_1^{meas} = [88.35 \ 76.4 \ 65.1 \ 50.4 \ 37.5 \ 25.9 \ 14.0 \ 4.5] \\
+  y_2^{meas} = [7.3 \ 15.6 \ 23.1 \ 32.9 \ 42.7 \ 49.1 \ 57.4 \ 63.1] \\
+  y_3^{meas} = [2.3 \ 4.5 \ 5.3 \ 6.0 \ 6.0 \ 5.9 \ 5.1 \ 3.8] \\
+  y_4^{meas} = [0.4 \ 0.7 \ 1.1 \ 1.5 \ 1.9 \ 2.2 \ 2.6 \ 2.9] \\
+  y_5^{meas} = [1.75 \ 2.8 \ 5.8 \ 9.3 \ 12.0 \ 17.0 \ 21.0 \ 25.7] \\
+  y_0 = [100 \ 0 \ 0 \ 0 \ 0]
+  \]
+<p>
+  Reference:
+  <ol>
+  <li>E. D. Dolan, J. J. Mor&eacute; and T. S. Munson,
+  <em>Benchmarking Optimization Software with COPS 3.0</em>,
+  Argonne National Laboratory, Technical Report ANL/MCS-TM-273, February 2004.
+  </ol>
+<p>
+  Source: PROPT - Matlab Optimal Control Software, User Manual, April 26, 2010
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  tf = 40000
+  
+<font color="red"><b>var:</b></font>
+  theta{1:5}
+
+<font color="red"><b>dyn:</b></font>
+  y{1:5}	<font color="#808080"><i># state variables</i></font>
+
+<font color="red"><b>obs:</b></font>
+  <font color="#0074D9">Time</font>     y1      y2      y3      y4      y5
+   1230   88.35    7.3     2.3     0.4     1.75
+   3060   76.4    15.6     4.5     0.7     2.8
+   4920   65.1    23.1     5.3     1.1     5.8
+   7800   50.4    32.9     6.0     1.5     9.3
+  10680   37.5    42.7     6.0     1.9    12.0
+  15030   25.9    49.1     5.9     2.2    17.0
+  22620   14.0    57.4     5.1     2.6    21.0
+  36420    4.5    63.1     3.8     2.9    25.7
+
+<font color="red"><b>lim:</b></font>
+  0 &lt;= theta{1:5} &lt;= 1
+
+<font color="red"><b>t=t0:</b></font>
+  y1 = 100
+  y2 = 0
+  y3 = 0
+  y4 = 0
+  y5 = 0
+
+<font color="red"><b>ini:</b></font>
+  theta{1:4} = 0
+  y1 = 100
+  y2 = 0
+  y3 = 0
+  y4 = 0
+  y5 = 0
+
+<font color="red"><b>equ:</b></font>
+  y1&acute; == - (theta1+theta2)*y1
+  y2&acute; == theta1*y1
+  y3&acute; == theta2*y1 - (theta3+theta4)*y3 + theta5*y5
+  y4&acute; == theta3*y3
+  y5&acute; == theta4*y3 - theta5*y5
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#3D9970">sum</font>{1:5,<font color="#0074D9">ObservedErr</font>(y{:})} <font color="#8A2BE2">using</font> nlp
+</pre>
+</body>
+</html>

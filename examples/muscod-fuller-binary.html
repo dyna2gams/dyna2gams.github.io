@@ -1,0 +1,84 @@
+<!-- Dyna-to-Html Version 1.0 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Fuller&rsquo;s initial value multimode problem</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Fuller&rsquo;s initial value multimode problem
+</pre>
+<p>
+  Here follows the description of a Fuller&rsquo;s problem variant with no terminal
+  constraints and additional Mayer term for penalizing deviation from given
+  reference values. Furthermore, this variant comprises four binary controls
+  instead of only one control.
+<p>
+  For \(t \in [t_0,t_f]\) almost everywhere the mixed-integer optimal control
+  problem is given by
+<p>
+  \[
+  \min_{x,w} \int_{t_0}^{t_f} x_0^2 \ \mathrm{d} t + (x(t_f)-x_T)^2 \\
+  \]
+<p>
+  subject to
+<p>
+  \[
+  \dot{x}_0 = x_1+ \sum\limits_{i=1}^{4} c_{0,i} \omega_i \\
+  \dot{x}_1 = 1 + \sum\limits_{i=1}^{4} c_{1,i} \omega_i \\
+   1 = \sum\limits_{i=1}^{4}w_i(t) \\
+   x(0) = x_S \\ 
+   w(t) \in \{0,1\}. 
+   \] 
+<p>
+  See: <a href="https://mintoc.de/index.php/Fuller%27s_initial_value_multimode_problem">mintoc.de</a>
+<p>
+<pre>
+<font color="red"><b>set:</b></font>
+  i = i1:i4
+
+<font color="red"><b>par:</b></font>
+  c0[i] = /i1  0, i2  0,   i3  0, i4 0/
+  c1[i] = /i1 -2, i2 -0.5, i3 -3, i4 0/
+  tf = 1
+  
+<font color="red"><b>dyn:</b></font>
+  x{0:1}
+  J
+  w[i]
+  
+<font color="red"><b>lim:</b></font>
+  0 &lt;= w[i] &lt;= 1
+  
+<font color="red"><b>t=t0:</b></font>
+  x{0:1} = {0.01 0}
+  J = 0
+  
+<font color="red"><b>equ:</b></font>
+  x0&acute; == x1 + <font color="#3D9970">sum</font>(i, c0[i]*w[i])
+  x1&acute; == 1 + <font color="#3D9970">sum</font>(i, c1[i]*w[i])
+  J&acute;  == x0*x0
+  <font color="#8A2BE2">$all</font>.. 1 == <font color="#3D9970">sum</font>(i, w[i])
+  
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J) + <font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(x0)-0.01) + <font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(x1)-0) <font color="#8A2BE2">using</font> nlp
+  
+<font color="red"><b>gms:</b></font>
+  <font color="#8B0000">$$ifthen</font> <font color="#8A2BE2">%ITER%</font>==<font color="#8A2BE2">%ITERMAX%</font>
+  <font color="#8A2BE2">@seekcia</font> ControlVar=w[i]
+  <font color="#8B0000">$$endif</font>
+
+  
+</pre>
+</body>
+</html>
