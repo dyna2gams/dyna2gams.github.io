@@ -49,6 +49,8 @@ under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International 
 It is based on [Regina Rexx Interpreter](https://regina-rexx.sourceforge.io/).
 Regina is distributed under the terms of the GNU Library General Public License Version 2.
 
+Please visit our [website](https://dyna2gams.github.io/).
+
 Feel free to contact us for any questions you might have (dyna2gams@outlook.com).
 
 Copyright (c) 2018 Alain J. Michiels. All rights reserved.
