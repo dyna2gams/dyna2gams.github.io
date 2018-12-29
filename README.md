@@ -1,4 +1,4 @@
-#DYNA2GAMS - optimization control with GAMS
+# DYNA2GAMS - optimization control with GAMS
 
 The DYNA2GAMS project aims at solving optimal control problems with the help of the [GAMS](http://www.gams.com)
 modeling language.
