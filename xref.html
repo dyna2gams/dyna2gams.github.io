@@ -419,7 +419,7 @@ pre.syntax {border: 1px solid #C4CFE5; background-color: #FBFCFD; padding: 4px 6
 
 <!------------------------------------------------------------->
 <h2 id="pfun" style="color:#7EAEAC">Predefined functions</h2>
-<h4>Time related functions</h4>
+<h4 id="tirf">Time related functions</h4>
 <ul>
 <li><font color="#0074D9">AllTimeMax</font>&ensp; <a href="examples/sim-infinite-horizon.html">sim-infinite-horizon</a> 
 <li><font color="#0074D9">AllTimeMin</font>&ensp;
@@ -449,7 +449,7 @@ pre.syntax {border: 1px solid #C4CFE5; background-color: #FBFCFD; padding: 4px 6
 
 <li><font color="#0074D9">linspace</font>&ensp; <a href="examples/acado-discrete-time-rocket.html">acado-discrete-time-rocket</a> | <a href="examples/aquanautics.html">aquanautics</a> | <a href="examples/bocop-clamped-beam.html">bocop-clamped-beam</a> | <a href="examples/bocop-fuller.html">bocop-fuller</a> | <a href="examples/bocop-third-order-state-constraints.html">bocop-third-order-state-constraints</a> | <a href="examples/cops-glider.html">cops-glider</a> | <a href="examples/costate-example-b.html">costate-example-b</a> | <a href="examples/costate-example-c.html">costate-example-c</a> | <a href="examples/costate-example-d.html">costate-example-d</a> | <a href="examples/dido-uav.html">dido-uav</a> | <a href="examples/dynopt-batch-reactor.html">dynopt-batch-reactor</a> | <a href="examples/dynopt-parallel-reactions.html">dynopt-parallel-reactions</a> | <a href="examples/electric-car.html">electric-car</a> | <a href="examples/ethanol.html">ethanol</a> | <a href="examples/gpops-dynamic-soaring.html">gpops-dynamic-soaring</a> | <a href="examples/gpops-hyper-sensitive.html">gpops-hyper-sensitive</a> | <a href="examples/gpops-multiple-stage-launch-a.html">gpops-multiple-stage-launch-a</a> | <a href="examples/gpops-multiple-stage-launch-a2.html">gpops-multiple-stage-launch-a2</a> | <a href="examples/gpops-multiple-stage-launch-a3.html">gpops-multiple-stage-launch-a3</a> | <a href="examples/gpops-multiple-stage-launch-b.html">gpops-multiple-stage-launch-b</a> | <a href="examples/gpops-multiple-stage-launch-b2.html">gpops-multiple-stage-launch-b2</a> | <a href="examples/gpops-multiple-stage-launch-b3.html">gpops-multiple-stage-launch-b3</a> | <a href="examples/gpops-reusable-launch-vehicle.html">gpops-reusable-launch-vehicle</a> | <a href="examples/gpops-supersonic.html">gpops-supersonic</a> | <a href="examples/iclocs-windshear.html">iclocs-windshear</a> | <a href="examples/multi-sat-traj-a.html">multi-sat-traj-a</a> | <a href="examples/multi-sat-traj-b.html">multi-sat-traj-b</a> | <a href="examples/multi-sat-traj-c.html">multi-sat-traj-c</a> | <a href="examples/multi-sat-traj-d.html">multi-sat-traj-d</a> | <a href="examples/propt-acrobot.html">propt-acrobot</a> | <a href="examples/propt-bang-bang-free-time.html">propt-bang-bang-free-time</a> | <a href="examples/propt-batch-production.html">propt-batch-production</a> | <a href="examples/propt-brachistochrone-dae.html">propt-brachistochrone-dae</a> | <a href="examples/propt-brachistochrone.html">propt-brachistochrone</a> | <a href="examples/propt-bridge-crane-system.html">propt-bridge-crane-system</a> | <a href="examples/propt-bryson-denham-detailed.html">propt-bryson-denham-detailed</a> | <a href="examples/propt-bryson-denham-two-phase.html">propt-bryson-denham-two-phase</a> | <a href="examples/propt-bryson-denham.html">propt-bryson-denham</a> | <a href="examples/propt-catalyst-mixing.html">propt-catalyst-mixing</a> | <a href="examples/propt-coloumb-friction-a.html">propt-coloumb-friction-a</a> | <a href="examples/propt-coloumb-friction-b.html">propt-coloumb-friction-b</a> | <a href="examples/propt-curve-area-maximization.html">propt-curve-area-maximization</a> | <a href="examples/propt-denbigh-system.html">propt-denbigh-system</a> | <a href="examples/propt-dielectrophoresis-problem.html">propt-dielectrophoresis-problem</a> | <a href="examples/propt-drug-displacement.html">propt-drug-displacement</a> | <a href="examples/propt-euler-buckling.html">propt-euler-buckling</a> | <a href="examples/propt-food-sterilization.html">propt-food-sterilization</a> | <a href="examples/propt-fuller-phenomenon.html">propt-fuller-phenomenon</a> | <a href="examples/propt-genetic-b.html">propt-genetic-b</a> | <a href="examples/propt-goddard-rocket.html">propt-goddard-rocket</a> | <a href="examples/propt-hang-glider.html">propt-hang-glider</a> | <a href="examples/propt-lee-bio-reactor.html">propt-lee-bio-reactor</a> | <a href="examples/propt-lin-tan-ste.html">propt-lin-tan-ste</a> | <a href="examples/propt-lqr-problem.html">propt-lqr-problem</a> | <a href="examples/propt-metabolic-pathways.html">propt-metabolic-pathways</a> | <a href="examples/propt-methanol-to-hydrocarbons.html">propt-methanol-to-hydrocarbons</a> | <a href="examples/propt-minimum-climb-eng.html">propt-minimum-climb-eng</a> | <a href="examples/propt-moon-lander.html">propt-moon-lander</a> | <a href="examples/propt-nishida-problem.html">propt-nishida-problem</a> | <a href="examples/propt-nondiff-system-a.html">propt-nondiff-system-a</a> | <a href="examples/propt-nondiff-system-b.html">propt-nondiff-system-b</a> | <a href="examples/propt-obstacle-avoidance.html">propt-obstacle-avoidance</a> | <a href="examples/propt-one-dim-rocket.html">propt-one-dim-rocket</a> | <a href="examples/propt-orbit-raising-min-time.html">propt-orbit-raising-min-time</a> | <a href="examples/propt-pendulum-gravity.html">propt-pendulum-gravity</a> | <a href="examples/propt-penicillin-plant.html">propt-penicillin-plant</a> | <a href="examples/propt-plug-flow-reactor.html">propt-plug-flow-reactor</a> | <a href="examples/propt-quadratic-constraint.html">propt-quadratic-constraint</a> | <a href="examples/propt-quadruple-integral.html">propt-quadruple-integral</a> | <a href="examples/propt-robot-arm-movement.html">propt-robot-arm-movement</a> | <a href="examples/propt-robot-manipulators.html">propt-robot-manipulators</a> | <a href="examples/propt-second-order-system.html">propt-second-order-system</a> | <a href="examples/propt-shuttle-entry.html">propt-shuttle-entry</a> | <a href="examples/propt-simple-bang-bang.html">propt-simple-bang-bang</a> | <a href="examples/propt-singular-arc.html">propt-singular-arc</a> | <a href="examples/propt-temperature-control.html">propt-temperature-control</a> | <a href="examples/propt-terminal-constraint-a.html">propt-terminal-constraint-a</a> | <a href="examples/propt-terminal-constraint-b.html">propt-terminal-constraint-b</a> | <a href="examples/propt-transfer-min-swing.html">propt-transfer-min-swing</a> | <a href="examples/propt-two-link-robotic-arm.html">propt-two-link-robotic-arm</a> | <a href="examples/psopt-alpine.html">psopt-alpine</a> | <a href="examples/psopt-bioreactor.html">psopt-bioreactor</a> | <a href="examples/psopt-brac.html">psopt-brac</a> | <a href="examples/psopt-bryson-denham.html">psopt-bryson-denham</a> | <a href="examples/psopt-bryson-max-range.html">psopt-bryson-max-range</a> | <a href="examples/psopt-catmix.html">psopt-catmix</a> | <a href="examples/psopt-chain.html">psopt-chain</a> | <a href="examples/psopt-coulomb.html">psopt-coulomb</a> | <a href="examples/psopt-cracking2.html">psopt-cracking2</a> | <a href="examples/psopt-crane.html">psopt-crane</a> | <a href="examples/psopt-lambert.html">psopt-lambert</a> | <a href="examples/psopt-lts.html">psopt-lts</a> | <a href="examples/psopt-missile.html">psopt-missile</a> | <a href="examples/psopt-moon.html">psopt-moon</a> | <a href="examples/psopt-obstacle-a.html">psopt-obstacle-a</a> | <a href="examples/psopt-obstacle-b.html">psopt-obstacle-b</a> | <a href="examples/psopt-reorientation.html">psopt-reorientation</a> | <a href="examples/psopt-shuttle-reentry.html">psopt-shuttle-reentry</a> | <a href="examples/psopt-two-phase-robot-a.html">psopt-two-phase-robot-a</a> | <a href="examples/psopt-two-phase-robot-b.html">psopt-two-phase-robot-b</a> | <a href="examples/satellite.html">satellite</a> | <a href="examples/skandari-c.html">skandari-c</a> | <a href="examples/taco-brac.html">taco-brac</a> | <a href="examples/taco-reentry.html">taco-reentry</a> | <a href="examples/tutor-e.html">tutor-e</a> 
 </ul>
-<h4>Polynomials of various degrees</h4>
+<h4 id="povd">Polynomials of various degrees</h4>
 <ul>
 <li><font color="#0074D9">poly1</font>&ensp; <a href="examples/muscod-refrigeration-binary.html">muscod-refrigeration-binary</a> | <a href="examples/muscod-refrigeration.html">muscod-refrigeration</a> 
 <li><font color="#0074D9">poly2</font>&ensp; <a href="examples/iclocs-commercial-flight.html">iclocs-commercial-flight</a> | <a href="examples/muscod-refrigeration-binary.html">muscod-refrigeration-binary</a> | <a href="examples/muscod-refrigeration.html">muscod-refrigeration</a> | <a href="examples/muscod-subway-binary.html">muscod-subway-binary</a> | <a href="examples/muscod-subway.html">muscod-subway</a> 
@@ -458,7 +458,7 @@ pre.syntax {border: 1px solid #C4CFE5; background-color: #FBFCFD; padding: 4px 6
 <li><font color="#0074D9">poly5</font>&ensp; <a href="examples/muscod-subway-binary.html">muscod-subway-binary</a> | <a href="examples/muscod-subway.html">muscod-subway</a> 
 <li><font color="#0074D9">poly6</font>&ensp; <a href="examples/iclocs-commercial-flight.html">iclocs-commercial-flight</a> 
 </ul>
-<h4>Parameters identification related functions</h4>
+<h4 id="pirf">Parameters identification related functions</h4>
 <ul>
 <li><font color="#0074D9">ObservedErr</font>&ensp; <a href="examples/acado-pendulum-estimation.html">acado-pendulum-estimation</a> | <a href="examples/bocop-jackson-id.html">bocop-jackson-id</a> | <a href="examples/bocop-jackson-id2.html">bocop-jackson-id2</a> | <a href="examples/cops-gasoil.html">cops-gasoil</a> | <a href="examples/cops-marine.html">cops-marine</a> | <a href="examples/cops-methanol.html">cops-methanol</a> | <a href="examples/cops-pinene.html">cops-pinene</a> | <a href="examples/dynopt-parameter-estimation.html">dynopt-parameter-estimation</a> | <a href="examples/propt-catalytic-cracking.html">propt-catalytic-cracking</a> | <a href="examples/propt-isomerization-alpha.html">propt-isomerization-alpha</a> | <a href="examples/propt-marine-population.html">propt-marine-population</a> | <a href="examples/propt-methanol-to-hydrocarbons.html">propt-methanol-to-hydrocarbons</a> | <a href="examples/psopt-cracking.html">psopt-cracking</a> | <a href="examples/psopt-notorious.html">psopt-notorious</a> | <a href="examples/psopt-predator.html">psopt-predator</a> | <a href="examples/tutor-f.html">tutor-f</a> 
 <li><font color="#0074D9">ObservedVal</font>&ensp; <a href="examples/acado-pendulum-estimation.html">acado-pendulum-estimation</a> | <a href="examples/bocop-jackson-id.html">bocop-jackson-id</a> | <a href="examples/bocop-jackson-id2.html">bocop-jackson-id2</a> | <a href="examples/cops-gasoil.html">cops-gasoil</a> | <a href="examples/cops-marine.html">cops-marine</a> | <a href="examples/cops-methanol.html">cops-methanol</a> | <a href="examples/cops-pinene.html">cops-pinene</a> | <a href="examples/dynopt-parameter-estimation.html">dynopt-parameter-estimation</a> | <a href="examples/propt-catalytic-cracking.html">propt-catalytic-cracking</a> | <a href="examples/psopt-cracking.html">psopt-cracking</a> | <a href="examples/psopt-notorious.html">psopt-notorious</a> | <a href="examples/psopt-predator.html">psopt-predator</a> | <a href="examples/tutor-f.html">tutor-f</a> 
@@ -469,7 +469,7 @@ pre.syntax {border: 1px solid #C4CFE5; background-color: #FBFCFD; padding: 4px 6
 <li><font color="#0074D9">ObservedGap</font>&ensp; <a href="examples/acado-pendulum-estimation.html">acado-pendulum-estimation</a> | <a href="examples/cops-marine.html">cops-marine</a> | <a href="examples/cops-methanol.html">cops-methanol</a> | <a href="examples/propt-marine-population.html">propt-marine-population</a> | <a href="examples/tutor-f.html">tutor-f</a> 
 <li><font color="#0074D9">ObservedTau</font>&ensp;
 </ul>
-<h4>Coordinates related functions</h4>
+<h4 id="corf">Coordinates related functions</h4>
 <ul>
 <li><font color="#0074D9">CartesianNorm</font>&ensp; <a href="examples/gpops-multiple-stage-launch-a3.html">gpops-multiple-stage-launch-a3</a> | <a href="examples/gpops-multiple-stage-launch-b3.html">gpops-multiple-stage-launch-b3</a> 
 <li><font color="#0074D9">CartesianDotProduct</font>&ensp;
@@ -489,24 +489,24 @@ pre.syntax {border: 1px solid #C4CFE5; background-color: #FBFCFD; padding: 4px 6
 <li><font color="#0074D9">TtaFromCartesianScalars</font>&ensp; <a href="examples/gpops-multiple-stage-launch-a.html">gpops-multiple-stage-launch-a</a> | <a href="examples/gpops-multiple-stage-launch-b.html">gpops-multiple-stage-launch-b</a> 
 <li><font color="#0074D9">PhiFromCartesianScalars</font>&ensp; <a href="examples/gpops-multiple-stage-launch-a.html">gpops-multiple-stage-launch-a</a> | <a href="examples/gpops-multiple-stage-launch-b.html">gpops-multiple-stage-launch-b</a> 
 </ul>
-<h4>Trigonometric related functions</h4>
+<h4 id="trrf">Trigonometric related functions</h4>
 <ul>
 <li><font color="#0074D9">Deg2Rad</font>&ensp; <a href="examples/iclocs-commercial-flight.html">iclocs-commercial-flight</a> | <a href="examples/iclocs-parallel-parking.html">iclocs-parallel-parking</a> | <a href="examples/iclocs-windshear.html">iclocs-windshear</a> | <a href="examples/multi-sat-traj-a.html">multi-sat-traj-a</a> | <a href="examples/multi-sat-traj-b.html">multi-sat-traj-b</a> | <a href="examples/multi-sat-traj-c.html">multi-sat-traj-c</a> | <a href="examples/multi-sat-traj-d.html">multi-sat-traj-d</a> 
 <li><font color="#0074D9">Rad2Deg</font>&ensp; <a href="examples/iclocs-commercial-flight.html">iclocs-commercial-flight</a> 
 </ul>
-<h4>Waveform functions</h4>
+<h4 id="wafu">Waveform functions</h4>
 <ul>
 <li><font color="#0074D9">Wavesawtooth</font>&ensp;
 <li><font color="#0074D9">Wavesquare</font>&ensp; <a href="examples/sim-acado-jojo.html">sim-acado-jojo</a> 
 <li><font color="#0074D9">Wavetriangle</font>&ensp;
 </ul>
-<h4>Miscellaneous functions</h4>
+<h4 id="mifu">Miscellaneous functions</h4>
 <ul>
 <li><font color="#0074D9">Heaviside</font>&ensp;
 <li><font color="#0074D9">Heavisided</font>&ensp;
 <li><font color="#0074D9">midpoint</font>&ensp;
 </ul>
-<h4>1-dimension interpolation - linear smooth</h4>
+<h4 id="1dls">1-dimension interpolation - linear smooth</h4>
 <ul>
 <li><font color="#0074D9">interp</font>&ensp; <a href="examples/cops-marine2.html">cops-marine2</a> 
 <li><font color="#0074D9">rectangle</font>&ensp; <a href="examples/muscod-subway-binary.html">muscod-subway-binary</a> | <a href="examples/muscod-subway.html">muscod-subway</a> 
@@ -516,7 +516,7 @@ pre.syntax {border: 1px solid #C4CFE5; background-color: #FBFCFD; padding: 4px 6
 <li><font color="#0074D9">interp3</font>&ensp; <a href="examples/cops-marine2.html">cops-marine2</a> 
 <li><font color="#0074D9">interp9</font>&ensp;
 </ul>
-<h4>1-dimension interpolation - linear non-smooth</h4>
+<h4 id="1dln">1-dimension interpolation - linear non-smooth</h4>
 <ul>
 <li><font color="#0074D9">dinterp0</font>&ensp;
 <li><font color="#0074D9">dinterp1</font>&ensp;
@@ -524,47 +524,47 @@ pre.syntax {border: 1px solid #C4CFE5; background-color: #FBFCFD; padding: 4px 6
 <li><font color="#0074D9">dinterp3</font>&ensp;
 <li><font color="#0074D9">dinterp9</font>&ensp;
 </ul>
-<h4>1-dimension interpolation - cubic spline smooth</h4>
+<h4 id="1dcs">1-dimension interpolation - cubic spline smooth</h4>
 <ul>
 <li><font color="#0074D9">spline0</font>&ensp;
 <li><font color="#0074D9">spline9</font>&ensp;
 <li><font color="#0074D9">spline0d</font>&ensp;
 <li><font color="#0074D9">spline9d</font>&ensp;
 </ul>
-<h4>1-dimension interpolation - cubic spline non-smooth</h4>
+<h4 id="1dcn">1-dimension interpolation - cubic spline non-smooth</h4>
 <ul>
 <li><font color="#0074D9">dspline0</font>&ensp;
 <li><font color="#0074D9">dspline9</font>&ensp;
 <li><font color="#0074D9">dspline0d</font>&ensp;
 <li><font color="#0074D9">dspline9d</font>&ensp;
 </ul>
-<h4>1-dimension interpolation - quintic spline smooth</h4>
+<h4 id="1dqs">1-dimension interpolation - quintic spline smooth</h4>
 <ul>
 <li><font color="#0074D9">quintic0</font>&ensp;
 <li><font color="#0074D9">quintic9</font>&ensp;
 <li><font color="#0074D9">quintic0d</font>&ensp;
 <li><font color="#0074D9">quintic9d</font>&ensp;
 </ul>
-<h4>1-dimension interpolation - quintic spline non-smooth</h4>
+<h4 id="1dqn">1-dimension interpolation - quintic spline non-smooth</h4>
 <ul>
 <li><font color="#0074D9">dquintic0</font>&ensp;
 <li><font color="#0074D9">dquintic9</font>&ensp;
 <li><font color="#0074D9">dquintic0d</font>&ensp;
 <li><font color="#0074D9">dquintic9d</font>&ensp;
 </ul>
-<h4>2-dimension interpolation - linear smooth</h4>
+<h4 id="2dls">2-dimension interpolation - linear smooth</h4>
 <ul>
 <li><font color="#0074D9">interp2D0</font>&ensp;
 <li><font color="#0074D9">interp2D1</font>&ensp;
 <li><font color="#0074D9">interp2D2</font>&ensp;
 </ul>
-<h4>2-dimension interpolation - linear non-smooth</h4>
+<h4 id="2dln">2-dimension interpolation - linear non-smooth</h4>
 <ul>
 <li><font color="#0074D9">dinterp2D0</font>&ensp;
 <li><font color="#0074D9">dinterp2D1</font>&ensp;
 <li><font color="#0074D9">dinterp2D2</font>&ensp;
 </ul>
-<h4>Time interpolation</h4>
+<h4 id="tiin">Time interpolation</h4>
 <ul>
 <li><font color="#0074D9">TInterp0</font>&ensp;
 <li><font color="#0074D9">TInterp1</font>&ensp; <a href="examples/gpops-multiple-stage-launch-b.html">gpops-multiple-stage-launch-b</a> | <a href="examples/gpops-multiple-stage-launch-b2.html">gpops-multiple-stage-launch-b2</a> | <a href="examples/gpops-multiple-stage-launch-b3.html">gpops-multiple-stage-launch-b3</a> | <a href="examples/time-optimal-car-b.html">time-optimal-car-b</a> 

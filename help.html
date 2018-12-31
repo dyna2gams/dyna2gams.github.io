@@ -736,7 +736,7 @@ x{1 2 4} = x{3 5 6}
 <!------------------------------------------------------------->
 <h2 id="pfun" style="color:#7EAEAC">Predefined functions</h2>
 <p>Predefined functions are implemented as GAMS macros.
-<h4>Time related functions</h4>
+<h4 id="tirf">Time related functions</h4>
 <pre class="syntax">
 <font color="#0074D9">AllTimeMax</font>(X)
 <font color="#0074D9">AllTimeMin</font>(X)
@@ -766,7 +766,7 @@ x{1 2 4} = x{3 5 6}
 
 <font color="#0074D9">linspace</font>(a,b)
 </pre>
-<h4>Polynomials of various degrees</h4>
+<h4 id="povd">Polynomials of various degrees</h4>
 <pre class="syntax">
 <font color="#0074D9">poly1</font>(x,a1,a0)
 <font color="#0074D9">poly2</font>(x,a2,a1,a0)
@@ -775,7 +775,7 @@ x{1 2 4} = x{3 5 6}
 <font color="#0074D9">poly5</font>(x,a5,a4,a3,a2,a1,a0)
 <font color="#0074D9">poly6</font>(x,a6,a5,a4,a3,a2,a1,a0)
 </pre>
-<h4>Parameters identification related functions</h4>
+<h4 id="pirf">Parameters identification related functions</h4>
 <pre class="syntax">
 <font color="#0074D9">ObservedErr</font>(x)
 <font color="#0074D9">ObservedVal</font>(x)
@@ -786,7 +786,7 @@ x{1 2 4} = x{3 5 6}
 <font color="#0074D9">ObservedGap</font>(x,i)
 <font color="#0074D9">ObservedTau</font>(x,i)
 </pre>
-<h4>Coordinates related functions</h4>
+<h4 id="corf">Coordinates related functions</h4>
 <pre class="syntax">
 <font color="#0074D9">CartesianNorm</font>(cc,u)
 <font color="#0074D9">CartesianDotProduct</font>(cc,u,v)
@@ -806,24 +806,24 @@ x{1 2 4} = x{3 5 6}
 <font color="#0074D9">TtaFromCartesianScalars</font>(u1,u2,u3)
 <font color="#0074D9">PhiFromCartesianScalars</font>(u1,u2,u3)
 </pre>
-<h4>Trigonometric related functions</h4>
+<h4 id="trrf">Trigonometric related functions</h4>
 <pre class="syntax">
 <font color="#0074D9">Deg2Rad</font>(x)
 <font color="#0074D9">Rad2Deg</font>(x)
 </pre>
-<h4>Waveform functions</h4>
+<h4 id="wafu">Waveform functions</h4>
 <pre class="syntax">
 <font color="#0074D9">Wavesawtooth</font>(x)
 <font color="#0074D9">Wavesquare</font>(x)
 <font color="#0074D9">Wavetriangle</font>(x)
 </pre>
-<h4>Miscellaneous functions</h4>
+<h4 id="mifu">Miscellaneous functions</h4>
 <pre class="syntax">
 <font color="#0074D9">Heaviside</font>(x)
 <font color="#0074D9">Heavisided</font>(x)
 <font color="#0074D9">midpoint</font>(a,b)
 </pre>
-<h4>1-dimension interpolation - linear smooth</h4>
+<h4 id="1dls">1-dimension interpolation - linear smooth</h4>
 <pre class="syntax">
 <font color="#0074D9">interp</font>(x,f1,f2,x1,x2)
 <font color="#0074D9">rectangle</font>(x,x1,x2)
@@ -833,7 +833,7 @@ x{1 2 4} = x{3 5 6}
 <font color="#0074D9">interp3</font>(x,i,i_,tabf,tabx)
 <font color="#0074D9">interp9</font>(x,i,s,i_,tabf,tabx)
 </pre>
-<h4>1-dimension interpolation - linear non-smooth</h4>
+<h4 id="1dln">1-dimension interpolation - linear non-smooth</h4>
 <pre class="syntax">
 <font color="#0074D9">dinterp0</font>(x,f1,f2,x1,x2)
 <font color="#0074D9">dinterp1</font>(x,i,tabf,tabx)
@@ -841,47 +841,47 @@ x{1 2 4} = x{3 5 6}
 <font color="#0074D9">dinterp3</font>(x,i,i_,tabf,tabx)
 <font color="#0074D9">dinterp9</font>(x,i,s,i_,tabf,tabx)
 </pre>
-<h4>1-dimension interpolation - cubic spline smooth</h4>
+<h4 id="1dcs">1-dimension interpolation - cubic spline smooth</h4>
 <pre class="syntax">
 <font color="#0074D9">spline0</font>(x,c3,c2,c1,c0,x1,x2)
 <font color="#0074D9">spline9</font>(x,i,<font color="#0074D9">n</font>,i_,c3,c2,c1,c0,tabx)
 <font color="#0074D9">spline0d</font>(x,c3,c2,c1,c0,x1,x2)
 <font color="#0074D9">spline9d</font>(x,i,<font color="#0074D9">n</font>,i_,c3,c2,c1,c0,tabx)
 </pre>
-<h4>1-dimension interpolation - cubic spline non-smooth</h4>
+<h4 id="1dcn">1-dimension interpolation - cubic spline non-smooth</h4>
 <pre class="syntax">
 <font color="#0074D9">dspline0</font>(x,c3,c2,c1,c0,x1,x2)
 <font color="#0074D9">dspline9</font>(x,i,<font color="#0074D9">n</font>,i_,c3,c2,c1,c0,tabx)
 <font color="#0074D9">dspline0d</font>(x,c3,c2,c1,c0,x1,x2)
 <font color="#0074D9">dspline9d</font>(x,i,<font color="#0074D9">n</font>,i_,c3,c2,c1,c0,tabx)
 </pre>
-<h4>1-dimension interpolation - quintic spline smooth</h4>
+<h4 id="1dqs">1-dimension interpolation - quintic spline smooth</h4>
 <pre class="syntax">
 <font color="#0074D9">quintic0</font>(x,c3,c2,c1,c0,x1,x2)
 <font color="#0074D9">quintic9</font>(x,i,<font color="#0074D9">n</font>,i_,c3,c2,c1,c0,tabx)
 <font color="#0074D9">quintic0d</font>(x,c3,c2,c1,c0,x1,x2)
 <font color="#0074D9">quintic9d</font>(x,i,<font color="#0074D9">n</font>,i_,c3,c2,c1,c0,tabx)
 </pre>
-<h4>1-dimension interpolation - quintic spline non-smooth</h4>
+<h4 id="1dqn">1-dimension interpolation - quintic spline non-smooth</h4>
 <pre class="syntax">
 <font color="#0074D9">dquintic0</font>(x,c5,c4,c3,c2,c1,c0,x1,x2)
 <font color="#0074D9">dquintic9</font>(x,i,<font color="#0074D9">n</font>,i_,c5,c4,c3,c2,c1,c0,tabx)
 <font color="#0074D9">dquintic0d</font>(x,c5,c4,c3,c2,c1,c0,x1,x2)
 <font color="#0074D9">dquintic9d</font>(x,i,<font color="#0074D9">n</font>,i_,c5,c4,c3,c2,c1,c0,tabx)
 </pre>
-<h4>2-dimension interpolation - linear smooth</h4>
+<h4 id="2dls">2-dimension interpolation - linear smooth</h4>
 <pre class="syntax">
 <font color="#0074D9">interp2D0</font>(x,y,f11,f12,f21,f22,x1,x2,y1,y2)
 <font color="#0074D9">interp2D1</font>(x,y,i,j,tabf,tabx,taby)
 <font color="#0074D9">interp2D2</font>(x,y,i,j,tab,ff,xx,yy)
 </pre>
-<h4>2-dimension interpolation - linear non-smooth</h4>
+<h4 id="2dln">2-dimension interpolation - linear non-smooth</h4>
 <pre class="syntax">
 <font color="#0074D9">dinterp2D0</font>(x,y,f11,f12,f21,f22,x1,x2,y1,y2)
 <font color="#0074D9">dinterp2D1</font>(x,y,i,j,tabf,tabx,taby)
 <font color="#0074D9">dinterp2D2</font>(x,y,i,j,tab,ff,xx,yy)
 </pre>
-<h4>Time interpolation</h4>
+<h4 id="tiin">Time interpolation</h4>
 <pre class="syntax">
 <font color="#0074D9">TInterp0</font>(x,f1,f2,x1,x2)
 <font color="#0074D9">TInterp1</font>(x,i,tabf,tabx)
