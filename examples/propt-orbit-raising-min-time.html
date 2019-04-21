@@ -1,0 +1,117 @@
+<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Orbit Raising Minimum Time</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Orbit Raising Minimum Time
+</pre>
+<p>
+  Minimize:
+  \[
+  J = t_f
+  \]
+  subject to the dynamic constraints
+  \[
+  \dot{r} = u \\
+  \dot{u} = \frac{v^2}{r}-\frac{\mu}{r^2}+T \frac{w1}{m} \\
+  \dot{v} = -u \frac{v}{r}+T \frac{w2}{m} \\
+  \dot{m} = -\frac{T}{g_0 \ ISP}
+  \]
+  the boundary conditions
+  \[
+  r(t_0) = 1 \\
+  r(t_f) = 1.5 \\
+  u(t_0) = 0 \\
+  u(t_f) = 0 \\
+  v(t_0) = (\frac{\mu}{r(t_0)})^{0.5} \\
+  v(t_f) = (\frac{\mu}{r(t_f)})^{0.5} \\
+  m(t_0) = 1
+  \]
+  where \(w_1 = \sin(\phi)\) and \(w_2 = \cos(\phi)\).
+<p>
+  Source: PROPT - Matlab Optimal Control Software, User Manual, April 26, 2010
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  mu = 1
+  T = 0.1405
+  Ve = 1.8758
+  r_0 = 1
+  u_0 = 0
+  m_0 = 1
+  r_f = 1.5
+  u_f = 0
+  rmin = 0.9
+  rmax = 5
+  umin = -5
+  umax = 5
+  vmin = -5
+  vmax = 5
+  mmax = m_0
+  mmin = 0.1
+  tf_min = 0.5
+  tf_max = 10
+
+<font color="red"><b>var:</b></font>
+  tf
+
+<font color="#808080"><i># The problem becomes less nonlinear if w1 and w2 are control variables</i></font>
+<font color="#808080"><i># (with the constraints w1^2+w2^2==1) than if phi is the control variable</i></font>
+<font color="#808080"><i># (with w1 and w2 being nonlinear functions of phi).</i></font>
+
+<font color="red"><b>dyn:</b></font>
+  r u v m	<font color="#808080"><i># state variables</i></font>
+  w1 w2		<font color="#808080"><i># control variables</i></font>
+
+<font color="red"><b>lim:</b></font>
+  tf_min &lt;= tf &lt;= tf_max
+  rmin &lt;= r &lt;= rmax
+  umin &lt;= u &lt;= umax
+  vmin &lt;= v &lt;= vmax
+  mmin &lt;= m &lt;= mmax
+  
+<font color="red"><b>t=t0:</b></font>
+  r = r_0
+  u = u_0
+  v = <font color="#2ECC40">sqrt</font>(mu/r)
+  m = m_0
+
+<font color="red"><b>t=tf:</b></font>
+  r = r_f
+  u = u_f
+  v = <font color="#2ECC40">sqrt</font>(mu/r)
+
+<font color="red"><b>ini:</b></font>
+  tf = 3.32
+  r = <font color="#0074D9">linspace</font>(r_0,r_f)
+  u = 0.1
+  v = <font color="#0074D9">initial</font>(v)
+  m = <font color="#0074D9">linspace</font>(m_0,m_0-(T/Ve)*tf)
+  w1 = <font color="#2ECC40">ifthen</font>(<font color="#0074D9">linspace</font>(0,tf)&lt;=tf/2,0.7,-0.7)
+  w2 = <font color="#2ECC40">sqrt</font>(1-<font color="#2ECC40">sqr</font>(w1))
+
+<font color="red"><b>equ:</b></font>
+  r&acute; == u
+  u&acute; == <font color="#2ECC40">sqr</font>(v)/r-mu/<font color="#2ECC40">sqr</font>(r)+T*w1/m
+  v&acute; == -u*v/r+T*w2/m
+  m&acute; == -T/Ve
+  <font color="#2ECC40">sqr</font>(w1) + <font color="#2ECC40">sqr</font>(w2) == 1
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> tf <font color="#8A2BE2">using</font> nlp
+</pre>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Hanging Chain</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Hanging Chain
+</pre>
+<p>
+  Find \(x(t)\) over \(t \in [0,1]\) to minimize
+  \[
+  J = \int_0^{1} x \sqrt{1+(\dot{x})^2} \ \mathrm{d}t
+  \]
+  subject to:
+  \[
+  \int_0^{1} \sqrt{1+(\dot{x})^2} \ \mathrm{d}t = 4 \\
+  x_0 = 1 \\
+  x_1 = 3
+  \]
+<p>
+  Reference:
+  <ol>
+  <li>E. D. Dolan, J. J. Mor&eacute; and T. S. Munson,
+  <em>Benchmarking Optimization Software with COPS 3.0</em>,
+  Argonne National Laboratory, Technical Report ANL/MCS-TM-273, February 2004.
+  </ol>
+<p>
+  Source: PROPT - Matlab Optimal Control Software, User Manual, April 26, 2010
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  a = 1
+  b = 3
+  tf = 1
+  
+<font color="red"><b>dyn:</b></font>
+  x	<font color="#808080"><i># state variables</i></font>
+  u
+  J K
+
+<font color="red"><b>lim:</b></font>
+  -10 &lt;= u &lt;= 20
+  
+<font color="red"><b>t=t0:</b></font>
+  x = a
+  J = 0
+  K = 0
+
+<font color="red"><b>t=tf:</b></font>
+  x = b
+  K = 4
+  
+<font color="red"><b>ini:</b></font>
+  x = (a+b)/2
+  u = 0
+
+<font color="red"><b>equ:</b></font>
+  x&acute; == u
+  J&acute; == x*<font color="#2ECC40">sqrt</font>(1+<font color="#2ECC40">sqr</font>(u))
+  K&acute; == <font color="#2ECC40">sqrt</font>(1+<font color="#2ECC40">sqr</font>(u))  
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp
+</pre>
+</body>
+</html>
