@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.0 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -49,6 +49,7 @@ pre.syntax {border: 1px solid #C4CFE5; background-color: #FBFCFD; padding: 4px 6
 <li><a href="#sca">Scaling</a></li>
 <li><a href="#exp">Symbolic variables</a></li>
 <li><a href="#tfm">Transfer function models</a></li>
+<li><a href="#mpc">Model predictive control</a></li>
 <li><a href="#equ">Equations</a></li>
 <li><a href="#sim">Simulation</a></li>
 <li><a href="#obj">Objective</a></li>
@@ -206,7 +207,7 @@ The degree of the polynomial is deduced from the number of coefficients.
 <pre class="syntax">
 <font color="red"><b>set:</b></font>
   &lt;<font color="#3D9970">set</font>&gt;[(L,{&lt;<font color="#3D9970">set</font>&gt;})] = [(|/] &lt;ident&gt;:&lt;ident&gt; | &lt;ident&gt;*&lt;ident&gt; | L,{&lt;ident&gt;} [)|/]
-  <font color="#8A2BE2">alias</font>(L,{&lt;<font color="#3D9970">set</font>&gt;},&lt;<font color="#3D9970">set</font>&gt;)	<font color="#808080"><i>Note: the right-most &lt;set&gt; must have been declared already</i></font>
+  <font color="#8A2BE2">alias</font>(L,{&lt;<font color="#3D9970">set</font>&gt;},&lt;<font color="#3D9970">set</font>&gt;)	<font color="#808080"><i>Note: the rightmost &lt;set&gt; must have been declared already</i></font>
 </pre>
 
 <!------------------------------------------------------------->
@@ -289,7 +290,7 @@ for a time discrete model.
   &lt;dyn&gt;[$&lt;condition&gt;] = &lt;tex&gt;
   &lt;var&gt;[$&lt;condition&gt;] = &lt;exp&gt;
 </pre>
-<p>By default, the mid-point is used when finite lower and upper limits are set.  In case of a semi-infinite interval,
+<p>By default, the midpoint is used when finite lower and upper limits are set.  In case of a semi-infinite interval,
 the lower or upper limit is used.
 <p>This section must appear after 'lim:' and 't=t{0,f}:' sections otherwise the initialization values are reset
 to their default.
@@ -336,6 +337,35 @@ to their default.
 <p>For a continuous model, the polynomial gives the coefficients of \([s^n \, s^{n-1} \, ... \, s \, 1]\).
 For a discrete model, the transfer function is written in \(z\): \([z^n \, z^{n-1} \, ... \, z \, 1]\).
 Undeclared symbols at this stage will be declared as static or dynamic variables.
+
+<!------------------------------------------------------------->
+<h2 id="mpc" style="color:#7EAEAC">Model predictive control</h2>
+<pre class="syntax">
+<font color="red"><b>mpc:</b></font>
+  &lt;mpc-statement&gt;
+
+&lt;mpc-statement&gt; :-
+  [<font color="#39CCCC">SAMPLING-TIME</font> = &lt;val&gt;|&lt;par&gt;]				<font color="#808080"><i>Needed if predictive model is continuous.</i></font>
+  [<font color="#39CCCC">STAGES</font> = &lt;val&gt;|&lt;par&gt;]				<font color="#808080"><i>Number of stages for a continuous model. Default is 1.</i></font>
+  <font color="#39CCCC">HORIZON</font> = &lt;set-definition&gt;
+  <font color="#39CCCC">STATES</font> = L{&lt;dyn&gt;}
+  <font color="#39CCCC">INPUTS</font> = L{&lt;dyn&gt;}
+  [<font color="#39CCCC">DISTURBANCES</font> = L{&lt;dyn&gt;|&lt;tpa&gt;}]
+  <font color="#39CCCC">OUTPUTS</font> = L{&lt;dyn&gt;}
+  <font color="#39CCCC">EQUATIONS</font> = L{&lt;equ&gt;}
+  [<font color="#39CCCC">A</font> = &lt;matrix&gt;]					<font color="#808080"><i>Alternative definition of linear equations by the usual matrix notation.</i></font>
+  [<font color="#39CCCC">B</font> = &lt;matrix&gt;]
+  [<font color="#39CCCC">G</font> = &lt;matrix&gt;]
+  [<font color="#39CCCC">C</font> = &lt;matrix&gt;]
+  [<font color="#39CCCC">D</font> = &lt;matrix&gt;]
+  [<font color="#39CCCC">LB</font> = L{&lt;var&gt;[&acute;] &lt;val&gt;}]				<font color="#808080"><i>Lower bound on variable [rate].</i></font>
+  [<font color="#39CCCC">UB</font> = L{&lt;var&gt;[&acute;] &lt;val&gt;}]				<font color="#808080"><i>Upper bound on variable [rate].</i></font>
+  <font color="#39CCCC">Q</font> = &lt;matrix&gt;						<font color="#808080"><i>Weighting matrix for states.</i></font>
+  <font color="#39CCCC">HORIZON-Q</font> = &lt;set-definition&gt;
+  <font color="#39CCCC">R</font> = &lt;matrix&gt;						<font color="#808080"><i>Weighting matrix for inputs.</i></font>
+  <font color="#39CCCC">HORIZON-R</font> = &lt;set-definition&gt;
+  <font color="#39CCCC">DECAY</font> = &lt;val&gt;|&lt;par&gt;
+</pre>
 
 <!------------------------------------------------------------->
 <h2 id="equ" style="color:#7EAEAC">Equations</h2>
@@ -443,6 +473,8 @@ when all the dependent variables are known.
 <pre class="syntax">
 <font color="red"><b>gms:</b></font>
   &lt;gams-statement&gt;;
+  <font color="#8A2BE2">@abltimeput</font> 'min|max' L/{var} L/{equ};		<font color="#808080"><i>Put all but last dynamic variables and equations to file</i></font>
+  <font color="#8A2BE2">@alltimeput</font> 'min|max' L/{var} L/{equ};		<font color="#808080"><i>Put all dynamic variables and equations to file</i></font>
   <font color="#8A2BE2">@costates</font>[(POLY|ZERO|PREV)];				<font color="#808080"><i>Costates calculation (must be used before any call to costate(.) function</i></font>
   <font color="#8A2BE2">@csvsave</font> L{&lt;dyn&gt;};					<font color="#808080"><i>Save dynamic variables in the CSV files</i></font>
   <font color="#8A2BE2">@seekcia</font> L,{&lt;seekcia-statement&gt;};			<font color="#808080"><i>Combinatorial Integral Approximation</i></font>
@@ -544,6 +576,7 @@ The table here below sets forth which section is valid in which mode.
 <tr><td>sca:</td>		<td>Yes</td>			<td>-</td></tr>
 <tr><td>exp:</td>		<td>Yes</td>			<td>Yes</td></tr>
 <tr><td>tfm:</td>		<td>Yes</td>			<td>Yes</td></tr>
+<tr><td>mpc:</td>		<td>-</td>			<td>Yes</td></tr>
 <tr><td>equ:</td>		<td>Yes</td>			<td>-</td></tr>
 <tr><td>sim:</td>		<td>-</td>				<td>Yes</td></tr>
 <tr><td>obj:</td>		<td>Yes</td>			<td>-</td></tr>
@@ -578,7 +611,7 @@ $&lt;gams-$-directive&gt;
 <font color="#FF4500">@endif</font>
 <font color="#FF4500">@ifdef</font> L{&lt;var&gt;}
 <font color="#FF4500">@ifndef</font> L{&lt;var&gt;}
-<font color="#FF4500">@MACRO</font> &lt;name&gt;[(L,{&lt;argument&gt;})] &lt;expression&gt;
+<font color="#FF4500">@macro</font> &lt;name&gt;[(L,{&lt;argument&gt;})] &lt;expression&gt;
 <font color="#FF4500">@otherwise</font>
 <font color="#FF4500">@set</font> &lt;var&gt;[=]&lt;token&gt;
 <font color="#FF4500">@when</font> L{[,]&lt;token&gt;}
@@ -765,6 +798,11 @@ x{1 2 4} = x{3 5 6}
 <font color="#0074D9">TimeRamp</font>(tau)
 
 <font color="#0074D9">linspace</font>(a,b)
+</pre>
+<h4 id="frac">Fractional derivative</h4>
+<pre class="syntax">
+<font color="#0074D9">fractder</font>(x,order)
+<font color="#0074D9">fractint</font>(x,order)
 </pre>
 <h4 id="povd">Polynomials of various degrees</h4>
 <pre class="syntax">
@@ -988,6 +1026,8 @@ dyna-shell.cmd		<font color="#808080"><i>Starts a new shell for DYNA2GAMS</i></f
 <!------------------------------------------------------------->
 <h2 id="fbat" style="color:#7EAEAC">GAMS $BATINCLUDE Files</h2>
 <pre class="syntax">
+<font color="#8B0000">$BATINCLUDE</font> dyna-fractder {JG|GL} L{&lt;par&gt;}
+<font color="#8B0000">$BATINCLUDE</font> dyna-fractint JG L{&lt;par&gt;}
 <font color="#8B0000">$BATINCLUDE</font> dyna-pderiv-x &lt;left-boundary-value&gt; &lt;right-boundary-value&gt; &lt;knots-number&gt;
 </pre>
 </body>
