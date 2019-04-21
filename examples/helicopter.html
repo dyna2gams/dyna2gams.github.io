@@ -1,0 +1,100 @@
+<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Helicopter model</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Helicopter model
+</pre>
+<p>
+  Reference:
+  <ol>
+  <li>Gäfvert,Magnus,
+  <em>Modelling of the ETH Helicopter Laboratory Process</em>,
+  Department of Automatic Control, Lund Institute of Technology, November 2001.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  l1 = 0.1995	<font color="#808080"><i># [m] arm length to R1</i></font>
+  l2 = 0.1743	<font color="#808080"><i># [m] arm length to R2 </i></font>
+  ml = 0.280	<font color="#808080"><i># [kg] mass of lever arm bar</i></font>
+  h = 0.0298	<font color="#808080"><i># [m] pivot height</i></font>
+  mw = 0.158	<font color="#808080"><i># [kg] mass of weight </i></font>
+  lw = 0.090	<font color="#808080"><i># [m] distance to weight (nominal)</i></font>
+  m1 = 0.3792	<font color="#808080"><i># [kg] mass of rotor R1</i></font>
+  m2 = 0.1739	<font color="#808080"><i># [kg] mass of rotor R2</i></font>
+  T1 = 1.1	<font color="#808080"><i># [s] time constant for rotor R1 </i></font>
+  T2 = 0.33	<font color="#808080"><i># [s] time constant for rotor R2</i></font>
+  k1 = 1.00e-2	<font color="#808080"><i># [Vs/rad] motor constant for rotor R1 </i></font>
+  k2 = 1.39e-2	<font color="#808080"><i># [Vs/rad] motor constant for rotor R2 </i></font>
+  C1 = 2.50e-5	<font color="#808080"><i># [Ns²/rad²] aerodynamic drag for rotor R1 </i></font>
+  C2 = 1.58e-6	<font color="#808080"><i># [Ns²/rad²] aerodynamic drag for rotor R2 </i></font>
+  D1 = 2.90e-7	<font color="#808080"><i># [Nms²/rad²] aerodynamic torque for rotor R1 </i></font>
+  D2 = 1.76e-7	<font color="#808080"><i># [Nms²/rad²] aerodynamic torque for rotor R2 </i></font>
+  m = ml + m1 +m2 + mw				<font color="#808080"><i># total mass of the lever arm</i></font>
+  Jl = ml/3*(l1^3+l2^3)/(l1+l2) + m1*l1^2 + m2*l2^2 + mw*lw^2	<font color="#808080"><i># moment of inertia for the lever arm</i></font>
+  Ja = 0					<font color="#808080"><i># moment of inertia for the vertical axle</i></font>
+  lc = (ml*(l1-l2)+m1*l1-m2*l2-mw*lw)/m		<font color="#808080"><i># center of gravity</i></font>
+  g = 9.81
+  tf = 10
+  
+<font color="red"><b>dyn:</b></font>
+  phi	<font color="#808080"><i># yaw angle</i></font>
+  phid	<font color="#808080"><i># yaw angular velocity</i></font>
+  th	<font color="#808080"><i># pitch angle</i></font>
+  thd	<font color="#808080"><i># pitch angular velocity</i></font>
+  w{1:2}	<font color="#808080"><i># rotor R{1:2} velocity</i></font>
+  u{1:2}	<font color="#808080"><i># control</i></font>
+  J
+
+<font color="red"><b>t=t0:</b></font>
+  phi = 1
+  phid = 0
+  th = 1
+  thd = 1
+  w{1:2} = {200 -200}
+  J = 0
+  
+<font color="red"><b>lim:</b></font>
+  -pi &lt;= phi &lt;= pi
+  -pi &lt;= th &lt;= pi
+  -20 &lt;= u{1:2} &lt;= 20
+
+<font color="red"><b>ini:</b></font>
+  phi = 1
+  phid = 0
+  th = 1
+  thd = 1
+  w1 = 100
+  w2 = -100
+  
+<font color="red"><b>equ:</b></font>
+  phi&acute; == phid
+  th&acute; == thd
+  phid&acute; == (<font color="#2ECC40">sqr</font>(<font color="#2ECC40">cos</font>(th))*Jl-2*h*<font color="#2ECC40">cos</font>(th)*<font color="#2ECC40">sin</font>(th)*m*lc+<font color="#2ECC40">sqr</font>(h*<font color="#2ECC40">sin</font>(th))*th*m+Ja)^(-1)\
+      *(2*<font color="#2ECC40">cos</font>(th)*<font color="#2ECC40">sin</font>(th)*phid*thd*Jl-2*h*(<font color="#2ECC40">sqr</font>(<font color="#2ECC40">sin</font>(th))-<font color="#2ECC40">sqr</font>(<font color="#2ECC40">cos</font>(th)))*phid*thd*m*lc\
+      -2*<font color="#2ECC40">sqr</font>(h)*<font color="#2ECC40">sin</font>(th)*<font color="#2ECC40">cos</font>(th)*phid*thd*m+D1*w1*<font color="#2ECC40">abs</font>(w1)*<font color="#2ECC40">cos</font>(th)+l2*<font color="#2ECC40">cos</font>(th)*C2*w2*<font color="#2ECC40">abs</font>(w2))
+  thd&acute; == (Jl+h^2*m)^(-1)*(-<font color="#2ECC40">cos</font>(th)*<font color="#2ECC40">sin</font>(th)*<font color="#2ECC40">sqr</font>(phid)*Jl-h*(-<font color="#2ECC40">sqr</font>(<font color="#2ECC40">sin</font>(th))+<font color="#2ECC40">sqr</font>(<font color="#2ECC40">cos</font>(th)))*<font color="#2ECC40">sqr</font>(phid)*m*lc\
+     -g*<font color="#2ECC40">cos</font>(th)*m*lc+<font color="#2ECC40">sqr</font>(h)*<font color="#2ECC40">sin</font>(th)*<font color="#2ECC40">cos</font>(th)*<font color="#2ECC40">sqr</font>(phid)*m+m*g*h*<font color="#2ECC40">sin</font>(th)+l1*C1*w1*<font color="#2ECC40">abs</font>(w1)+D2*w2*<font color="#2ECC40">abs</font>(w2))
+  w1&acute; == -1/T1*w1+1/(k1*T1)*u1
+  w2&acute; == -1/T2*w2+1/(k2*T2)*u2
+  J&acute; == 100*<font color="#2ECC40">sqr</font>(phi) + 100*<font color="#2ECC40">sqr</font>(th) + 10*<font color="#2ECC40">sqr</font>(phid) + 10*<font color="#2ECC40">sqr</font>(thd) + <font color="#2ECC40">sqr</font>(<font color="#0074D9">slope</font>(u1)) + <font color="#2ECC40">sqr</font>(<font color="#0074D9">slope</font>(u2))
+  
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> dnlp
+</pre>
+</body>
+</html>

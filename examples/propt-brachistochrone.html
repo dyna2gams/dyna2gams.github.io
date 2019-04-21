@@ -1,0 +1,83 @@
+<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">The Brachistochrone Problem</h1>
+<pre>
+<font color="red"><b>rem:</b></font> The Brachistochrone Problem
+</pre>
+<p>
+  This problem was formulated by Johann Bernoulli, in Acta Eruditorum, June
+  1696.
+<p>
+  "Given two points \(A\) and \(B\) in a vertical plane, what is the curve traced out
+  by a point acted on only by gravity, which starts at \(A\) and reaches \(B\) in the
+  shortest time."
+<p>
+  In this example, we solve the problem numerically for \(A = (0,0)\) and 
+  \(B = (10,-3)\), and an initial speed of zero. The mechanical system is
+  modelled as follows:
+  \[
+  \dot{x} = v \ \sin(\theta) \\
+  \dot{y} = -v \ \cos(\theta) \\
+  \dot{v} = g \ \cos(\theta)
+  \]
+  where \([x \ y]\) is the coordinates of the point, \(v\) is the velocity, and \(\theta\) is
+  the angle between the direction of movement and the vertical.
+<p>
+  Source: PROPT - Matlab Optimal Control Software, User Manual, April 26, 2010
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  g = 9.81
+
+<font color="red"><b>var:</b></font>
+  tf
+
+<font color="red"><b>dyn:</b></font>
+  x y v	<font color="#808080"><i># state variables</i></font>
+  theta	<font color="#808080"><i># control variables</i></font>
+
+<font color="red"><b>lim:</b></font>
+  0.1 &lt;= tf &lt;= 100
+  0 &lt;= v &lt;= +<font color="#3D9970">inf</font>
+  0 &lt;= theta &lt;= pi
+
+<font color="red"><b>t=t0:</b></font>
+  x = 0
+  y = 0
+  v = 0
+
+<font color="red"><b>t=tf:</b></font>
+  x = 10
+  y = -3
+
+<font color="red"><b>ini:</b></font>
+  tf = 10
+  v = <font color="#0074D9">linspace</font>(0,tf)
+  x = 0.5*v*<font color="#0074D9">linspace</font>(0,tf)
+  y = -1
+  theta = 0
+
+<font color="red"><b>equ:</b></font>
+  x&acute; == v*<font color="#2ECC40">sin</font>(theta)
+  y&acute; == -v*<font color="#2ECC40">cos</font>(theta)
+  v&acute; == g*<font color="#2ECC40">cos</font>(theta)
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> tf <font color="#8A2BE2">using</font> nlp
+</pre>
+</body>
+</html>

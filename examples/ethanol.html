@@ -1,0 +1,81 @@
+<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Fed-batch Reactor For Ethanol Production</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Fed-batch Reactor For Ethanol Production
+</pre>
+<p>
+  Optimal control of fed-batch reactor for ethanol production.
+  A fed-batch bioreactor for the production of ethanol from the anaerobic
+  glucose fermentation by Saccharomyces cerevisiae.
+<p>
+  Reference: 
+  <ol>
+  <li>Larrosa, J.A.E.,
+  <em>New heuristics for global optimization of complex bioprocesses</em>,
+  Ph.D. Thesis, Universidade de Vigo, Departamento de Enxeñería Química, Vigo, 2008.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  tf = 54
+
+<font color="red"><b>dyn:</b></font>
+  y1   <font color="#808080"><i># microbial population concentration</i></font>
+  y2   <font color="#808080"><i># substrate concentration</i></font>
+  y3   <font color="#808080"><i># the product concentration</i></font>
+  y4   <font color="#808080"><i># volume</i></font>
+  u    <font color="#808080"><i># control variable</i></font>
+
+<font color="red"><b>lim:</b></font>
+  0 &lt;= y1 &lt;= 50
+  0 &lt;= y{2:3} &lt;= 200
+  1 &lt;= y4 &lt;= 200
+  0 &lt;= u &lt;= 12
+
+<font color="red"><b>t=t0:</b></font>
+  y1 = 20
+  y2 = 150
+  y3 = 20
+  y4 = 10
+
+<font color="red"><b>t=tf:</b></font>
+  y4 &lt;= 200
+  
+<font color="red"><b>ini:</b></font>
+  y1 = 20
+  y2 = 150
+  y3 = 20
+  y4 = 10
+  u  = <font color="#0074D9">linspace</font>(2,12)
+
+<font color="red"><b>exp:</b></font>
+  p1 == 0.408/(1+y3/16)*y2/(0.22+y2)
+  p2 == 1/(1+y3/71.5)*y2/(0.44+y2)
+
+<font color="red"><b>equ:</b></font>
+  y1&acute; == p1*y1 - u*y1/y4
+  y2&acute; == -10*p1*y1 + u*(150-y2)/y4
+  y3&acute; == p2*y1 - u*y3/y4
+  y4&acute; == u
+  u :: <font color="#7FDBFF">constant</font>(-6)
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">maximize</font> <font color="#0074D9">final</font>(y3*y4) <font color="#8A2BE2">using</font> nlp <font color="#8A2BE2">with</font> ipopt
+</pre>
+</body>
+</html>

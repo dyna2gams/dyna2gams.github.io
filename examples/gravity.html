@@ -1,0 +1,112 @@
+<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Gravity Turn Maneuver</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Gravity Turn Maneuver
+</pre>
+<p>
+  The gravity turn or zero lift turn is a common maneuver used to launch
+  spacecraft into orbit from bodies that have non-negligible atmospheres.
+  The goal of the maneuver is to minimize atmospheric drag by always
+  orienting the vehicle along the velocity vector.  In this maneuver, the
+  vehicle&rsquo;s pitch is determined solely by the change of the velocity
+  vector through gravitational acceleration and thrust.  The goal is to
+  find a launch configuration and thrust control strategy that achieves a
+  specific orbit with minimal fuel consumption.
+<p>
+  The solution achieves the desired orbit in \(t_f = 338.042\) sec, spending
+  \(m_0 - m(t_f) = 9.6508\) t of fuel.
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  <font color="#808080"><i># Artificial model parameters</i></font>
+  vel_eps = 1e-6            <font color="#808080"><i># Initial velocity (km/s)</i></font>
+  <font color="#808080"><i># Vehicle parameters</i></font>
+  m0   = 11.3               <font color="#808080"><i># Launch mass (t)</i></font>
+  m1   = 1.3                <font color="#808080"><i># Dry mass (t)</i></font>
+  g0   = 9.81e-3            <font color="#808080"><i># Gravitational acceleration at altitude zero (km/s^2)</i></font>
+  r0   = 6.0e2              <font color="#808080"><i># Radius at altitude zero (km)</i></font>
+  Isp  = 300.0              <font color="#808080"><i># Specific impulse (s)</i></font>
+  Fmax = 600.0e-3           <font color="#808080"><i># Maximum thrust (MN)</i></font>
+  <font color="#808080"><i># Atmospheric parameters</i></font>
+  cd  = 0.021               <font color="#808080"><i># Drag coefficients</i></font>
+  A   = 1.0                 <font color="#808080"><i># Reference area (m^2)</i></font>
+  HH  = 5.6                 <font color="#808080"><i># Scale height (km)</i></font>
+  rho = 1.2230948554874     <font color="#808080"><i># Density at altitude zero</i></font>
+  <font color="#808080"><i># Target orbit parameters</i></font>
+  h_obj = 75                <font color="#808080"><i># Target altitude (km)</i></font>
+  v_obj = 2.287             <font color="#808080"><i># Target velocity (km/s)</i></font>
+  q_obj = 0.5 * pi          <font color="#808080"><i># Target angle to vertical (rad)</i></font>
+
+<font color="red"><b>var:</b></font>
+  tf
+  
+<font color="red"><b>dyn:</b></font>
+  m v q h d                 <font color="#808080"><i># Vehicle state</i></font>
+  u                         <font color="#808080"><i># Vehicle control</i></font>
+
+<font color="red"><b>lim:</b></font>
+  120 &lt;= tf &lt;= 600
+  0.0 &lt;= u &lt;= 1.0
+  m1 &lt;= m &lt;= m0
+  vel_eps &lt;= v &lt;= +<font color="#3D9970">inf</font>
+  0.0 &lt;= q &lt;= pi
+  0.0 &lt;= h &lt;= +<font color="#3D9970">inf</font>
+  0.0 &lt;= d &lt;= +<font color="#3D9970">inf</font>
+  
+<font color="red"><b>t=t0:</b></font>
+  m = m0   
+  v = vel_eps 
+  h = 0.0
+  d = 0.0
+  q &lt;= 0.5*pi
+
+<font color="red"><b>t=tf:</b></font>
+  v = v_obj
+  q = q_obj
+  h = h_obj
+
+<font color="red"><b>ini:</b></font>
+  tf = 120
+  u = 0.5
+  m = 0.5 * (m0+m1)
+  v = 0.5 * v_obj
+  q = 0.5 * q_obj
+  h = 0.5 * h_obj
+  d = 0.0
+
+<font color="red"><b>exp:</b></font>
+  <font color="#808080"><i># Introduce symbolic expressions for important composite terms</i></font>
+  Fthrust == Fmax * u
+  Fdrag   == 0.5e3 * A * cd * rho * <font color="#2ECC40">exp</font>(-h/HH) * v * v
+  r       == h + r0
+  g       == g0 * <font color="#2ECC40">sqr</font>(r0/r)
+  vhor    == v * <font color="#2ECC40">sin</font>(q)
+  vver    == v * <font color="#2ECC40">cos</font>(q)
+
+<font color="red"><b>equ:</b></font>
+  m&acute; == -(Fmax / (Isp * g0)) * u
+  v&acute; == (Fthrust - Fdrag) / m - g * <font color="#2ECC40">cos</font>(q)
+  q&acute; == g * <font color="#2ECC40">sin</font>(q) / v - vhor / r
+  h&acute; == vver
+  d&acute; == vhor / r
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> m0 - <font color="#0074D9">final</font>(m) <font color="#8A2BE2">using</font> nlp 
+</pre>
+</body>
+</html>

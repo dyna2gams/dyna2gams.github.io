@@ -1,0 +1,145 @@
+<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Supermarket refrigeration system</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Supermarket refrigeration system
+</pre>
+<p>
+  The supermarket refrigeration system problem is based on a model describing a refrigeration system with 2 parallel
+  connected compressors (called a compressor rack) which only can be controlled stepwise (each single compressor can be
+  turned on or off) and 2 open refrigerated display cases containing goods needed to be refrigerated. Each display case is
+  connected to the refrigeration circuit through an expansion valve which also can only be closed or opened. This valve
+  controls the flow of refrigerant into the evaporator, where it absorbs heat from the surrounding air. The refrigerated
+  air then creates the well-known air-curtain at the front of the display case.
+<p>
+  The air temperatures surrounding the goods in each display case are modeled by one differential state each. These states
+  have to be bounded, so that the goods are properly refrigerated.
+<p>
+  The model was published by Larsen et. al. [1]. The main goal is to control the refrigeration system energy-optimal. The
+  problem was set up as a benchmark problem for MIOCPs.
+<p>
+  The mathematical equations form an ODE model. The initial values of the differential states are not fixed but periodicity
+  of the whole process is required.
+<p>
+  See: <a href="https://mintoc.de/index.php/Supermarket_refrigeration_system">mintoc.de</a>
+<p>
+  For the relaxed problem, the optimal solution is 12072.45
+<p>
+  Reference:
+  <ol>
+  <li>L.F.S. Larsen, R. Izadi-Zamanabadi, R. Wisniewski, C Sonntag,
+  <em>Supermarket Refrigeration Systems -- A benchmark for the optimal control of hybrid systems</em>,
+  Technical report for the HYCON NoE (2007).
+  </ol>
+<p>
+<pre>
+<font color="red"><b>set:</b></font>
+				<font color="#808080"><i># number of valves:</i></font>
+  valves = v1:v2		<font color="#808080"><i># 2 display cases - 2 compressors</i></font>
+  <font color="#808080"><i>#valves = v1:v3		# 3 display cases - 3 compressors</i></font>
+  <font color="#8A2BE2">alias</font>(v,valves)
+
+<font color="red"><b>par:</b></font>
+  <font color="#808080"><i># constants</i></font>
+  M_GOODS = 200			<font color="#808080"><i># kg			Mass of goods</i></font>
+  C_P_GOODS = 1000		<font color="#808080"><i># \frac{J}{kg \cdot K}	Heat capacity of goods</i></font>
+  UA_GOODS_AIR = 300		<font color="#808080"><i># \frac{J}{s \cdot K}	Heat transfer coefficient between goods and air</i></font>
+  M_WALL = 260			<font color="#808080"><i># kg			Mass of evaporator wall</i></font>
+  C_P_WALL = 385		<font color="#808080"><i># \frac{J}{kg \cdot K}	Heat capacity of evaporator wall</i></font>
+  UA_AIR_WALL = 500		<font color="#808080"><i># \frac{J}{s \cdot K}	Heat transfer coefficient between air and wall</i></font>
+  M_AIR = 50			<font color="#808080"><i># kg			Mass of air in display case</i></font>
+  C_P_AIR = 1000		<font color="#808080"><i># \frac{J}{kg \cdot K}	Heat capacity of air</i></font>
+  UA_WALL_REF_MAX = 4000	<font color="#808080"><i># \frac{J}{s \cdot K}	Maximum heat transfer coefficient between refrigerant and evaporator wall</i></font>
+  TAU_FILL = 40			<font color="#808080"><i># s			Parameter describing the filling time of the evaporator under opened valve</i></font>
+  M_REF_MAX = 1 		<font color="#808080"><i># kg			Maximum mass of refrigerant in evaporator  					</i></font>
+  T_SH = 10			<font color="#808080"><i># K			Superheat in the suction manifold	</i></font>
+  V_SUC = 5			<font color="#808080"><i># m^3			Total volume of suction manifold</i></font>
+  V_SL = \			<font color="#808080"><i># \frac{m^3}{s}		Total displacement volume</i></font>
+    0.08$(<font color="#3D9970">card</font>(v)=2) + 0.095$(<font color="#3D9970">card</font>(v)=3)
+  ETA_VOL = 0.81		<font color="#808080"><i># -			Volumetric efficiency</i></font>
+  NCOMP = <font color="#3D9970">card</font>(v)		<font color="#808080"><i># -			Number of compressors</i></font>
+  <font color="#808080"><i># disturbances - day scenario</i></font>
+  Q_AIRLOAD = 3000		<font color="#808080"><i># \frac{J}{s}		Disturbance, heat transfer from outside the display case</i></font>
+  M_REF_CONST = 0.2		<font color="#808080"><i># \frac{kg}{s}		Disturbance, constant mass flow of refrigerant from unmodeled entities</i></font>
+  <font color="#808080"><i># disturbances - night scenario</i></font>
+  <font color="#808080"><i># Q_AIRLOAD = 1800</i></font>
+  <font color="#808080"><i># M_REF_CONST = 0</i></font>
+
+<font color="red"><b>var:</b></font>
+  tf
+
+<font color="red"><b>dyn:</b></font>
+  pressure	<font color="#808080"><i># describes the suction pressure in the suction manifold (in bar)</i></font>
+  goods[v]	<font color="#808080"><i># is the goods&rsquo; temperature (in °C)</i></font>
+  wall[v]	<font color="#808080"><i># the one of the evaporator wall (in °C)</i></font>
+  air[v]	<font color="#808080"><i># the air temperature surrounding the goods (in °C)</i></font>
+  mass[v]	<font color="#808080"><i># the mass of the liquefied refrigerant in the evaporator (in kg)</i></font>
+  u[v]:<font color="#3D9970">binary</font>	<font color="#808080"><i># describes the inlet valve of the v-th display case</i></font>
+  uc:<font color="#3D9970">binary</font>	<font color="#808080"><i># denotes the activity of the compressors (they are parallel connected)</i></font>
+  cost
+
+<font color="red"><b>lim:</b></font>
+  650 &lt;= tf &lt;= 750
+  0 &lt;= u[v] &lt;= 1
+  0 &lt;=  uc  &lt;= 1
+  0 &lt;= pressure &lt;= 1.7
+  2 &lt;= goods[v] &lt;= 5
+ -5 &lt;= wall[v] &lt;= 5
+ -5 &lt;= air[v] &lt;= 5
+  0 &lt;= mass[v] &lt;= 1
+
+<font color="red"><b>t=t0:</b></font>
+  cost = 0
+
+<font color="red"><b>ini:</b></font>
+  cost = 0
+
+<font color="red"><b>exp:</b></font>
+  delta_h == 1e5*<font color="#0074D9">Poly2</font>(pressure,0.0217,-0.1704,2.2988)
+  T_e == <font color="#0074D9">Poly2</font>(pressure,-4.3544,29.224,-51.2005)
+  rho_suc == <font color="#0074D9">Poly1</font>(pressure,4.6073,0.3798)
+  rho_suc__P_suc == <font color="#0074D9">Poly3</font>(pressure,-0.0329,0.2161,-0.4742,5.4817)
+  f == 1e5*<font color="#0074D9">Poly3</font>(pressure,0.0265,-0.4346,2.4923,1.2189)
+  Q_goods_air[v] == UA_GOODS_AIR * (goods[v] - air[v])
+  Q_air_wall[v]  == UA_AIR_WALL * (air[v] - wall[v])
+  UA_wall_ref[v] == UA_WALL_REF_MAX * mass[v] / M_REF_MAX
+  Q_e[v] == UA_wall_ref[v] * (wall[v] - T_e)
+  m[v] == Q_e[v] / delta_h
+  m_in_suc == <font color="#3D9970">sum</font>(v,m[v])
+  V_comp == uc*ETA_VOL*V_SL/NCOMP
+
+<font color="red"><b>equ:</b></font>
+  <font color="#808080"><i># suction pressure</i></font>
+  pressure&acute; == (m_in_suc + M_REF_CONST - V_comp*rho_suc) / (V_SUC*rho_suc__P_suc)
+  <font color="#808080"><i># temperatures</i></font>
+  goods&acute;[v] == - Q_goods_air[v] / (M_GOODS*C_P_GOODS)
+  wall&acute;[v] == (Q_air_wall[v] - Q_e[v]) / (M_WALL*C_P_WALL)
+  air&acute;[v] == ((Q_goods_air[v] + Q_AIRLOAD - Q_air_wall[v]) / (M_AIR*C_P_AIR))
+  <font color="#808080"><i># mass of liquefied refrigerant</i></font>
+  mass&acute;[v] == ((M_REF_MAX - mass[v])/TAU_FILL * u[v] - m[v] * (1 - u[v]))
+  cost&acute; == V_comp*f
+  <font color="#8A2BE2">$once</font>.. <font color="#0074D9">initial</font>(pressure) == <font color="#0074D9">final</font>(pressure)
+  <font color="#8A2BE2">$once</font>.. <font color="#0074D9">initial</font>(goods[v]) == <font color="#0074D9">final</font>(goods[v])
+  <font color="#8A2BE2">$once</font>.. <font color="#0074D9">initial</font>(wall[v]) == <font color="#0074D9">final</font>(wall[v])
+  <font color="#8A2BE2">$once</font>.. <font color="#0074D9">initial</font>(air[v]) == <font color="#0074D9">final</font>(air[v])
+  <font color="#8A2BE2">$once</font>.. <font color="#0074D9">initial</font>(mass[v]) == <font color="#0074D9">final</font>(mass[v])
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(cost)/tf <font color="#8A2BE2">using</font> rminlp
+</pre>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Optimal observer of a paper machine headbox</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Optimal observer of a paper machine headbox
+</pre>
+<p>
+  This problem contemplates the design for a state/disturbance
+  observer in continuous time for a paper machine headbox.
+<p>
+  References:
+  <ol>
+  <li>Maciejowski, J.M.,
+  <em>Predictive control with constraints</em>,
+  Prentice Hall, 2000.
+  <li>Morari, M. and Ricker, N.L.,
+  <em>Model Predictive Control Toolbox: User&rsquo;s Guide</em>,
+  The Mathworks, 1995.
+  <li>Ying, Y., Rao, M., and Sun, Y.,
+  <em>Bilinear Control Strategy For Paper-Making Process</em>,
+  Chemical Engineering Communications, 111(1), 13-28, 1992.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  tf = 60
+  nlin = 0
+
+<font color="red"><b>set:</b></font>
+  scen = scen1:scen4
+
+<font color="red"><b>tpa:</b></font>  
+  <font color="#808080"><i># u{1:2}[scen]	# stock flow rate / white water flow rate</i></font>
+  <font color="#808080"><i># w{1:2}[scen]	# disturbances (measured, unmeasured)</i></font>
+  
+  <font color="#808080"><i>#u1[scen] = ifthen(Time&gt;tf/20,1,0)$sameas(scen,'scen1')</i></font>
+  <font color="#808080"><i>#u2[scen] = ifthen(Time&gt;tf/20,1,0)$sameas(scen,'scen2') </i></font>
+  <font color="#808080"><i>#w1[scen] = ifthen(Time&gt;tf/20,1,0)$sameas(scen,'scen3') </i></font>
+  <font color="#808080"><i>#w2[scen] = ifthen(Time&gt;tf/20,1,0)$sameas(scen,'scen4')</i></font>
+  
+  u1[scen] = ((<font color="#0074D9">WaveSquare</font>(<font color="#0074D9">Time</font>/30)+1)/2)$<font color="#2ECC40">sameas</font>(scen,'scen1')
+  u2[scen] = ((<font color="#0074D9">WaveSquare</font>(<font color="#0074D9">Time</font>/30)+1)/2)$<font color="#2ECC40">sameas</font>(scen,'scen2') 
+  w1[scen] = ((<font color="#0074D9">WaveSquare</font>(<font color="#0074D9">Time</font>/30)+1)/2)$<font color="#2ECC40">sameas</font>(scen,'scen3') 
+  w2[scen] = ((<font color="#0074D9">WaveSquare</font>(<font color="#0074D9">Time</font>/30)+1)/2)$<font color="#2ECC40">sameas</font>(scen,'scen4')
+  
+<font color="red"><b>var:</b></font>
+  ky11 ky12 ky13 kw11 ku11 ku12
+  ky21 ky22 ky23 kw21 ku21 ku22 kyu1 kyu2
+  cy11 cy12 cy13 cw11
+  cy21 cy22 cy23 cw21
+
+<font color="red"><b>dyn:</b></font>
+  x{1:4}[scen]	<font color="#808080"><i># feed tank level / headbox level / feed tank consistency / headbox consistency</i></font>
+  y{1:3}[scen]	<font color="#808080"><i># measured outputs: headbox level / feed tank consistency / headbox consistency</i></font>
+  oz{1:2}[scen]	<font color="#808080"><i># state variables of the observer</i></font>
+  ox1[scen]	<font color="#808080"><i># estimation of x1</i></font>
+  ow2[scen]	<font color="#808080"><i># estimation of w2</i></font>
+  J		<font color="#808080"><i># criterion</i></font>
+  
+<font color="red"><b>lim:</b></font>
+  0 &lt;= kw11 &lt;= 0 
+  0 &lt;= ky21 &lt;= 0 
+  0 &lt;= ky23 &lt;= 0 
+  0 &lt;= cy11 &lt;= 0 
+  0 &lt;= cy12 &lt;= 0 
+  0 &lt;= cw11 &lt;= 0
+  0 &lt;= cy21 &lt;= 0 
+  0 &lt;= cy23 &lt;= 0 
+
+<font color="red"><b>t=t0:</b></font>
+  x{1:4}[scen] = 0
+  oz{1:2}[scen] = 0
+  J = 0
+  
+<font color="red"><b>ini:</b></font>
+  ky11 = -1.367 
+  ky12 = 0.720 
+  ky13 = 0.129 
+  kw11 = 0 
+  ku11 = 1.274 
+  ku12 = 1.274
+  ky21 = 0 
+  ky22 = 0.211 
+  ky23 = 0 
+  kw21 = -0.0103 
+  ku21 = 0.659  
+  ku22 = 0.315 
+  kyu1 = 0.161 
+  kyu2 = 0.161
+  cy11 = 0 
+  cy12 = 0 
+  cy13 = -1.744 
+  cw11 = 0
+  cy21 = 0 
+  cy22 = 0.493 
+  cy23 = 0 
+  cw21 = 0.226
+
+<font color="red"><b>equ:</b></font>
+  <font color="#808080"><i># plant model</i></font>
+  y1[scen] == x2[scen]
+  y2[scen] == x3[scen]
+  y3[scen] == x4[scen]
+  x1&acute;[scen] == -1.930*x1[scen]                                                    + 1.274*u1[scen] + 1.274*u2[scen]
+  x2&acute;[scen] ==  0.394*x1[scen] - 0.426*x2[scen]
+  $(nlin=0).. x3&acute;[scen] ==                      - 0.630*x3[scen]                  + 1.340*u1[scen] - 0.650*u2[scen] + 0.203*w1[scen] + 0.406*w2[scen]
+  $(nlin=1).. x3&acute;[scen] ==                      - 0.630*x3[scen]                  + 1.340*u1[scen] - 0.650*u2[scen] + 0.203*w1[scen] + 0.406*w2[scen] - 0.327*x3[scen]*u1[scen] - 0.327*x3[scen]*u2[scen]
+  x4&acute;[scen] ==  0.820*x1[scen] - 0.784*x2[scen] + 0.413*x3[scen] - 0.426*x4[scen]
+  <font color="#808080"><i># observer model</i></font>
+  oz1&acute;[scen] == -0.5*oz1[scen] + ky11*y1[scen] + ky12*y2[scen] + ky13*y3[scen] + kw11*w1[scen] + ku11*u1[scen] + ku12*u2[scen]
+  $(nlin=0).. oz2&acute;[scen] == -0.2*oz2[scen] + ky21*y1[scen] + ky22*y2[scen] + ky23*y3[scen] + kw21*w1[scen] + ku21*u1[scen] + ku22*u2[scen]
+  $(nlin=1).. oz2&acute;[scen] == -0.2*oz2[scen] + ky21*y1[scen] + ky22*y2[scen] + ky23*y3[scen] + kw21*w1[scen] + ku21*u1[scen] + ku22*u2[scen] + kyu1*y2[scen]*u1[scen] + kyu2*y2[scen]*u2[scen]
+  ox1[scen] == oz1[scen] + cy11*y1[scen] + cy12*y2[scen] + cy13*y3[scen] + cw11*w1[scen]
+  ow2[scen] == oz2[scen] + cy21*y1[scen] + cy22*y2[scen] + cy23*y3[scen] + cw21*w1[scen]
+  <font color="#808080"><i># criterion</i></font>
+  J&acute; == <font color="#3D9970">sum</font>(scen, <font color="#2ECC40">sqr</font>(ox1[scen]-x1[scen]) + <font color="#2ECC40">sqr</font>(ow2[scen]-w2[scen]))
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  nlin = 1;
+  ky11.fx = ky11.l;  
+  ky12.fx = ky12.l; 
+  ky13.fx = ky13.l; 
+  kw11.fx = kw11.l; 
+  ku11.fx = ku11.l; 
+  ku12.fx = ku12.l; 
+  ky21.fx = ky21.l; 
+  ky22.fx = ky22.l; 
+  ky23.fx = ky23.l; 
+  kw21.fx = kw21.l;
+  ku21.fx = ku21.l;  
+  ku22.fx = ku22.l; 
+  cy11.fx = cy11.l; 
+  cy12.fx = cy12.l; 
+  cy13.fx = cy13.l;  
+  cw11.fx = cw11.l; 
+  cy21.fx = cy21.l; 
+  cy22.fx = cy22.l; 
+  cy23.fx = cy23.l; 
+  cw21.fx = cw21.l;
+  <font color="#8A2BE2">@solve</font>
+
+</pre>
+</body>
+</html>

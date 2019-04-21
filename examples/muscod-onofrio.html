@@ -1,0 +1,104 @@
+<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">D&rsquo;Onofrio chemotherapy model</h1>
+<pre>
+<font color="red"><b>rem:</b></font> D&rsquo;Onofrio chemotherapy model
+</pre>
+<p>
+  This cancer chemotherapy model is based on the work of d&rsquo;Onofrio. The corresponding dynamic
+  describes the effect of two different drugs administered to the patient. An anti-angiogetic drug is
+  used to suppress the formation of blood vessels from existing vessels and thereby starving the
+  tumors supply of proliferating vessels. In addition a cytostatic drug effects the proliferation of
+  the tumor cells directly. The dynamic of the problem is given by an ODE model.
+<p>
+  For \(t \in [0, t_f]\) the optimal control problem is given by
+<p>
+  \[
+  \min_{x,u} \ x_0(t_f) + \alpha \int_0^{t_f} u_0^2(t) \ \text{d}t
+  \]
+<p>
+  subject to
+  \[
+  \dot{x}_0 = - \zeta x_0 \text{log} \left( \frac{x_0}{x_1} \right) - F x_0 u_1 \\
+  \dot{x}_1 = b x_0 - \mu x_1 - d x_0^{\frac{2}{3}}x_1 - G x_1 u_0 - \eta x_1 u_1 \\ 
+  \dot{x}_2 = u_0 \\ 
+  \dot{x}_3 = u_1 \\
+  u_0 \in [0,u_0^{max}]\\ 
+  u_1 \in [0,u_1^{max}]\\ 
+  x_2 \leq x_2^{max} \\ 
+  x_3 \leq x_3^{max} 
+  \]
+<p>
+  where the control \(u_0\) denotes the administered amount of anti-angiogetic drugs and \(u_1\) the
+  amount of cytostatic drugs. The state \(x_0\) describes the volume of tumor and \(x_1\) the volume
+  of neighboring blood vessels. The remaining states \(x_2\) and \(x_3\) are used to constraint the
+  maximum amount of drugs over the duration of the therapy.
+<p>
+  See: <a href="https://mintoc.de/index.php/D%27Onofrio_chemotherapy_model">mintoc.de</a>
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  zeta = 0.192
+  b = 5.85
+  mu = 0
+  d = 0.00873
+  F = 1
+  G = 0.15
+  alpha = 0
+  eta = 1
+  tf = 7
+
+<font color="red"><b>dyn:</b></font>
+  x0	<font color="#808080"><i># the volume of tumor</i></font>
+  x1	<font color="#808080"><i># the volume of neighboring blood vessels</i></font>
+  x2	<font color="#808080"><i># amount of anti-angiogetic drugs over the duration of the therapy</i></font>
+  x3	<font color="#808080"><i># amount of cytostatic drugs over the duration of the therapy</i></font>
+  u0	<font color="#808080"><i># the administered amount of anti-angiogetic drugs </i></font>
+  u1	<font color="#808080"><i># the amount of cytostatic drugs</i></font>
+  J
+
+<font color="red"><b>lim:</b></font>
+  0 &lt;= x0 &lt;= +<font color="#3D9970">inf</font> 
+  0 &lt;= x1 &lt;= +<font color="#3D9970">inf</font> 
+  0 &lt;= x2 &lt;= 300
+  0 &lt;= x3 &lt;= 2		<font color="#808080"><i># 2 | 10 | 2 | 10</i></font>
+  0 &lt;= u0 &lt;= 75
+  0 &lt;= u1 &lt;= 1		<font color="#808080"><i># 1 |  2 | 1 |  2</i></font>
+
+<font color="red"><b>t=t0:</b></font>
+  x0 = 12000		<font color="#808080"><i># 12000 | 12000 | 14000 | 14000</i></font>
+  x1 = 15000		<font color="#808080"><i># 15000 | 15000 |  5000 |  5000</i></font>
+  x2 = 0
+  x3 = 0
+  J  = 0
+
+<font color="red"><b>ini:</b></font>
+  x0 = 12000
+  x1 = 15000
+
+<font color="red"><b>equ:</b></font> 
+  x0&acute; == - zeta*x0*<font color="#2ECC40">log</font>(x0/x1) - F*x0*u1
+  x1&acute; == b*x0 - mu*x1 - d*x0**(2/3)*x1 - G*u0*x1 - eta*x1*u1
+  x2&acute; == u0
+  x3&acute; == u1
+  J&acute;  == u0*u0
+  
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(x0)+alpha*<font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp
+</pre>
+</body>
+</html>

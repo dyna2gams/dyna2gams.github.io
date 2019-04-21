@@ -1,0 +1,265 @@
+<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Automatic parallel parking in minimum time</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Automatic parallel parking in minimum time
+</pre>
+<p>
+  This problem is taken from the examples implemented in ICLOCS2
+  (<a href="http://www.ee.ic.ac.uk/ICLOCS/">www.ee.ic.ac.uk/ICLOCS/</a>).
+  The description is reproduced here below.
+<p>
+  The problem was adapted from [1].
+<p>
+  Consider the following geometry of the parking slot
+<p>
+  <center><img src="iclocs-parallel-parking-1.jpg" alt="" width="50%"/></center>
+<p>
+  and a generic car model as
+<p>
+  <center><img src="iclocs-parallel-parking-2.jpg" alt="" width="50%"/></center>
+<p>
+  The objective is to finish the parallel parking of the car in minimum time, while
+  requiring the vehicle not to collide with the barriers. Thus we formulate the optimal
+  control problem as
+<p>
+  \[
+  \min t_f
+  \]
+<p>
+  subject to dynamics constraints
+<p>
+  \[
+  \dot{x} = v \cos(\theta)\\
+  \dot{y} = v \sin(\theta)\\
+  \dot{v} = a\\
+  \dot{a} = u_1\\
+  \dot{\theta} = v \tan(\phi)/l_a\\
+  \dot{\phi} = u_2
+  \]
+<p>
+  As for path constraints, we first have the ride comfort requirement
+<p>
+  \[
+  -0.6 \le \frac{u_2}{l_a \cos^2(\phi)} \le 0.6
+  \]
+<p>
+  The condition for the vehicle not to collide with the barriers can be approximated by the
+  requirements for the four corners of the car to fulfil the following inequality constraints
+<p>
+  \[
+  f_{slot}(A_x) \le A_y \le l_{cl}\\
+  f_{slot}(B_x) \le B_y \le l_{cl}\\
+  f_{slot}(C_x) \le C_y \le l_{cl}\\
+  f_{slot}(D_x) \le D_y \le l_{cl}
+  \]
+<p>
+  with the four corners expressed as
+<p>
+  \[
+  A_x = x + (l_a+l_f) \cos(\theta) - b \sin(\theta), A_y = y + (l_a+l_f) \sin(\theta) + b \cos(\theta)\\
+  B_x = x + (l_a+l_f) \cos(\theta) + b \sin(\theta), B_y = y + (l_a+l_f) \sin(\theta) - b \cos(\theta)\\
+  C_x = x - l_r \cos(\theta) + b \sin(\theta), C_y = y - l_r \sin(\theta) - b \cos(\theta)\\
+  D_x = x - l_r \cos(\theta) - b \sin(\theta), D_y = y - l_r \sin(\theta) + b \cos(\theta)\\
+  \]
+<p>
+  and the lower wall expressed with Heaviside functions as
+<p>
+  \[
+  f_{slot}(x) = (-H(x) + H(x-l_{SL}))/l_{SW}
+  \]
+<p>
+  Nevertheless, there is one exception that the vehicle can still hit the barrier in two
+  corners (point O and E) even when the above conditions are satisfied.
+<p>
+  <center><img src="iclocs-parallel-parking-3.jpg" alt="" width="50%"/></center>
+<p>
+  In order to avoid this, we require
+<p>
+  \[
+  Area(AEB)+Area(BEC)+Area(CED)+Area(DEA) \ge Area(ABCD)\\
+  Area(AOB)+Area(BOC)+Area(COD)+Area(DOA) \ge Area(ABCD)
+  \]
+<p>
+  Additionally we will have simple bounds
+<p>
+  \[
+  -0.75 \le a \le 0.75 \text{ [m/s\(^2\)]}\\
+  -2 \le v \le 2 \text{ [m/s]}\\
+  -33 \le \phi \le 33 \text{ [deg]}\\
+  -0.5 \le u_1 \le 0.5 \text{ [m/s\(^3\)]}
+  \]
+<p>
+  and boundary conditions
+<p>
+  \[
+  x(0)=l_{sl}+l_r, \ y(0)=1.5 \text{ [m]}, \ v(0)=0 \text{ [m/s]}, \ a(0)=0 \text{ [m/s\(^2\)]}, \
+  \theta(0) = 0 \text{ [deg]}, \ \phi(0) = 0 \text{ [deg]}\\
+  v(t_f)=0 \text{ [m/s]}, \ a(t_f)=0 \text{ [m/s\(^2\)]}, \
+  A_y(t_f) \le 0 \text{ [m]}, \ B_y(t_f) \le 0 \text{ [m]}, \ C_y(t_f) \le 0 \text{ [m]}, \ D_y(t_f) \le 0 \text{ [m]}
+  \]
+<p>
+  References:
+  <ol>
+  <li>B. Li, K. Wang, and Z. Shao,
+  <em>Time-optimal maneuver planning in automatic parallel parking using a simultaneous dynamic optimization approach</em>,
+  IEEE Transactions on Intelligent Transportation Systems, 17(11), pp. 3263-3274, 2016.
+  <li>P. Falugi, E. Kerrigan, E. van Wyk,
+  <em>Imperial College London Optimal Control Software User Guide (ICLOCS)</em>,
+  <a href="http://www.ee.ic.ac.uk/ICLOCS/user_guide.pdf">http://www.ee.ic.ac.uk/ICLOCS/user_guide.pdf</a>
+  </ol>
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  SL = 5
+  SW = 2
+  CL = 3.5
+  l_front = 0.8
+  l_axes = 2.5
+  l_rear = 0.7
+  b_width = 1.771/2
+  phi_max = <font color="#0074D9">deg2rad</font>(33)
+  a_max = 0.75
+  v_max = 2
+  u1_max = 0.5
+  curvature_dot_max = 0.6
+
+<font color="red"><b>var:</b></font>
+  tf
+
+<font color="red"><b>dyn:</b></font>
+  posx
+  posy
+  v	<font color="#808080"><i># velocity [m/s]</i></font>
+  a	<font color="#808080"><i># acceleration [m/s^2]</i></font>
+  theta <font color="#808080"><i># orientation angle [rad]</i></font>
+  phi	<font color="#808080"><i># steering angle [rad]</i></font>
+  u1
+  u2
+
+<font color="red"><b>lim:</b></font>
+  10 &lt;= tf &lt;= 20
+  -10 &lt;= posx &lt;= 15
+  -SW &lt;= posy &lt;= CL
+  -v_max &lt;= v &lt;= v_max
+  -<font color="#0074D9">deg2rad</font>(180) &lt;= theta &lt;= <font color="#0074D9">deg2rad</font>(180)
+  -phi_max &lt;= phi &lt;= phi_max
+  -a_max &lt;= a &lt;= a_max
+  -u1_max &lt;= u1 &lt;= u1_max
+  -curvature_dot_max*l_axes*<font color="#2ECC40">cos</font>(phi_max)^2 &lt;= u2 &lt;= curvature_dot_max*l_axes*<font color="#2ECC40">cos</font>(phi_max)^2
+
+<font color="red"><b>t=t0:</b></font>
+  posx = SL+l_rear
+  posy = 1.5
+  v = 0
+  a = 0
+  theta = 0
+  phi = 0
+
+<font color="red"><b>t=tf:</b></font>
+  l_rear &lt;= posx &lt;= SL
+  v = 0
+  a = 0
+  -<font color="#0074D9">deg2rad</font>(5) &lt;= theta &lt;= <font color="#0074D9">deg2rad</font>(5)
+  -<font color="#0074D9">deg2rad</font>(5) &lt;= phi &lt;= <font color="#0074D9">deg2rad</font>(5)
+
+<font color="red"><b>ini:</b></font>
+  tf = 14
+  posx = l_rear
+  posy = -SW/2
+  v = 0
+  theta = <font color="#0074D9">deg2rad</font>(1)
+  phi = 0
+  a = 0
+  u1 = 0
+  u2 = 0
+
+<font color="red"><b>par:</b></font>
+  Ax_p = (l_axes+l_front+l_rear)/2
+  Ay_p = b_width
+  Bx_p = (l_axes+l_front+l_rear)/2
+  By_p = -b_width
+  Cx_p = -(l_axes+l_front+l_rear)/2
+  Cy_p = -b_width
+  Dx_p = -(l_axes+l_front+l_rear)/2
+  Dy_p = b_width
+  AreaRef = (l_axes+l_front+l_rear)*2*b_width
+
+<font color="red"><b>exp:</b></font>
+  AreaTriangle(ax,ay,bx,by,cx,cy) == <font color="#2ECC40">sqrt</font>(1e-6+<font color="#2ECC40">sqr</font>((ax*(by-cy)+bx*(cy-ay)+cx*(ay-by))/2))
+
+  A_x == posx+(l_axes+l_front)*<font color="#2ECC40">cos</font>(theta)-b_width*<font color="#2ECC40">sin</font>(theta)
+  B_x == posx+(l_axes+l_front)*<font color="#2ECC40">cos</font>(theta)+b_width*<font color="#2ECC40">sin</font>(theta)
+  C_x == posx-l_rear*<font color="#2ECC40">cos</font>(theta)+b_width*<font color="#2ECC40">sin</font>(theta)
+  D_x == posx-l_rear*<font color="#2ECC40">cos</font>(theta)-b_width*<font color="#2ECC40">sin</font>(theta)
+
+  f_p_A_x == (-<font color="#2ECC40">tanh</font>(50*(A_x-0.1))+<font color="#2ECC40">tanh</font>(50*(A_x-SL+0.1)))/2*SW
+  f_p_B_x == (-<font color="#2ECC40">tanh</font>(50*(B_x-0.1))+<font color="#2ECC40">tanh</font>(50*(B_x-SL+0.1)))/2*SW
+  f_p_C_x == (-<font color="#2ECC40">tanh</font>(50*(C_x-0.1))+<font color="#2ECC40">tanh</font>(50*(C_x-SL+0.1)))/2*SW
+  f_p_D_x == (-<font color="#2ECC40">tanh</font>(50*(D_x-0.1))+<font color="#2ECC40">tanh</font>(50*(D_x-SL+0.1)))/2*SW
+
+  A_y == posy+(l_axes+l_front)*<font color="#2ECC40">sin</font>(theta)+b_width*<font color="#2ECC40">cos</font>(theta)
+  B_y == posy+(l_axes+l_front)*<font color="#2ECC40">sin</font>(theta)-b_width*<font color="#2ECC40">cos</font>(theta)
+  C_y == posy-l_rear*<font color="#2ECC40">sin</font>(theta)-b_width*<font color="#2ECC40">cos</font>(theta)
+  D_y == posy-l_rear*<font color="#2ECC40">sin</font>(theta)+b_width*<font color="#2ECC40">cos</font>(theta)
+
+  Ox_p == -posx*<font color="#2ECC40">cos</font>(theta)-posy*<font color="#2ECC40">sin</font>(theta)-(l_axes+l_front-l_rear)/2
+  Oy_p ==  posx*<font color="#2ECC40">sin</font>(theta)-posy*<font color="#2ECC40">cos</font>(theta)
+
+  Ex_p == -posx*<font color="#2ECC40">cos</font>(theta)-posy*<font color="#2ECC40">sin</font>(theta)-(l_axes+l_front-l_rear)/2+SL*<font color="#2ECC40">cos</font>(theta)
+  Ey_p ==  posx*<font color="#2ECC40">sin</font>(theta)-posy*<font color="#2ECC40">cos</font>(theta)-SL*<font color="#2ECC40">sin</font>(theta)
+
+  AreaO1 == AreaTriangle(Ox_p,Oy_p,Ax_p,Ay_p,Bx_p,By_p)
+  AreaO2 == AreaTriangle(Ox_p,Oy_p,Cx_p,Cy_p,Bx_p,By_p)
+  AreaO3 == AreaTriangle(Ox_p,Oy_p,Ax_p,Ay_p,Dx_p,Dy_p)
+  AreaO4 == AreaTriangle(Ox_p,Oy_p,Dx_p,Dy_p,Cx_p,Cy_p)
+  AreaO  == AreaO1+AreaO2+AreaO3+AreaO4
+
+  AreaE1 == AreaTriangle(Ex_p,Ey_p,Ax_p,Ay_p,Bx_p,By_p)
+  AreaE2 == AreaTriangle(Ex_p,Ey_p,Cx_p,Cy_p,Bx_p,By_p)
+  AreaE3 == AreaTriangle(Ex_p,Ey_p,Ax_p,Ay_p,Dx_p,Dy_p)
+  AreaE4 == AreaTriangle(Ex_p,Ey_p,Dx_p,Dy_p,Cx_p,Cy_p)
+  AreaE  == AreaE1+AreaE2+AreaE3+AreaE4
+
+<font color="red"><b>equ:</b></font>
+  posx&acute; == v * <font color="#2ECC40">cos</font>(theta)
+  posy&acute; == v * <font color="#2ECC40">sin</font>(theta)
+  v&acute; == a
+  a&acute; == u1
+  theta&acute; == v * <font color="#2ECC40">tan</font>(phi) / l_axes
+  phi&acute; == u2
+
+  -curvature_dot_max * l_axes * <font color="#2ECC40">sqr</font>(<font color="#2ECC40">cos</font>(phi)) &lt;= u2 &lt;=  curvature_dot_max * l_axes * <font color="#2ECC40">sqr</font>(<font color="#2ECC40">cos</font>(phi))
+
+  f_p_A_x &lt;= A_y &lt;= CL
+  f_p_B_x &lt;= B_y &lt;= CL
+  f_p_C_x &lt;= C_y &lt;= CL
+  f_p_D_x &lt;= D_y &lt;= CL
+
+  AreaO &gt;= AreaRef
+  AreaE &gt;= AreaRef
+
+  <font color="#0074D9">final</font>(A_y) &lt;= 0
+  <font color="#0074D9">final</font>(B_y) &lt;= 0
+  <font color="#0074D9">final</font>(C_y) &lt;= 0
+  <font color="#0074D9">final</font>(D_y) &lt;= 0
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> tf <font color="#8A2BE2">using</font> nlp <font color="#8A2BE2">with</font> ipopt
+</pre>
+</body>
+</html>

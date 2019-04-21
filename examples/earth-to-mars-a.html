@@ -1,0 +1,183 @@
+<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Two-dimensional low-thrust Earth-to-Mars trajectory optimization</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Two-dimensional low-thrust Earth-to-Mars trajectory optimization
+</pre>
+<p>
+  Optimize two-dimensional, heliocentric low-thrust trajectories between the orbits of Earth
+  and Mars for either minimum transfer time or maximum final mass,
+<p>
+  The trajectory optimization problem is modeled in a two-dimensional, heliocentric (sun-
+  centered) polar coordinate system. The planets are assumed to be in circular and coplanar
+  heliocentric orbits. No allowance is made for the eccentricity or orbital inclination of
+  the planetary orbits. Therefore, all orbital motion is confined to the ecliptic plane.
+<p>
+  The two-dimensional equations of motion in the polar coordinate system are given by
+<p>
+  \[
+  \dot{r} = u \\
+  \dot{u} = \frac{v^2}{r} - \frac{\mu}{r^2} + \eta \dfrac{T}{m} \sin \alpha \\
+  \dot{v} = -\frac{u v}{r} + \eta \frac{T}{m} \cos \alpha \\
+  \dot{\theta} = \frac{v}{r}
+  \]
+<p>
+  where \(r\) is the radial position, \(u\) the radial velocity, \(v\) the transverse
+  velocity, \(\theta\) the polar angle, \(T\) the propulsive thrust, \(\eta\) the throttle
+  setting, \(m\) the mass, \(\alpha\) the thrust angle and \(\mu\) the gravitational constant.
+<p>
+  The thrust angle is defined relative to the "local horizontal" or tangential direction at
+  the current position. It is measured positive above the local horizontal plane and negative
+  below. The in-plane thrust angle \(\alpha\) is the single control variable for this
+  problem. The throttle setting is normally a value greater than or equal to zero and less
+  than or equal to one.
+<p>
+  To "streamline" the numerical calculations, the fundamental distance, velocity and time in
+  the equations of motion are normalized. In the setting here after, all heliocentric
+  distances are normalized with respect to the Astronomical Unit. Likewise, all velocity
+  values are normalized with respect to the "local circular velocity" at the heliocentric
+  distance of the Earth&rsquo;s circular orbit. Therefore, the velocity unit is \(\sqrt{\mu}\).
+  Furthermore, all time values are normalized with respect to \(\sqrt{1/\mu}\).
+<p>
+  Reference:
+  <ol>
+  <li>David Eagle,
+  <em>Two-dimensional, Low-thrust Earth-to-Mars Trajectory Analysis with MATLAB</em>,
+  https://www.mathworks.com/matlabcentral/fileexchange/42374
+  </ol>
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  aunit = 149597870.691		<font color="#808080"><i># astronomical unit (kilometers)</i></font>
+  smu = 0.2959122082855912e-3	<font color="#808080"><i># gravitational constant of the sun (au^3/day^2)</i></font>
+  xmu = smu * aunit^3 / 86400^2	<font color="#808080"><i># gravitational constant of the sun (kilometer^3/second^2)</i></font>
+  tfactor = <font color="#2ECC40">sqrt</font>(1/smu)		<font color="#808080"><i># non-dimensional to dimensional time conversion factor</i></font>
+  mass0 = 5000			<font color="#808080"><i># initial mass (kilograms)</i></font>
+  thrmag = 3.5			<font color="#808080"><i># propulsive thrust (newtons)</i></font>
+  xisp = 3000			<font color="#808080"><i># specific impulse (seconds)</i></font>
+  acc_thrust = (0.001*thrmag/mass0)/(xmu/aunit^2)	<font color="#808080"><i># compute non-dimensional thrust acceleration ratio</i></font>
+  mdot = (thrmag/(9.80665*xisp))*86400			<font color="#808080"><i># compute normalized propellant flow rate</i></font>
+  mp_dot = (mdot/mass0)*tfactor
+  case = 2			<font color="#808080"><i># 1 = minimize tranfer time   2 = maximize final mass  </i></font>
+
+<font color="red"><b>var:</b></font>
+  throttle
+  tf		<font color="#808080"><i># non-dimensional simulation time</i></font>
+
+<font color="red"><b>dyn:</b></font>
+  r		<font color="#808080"><i># radial distance (astronomical unit)</i></font>
+  u		<font color="#808080"><i># radial component of velocity (au/day)</i></font>
+  v		<font color="#808080"><i># tangential component of velocity (au/day)</i></font>
+  theta		<font color="#808080"><i># polar angle (radians)</i></font>
+  p		<font color="#808080"><i># propellant mass</i></font>
+  y		<font color="#808080"><i># thrust derivative</i></font>
+  alpha		<font color="#808080"><i># steering angles (radians)</i></font>
+
+<font color="red"><b>lim:</b></font>
+  					<font color="#808080"><i># bounds for mission duration (days)</i></font>
+  (175$(case=1)+350$(case=2))/tfactor &lt;= tf &lt;= (225$(case=1)+350$(case=2))/tfactor
+  0 &lt;= throttle &lt;= 1			<font color="#808080"><i># bounds for throttle setting</i></font>
+  -Pi/2 &lt;= alpha &lt;= +Pi/2		<font color="#808080"><i># bounds for steering angles (radians)</i></font>
+  1 &lt;= r &lt;= 2
+
+<font color="red"><b>t=t0:</b></font>
+  r = 1
+  u = 0
+  v = 1
+  theta = 0
+  p = 0
+  y = 0
+
+<font color="red"><b>t=tf:</b></font>
+  r = 1.52368
+  u = 0
+  v = <font color="#2ECC40">sqrt</font>(1/r)
+
+<font color="red"><b>ini:</b></font>
+  throttle = 1
+  tf = (200$(case=1)+350$(case=2))/tfactor
+  alpha = <font color="#0074D9">deg2rad</font>(20)
+  r = <font color="#0074D9">linspace</font>(<font color="#0074D9">initial</font>(r),<font color="#0074D9">final</font>(r))
+  u = 0
+  v = <font color="#0074D9">linspace</font>(<font color="#0074D9">initial</font>(v),<font color="#0074D9">final</font>(v))
+  theta = 0
+  p = 0
+  y = 0
+
+<font color="red"><b>exp:</b></font>
+  accm == throttle * acc_thrust / (1 - mp_dot * <font color="#0074D9">Time</font>)
+
+<font color="red"><b>equ:</b></font>
+  r&acute; == u
+  u&acute; == (<font color="#2ECC40">sqr</font>(v) / r) - (1 / <font color="#2ECC40">sqr</font>(r)) + accm * <font color="#2ECC40">sin</font>(alpha)
+  v&acute; == -(u * v / r) + accm * <font color="#2ECC40">cos</font>(alpha)
+  theta&acute; == v / r
+  p&acute; == throttle * mp_dot	<font color="#808080"><i># propellant mass flowrate</i></font>
+  y&acute; == accm			<font color="#808080"><i># thrust acceleration</i></font>
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> tf$(case=1)+<font color="#0074D9">final</font>(p)$(case=2) <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#8A2BE2">@solveloop</font> Method=movavg, Paraml=3 0.95, Varl=alpha, Target=infes, Maxiter=3
+
+<font color="red"><b>gms:</b></font>
+  <font color="#3D9970">scalars</font> t, theta_earth, theta_mars, tau_earth, tau_mars, omega_earth, omega_mars,
+    jd_guess, jd_depart, tsynodic, transfer_time, transfer_angle, delta_t;
+  jd_guess = JDate(2020,06,20);
+  <font color="#808080"><i># celestial longitude of the Earth and Mars at jd_guess (degrees)</i></font>
+  t = (jd_guess - 2451545) / 36525;
+  theta_earth = <font color="#2ECC40">mod</font>(100.466449 + 35999.3728519 * t - 0.00000568 * <font color="#2ECC40">sqr</font>(t), 360);
+  theta_mars = <font color="#2ECC40">mod</font>(355.433275 + 19140.2993313 * t + 0.00000261 * <font color="#2ECC40">sqr</font>(t), 360);
+  <font color="#808080"><i># orbital period of the Earth and Mars (days)</i></font>
+  tau_earth = 2*Pi * <font color="#2ECC40">sqrt</font>(aunit^3 / xmu) / 86400;
+  tau_mars = 2*Pi * <font color="#2ECC40">sqrt</font>((aunit * 1.52368)^3 / xmu) / 86400;
+  <font color="#808080"><i># orbital rate of the Earth and Mars (degrees/day)</i></font>
+  omega_earth = 360 / tau_earth;
+  omega_mars = 360 / tau_mars;
+  <font color="#808080"><i># compute change to initial guess (days)</i></font>
+  transfer_time = tfactor * tf.l;
+  transfer_angle = <font color="#0074D9">rad2deg</font>(<font color="#0074D9">final</font>(theta.l));
+  delta_t = (theta_mars + omega_mars * transfer_time - theta_earth - transfer_angle) / (omega_earth - omega_mars);
+  <font color="#808080"><i># departure julian date</i></font>
+  jd_depart = jd_guess + <font color="#2ECC40">abs</font>(delta_t);
+  <font color="#808080"><i># synodic period (days)</i></font>
+  tsynodic = 360 / <font color="#2ECC40">abs</font>(omega_earth - omega_mars);
+  <font color="#3D9970">display</font> transfer_time, transfer_angle, tsynodic;
+  <font color="#808080"><i># celestial longitude of the Earth at departure (radians)</i></font>
+  t = (jd_depart - 2451545) / 36525;
+  theta_earth = <font color="#0074D9">deg2rad</font>(<font color="#2ECC40">mod</font>(100.466449 + 35999.3728519 * t - 0.00000568 * <font color="#2ECC40">sqr</font>(t), 360));
+  <font color="#8B0000">$$ondotl</font>
+  <font color="#8A2BE2">@tpa</font> xau = r*<font color="#2ECC40">cos</font>(theta+theta_earth);
+  <font color="#8A2BE2">@tpa</font> yau = r*<font color="#2ECC40">sin</font>(theta+theta_earth);
+  <font color="#8A2BE2">@tpa</font> xearth = <font color="#0074D9">initial</font>(r)*<font color="#2ECC40">cos</font>(<font color="#0074D9">Time</font>/tf*2*Pi);
+  <font color="#8A2BE2">@tpa</font> yearth = <font color="#0074D9">initial</font>(r)*<font color="#2ECC40">sin</font>(<font color="#0074D9">Time</font>/tf*2*Pi);
+  <font color="#8A2BE2">@tpa</font> xmars = <font color="#0074D9">final</font>(r)*<font color="#2ECC40">cos</font>(<font color="#0074D9">Time</font>/tf*2*Pi);
+  <font color="#8A2BE2">@tpa</font> ymars = <font color="#0074D9">final</font>(r)*<font color="#2ECC40">sin</font>(<font color="#0074D9">Time</font>/tf*2*Pi);
+  <font color="#8B0000">$$offdotl</font>
+  <font color="#8A2BE2">@csvsave</font> xau yau xearth yearth xmars ymars
+  
+<font color="red"><b>gpl:</b></font>
+  <font color="#8A2BE2">@plotYX</font> yau, xau, "Two-dimensional Earth-to-Mars Low-thrust Trajectory", "Y coordinate [AU]", "X coordinate [AU]"
+  <font color="#808080"><i># replot with Earth and Mars orbits</i></font>
+  set size ratio -1
+  plot dfil using "xau":"yau" notitle with lines, \
+       dfil using "xearth":"yearth" notitle with lines lc rgb "green", \
+       dfil using "xmars":"ymars" notitle with lines lc rgb "red"
+</pre>
+</body>
+</html>

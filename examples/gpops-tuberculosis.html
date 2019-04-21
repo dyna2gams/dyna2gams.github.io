@@ -1,0 +1,92 @@
+<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Two-Strain Tuberculosis Optimal Control Model</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Two-Strain Tuberculosis Optimal Control Model
+</pre>
+<p>
+  This problem is taken from the following reference:
+  <ol>
+  <li>Betts, J. T.,
+  <em>Practical Methods for Optimal Control and Estimation Using Nonlinear Programming</em>,
+  SIAM Press, Philadelphia, PA, 2009.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  beta1 = 13
+  beta2 = 13
+  mu = 0.0143
+  d1 = 0
+  d2 = 0
+  k1 = 0.5
+  k2 = 1
+  r1 = 2
+  r2 = 1
+  p = 0.4
+  q = 0.1
+  Npop = 30000
+  betas = 0.029
+  B1 = 50
+  B2 = 500
+  lam = mu * Npop
+  m0 = 1
+  dm = 0.0749
+  tf = 5
+
+<font color="red"><b>dyn:</b></font>
+  S T L1 L2 I1 I2 u1 u2 j
+
+<font color="red"><b>lim:</b></font>
+  0.05 &lt;= u1 &lt;= 0.95
+  0.05 &lt;= u2 &lt;= 0.95
+
+<font color="red"><b>t=t0:</b></font>
+  S = 76 * Npop/120
+  T = Npop/120
+  L1 = 36 * Npop/120
+  L2 = 2 * Npop/120
+  I1 = 4 * Npop/120
+  I2 = 1 * Npop/120
+  j = 0
+
+<font color="red"><b>ini:</b></font>
+  S = 76 * Npop/120
+  T = Npop/120
+  L1 = 36 * Npop/120
+  L2 = 2 * Npop/120
+  I1 = 4 * Npop/120
+  I2 = 1 * Npop/120
+  u1 = 0.95
+  u2 = 0.95
+  j = 0
+
+<font color="red"><b>equ:</b></font>
+  S&acute; == lam - (beta1*S*I1 + betas*S*I2) / Npop - mu*S
+  T&acute; == u1*r1*L1 - mu*T + (1-(1-u2)*(p+q))*r2*I1 - (beta2*T*I1 + betas*T*I2) / Npop
+  L1&acute; == (beta1*S*I1 + beta2*T*I1 - betas*L1*I2) / Npop - (mu+k1)*L1 - u1*r1*L1 + (1-u2)*p*r2*I1
+  L2&acute; == (1-u2)*q*r2*I1 - (mu+k2)*L2 + betas*(S+L1+T)*I2/Npop
+  I1&acute; == k1*L1 - (mu+d1)*I1 - r2*I1
+  I2&acute; == k2*L2 - (mu+d2)*I2
+  j&acute; == L2 + I2 + B1/2*u1*u1 + B2/2*u2*u2
+  S + L1 + I1 + L2 + I2 + T &lt;= Npop
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(j) <font color="#8A2BE2">using</font> nlp
+</pre>
+</body>
+</html>

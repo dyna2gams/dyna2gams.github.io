@@ -1,0 +1,228 @@
+<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Multiple-Stage Launch Vehicle Ascent Example</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Multiple-Stage Launch Vehicle Ascent Example
+</pre>
+<p>
+  The problem considered in this section is the ascent of a multiple-stage launch vehicle. The
+  objective is to maneuver the launch vehicle from the ground to the target orbit while maximizing the
+  remaining fuel in the upper stage. It is noted that this example is found verbatim in Refs. 1 and 2.
+<p>
+  The goal of this launch vehicle ascent problem is to steer the vehicle from launch to a geostationary
+  transfer orbit (GTO). The motion of the vehicle is divided into four distinct phases. Phase 1 starts
+  with the vehicle on the ground and terminates when the fuel of the first set of solid rocket boosters
+  is depleted. Upon termination of Phase 1 the first set of solid rocket boosters are dropped. Phase 2
+  starts where Phase 1 terminates and terminates when the fuel of the second set of solid rockets
+  boosters is depleted. Phase 3 starts when Phase 2 terminates and terminates when the fuel of the first
+  main engine fuel is depleted. Finally, Phase 4 starts where Phase 3 terminates and terminates when the
+  vehicle reaches the final GTO. The vehicle data for this problem is taken verbatim from Ref. 1 or 2.
+<p>
+  References:
+  <ol>
+  <li>Rao, A. V., Benson, D. A., Darby, C. L., Patterson, M. A., Francolin, C. Sanders, I., and Huntington, G. T.,
+  <em>Algorithm 902: GPOPS, A MATLAB Software for Solving Multiple-Phase Optimal Control Problems
+  Using the Gauss Pseudospectral Method</em>,
+  ACM Transactions on Mathematical Software, Vol. 37, No. 2, April-June 2010, Article No. 22, pp. 1-39.
+  <li>Betts, J. T.,
+  <em>Practical Methods for Optimal Control and Estimation Using Nonlinear Programming</em>,
+  SIAM Press, Philadelphia, 2009.
+  </ol>
+<p>
+  This problem highlights different features of Dyna:
+  <ul>
+  <li>multi-phase representation
+  <li>scaling of variables
+  <li>indexation of variables
+  <li>conversion between Spherical and Cartesian coordinates
+  </ul>
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">default-time-steps-number</font> = 12
+  
+<font color="red"><b>set:</b></font>
+  phase = ph1:ph4
+  <font color="#8A2BE2">alias</font>(ph,phase)
+
+<font color="red"><b>par:</b></font>
+  tf = 1
+  t{1:3} = {75.2 150.4 261}
+
+<font color="red"><b>var:</b></font>
+  tlen[phase]
+
+<font color="red"><b>lim:</b></font>
+      t1 &lt;= tlen['ph1'] &lt;= t1
+   t2-t1 &lt;= tlen['ph2'] &lt;= t2-t1
+   t3-t2 &lt;= tlen['ph3'] &lt;= t3-t2
+  961-t3 &lt;= tlen['ph4'] &lt;= 1200-t3
+
+<font color="#8B0000">$macro</font> linspacebyphase(a,b) (a+(b-(a))*linspace(sum(ph$(ord(ph)&lt;ord(phase)),tlen[ph]),sum(ph$(ord(ph)&lt;=ord(phase)),tlen[ph]))/sum(ph,tlen[ph]))
+<font color="#808080"><i>*macro linspacebyphase(a,b) (a+(b-(a))*linspace(ord(phase)-1,ord(phase))/card(phase))</i></font>
+
+<font color="red"><b>set:</b></font>
+  <font color="#8A2BE2">alias</font>(cc,cc_,<font color="#0074D9">CartesianCoordinates</font>)
+  <font color="#8A2BE2">alias</font>(sc,<font color="#0074D9">SphericalCoordinates</font>)
+
+<font color="red"><b>par:</b></font>
+  earthRadius = 6378145
+  gravParam = 3.986012e14
+  initialMass = 301454
+  earthRotRate = 7.29211585e-5
+  seaLevelDensity = 1.225
+  densityScaleHeight = 7200
+  g0 = 9.80665
+
+  omega(cc) = <font color="#0074D9">CartesianFromScalars</font>(cc,0,0,earthRotRate)
+  mu = gravParam
+  cd = 0.5
+  sa = 4*Pi
+  rho0 = seaLevelDensity
+  HH = densityScaleHeight
+  Re = earthRadius
+  lat0 = 28.5/180*Pi
+  r0(cc) = Re*<font color="#0074D9">CartesianFromScalars</font>(cc,<font color="#2ECC40">cos</font>(lat0),0,<font color="#2ECC40">sin</font>(lat0))
+  unitr0(cc) = r0(cc)/<font color="#0074D9">CartesianNorm</font>(cc_,r0(cc_))
+  vrel0 = 5
+  v0(cc) = vrel0*unitr0(cc) + <font color="#0074D9">CartesianCrossProduct</font>(cc,cc_,omega(cc_),r0(cc_))
+  btSrb = 75.2
+  btFirst = 261
+  btSecond = 700
+  mTotSrb = 19290
+  mPropSrb = 17010
+  mDrySrb = mTotSrb - mPropSrb
+  mTotFirst = 104380
+  mPropFirst = 95550
+  mDryFirst = mTotFirst - mPropFirst
+  mTotSecond = 19300
+  mPropSecond = 16820
+  mDrySecond = mTotSecond - mPropSecond
+  mPayload = 4164
+  ThrustSrb = 628500
+  ThrustFirst = 1083100
+  ThrustSecond = 110094
+  mdotSrb = mPropSrb / btSrb
+  ispSrb = ThrustSrb / (g0 * mdotSrb)
+  mdotFirst = mPropFirst / btFirst
+  ispFirst = ThrustFirst / (g0 * mdotFirst)
+  mdotSecond = mPropSecond / btSecond
+  ispSecond = ThrustSecond / (g0 * mdotSecond)
+  m10 = mPayload + mTotSecond + mTotFirst + 9*mTotSrb
+  m1f = m10 - (6*mdotSrb+mdotFirst)*t1
+  m20 = m1f - 6*mDrySrb
+  m2f = m20 - (3*mdotSrb+mdotFirst)*(t2-t1)
+  m30 = m2f - 3*mDrySrb
+  m3f = m30 - mdotFirst*(t3-t2)
+  m40 = m3f - mDryFirst
+  m4f = mPayload
+  rmin = -2*Re; rmax = -rmin
+  vmin = -10000; vmax = -vmin
+  rf(cc) = <font color="#0074D9">CartesianFromScalars</font>(cc,4397287.4,4243769.0,2379474.6)
+  vf(cc) = <font color="#0074D9">CartesianFromScalars</font>(cc,  -5826.7,   7819.6,  -3178.4)
+
+<font color="red"><b>dyn:</b></font>
+  t[phase]
+  r[cc,phase]			<font color="#808080"><i># the Cartesian ECI position</i></font>
+  v[cc,phase]			<font color="#808080"><i># the Cartesian ECI velocity</i></font>
+  m[phase]			<font color="#808080"><i># the mass</i></font>
+  u[sc,phase] :: <font color="#7FDBFF">controls</font>	<font color="#808080"><i># in spherical coordinates</i></font>
+  rr[phase]
+  vrel[cc,phase] vrelr[phase]
+  Drag[cc,phase]
+  Grav[cc,phase]
+  Thrust[cc,phase]
+
+<font color="red"><b>lim:</b></font>
+  rmin &lt;= r[cc,phase] &lt;= rmax
+  vmin &lt;= v[cc,phase] &lt;= vmax
+  <font color="#0074D9">SphericalFromScalars</font>(sc,1,0,-Pi) &lt;= u[sc,phase] &lt;= <font color="#0074D9">SphericalFromScalars</font>(sc,1,Pi,Pi)
+  1 &lt;= m[phase] &lt;= +<font color="#3D9970">inf</font>
+  Re &lt;= rr[phase] &lt;= +<font color="#3D9970">inf</font>
+
+<font color="red"><b>t=t0:</b></font>
+  t['ph1'] = 0
+  r[cc,'ph1'] = r0[cc]
+  v[cc,'ph1'] = v0[cc]
+  m['ph1'] = m10
+
+<font color="red"><b>t=tf:</b></font>
+  r[cc,'ph4'] = rf[cc]
+  v[cc,'ph4'] = vf[cc]
+
+<font color="red"><b>exp:</b></font>
+  mdot1 == -6*ThrustSrb/(g0*ispSrb) - ThrustFirst/(g0*ispFirst)
+  mdot2 == -3*ThrustSrb/(g0*ispSrb) - ThrustFirst/(g0*ispFirst)
+  mdot3 == -ThrustFirst/(g0*ispFirst)
+  mdot4 == -ThrustSecond/(g0*ispSecond)
+  TTot1 == 6*ThrustSrb + ThrustFirst
+  TTot2 == 3*ThrustSrb + ThrustFirst
+  TTot3 == ThrustFirst
+  TTot4 == ThrustSecond
+  rho == rho0*<font color="#2ECC40">exp</font>(-(rr[phase]-Re)/HH)
+  bcspeed == rho/(2*m[phase])*sa*cd*vrelr[phase]
+  mdot == mdot1$<font color="#2ECC40">sameas</font>(phase,'ph1') + mdot2$<font color="#2ECC40">sameas</font>(phase,'ph2') + mdot3$<font color="#2ECC40">sameas</font>(phase,'ph3') + mdot4$<font color="#2ECC40">sameas</font>(phase,'ph4')
+  TTot == TTot1$<font color="#2ECC40">sameas</font>(phase,'ph1') + TTot2$<font color="#2ECC40">sameas</font>(phase,'ph2') + TTot3$<font color="#2ECC40">sameas</font>(phase,'ph3') + TTot4$<font color="#2ECC40">sameas</font>(phase,'ph4')
+  TimeDot == tlen[phase] / tf
+
+<font color="red"><b>ini:</b></font>
+  t[phase] = linspacebyphase(0,t3+tlen['ph4']);
+  u[sc,phase] = <font color="#0074D9">SphericalFromScalars</font>(sc,1,linspacebyphase(1,2),linspacebyphase(-0.5,2))
+  r[cc,phase] = <font color="#0074D9">CartesianFromSpherical</font>(cc,sc,linspacebyphase(<font color="#0074D9">SphericalFromCartesian</font>(sc,cc_,(r0(cc_))),<font color="#0074D9">SphericalFromCartesian</font>(sc,cc_,(rf(cc_)))))
+  rr[phase] = <font color="#0074D9">CartesianNorm</font>(cc_,(r[cc_,phase]))
+  v[cc,phase] = linspacebyphase(v0(cc),vf(cc))
+  vrel[cc,phase] = v[cc,phase] - <font color="#0074D9">CartesianCrossProduct</font>(cc,cc_,(omega(cc_)),(r[cc_,phase]))
+  vrelr[phase] = <font color="#0074D9">CartesianNorm</font>(cc_,(vrel[cc_,phase]))
+  m[phase] = <font color="#0074D9">linspace</font>(m10,m1f)$<font color="#2ECC40">sameas</font>(phase,'ph1')+<font color="#0074D9">linspace</font>(m20,m2f)$<font color="#2ECC40">sameas</font>(phase,'ph2')+<font color="#0074D9">linspace</font>(m30,m3f)$<font color="#2ECC40">sameas</font>(phase,'ph3')+<font color="#0074D9">linspace</font>(m40,m4f)$<font color="#2ECC40">sameas</font>(phase,'ph4')
+  Drag[cc,phase] = -bcspeed*vrel[cc,phase]
+  Grav[cc,phase] = -mu/rr[phase]^3*r[cc,phase]
+  Thrust[cc,phase] = TTot/m[phase]*<font color="#0074D9">CartesianFromSpherical</font>(cc,sc,(u[sc,phase]))
+
+<font color="red"><b>sca:</b></font>
+  u[sc,phase] = 1e+00
+  t[phase] = 1e+3
+  r[cc,phase] = 1e+06; rr[phase] = 1e+06
+  v[cc,phase] = 1e+03
+  vrel[cc,phase] = 1e+03; vrelr[phase] = 1e+03
+  m[phase] = 1e+04
+  Drag[cc,phase] = 1e-01
+  Grav[cc,phase] = 1e+00
+  Thrust[cc,phase] = 1e+01
+
+<font color="red"><b>equ:</b></font>
+  rr[phase] == <font color="#0074D9">CartesianNorm</font>(cc_,(r[cc_,phase]))
+
+  vrel[cc,phase] == v[cc,phase] - <font color="#0074D9">CartesianCrossProduct</font>(cc,cc_,(omega(cc_)),(r[cc_,phase]))
+  vrelr[phase] == <font color="#0074D9">CartesianNorm</font>(cc_,(vrel[cc_,phase]))
+
+  Drag[cc,phase] == - bcspeed*vrel[cc,phase]
+  Grav[cc,phase] == - mu/rr[phase]^3*r[cc,phase]
+  Thrust[cc,phase] == TTot/m[phase]*<font color="#0074D9">CartesianFromSpherical</font>(cc,sc,(u[sc,phase]))
+
+  t&acute;[phase]    / TimeDot == 1
+  r&acute;[cc,phase] / TimeDot == v[cc,phase]
+  v&acute;[cc,phase] / TimeDot == Thrust[cc,phase] + Drag[cc,phase] + Grav[cc,phase]
+  m&acute;[phase]    / TimeDot == mdot
+
+  <font color="#8A2BE2">@linkphases</font> -x m
+  [phase]$((<font color="#3D9970">ord</font>(phase)&lt;<font color="#3D9970">card</font>(phase))<font color="#8A2BE2">$once</font>).. <font color="#0074D9">initial</font>(m[phase+1]) == <font color="#0074D9">final</font>(m[phase]) + (m20-m1f)$<font color="#2ECC40">sameas</font>(phase,'ph1') + (m30-m2f)$<font color="#2ECC40">sameas</font>(phase,'ph2') + (m40-m3f)$<font color="#2ECC40">sameas</font>(phase,'ph3')
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">maximize</font> <font color="#0074D9">final</font>(m['ph4']) <font color="#8A2BE2">using</font> nlp
+</pre>
+</body>
+</html>
