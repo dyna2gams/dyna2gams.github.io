@@ -1,0 +1,118 @@
+<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Optimal control of a simplified Manutec R3 robot with three arms</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Optimal control of a simplified Manutec R3 robot with three arms
+</pre>
+<p>
+  Source: PSOPT - Optimal Control Solver, User Manual, Release 4 build 2015
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  g = 9.81		<font color="#808080"><i># Gravity constant [m/s2]</i></font>
+  pl = 0.0		<font color="#808080"><i># Point mass of load [kg]</i></font>
+  Ia1 = 1.16		<font color="#808080"><i># Moment of inertia of arm 1, element (3,3) [kgm^2]</i></font>
+  Fc{1:3} = {-126.0 252.0 72.0}	<font color="#808080"><i># Voltage-force constant of motor [N*m/V]</i></font>
+  r{1:3} = {-105 210 60}	<font color="#808080"><i># Gear ratio of motor</i></font>
+  Im{1:3} = 1.3e-3	<font color="#808080"><i># Moment of inertia of motor [kg*m^2]</i></font>
+  m1 = 56.5
+  m2 = 60.3		<font color="#808080"><i># Mass of arm 2 and 3 [kg]</i></font>
+  L1 = 0.5
+  L2 = 0.98		<font color="#808080"><i># Length of arm 2 and 3 (inc. tool) [m]</i></font>
+  com11 = 0.172
+  com12 = 0.028
+  com21 = 0.205
+  com22 = 0.202		<font color="#808080"><i># Center of mass coordinates of arm 2 and 3 [m]</i></font>
+  Ia11 = 2.58
+  Ia12 = 11.0
+  Ia21 = 2.73
+  Ia22 = 8.0
+  Ia31 = 0.64
+  Ia32 = 0.80
+  Ia41 = -0.46
+  Ia42 = 0.50		<font color="#808080"><i># Moment of inertia arm 2 and 3 [kg*m^2]</i></font>
+  case = 3
+
+<font color="red"><b>var:</b></font>
+  tf
+
+<font color="red"><b>dyn:</b></font>
+  <font color="#808080"><i># q1 = relative angle between fundament and arm 1</i></font>
+  <font color="#808080"><i># q2 = relative angle between arm 1 and arm 2</i></font>
+  <font color="#808080"><i># q3 = relative angle between arm 2 and arm 3</i></font>
+  q{1:3} qdot{1:3}	<font color="#808080"><i># state variables</i></font>
+  u{1:3}		<font color="#808080"><i># control variables</i></font>
+  J			<font color="#808080"><i># criterion</i></font>
+  qddot{1:3}		<font color="#808080"><i># auxiliary variables</i></font>
+
+<font color="red"><b>lim:</b></font>
+  {-2.97 -2.01 -2.86} &lt;= q{1:3}    &lt;= {2.97 2.01 2.86}
+  {-3.0  -1.5  -5.2}  &lt;= qdot{1:3} &lt;= {3.0  1.5  5.2}
+  -7.5 &lt;= u{1:3} &lt;= 7.5
+  0.53$(case=3) &lt;= tf &lt;= 1$(case=1) + 1$(case=2) + 0.53$(case=3)
+
+<font color="red"><b>t=t0:</b></font>
+  q{1:3} = {0 -1.5 0}	<font color="#808080"><i># Initial joint positions in rad</i></font>
+  qdot{1:3} = 0		<font color="#808080"><i># Initial joint velocities in rad/s</i></font>
+  J = 0
+
+<font color="red"><b>t=tf:</b></font>
+  q{1:3} = {1 -1.95 1}	<font color="#808080"><i># Final joint positions in rad</i></font>
+  qdot{1:3} = 0		<font color="#808080"><i># Final joint velocities in rad/s</i></font>
+
+<font color="red"><b>ini:</b></font>
+  q{1:3} = <font color="#0074D9">linspace</font>(<font color="#0074D9">initial</font>(q{1:3}),<font color="#0074D9">final</font>(q{1:3}))
+  qdot{1:3} = <font color="#0074D9">linspace</font>(<font color="#0074D9">initial</font>(qdot{1:3}),<font color="#0074D9">final</font>(qdot{1:3}))
+
+<font color="red"><b>exp:</b></font>
+  <font color="#808080"><i>#  Components of the symmetric and positive definite mass matrix M(x,p), a 3x3 matrix</i></font>
+  M11 == Ia1 + r1*r1*Im1 + com12^2*m2 + com11^2*m1 + Ia31*<font color="#2ECC40">sqr</font>(<font color="#2ECC40">cos</font>(q2)) + (Ia21 + com21^2*m1)*<font color="#2ECC40">sqr</font>(<font color="#2ECC40">sin</font>(q2)) + Ia32*<font color="#2ECC40">sqr</font>(<font color="#2ECC40">cos</font>(q2+q3)) \
+      + Ia22*<font color="#2ECC40">sqr</font>(<font color="#2ECC40">sin</font>(q2+q3)) + pl*<font color="#2ECC40">sqr</font>(L1*<font color="#2ECC40">sin</font>(q2) + L2*<font color="#2ECC40">sin</font>(q2+q3)) + m2*<font color="#2ECC40">sqr</font>(L1*<font color="#2ECC40">sin</font>(q2) + com22*<font color="#2ECC40">sin</font>(q2+q3))
+  M13 == (Ia42 - com12*com22*m2)*<font color="#2ECC40">cos</font>(q2+q3)
+  M12 == (Ia41 - com12*L1*m2 - com11*com21*m1)*<font color="#2ECC40">cos</font>(q2) + M13
+  M22 == Ia12 + Ia11 + r2*r2*Im2 + com21^2*m1 + (com22^2 + L1^2)*m2 + (L2^2 + L1^2)*pl + 2*L1*(com22*m2 + L2*pl)*<font color="#2ECC40">cos</font>(q3)
+  M23 == Ia12 + r3*Im3 + com22^2*m2 + L2^2*pl + L1*(com22*m2 + L2*pl)*<font color="#2ECC40">cos</font>(q3)
+  M33 == Ia12 + r3*r3*Im3 + com22^2*m2 + L2^2*pl
+  M21 == M12
+  M31 == M13
+  M32 == M23
+  <font color="#808080"><i># Gravitational forces G</i></font>
+  G2 == g*(com21*m1 + L1*(m2 + pl))*<font color="#2ECC40">sin</font>(q2) + g*(com22*m2 + L2*pl)*<font color="#2ECC40">sin</font>(q2+q3)
+  G3 == g*(com22*m2 + L2*pl)*<font color="#2ECC40">sin</font>(q2+q3)
+  <font color="#808080"><i># Coriolis and centrifugal force components Gamma and H</i></font>
+  Gamma1 == (Ia31 - Ia21 - com21^2*m1 - L1^2*(m2+pl))*<font color="#2ECC40">cos</font>(q2)*<font color="#2ECC40">sin</font>(q2) - L1*(com22*m2 + L2*pl)*<font color="#2ECC40">sin</font>(q2)*<font color="#2ECC40">cos</font>(q2+q3) + Gamma2
+  Gamma2 == (Ia32 - Ia22 - com22^2*m2 - L2^2*pl)*<font color="#2ECC40">sin</font>(q2+q3)*<font color="#2ECC40">cos</font>(q2+q3) - L1*(com22*m2 + L2*pl)*<font color="#2ECC40">sin</font>(q2)*<font color="#2ECC40">cos</font>(q2+q3)
+  Gamma3 == (Ia41 - com12*L1*m2 - com11*com21*m1)*<font color="#2ECC40">sin</font>(q2) + Gamma4
+  Gamma4 == (Ia42 - com12*com22*m2)*<font color="#2ECC40">sin</font>(q2+q3)
+  Gamma5 == L1*(com22*m2 + L2*pl)
+  H1 == 2*q1*(Gamma1*q2 + Gamma2*q3) + Gamma3*<font color="#2ECC40">sqr</font>(q2) + Gamma4*(2*q2 + q3)*q3
+  H2 == -Gamma1*<font color="#2ECC40">sqr</font>(q1) + Gamma5*(2*q2 + q3)*q3
+  H3 == -Gamma2*<font color="#2ECC40">sqr</font>(q1) - Gamma5*<font color="#2ECC40">sqr</font>(q2)
+
+<font color="red"><b>equ:</b></font>
+  q{1:3}&acute; == qdot{1:3}
+  qdot{1:3}&acute; == qddot{1:3}
+  M11*qddot1 + M12*qddot2 + M13*qddot3 == Fc1*u1      + H1
+  M21*qddot1 + M22*qddot2 + M23*qddot3 == Fc2*u2 + G2 + H2
+  M31*qddot1 + M32*qddot2 + M33*qddot3 == Fc3*u3 + G3 + H3
+  J&acute; == u1*u1 + u2*u2 + u3*u3
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> tf$(case=1)+(tf+1e-5*<font color="#0074D9">final</font>(J))$(case=2)+<font color="#0074D9">final</font>(J)$(case=3) <font color="#8A2BE2">using</font> nlp
+</pre>
+</body>
+</html>

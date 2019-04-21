@@ -1,0 +1,129 @@
+<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">MPC control of a citation aircraft</h1>
+<pre>
+<font color="red"><b>rem:</b></font> MPC control of a citation aircraft
+</pre>
+<p>
+  The following is a constant-speed approximation of some of the linearised dynamics
+  of a Cessna Citation 500 aircraft, when it is cruising at an altitude of 5000 m and
+  a speed of 128.2 m/sec. The elevator angle (rad) is the only input; the pitch angle
+  (rad), altitude (m), and altitude rate (m/s) are outputs.
+<p>
+  The elevator angle is limited to &plusmn;15&deg; (&plusmn;0.262 rad), and the
+  elevator slew rate is limited to &plusmn;30&deg;/sec (&plusmn;0.524 rad/sec). These
+  are limits imposed by the equipment design, and cannot be exceeded. For passenger
+  comfort the pitch angle is limited to &plusmn;20&deg; (&plusmn;0.349 rad).
+<p>
+  We contemplate the response to a step change of 400 m in the altitude set-point at
+  time 1 sec, with set-points for pitch angle and altitude rate held at 0, and the
+  reference trajectory equal to the set-point.
+<p>
+  Reference:
+  <ol>
+  <li>J.M. Maciejowski,
+  <em>Predictive control with constraints</em>,
+  Prentice Hall, 2000.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  te = 0.5
+  tf = 20
+
+<font color="red"><b>mpc:</b></font>
+  <font color="#39CCCC">sampling-time</font> = te
+  <font color="#39CCCC">horizon</font> = K0:K10
+  <font color="#39CCCC">states</font> = x{1:4}
+  <font color="#39CCCC">inputs</font> = u
+  <font color="#39CCCC">outputs</font> = z{1:3}
+  <font color="#39CCCC">A</font> =     x1        x2        x3        x4
+    x1    -1.2822   0         0.9800    0
+    x2     0        0         1         0
+    x3    -5.4293   0        -1.8366    0
+    x4  -128.2000 128.2000    0         0  
+  <font color="#39CCCC">B</font> =     u     
+    x1   -0.3
+    x2    0
+    x3  -17
+    x4    0
+  <font color="#39CCCC">C</font> =     x1    x2    x3    x4
+    z1     0     1     0     0
+    z2     0     0     0     1
+    z3  -128.2 128.2   0     0
+  <font color="#39CCCC">lb</font> =
+    u  -0.262 
+    u&acute; -0.524*te 
+    z1 -0.349
+  <font color="#39CCCC">ub</font> =
+    u  +0.262 
+    u&acute; +0.524*te
+    z1 +0.349
+  <font color="#39CCCC">Q</font> =   z1  z2   z3
+    z1   0   0   0
+    z2   0   1   0
+    z3   0   0   0
+  <font color="#39CCCC">horizon-Q</font> = K1:K10
+  <font color="#39CCCC">R</font> =    u  
+    u    1
+  <font color="#39CCCC">horizon-R</font> = K0:K2
+  <font color="#39CCCC">decay</font> = 0
+
+<font color="red"><b>dyn:</b></font>
+  x{1:4}	<font color="#808080"><i># angle of attack (rad), pitch angle (rad), pitch rate (rad/sec), altitude (m)</i></font>
+  z{1:3}	<font color="#808080"><i># measured outputs: pitch angle (rad), altitude (m), altitude rate (m/s)</i></font>
+  u		<font color="#808080"><i># elevator angle (rad)</i></font>
+
+<font color="red"><b>t=t0:</b></font>
+  x{1:4} = 0
+
+<font color="red"><b>par:</b></font>					<font color="#808080"><i># pseudo parameters updated by dcc</i></font>
+  tm = 0
+  tk = 0
+  ue
+
+<font color="red"><b>mac:</b></font>
+  @dcc(u)				<font color="#808080"><i># digital computer control</i></font>
+    <font color="#3D9970">if</font>(<font color="#0074D9">Time</font> &gt;= tf/20,			<font color="#808080"><i># desired output</i></font>
+      mpc_s('Z2',kk_) = 400;
+    <font color="#3D9970">else</font>
+      mpc_s('Z{1:3}',kk_) = 0;
+      );
+    <font color="#3D9970">if</font>(<font color="#0074D9">Time</font> &gt;= tm,			<font color="#808080"><i># compare current time and sampling time</i></font>
+      mpc_uo('U') = <font color="#0074D9">last</font>(u);		<font color="#808080"><i># sampling</i></font>
+      mpc_x.fx('X{1:4}','K0') = <font color="#0074D9">last</font>(x{1:4}); <font color="#808080"><i># Note: I should use the z's only and estimate all the x's</i></font>
+      tm = tm + te			<font color="#808080"><i># reset sampling time</i></font>
+      );
+    <font color="#3D9970">if</font>(<font color="#0074D9">Time</font> &gt;= tk,			<font color="#808080"><i># compare current time and control time</i></font>
+      <font color="#3D9970">solve</font> mpc minimizing mpc_ksi using nlp;
+      &u = mpc_u.l('U','K0');		<font color="#808080"><i># update control</i></font>
+      tk = tk + te			<font color="#808080"><i># reset control time</i></font>
+      );
+
+<font color="red"><b>sim:</b></font>
+  z1 := x2
+  z2 := x4
+  z3 := -128.2*x1 + 128.2*x2
+  @dcc(ue)
+  u := ue
+  x1&acute; := -1.2822*x1            + 0.9800*x3 - 0.3*u
+  x2&acute; :=                       +        x3
+  x3&acute; := -5.4293*x1            - 1.8366*x3 - 17 *u
+  x4&acute; := -128.2 *x1 + 128.2*x2
+</pre>
+</body>
+</html>

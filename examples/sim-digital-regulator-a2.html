@@ -1,0 +1,77 @@
+<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Implementation of a digital regulator</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Implementation of a digital regulator
+</pre>
+<p>
+  We consider the continuous time system with transfer function
+<p>
+  \[H(s)=\dfrac{1}{s+1}\]
+<p>
+  and the digital regulator
+<p>
+  \[D(z) = K_p + K_i \dfrac{1}{z-1}\]
+<p>
+  Note that the position of the digital regulator in the list of equations
+  really matters.
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  tf = 10
+  te = 0.5		<font color="#808080"><i># sampling time</i></font>
+  ti = 1		<font color="#808080"><i># PI regulator</i></font>
+  kp = 1		<font color="#808080"><i># PI regulator</i></font>
+  ki = te / ti
+
+<font color="red"><b>dyn:</b></font>
+  x y u
+  
+<font color="red"><b>par:</b></font>			<font color="#808080"><i># pseudo parameters updated by dcc</i></font>
+  tm = 0
+  tk = 0
+  error
+  s = 0
+  ue
+  ye
+  yd = 0
+
+<font color="red"><b>mac:</b></font>
+  @dcc(out)		<font color="#808080"><i># digital computer control</i></font>
+    <font color="#3D9970">if</font>(<font color="#0074D9">Time</font> &gt;= 0.5, yd = 1);	<font color="#808080"><i># desired output</i></font>
+    <font color="#3D9970">if</font>(<font color="#0074D9">Time</font> &gt;= tm,	<font color="#808080"><i># compare current time and sampling time</i></font>
+      ye = <font color="#0074D9">last</font>(y);	<font color="#808080"><i># sampling </i></font>
+      tm = tm + te	<font color="#808080"><i># reset sampling time </i></font>
+      );
+    <font color="#3D9970">if</font>(<font color="#0074D9">Time</font> &gt;= tk,	<font color="#808080"><i># compare current time and control time</i></font>
+      error = yd - ye;	<font color="#808080"><i># control algorithm</i></font>
+      &out = kp*error + ki*s;
+      s = s + error;
+      tk = tk + te	<font color="#808080"><i># reset control time </i></font>
+      );
+
+<font color="red"><b>t=t0:</b></font>
+  x = 0
+  
+<font color="red"><b>sim:</b></font>
+  y := x
+  @dcc(ue)		<font color="#808080"><i># digital computer control</i></font>
+  u := ue		<font color="#808080"><i># input</i></font>
+  x&acute; := - x + u		<font color="#808080"><i># state equation of continuous-time system</i></font>
+</pre>
+</body>
+</html>

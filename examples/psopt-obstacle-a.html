@@ -1,0 +1,63 @@
+<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Obstacle avoidance problem</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Obstacle avoidance problem
+</pre>
+<p>
+  Source: PSOPT - Optimal Control Solver, User Manual, Release 4 build 2015
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  V = 2.138
+  tf = 1
+
+<font color="red"><b>dyn:</b></font>
+  x y     <font color="#808080"><i># state variables</i></font>
+  theta   <font color="#808080"><i># control variables</i></font>
+  J       <font color="#808080"><i># cost criterion</i></font>
+  
+<font color="red"><b>lim:</b></font>
+  0 &lt;= x &lt;= 2
+  0 &lt;= y &lt;= 2
+  -10 &lt;= theta &lt;= 10
+  
+<font color="red"><b>t=t0:</b></font>
+  x = 0
+  y = 0
+  J = 0
+  
+<font color="red"><b>t=tf:</b></font>
+  x = 1.2
+  y = 1.6
+  
+<font color="red"><b>ini:</b></font>
+  x = <font color="#0074D9">linspace</font>(<font color="#0074D9">initial</font>(x),<font color="#0074D9">final</font>(x))
+  y = <font color="#0074D9">linspace</font>(<font color="#0074D9">initial</font>(y),<font color="#0074D9">final</font>(y))
+
+<font color="red"><b>equ:</b></font>
+  x&acute; == V*<font color="#2ECC40">cos</font>(theta)
+  y&acute; == V*<font color="#2ECC40">sin</font>(theta)
+  J&acute; == <font color="#2ECC40">sqr</font>(V*<font color="#2ECC40">cos</font>(theta)) + <font color="#2ECC40">sqr</font>(V*<font color="#2ECC40">sin</font>(theta))
+  <font color="#2ECC40">sqr</font>(x-0.4) + <font color="#2ECC40">sqr</font>(y-0.5) &gt;= 0.1
+  <font color="#2ECC40">sqr</font>(x-0.8) + <font color="#2ECC40">sqr</font>(y-1.5) &gt;= 0.1
+  
+<font color="red"><b>obj:</b></font> 
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp <font color="#8A2BE2">with</font> ipopt
+</pre>
+</body>
+</html>

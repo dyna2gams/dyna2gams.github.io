@@ -1,0 +1,100 @@
+<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Regulation of the Steam Generator of a Nuclear Power Plant</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Regulation of the Steam Generator of a Nuclear Power Plant
+</pre>
+<p>
+  Simulation of the proposed regulation for the plant fast dynamics.
+<p>
+  Reference:
+  <ol>
+  <li>A. Michiels,
+  <em>Etude de la régulation du générateur de vapeur à Doel 3</em>,
+  Unpublished master&rsquo;s thesis, Université Catholique de Louvain, Belgium (1982).
+  </ol>
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  tf = 50
+  Qnom = 1; Qstep = 0; Qramp = 0	<font color="#808080"><i># flow rate</i></font>
+  Wnom = 1; Wstep = -0.5; Wramp = 0	<font color="#808080"><i># load</i></font>
+  Vc = 5				<font color="#808080"><i># valve setpoint</i></font>
+  gp11 =  1.54639			<font color="#808080"><i># controllers</i></font>
+  gp12 = -0.27341
+  gp21 =  2.71562
+  gp22 =  0.50395
+  gi11 =  0.18556
+  gi12 = -0.03564
+  gi21 =  0.49554
+  gi22 =  0.07113
+  gf1  = -0.88453
+  gf2  = -1.90923
+
+<font color="red"><b>dyn:</b></font>
+  Qc Q			<font color="#808080"><i># flow rate (pu) </i></font>
+  Lc Ls L		<font color="#808080"><i># position of the equivalent valve (pu)</i></font>
+  Nc Ncr Ns Nsa		<font color="#808080"><i># speed of the pumps (1000 rpm)</i></font>
+  V			<font color="#808080"><i># pressure drop across the valve (bars)</i></font>
+  e1 e2 z1 z2		<font color="#808080"><i># proportional-integral controllers</i></font>
+  s1 s2 t1 t2		<font color="#808080"><i># anti-reset windup </i></font>
+  W			<font color="#808080"><i># load</i></font>
+
+<font color="red"><b>mac:</b></font>
+  @sat(x1,x2,x) <font color="#2ECC40">ifthen</font>(&x&lt;&x1,&x1,<font color="#2ECC40">ifthen</font>(&x&gt;&x2,&x2,&x))
+
+<font color="red"><b>exp:</b></font>
+  NWL == ((3.142*Nsa-1.077)*Nsa + 12.5*W - 18.43) / (3.2+32.67*L*L)
+  Qin == Qstep*<font color="#0074D9">TimeStep</font>(tf/10) + Qramp*<font color="#0074D9">TimeRamp</font>(tf/10) + Qnom
+  Win == Wstep*<font color="#0074D9">TimeStep</font>(tf/10) + Wramp*<font color="#0074D9">TimeRamp</font>(tf/10) + Wnom
+
+<font color="red"><b>t=t0:</b></font>
+  Ls = Wnom / (0.559*<font color="#2ECC40">sqrt</font>(Vc))
+  Ns = (1.077 + <font color="#2ECC40">sqrt</font>((410.6*Wnom-157.1)*Wnom + 232.788 + 12.568*Vc)) / 6.284
+  z1 = ( gi22*(Ls-gf1*Wnom) - gi12*(Ns-gf2*Wnom)) / (gi11*gi22 - gi21*gi12)
+  z2 = (-gi21*(Ls-gf1*Wnom) + gi11*(Ns-gf2*Wnom)) / (gi11*gi22 - gi21*gi12)
+
+<font color="red"><b>sim:</b></font>
+  <font color="#808080"><i>#--- flow rate setpoint ---</i></font>
+  Qc  := @sat(0,1,Qin)
+
+  <font color="#808080"><i>#--- perturbation model ---</i></font>
+  W   := @sat(0.0,1.0,Win)
+
+  <font color="#808080"><i>#--- regulation of the plant fast dynamics ---</i></font>
+  e1  := Qc - Q
+  e2  := Vc - V
+  z1&acute; := e1
+  z2&acute; := e2
+  Lc  := gp11*e1 + gp12*e2 + gi11*z1 + gi12*z2 + gf1*Qc
+  Nc  := gp21*e1 + gp22*e2 + gi21*z1 + gi22*z2 + gf2*Qc
+  Ncr := <font color="#0074D9">delay</font>(Nc,1.0)
+
+  <font color="#808080"><i>#--- modeling of the plant fast dynamics ---</i></font>
+  Ls&acute; := t1
+  Ns&acute; := t2
+  L   := @sat(0.0,1.0,Ls)
+  Nsa := @sat(1.56,5.40,Ns)
+  s1  := -0.1*L + 0.1*Lc
+  s2  := -0.2*Nsa + 0.2*Ncr
+  t1  := @sat(-0.1,0.1,s1)
+  t2  := @sat(-0.05,0.05,s2)
+  Q   := L*<font color="#2ECC40">sqrt</font>(NWL)
+  V   := 3.2*NWL
+</pre>
+</body>
+</html>

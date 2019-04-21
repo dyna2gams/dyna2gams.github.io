@@ -1,0 +1,90 @@
+<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">DAE index 3 parameter estimation problem</h1>
+<pre>
+<font color="red"><b>rem:</b></font> DAE index 3 parameter estimation problem
+</pre>
+<p>
+  Source: PSOPT - Optimal Control Solver, User Manual, Release 4 build 2015
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">default-collocation-method</font> = L3A2/IL
+
+<font color="red"><b>par:</b></font>
+  tf = 9.5
+
+<font color="red"><b>dyn:</b></font>
+  x{1:4}   <font color="#808080"><i># state variables</i></font>
+  lambda   <font color="#808080"><i># control variable</i></font>
+
+<font color="red"><b>var:</b></font>
+  L
+
+<font color="red"><b>lim:</b></font>
+  -2 &lt;= x{1:4} &lt;= 2
+  -10 &lt;= lambda &lt;= 10
+  0.1 &lt;= L &lt;= 5
+
+<font color="red"><b>obs:</b></font>
+  <font color="#0074D9">Time</font>  x1      x2
+  0.0   0.962   0.281
+  0.5   0.977  -0.215
+  1.0   0.754  -0.657
+  1.5   0.346  -0.942
+  2.0  -0.146  -0.995
+  2.5  -0.596  -0.799
+  3.0  -0.912  -0.422
+  3.5  -0.996   0.075
+  4.0  -0.831   0.536
+  4.5  -0.485   0.875
+  5.0  -0.004   0.994
+  5.5   0.481   0.872
+  6.0   0.842   0.545
+  6.5   0.988   0.072
+  7.0   0.904  -0.424
+  7.5   0.588  -0.789
+  8.0   0.135  -0.985
+  8.5  -0.350  -0.931
+  9.0  -0.762  -0.654
+  9.5  -0.969  -0.208
+
+<font color="red"><b>ini:</b></font>
+  L = 0.5
+  x{1:2} = <font color="#0074D9">ObservedVal</font>(x{1:2})
+
+<font color="red"><b>equ:</b></font>
+  x1&acute; == x3
+  x2&acute; == x4
+  x3&acute; == lambda*x1
+  x4&acute; == lambda*x2
+  x1*x1 + x2*x2 == L*L
+  lambda :: <font color="#7FDBFF">constant</font>(-3)
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#3D9970">sum</font>{1:2, <font color="#0074D9">ObservedErr</font>(x{:})} <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#3D9970">parameter</font> report(*,*);
+  <font color="#3D9970">set</font> o(<font color="#0074D9">Observation</font>);
+  <font color="#0074D9">ObservedSet</font>(x{1:2},o); 
+  <font color="#8B0000">$$ondotL</font>
+  report(o,'x{1:2}') = <font color="#0074D9">ObservedGap</font>(x{1:2},o);
+  <font color="#3D9970">display</font> report; 
+</pre>
+</body>
+</html>

@@ -1,0 +1,233 @@
+<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Reachable set</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Reachable set
+</pre>
+<p>
+  We investigate a computational method for the approximation of reachable
+  sets for nonlinear dynamic systems. The method uses grids to cover the
+  region of interest and the distance function to the reachable set
+  evaluated at grid points.
+<p>
+  Reference:
+  <ol>
+  <li>Baier Robert, Gerdts Matthias, Xausa Ilaria,
+  <em>Approximation of Reachable Sets using Optimal Control Algorithms</em>,
+  Numerical Algebra, Control and Optimization, Vol 3 No 3, 2013.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">iterations-number</font> = 1
+
+<font color="red"><b>par:</b></font>
+  x1glo = -7
+  x1gup = 7
+  x2glo = -6
+  x2gup = 8
+  x1g = x1glo
+  x2g = x2glo
+
+<font color="red"><b>var:</b></font>
+  tf
+
+<font color="red"><b>dyn:</b></font>
+  x1 x2
+  u
+
+<font color="red"><b>lim:</b></font>
+  1e-3 &lt;= tf &lt;= 10
+  x1glo &lt;= x1 &lt;= x1gup
+  x2glo &lt;= x2 &lt;= x2gup
+  -0.2 &lt;= u &lt;= 0.2
+
+<font color="red"><b>t=t0:</b></font>
+  x1 = 0.8
+  x2 = 1
+
+<font color="red"><b>ini:</b></font>
+  x1 = 0.8
+  x2 = 1
+  u = 0
+  tf = 10
+
+<font color="red"><b>exp:</b></font>
+  J == <font color="#2ECC40">sqr</font>(x1-x1g) + <font color="#2ECC40">sqr</font>(x2-x2g)
+
+<font color="red"><b>equ:</b></font>
+  x1&acute; == u + <font color="#2ECC40">cos</font>(x2)
+  x2&acute; == u - <font color="#2ECC40">sin</font>(x1)
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#2ECC40">sqrt</font>(<font color="#0074D9">final</font>(J)) <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#8B0000">$$set</font> GS 64
+  <font color="#3D9970">set</font> i1 /x0*x%GS%/; <font color="#3D9970">alias</font>(i1,j1);
+  <font color="#3D9970">set</font> i2 /y0*y%GS%/; <font color="#3D9970">alias</font>(i2,j2);
+  <font color="#8B0000">$$if</font> %GS%==16  <font color="#3D9970">set</font> iter /k1*k1/; 
+  <font color="#8B0000">$$if</font> %GS%==32  <font color="#3D9970">set</font> iter /k1*k2/; 
+  <font color="#8B0000">$$if</font> %GS%==64  <font color="#3D9970">set</font> iter /k1*k3/; 
+  <font color="#8B0000">$$if</font> %GS%==128 <font color="#3D9970">set</font> iter /k1*k4/;
+  <font color="#3D9970">parameter</font> modul(iter);
+  modul(iter)$(<font color="#3D9970">ord</font>(iter)=1) = 2**(<font color="#3D9970">card</font>(iter)-1);
+  <font color="#3D9970">loop</font>(iter$(<font color="#3D9970">ord</font>(iter)&gt;1), modul(iter) = <font color="#2ECC40">round</font>(modul(iter-1)/2));
+  <font color="#3D9970">parameter</font> i1p(i1); i1p(i1) = x1glo + (x1gup-x1glo)*(<font color="#3D9970">ord</font>(i1)-1)/(<font color="#3D9970">card</font>(i1)-1);
+  <font color="#3D9970">parameter</font> i2p(i2); i2p(i2) = x2glo + (x2gup-x2glo)*(<font color="#3D9970">ord</font>(i2)-1)/(<font color="#3D9970">card</font>(i2)-1);
+  <font color="#3D9970">parameter</font> grid(i1,i2); grid(i1,i2) = <font color="#3D9970">NA</font>;
+  <font color="#3D9970">set</font> encl /p1*p8/;
+  <font color="#3D9970">parameter</font> i1encl(encl) /p1 -1, p2  0, p3 +1, p4 -1, p5 +1, p6 -1, p7  0, p8 +1/;
+  <font color="#3D9970">parameter</font> i2encl(encl) /p1 +1, p2 +1, p3 +1, p4  0, p5  0, p6 -1, p7 -1, p8 -1/;  
+  <font color="#3D9970">scalars</font> a, t, t1, t2, obj, solv /0/, ok /1/, nok /2/, epsilon /1e-2/;
+  <font color="#8A2BE2">@tpa</font> hist(i1,i2,*);
+  <font color="#3D9970">file</font> res /$$<font color="#FF4500"><font color="#FF4500">@ifnam@</font></font>.gs.csv/;
+  res.pc = 5; res.nw = 13; res.nd = 6; res.nr = 2;
+  <font color="#3D9970">put</font> res;
+  <font color="#808080"><i># progressive grid refinement</i></font>
+  <font color="#3D9970">loop</font>(iter,
+    <font color="#3D9970">loop</font>(i1$(<font color="#2ECC40">mod</font>(<font color="#3D9970">ord</font>(i1)-1,modul(iter))=0),
+      x1g = i1p(i1);
+      <font color="#3D9970">loop</font>(i2$(<font color="#2ECC40">mod</font>(<font color="#3D9970">ord</font>(i2)-1,modul(iter))=0),
+        x2g = i2p(i2);
+        <font color="#3D9970">if</font>(<font color="#3D9970">ord</font>(iter)&gt;1, <font color="#3D9970">if</font>((<font color="#2ECC40">mod</font>(<font color="#3D9970">ord</font>(i1)-1,modul(iter-1))&lt;&gt;0) or (<font color="#2ECC40">mod</font>(<font color="#3D9970">ord</font>(i2)-1,modul(iter-1))&lt;&gt;0),
+          <font color="#808080"><i># this is a new point further to grid refinement</i></font>
+          <font color="#3D9970">if</font>((<font color="#2ECC40">mod</font>(<font color="#3D9970">ord</font>(i1)-1,modul(iter-1))&lt;&gt;0) and (<font color="#2ECC40">mod</font>(<font color="#3D9970">ord</font>(i2)-1,modul(iter-1))&lt;&gt;0),
+            <font color="#3D9970">if</font>((grid(i1-modul(iter),i2+modul(iter))=nok) and 
+               (grid(i1+modul(iter),i2+modul(iter))=nok) and 
+               (grid(i1-modul(iter),i2-modul(iter))=nok) and 
+               (grid(i1+modul(iter),i2-modul(iter))=nok), grid(i1,i2) = nok
+              )
+            );
+          <font color="#3D9970">if</font>((<font color="#2ECC40">mod</font>(<font color="#3D9970">ord</font>(i1)-1,modul(iter-1))&lt;&gt;0) and (<font color="#2ECC40">mod</font>(<font color="#3D9970">ord</font>(i2)-1,modul(iter-1))=0),
+            <font color="#3D9970">if</font>((grid(i1-modul(iter),i2                )=nok) and 
+               (grid(i1+modul(iter),i2                )=nok) and 
+               (grid(i1-modul(iter),i2+(2*modul(iter)))=nok) and 
+               (grid(i1+modul(iter),i2+(2*modul(iter)))=nok) and 
+               (grid(i1-modul(iter),i2-(2*modul(iter)))=nok) and 
+               (grid(i1+modul(iter),i2-(2*modul(iter)))=nok), grid(i1,i2) = nok
+              )
+            );    
+          <font color="#3D9970">if</font>((<font color="#2ECC40">mod</font>(<font color="#3D9970">ord</font>(i1)-1,modul(iter-1))=0) and (<font color="#2ECC40">mod</font>(<font color="#3D9970">ord</font>(i2)-1,modul(iter-1))&lt;&gt;0), 
+            <font color="#3D9970">if</font>((grid(i1                ,i2-modul(iter))=nok) and 
+               (grid(i1                ,i2+modul(iter))=nok) and 
+               (grid(i1+(2*modul(iter)),i2-modul(iter))=nok) and 
+               (grid(i1+(2*modul(iter)),i2+modul(iter))=nok) and 
+               (grid(i1-(2*modul(iter)),i2-modul(iter))=nok) and 
+               (grid(i1-(2*modul(iter)),i2+modul(iter))=nok), grid(i1,i2) = nok
+              )
+            )
+          ));
+        <font color="#3D9970">if</font>(grid(i1,i2) = <font color="#3D9970">NA</font>, 
+          obj = +<font color="#3D9970">inf</font>;
+          solv = solv + 1;
+          <font color="#8A2BE2">@solve</font>;
+          <font color="#3D9970">if</font>(<font color="#8A2BE2">%MODEL%</font>.modelstat = 2, <font color="#3D9970">if</font>(<font color="#8A2BE2">%OBJECTIVE%</font>.l &lt; obj, obj = <font color="#8A2BE2">%OBJECTIVE%</font>.l; hist(i1,i2,'x1') = x1.l; hist(i1,i2,'x2') = x2.l; hist(i1,i2,'u') = u.l;)); 
+          <font color="#3D9970">if</font>(obj &gt; epsilon,
+            x1.l = <font color="#0074D9">linspace</font>(<font color="#0074D9">initial</font>(x1.l),x1g);
+            x2.l = <font color="#0074D9">linspace</font>(<font color="#0074D9">initial</font>(x2.l),x2g);
+            tf.l = 10;
+            solv = solv + 1;
+            <font color="#8A2BE2">@solve</font>;
+            <font color="#3D9970">if</font>(<font color="#8A2BE2">%MODEL%</font>.modelstat = 2, <font color="#3D9970">if</font>(<font color="#8A2BE2">%OBJECTIVE%</font>.l &lt; obj, obj = <font color="#8A2BE2">%OBJECTIVE%</font>.l; hist(i1,i2,'x1') = x1.l; hist(i1,i2,'x2') = x2.l; hist(i1,i2,'u') = u.l;)); 
+            );
+          <font color="#3D9970">if</font>(obj &gt; epsilon,
+            a = <font color="#2ECC40">uniform</font>(1.8,2.2); x1.l = a;
+            a = <font color="#2ECC40">uniform</font>(1.8,2.2); x2.l = a;
+            u.l = 0;
+            tf.l = <font color="#2ECC40">uniform</font>(4,6);
+            solv = solv + 1;
+            <font color="#8A2BE2">@solve</font>;
+            <font color="#3D9970">if</font>(<font color="#8A2BE2">%MODEL%</font>.modelstat = 2, <font color="#3D9970">if</font>(<font color="#8A2BE2">%OBJECTIVE%</font>.l &lt; obj, obj = <font color="#8A2BE2">%OBJECTIVE%</font>.l; hist(i1,i2,'x1') = x1.l; hist(i1,i2,'x2') = x2.l; hist(i1,i2,'u') = u.l;)); 
+            );
+          <font color="#3D9970">if</font>(obj &gt; epsilon,        
+            a = <font color="#2ECC40">uniform</font>(-0.2, 0.2); x1.l = a;
+            a = <font color="#2ECC40">uniform</font>(-2.2,-1.8); x2.l = a;
+            u.l = 0;
+            tf.l = <font color="#2ECC40">uniform</font>(4,6);
+            solv = solv + 1;
+            <font color="#8A2BE2">@solve</font>;
+            <font color="#3D9970">if</font>(<font color="#8A2BE2">%MODEL%</font>.modelstat = 2, <font color="#3D9970">if</font>(<font color="#8A2BE2">%OBJECTIVE%</font>.l &lt; obj, obj = <font color="#8A2BE2">%OBJECTIVE%</font>.l; hist(i1,i2,'x1') = x1.l; hist(i1,i2,'x2') = x2.l; hist(i1,i2,'u') = u.l;)); 
+            );
+          <font color="#3D9970">if</font>(obj &lt;&gt; +<font color="#3D9970">inf</font>,
+            <font color="#3D9970">if</font>(obj &lt; epsilon,
+              grid(i1,i2) = ok;
+              <font color="#808080"><i># put 'P' x1g x2g /;</i></font>
+            <font color="#3D9970">else</font>
+              grid(i1,i2) = nok;
+              <font color="#808080"><i># put 'C' x1g x2g obj /;</i></font>
+              )
+          <font color="#3D9970">else</font> 
+            grid(i1,i2) = 0;
+            )
+          )
+        )
+      )
+    );
+  <font color="#808080"><i># revisit grid seeking enclosed nok points</i></font>
+  <font color="#3D9970">repeat</font>(
+    a = 0;
+    <font color="#3D9970">loop</font>((i1,i2)$(grid(i1,i2)=nok),
+      t = 0; <font color="#3D9970">loop</font>(encl, t$(grid(i1+i1encl(encl),i2+i2encl(encl))=ok) = t + 1);      
+      <font color="#3D9970">if</font>(t &gt;= 7,
+        x1g = i1p(i1);
+        x2g = i2p(i2);
+        <font color="#3D9970">loop</font>(encl$(a=0),
+          t1 = i1encl(encl);
+          t2 = i2encl(encl);
+          <font color="#3D9970">if</font>(grid(i1+t1,i2+t2) = ok, 
+            x1.l = hist(i1+t1,i2+t2,'x1'); 
+            x2.l = hist(i1+t1,i2+t2,'x2'); 
+            u.l  = hist(i1+t1,i2+t2,'u')
+            );
+          tf.l = 10;
+          solv = solv + 1;
+          <font color="#8A2BE2">@solve</font>;
+          <font color="#3D9970">if</font>(<font color="#8A2BE2">%MODEL%</font>.modelstat = 2, 
+            <font color="#3D9970">if</font>(<font color="#8A2BE2">%OBJECTIVE%</font>.l &lt; epsilon, 
+              grid(i1,i2) = ok;
+              <font color="#808080"><i># put 'Q' x1g x2g /;</i></font>
+              a = 1;
+            <font color="#3D9970">else</font>
+              <font color="#808080"><i># put 'D' x1g x2g obj /;</i></font>
+              )
+            )
+          )
+        )
+      );
+    <font color="#3D9970">until</font> a = 0);  
+  <font color="#808080"><i># dump grid on output file</i></font>
+  <font color="#3D9970">loop</font>((i1,i2)$grid(i1,i2),
+    <font color="#3D9970">put</font> 'G' i1p(i1) i2p(i2) grid(i1,i2) /
+    );
+  <font color="#3D9970">putclose</font>;
+  <font color="#3D9970">display</font> 'Number of solves:', solv;
+
+<font color="red"><b>gpl:</b></font>
+  set datafile separator ","
+  set xrange [-7:7]
+  set yrange [-6:8]
+  set style fill solid noborder
+  <font color="#808080"><i>#set palette model RGB defined (1 "green", 2 "light-gray")</i></font>
+  set palette model RGB defined (1 "green", 2 "white")
+  unset colorbox
+  unset key
+  plot dfil using 2:3:4 with points pt 7 ps 0.5 palette
+  <font color="#808080"><i>#plot me with command "dyna-gnuplot reachable-set-c gs"</i></font>
+</pre>
+</body>
+</html>

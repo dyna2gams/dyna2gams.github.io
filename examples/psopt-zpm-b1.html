@@ -1,0 +1,278 @@
+<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Zero Propellant Manoeuvre of the ISS</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Zero Propellant Manoeuvre of the ISS
+</pre>
+<p>
+  The optimal trajectory presented here is for three active control moment gyroscopes
+  and takes 7200 sec (just over two orbits) to complete the manoeuvre.
+<p>
+  So called "near eigenaxis" solution.
+<p>
+  Source: PSOPT - Optimal Control Solver, User Manual, Release 4 build 2015
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">default-time-steps-number</font> = 24
+  <font color="#39CCCC">default-iterations-number</font> = 3
+  <font color="#39CCCC">model-option</font> = optfile=1 | bratio=0
+  conopt.opt &lt; rtnwmi=4e-9
+
+<font color="red"><b>mac:</b></font>
+  @dotprod3(x,y) (&x1*&y1+&x2*&y2+&x3*&y3)
+
+  @dotprod4(x,y) (&x1*&y1+&x2*&y2+&x3*&y3+&x4*&y4)
+
+  @compute_crossprod3(z,op,x,y) \
+    &z1 &op &x2*&y3-&x3*&y2; \
+    &z2 &op &x3*&y1-&x1*&y3; \
+    &z3 &op &x1*&y2-&x2*&y1;
+
+  @compute_product_ad3(z,op,A,x) \
+    &z1 &op &A11*&x1 + &A12*&x2 + &A13*&x3; \
+    &z2 &op &A21*&x1 + &A22*&x2 + &A23*&x3; \
+    &z3 &op &A31*&x1 + &A32*&x2 + &A33*&x3;
+
+  @compute_inv3(B,op,A) \
+    &B00 &op &A11*(&A33*&A22-&A32*&A23)-&A21*(&A33*&A12-&A32*&A13)+&A31*(&A23*&A12-&A22*&A13); \
+    &B11 &op  (&A33*&A22-&A32*&A23)/&B00; \
+    &B12 &op -(&A33*&A12-&A32*&A13)/&B00; \
+    &B13 &op  (&A23*&A12-&A22*&A13)/&B00; \
+    &B21 &op -(&A33*&A21-&A31*&A23)/&B00; \
+    &B22 &op  (&A33*&A11-&A31*&A13)/&B00; \
+    &B23 &op -(&A23*&A11-&A21*&A13)/&B00; \
+    &B31 &op  (&A32*&A21-&A31*&A22)/&B00; \
+    &B32 &op -(&A32*&A11-&A31*&A12)/&B00; \
+    &B33 &op  (&A22*&A11-&A21*&A12)/&B00
+
+  @compute_T(T,op,q) \
+    &T11 &op -&q2; &T12 &op -&q3; &T13 &op -&q4; \
+    &T21 &op  &q1; &T22 &op -&q4; &T23 &op  &q3; \
+    &T31 &op  &q4; &T32 &op  &q1; &T33 &op -&q2; \
+    &T41 &op -&q3; &T42 &op  &q2; &T43 &op  &q1;
+
+  @compute_omega(w,op,q) \	<font color="#808080"><i># computes the angular speed in the rotating LVLH reference frame</i></font>
+    &w1 &op -rr*(  2*(&q2*&q3 + &q1*&q4)); \
+    &w2 &op -rr*(1-2*(&q2*&q2 + &q4*&q4)); \
+    &w3 &op -rr*(  2*(&q3*&q4 - &q1*&q2));
+
+  <font color="#808080"><i># This function approximates the aerodynamic torque by using the model and</i></font>
+  <font color="#808080"><i># parameters given in the following reference:</i></font>
+  <font color="#808080"><i># A. Chun Lee (2003) "Robust Momentum Manager Controller for Space Station Applications".</i></font>
+  <font color="#808080"><i># Master of Arts Thesis, Rice University.</i></font>
+  @compute_aerodynamic_torque(tau,op,t) \	<font color="#808080"><i># Aerodynamic torque in [lb-ft]</i></font>
+    &tau1 &op alpha11 + alpha21*<font color="#2ECC40">sin</font>(rr*&t) + alpha31*<font color="#2ECC40">sin</font>(2*rr*&t); \
+    &tau2 &op alpha12 + alpha22*<font color="#2ECC40">sin</font>(rr*&t) + alpha32*<font color="#2ECC40">sin</font>(2*rr*&t); \
+    &tau3 &op alpha13 + alpha23*<font color="#2ECC40">sin</font>(rr*&t) + alpha33*<font color="#2ECC40">sin</font>(2*rr*&t)
+
+  <font color="#808080"><i># This function finds the Euler angles given the quaternion vector</i></font>
+  <font color="#808080"><i># (phi,theta,psi) is also called (roll,pitch,yaw)</i></font>
+  @quaternion2euler(phi,theta,psi,op,q) \
+    &phi &op  <font color="#2ECC40">arctan2</font>(2*(&q1*&q2+&q3*&q4),1-2*(&q2*&q2+&q3*&q3)); \
+    &theta &op <font color="#2ECC40">arcsin</font>(2*(&q1*&q3-&q4*&q2)); \
+    &psi &op  <font color="#2ECC40">arctan2</font>(2*(&q1*&q4+&q2*&q3),1-2*(&q3*&q3+&q4*&q4))
+
+  <font color="#808080"><i># This function finds the quaternion vector given the Euler angles</i></font>
+  @euler2quaternion(q,op,phi,theta,psi) \
+    &q1 &op <font color="#2ECC40">cos</font>(&phi/2)*<font color="#2ECC40">cos</font>(&theta/2)*<font color="#2ECC40">cos</font>(&psi/2) + <font color="#2ECC40">sin</font>(&phi/2)*<font color="#2ECC40">sin</font>(&theta/2)*<font color="#2ECC40">sin</font>(&psi/2); \
+    &q2 &op <font color="#2ECC40">sin</font>(&phi/2)*<font color="#2ECC40">cos</font>(&theta/2)*<font color="#2ECC40">cos</font>(&psi/2) - <font color="#2ECC40">cos</font>(&phi/2)*<font color="#2ECC40">sin</font>(&theta/2)*<font color="#2ECC40">sin</font>(&psi/2); \
+    &q3 &op <font color="#2ECC40">cos</font>(&phi/2)*<font color="#2ECC40">sin</font>(&theta/2)*<font color="#2ECC40">cos</font>(&psi/2) + <font color="#2ECC40">sin</font>(&phi/2)*<font color="#2ECC40">cos</font>(&theta/2)*<font color="#2ECC40">sin</font>(&psi/2); \
+    &q4 &op <font color="#2ECC40">cos</font>(&phi/2)*<font color="#2ECC40">cos</font>(&theta/2)*<font color="#2ECC40">sin</font>(&psi/2) - <font color="#2ECC40">sin</font>(&phi/2)*<font color="#2ECC40">sin</font>(&theta/2)*<font color="#2ECC40">cos</font>(&psi/2);
+
+  <font color="#808080"><i># Project point A onto the hypersphere Q of radius one </i></font>
+  @hypersphere(q,op,a) \
+    &q1 &op &a1/<font color="#2ECC40">sqrt</font>(&a1*&a1+&a2*&a2+&a3*&a3+&a4*&a4); \
+    &q2 &op &a2/<font color="#2ECC40">sqrt</font>(&a2*&a2+&a3*&a3+&a4*&a4)*<font color="#2ECC40">sqrt</font>(1-&q1*&q1); \
+    &q3 &op &a3/<font color="#2ECC40">sqrt</font>(&a3*&a3+&a4*&a4)*<font color="#2ECC40">sqrt</font>(1-&q1*&q1-&q2*&q2); \
+    &q4 &op <font color="#2ECC40">sign</font>(&a4)*<font color="#2ECC40">sqrt</font>(1-&q1*&q1-&q2*&q2-&q3*&q3);
+
+  @hyperspherel(q,op,a) \
+    &q1.l &op &a1.l/<font color="#2ECC40">sqrt</font>(&a1.l*&a1.l+&a2.l*&a2.l+&a3.l*&a3.l+&a4.l*&a4.l); \
+    &q2.l &op &a2.l/<font color="#2ECC40">sqrt</font>(&a2.l*&a2.l+&a3.l*&a3.l+&a4.l*&a4.l)*<font color="#2ECC40">sqrt</font>(1-&q1.l*&q1.l); \
+    &q3.l &op &a3.l/<font color="#2ECC40">sqrt</font>(&a3.l*&a3.l+&a4.l*&a4.l)*<font color="#2ECC40">sqrt</font>(1-&q1.l*&q1.l-&q2.l*&q2.l); \
+    &q4.l &op <font color="#2ECC40">sign</font>(&a4.l)*<font color="#2ECC40">sqrt</font>(1-&q1.l*&q1.l-&q2.l*&q2.l-&q3.l*&q3.l);
+
+<font color="red"><b>par:</b></font>
+  Kp = 0.000128		<font color="#808080"><i># proportional gain</i></font>
+  Kd = 0.015846		<font color="#808080"><i># derivative gain</i></font>
+  alpha11 = 1.0; alpha12 = 4.0; alpha13 = 1.0
+  alpha21 = 1.0; alpha22 = 2.0; alpha23 = 1.0
+  alpha31 = 0.5; alpha32 = 0.5; alpha33 = 0.5
+  end_point_weight = 0.1
+  running_cost_weight = 1
+
+  case = 2		<font color="#808080"><i># case=1 is 6000 manoeuvre / case=2 is 7200 manoeuvre</i></font>
+
+  tf   = 6000      $(case=1) + 7200      $(case=2)
+  rr   = 1.1461e-3 $(case=1) + 1.1475e-3 $(case=2)	<font color="#808080"><i># Orbital rotation rate [rad/s]</i></font>
+  hmax = 4*3600    $(case=1) + 3*3600    $(case=2)	<font color="#808080"><i># 3 or 4 CMG&rsquo;s</i></font>
+  <font color="#808080"><i># Inertia matrix in slug-ft^2</i></font>
+  J11  = 17834580  $(case=1) + 18836544  $(case=2)
+  J12  =  2787992  $(case=1) +  3666370  $(case=2)
+  J13  =  2873636  $(case=1) +  2965301  $(case=2)
+  J21  =  2787992  $(case=1) +  3666370  $(case=2)
+  J22  =  2773815  $(case=1) + 27984088  $(case=2)
+  J23  =  -863810  $(case=1) +(-1129004) $(case=2)
+  J31  = 28736361  $(case=1) +  2965301  $(case=2)
+  J32  =  -863810  $(case=1) +(-1129004) $(case=2)
+  J33  = 38030467  $(case=1) + 39442649  $(case=2)
+  @compute_inv3(Jinv,=,J)
+
+<font color="red"><b>dyn:</b></font>
+  <font color="#808080"><i># state variables</i></font>
+  q{1:4}	<font color="#808080"><i># quaternion vector</i></font>
+  omega{1:3}	<font color="#808080"><i># angular rate vector</i></font>
+  h{1:3}	<font color="#808080"><i># momentum vector</i></font>
+  <font color="#808080"><i># control variables</i></font>
+  qc{1:4}	<font color="#808080"><i># control vector</i></font>
+  <font color="#808080"><i># path constraints</i></font>
+  z{1:4}
+  <font color="#808080"><i># cost criterion</i></font>
+  J
+
+<font color="red"><b>var:</b></font>
+  gamma
+
+<font color="red"><b>lim:</b></font>
+  -1 &lt;= qc{1:4} &lt;= 1
+  -1 &lt;= q1 &lt;= 1
+  -0.2 &lt;= q2 &lt;= 0.2
+  -0.2 &lt;= q3 &lt;= 0.2
+  -1 &lt;= q4 &lt;= 1
+  -1e-2 &lt;= omega{1:3} &lt;= 1e-2
+  -hmax &lt;= h{1:3} &lt;= hmax
+  0 &lt;= gamma &lt;= <font color="#2ECC40">sqr</font>(hmax)
+  1 &lt;= z1 &lt;= 1
+  1 &lt;= z2 &lt;= 1
+  -<font color="#2ECC40">sqr</font>(hmax) &lt;= z3 &lt;= 0
+  0 &lt;= z4 &lt;= <font color="#2ECC40">sqr</font>(200)
+
+<font color="red"><b>t=t0:</b></font>
+  q1 =  0.98966 $(case=1) +  0.98996 $(case=2)
+  q2 =  0.02690 $(case=1) +  0.02650 $(case=2)
+  q3 = -0.08246 $(case=1) +(-0.07891)$(case=2)
+  q4 =  0.11425 $(case=1) +  0.11422 $(case=2)
+  @hypersphere(q,=,q)	<font color="#808080"><i># overwrite value to make sure norm of q is 1</i></font>
+  h1 =  -496    $(case=1) +  1000    $(case=2)
+  h2 =  -175    $(case=1) +( -500)   $(case=2)
+  h3 = -3892    $(case=1) +(-4200)   $(case=2)
+  @compute_omega(omega,=,q)
+  J = 0
+
+<font color="red"><b>t=tf:</b></font>
+  q1 =  0.70531
+  q2 = -0.06201
+  q3 = -0.03518
+  q4 = -0.70531
+  @hypersphere(q,=,q)	<font color="#808080"><i># overwrite value to make sure norm of q is 1</i></font>
+  h1 =    -9
+  h2 = -3557
+  h3 =  -135
+  @compute_omega(omega,=,q)
+
+<font color="red"><b>ini:</b></font>
+  q{1:4} = <font color="#0074D9">linspace</font>(<font color="#0074D9">initial</font>(q{1:4}),<font color="#0074D9">final</font>(q{1:4}))
+  omega{1:3} = <font color="#0074D9">linspace</font>(<font color="#0074D9">initial</font>(omega{1:3}),<font color="#0074D9">final</font>(omega{1:3}))
+  h{1:3} = <font color="#0074D9">linspace</font>(<font color="#0074D9">initial</font>(h{1:3}),<font color="#0074D9">final</font>(h{1:3}))
+  qc{1:4} = q{1:4}
+  gamma = <font color="#2ECC40">sqr</font>(hmax)
+
+<font color="red"><b>exp:</b></font>
+  <font color="#808080"><i># Quaternion attitude kinematics</i></font>
+  @compute_omega(omega0,==,q)
+  qdot{1:4} == 0.5*<font color="#3D9970">sum</font>{1:3, T{1:4}{:}*(omega{:}-omega0{:})}
+  @compute_product_ad3(Jomega,==,J,omega)
+  @compute_crossprod3(omegaCrossJomega,==,omega,Jomega)
+
+  <font color="#808080"><i># Compute the torque disturbances:</i></font>
+  C1 ==   2*(q2*q4 - q1*q3)
+  C2 ==   2*(q3*q4 + q1*q2)
+  C3 == 1-2*(q2*q2 + q3*q3)
+  v{1:3} == 3*<font color="#2ECC40">sqr</font>(rr)*C{1:3}
+  @compute_product_ad3(JC,==,J,C)
+
+  <font color="#808080"><i># Gravity gradient torque</i></font>
+  @compute_crossprod3(tau_grav,==,v,JC)
+
+  <font color="#808080"><i># Aerodynamic torque</i></font>
+  <font color="#808080"><i># Uncomment one of the next two lines</i></font>
+  tau_aero{1:3} == 0
+  <font color="#808080"><i>#@compute_aerodynamic_torque(tau_aero,==,Time)</i></font>
+  tau_d{1:3} == tau_grav{1:3} + tau_aero{1:3}
+
+  <font color="#808080"><i># Compute control torque</i></font>
+  @compute_T(T,==,q)
+  @compute_T(Tc,==,qc)
+  epsilon_tilde{1:3} == 2*<font color="#3D9970">sum</font>{1:4, Tc{:}{1:3}*q{:}}
+  @compute_omega(omega_c,==,qc)
+  omega_tilde{1:3} == omega{1:3} - omega_c{1:3}
+  uaux{1:3} == Kp*epsilon_tilde{1:3}+Kd*omega_tilde{1:3}
+  @compute_product_ad3(u,==,J,uaux)
+
+  <font color="#808080"><i># Rotational dynamics</i></font>
+  F{1:3} == tau_d{1:3} - omegaCrossJomega{1:3} - u{1:3}
+  @compute_product_ad3(omega_dot,==,Jinv,F)
+  @compute_crossprod3(OmegaCrossH,==,omega,h)
+
+  <font color="#808080"><i># Momentum derivative</i></font>
+  hdot{1:3} == u{1:3} - OmegaCrossH{1:3}
+
+<font color="red"><b>sca:</b></font>
+  q{1:4} = 1
+  qc{1:4} = 1
+  omega{1:3} = 1e-4
+  h{1:3} = 5e+3
+  z1 = 1
+  z2 = 1
+  z3 = 2.5e+7
+  z4 = 1e+4
+  J = 1
+  gamma = 1e+8
+
+<font color="red"><b>equ:</b></font>
+  q{1:4}&acute; == qdot{1:4}
+  omega{1:3}&acute; == omega_dot{1:3}
+  h{1:3}&acute; == hdot{1:3}
+  z1 == @dotprod4(q,q)
+  z2 == @dotprod4(qc,qc)
+  z3 == @dotprod3(h,h) - gamma
+  z4 == @dotprod3(hdot,hdot)
+  J&acute; == 1e-6*@dotprod3(u,u)
+
+<font color="red"><b>gms:</b></font>
+  <font color="#808080"><i># make sure norm of quaternions is one for initial guess</i></font>
+  @hyperspherel(q,=,q)
+  @hyperspherel(qc,=,qc)
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> 1e-6*end_point_weight*gamma+running_cost_weight*<font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp <font color="#8A2BE2">with</font> conopt
+
+<font color="red"><b>gms:</b></font>
+  <font color="#8A2BE2">@solveloop</font> Method=movavg, Paraml=3 0.95, Varl=q1 q2 q3 q4 omega1 omega2 omega3 h1 h2 h3, Target=infes, Maxiter=4
+  <font color="#3D9970">if</font>(<font color="#8A2BE2">%MODEL%</font>.modelstat=7,
+    <font color="#8A2BE2">%OBJECTIVE%</font>.lo = <font color="#8A2BE2">%OBJECTIVE%</font>.l;
+    <font color="#8A2BE2">@solve</font>
+    );
+  <font color="#8A2BE2">@tpa</font> phi; <font color="#8A2BE2">@tpa</font> theta; <font color="#8A2BE2">@tpa</font> psi;
+  <font color="#8B0000">$$ondotl</font>
+  @quaternion2euler(phi,theta,psi,=,q)
+  <font color="#8A2BE2">@csvsave</font> phi theta psi
+
+</pre>
+</body>
+</html>
