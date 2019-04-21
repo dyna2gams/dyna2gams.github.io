@@ -1,0 +1,268 @@
+<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Leukemia</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Leukemia
+</pre>
+<p>
+  We study the optimal control of leukemic cell population presented in [2], namely the optimal use
+  of a combination of cytostatic and cytotoxic drugs in order to reduce the total cancerous cells.
+  The model from [1] and [3] considers two sub-populations of leukemic cells: the inactive resting
+  cells, and the proliferating cells. Resting cells go into the proliferating phase at constant
+  rate \(\beta\). Proliferating cells either die by apoptosis with rate \(\gamma\) or divide during
+  mitosis into two daughter cells. Mitosis has a duration of \(2\tau\) and the daughter cells start
+  in the resting phase. We introduce the age variable a for the time spent in the proliferating
+  phase, and note \(R(t)\) the resting population and \(p(a,t)\) the proliferating population. We
+  consider two drugs: a cytotoxic that induces a death rate \(u(t)\) in the second half of the
+  proliferating phase, and a cytostatic \(v(t)\) that results in a fraction \(k(t)\) of inhibited
+  resting cells that are blocked from entering the proliferating phase.
+<p>
+  The system follows the dynamics:
+<p>
+  \[
+  \begin{array}{ll}
+  \frac{dR}{dt}(t) = -(1-k(t)) \beta R(t) + 2p(t,2\tau)\\
+  \frac{dk}{dt}(t) = v(t) (1-k(t)) - \alpha k(t)\\
+  \frac{\partial p}{\partial t}(t,a) + \frac{\partial p}{\partial a}(t,a) = -(\gamma + \chi_{(\tau,2\tau)}(a)u(t)) p(t,a),\ 2 \lt a \lt 2\tau\\
+  p(t,0) = (1-k(t)) \beta R(t)
+  \end{array}
+  \]
+<p>
+  In order to handle the transport equation for \(p\), we note the total and second half
+  proliferating populations
+<p>
+  \[
+  P(t) = \int_0^{2\tau} p(t,a)\ \mathrm{d}a, \quad P_2(t) = \int_\tau^{2\tau} p(t,a)\ \mathrm{d}a
+  \]
+<p>
+  As detailed in [1] and [2], by the method of characteristics the dynamics can be rewritten as a
+  system of delay differential equations corresponding to a controlled version of Mackey&rsquo;s model
+  [3].
+<p>
+  \[
+  \begin{array}{ll}
+  \frac{dR}{dt}(t) = & -(1-k(t)) \beta R(t) + 2(1-k(t-2\tau)\beta R(t-2\tau)e^{-(\gamma 2 \tau + \int_{t-\tau}^\tau u(s) \ \mathrm{d}s)}\\
+  \frac{dP}{dt}(t) = & -(\gamma P(t) + u(t)P_2(t)) + (1-k(t))\beta R(t) \\
+                     & - (1-k(t-2\tau))\beta R(t-2\tau) e^{-(\gamma 2 \tau + \int_{t-\tau}^\tau u(s) \ \mathrm{d}s)}\\
+  \frac{dP_2}{dt}(t) = & -(\gamma + u(t)P_2(t)) + (1-k(t-\tau))\beta R(t-\tau)e^{-\gamma \tau}\\
+                       & - (1-k(t-2\tau))\beta R(t-2\tau) e^{-(\gamma 2 \tau + \int_{t-\tau}^\tau u(s) \ \mathrm{d}s)}\\
+  \frac{dk}{dt}(t) = & v(t) (1-k(t)) - \alpha k(t)
+  \end{array}
+  \]
+<p>
+  We refer the reader to [2] for the formal analysis of this system, namely the existence of
+  solutions and the introduction of age-weighted populations \(\tilde{P}\), \(\tilde{P}_2\) to
+  counteract the horizon effect that would cause to always stop all treatment at the end of the
+  time interval. Taking into account constraints on the maximal cumulative dose of drugs, the
+  resulting optimal control problem writes as
+<p>
+  \[
+  \begin{array}{l}
+  \min \ R(T) + \tilde{P}(T)\\
+  \frac{dR}{dt}(t) = -(1-k(t)) \beta R(t) + \tilde{p}(t,2\tau)\\
+  \frac{d\tilde{P}}{dt}(t) = \lambda \tilde{P}(t) - u(t) \tilde{P}_2(t) + \tilde{p}(t,0) - \tilde{p}(t,2\tau)\\
+  \frac{d\tilde{P}_2}{dt}(t) = (\lambda - u(t)) \tilde{P}_2(t) + \tilde{p}(t,\tau) - \tilde{p}(t,2\tau)\\
+  \frac{dk}{dt}(t) = v(t) (1-k(t)) - \alpha k(t)\\
+  0 \le u(t) \le \bar{u}, \quad 0 \le v(t) \le \bar{v}\\
+  \int_0^T u(t) \ \mathrm{d}t \le \bar{U}
+  \end{array}
+  \]
+<p>
+  where \(\lambda\) is defined by the equation \(\lambda + \beta = 2 \beta e^{-(\lambda+\gamma) 2 \tau} \) and
+<p>
+  \[
+  \begin{array}{l}
+  \tilde{p}(t,0) = (1-k(t))(\lambda+\beta)R(t)\\
+  \tilde{p}(t,\tau) = (1-k(t-\tau))(\lambda+\beta)R(t-\tau)e^{\lambda \tau}\\
+  \tilde{p}(t,2\tau) = (1-k(t-2\tau))(\lambda+\beta)R(t-2\tau)e^{\lambda 2\tau - y(t)}\\
+  y(t) = \int_{t-\tau}^t u(s)\ \mathrm{d}s
+  \end{array}
+  \]
+<p>
+  with the border cases
+<p>
+  \[
+  \begin{array}{ll}
+  \tilde{p}(t,\tau) = p_0(\tau-t)2 e^{-\gamma t - (\lambda+\gamma)\tau} \ \text{if}\ t \lt \tau\\
+  \tilde{p}(t,2\tau) = p_0(2\tau-t)2 e^{-\gamma t - y(t)} \ \text{if}\ t \lt 2\tau \\
+  y(t) = \int_0^t u(s)\ \mathrm{d}s \ \text{if}\ t \lt \tau\\
+  \end{array}
+  \]
+<p>
+  From [2] we take the initial conditions
+<p>
+  \[
+  R(0)=R_0 = 4\ 10^5,\ k(0)=0,\ y(0)=0,\\
+  \tilde{P}(0)=\int_0^{2\tau}e^{(\lambda+\gamma)(a-2\tau)}p_0(a)\ \mathrm{d}a, \quad \tilde{P}_2(0)=\int_\tau^{2\tau}e^{(\lambda+\gamma)(a-2\tau)}p_0(a)\ \mathrm{d}a\\
+  \]
+<p>
+  and the parameters
+<p>
+  \[
+  T=5,\ \tau=1,\ p_0(a)=0.5\ 10^5,\ \alpha=1,\ \beta=2,\ \bar{v}=2,\ \gamma=0.05.
+  \]
+<p>
+  Numerical simulations are carried out for three cases:
+  \(\bar u = 0.2\), \(\bar U = 2 \bar u\);
+  \(\bar u = 1\), no limit \(\bar U\);
+  and
+  \(\bar u = 1\), \(\bar U = 2 \bar u\).
+<p>
+  References:
+  <ol>
+  <li>M. Adimy, F. Crauste, and A. El Abdllaoui,
+  <em>Discrete maturity-structured model of cell differentiation with applications to acute myelogenous leukemia</em>,
+  J. Biol. Systems, 16(3):395-424, 2008
+  <li>X. Dupuis,
+  <em>Optimal control of leukemic cell population dynamics</em>,
+  Math. Model. Nat. Phenom., 9(1):4-26, 2014.
+  <li>M.C. Mackey,
+  <em>Unified hypothesis for the origin of aplastic anemia and periodic hematopoiesis</em>,
+  Blood, 51(5):941-956, 1978.
+  </ol>
+<p>
+  See:
+  <a href="https://project.inria.fr/bocop/leukemia/">
+  BOCOP - The optimal control solver</a>
+<p>
+  Note: We cannot reproduce exactly the solution of BOCOP.
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">substitute-symbols</font> = U&gt;uu | Ubar&gt;uubar
+  <font color="#39CCCC">default-collocation-method</font> = L3A2
+
+<font color="red"><b>par:</b></font>
+  tau = 1
+  alpha = 1
+  beta = 2
+  gamma = 0.05		<font color="#808080"><i># 0.05   | 0.15 | 0.05</i></font>
+  p0 = 50000
+  ubar = 1		<font color="#808080"><i># 0.2    | 1    | 1</i></font>
+  vbar = 2
+  Ubar = 2*ubar		<font color="#808080"><i># 2*ubar | +inf | 2*ubar</i></font>
+  tf = 5
+
+<font color="red"><b>gms:</b></font>
+  <font color="#808080"><i># solve for lambda</i></font>
+  <font color="#3D9970">variable</font> L,dummy;
+  <font color="#3D9970">equation</font> equ,obj;
+  equ.. L + beta =e= 2*beta*<font color="#2ECC40">exp</font>(-(L+gamma)*2*tau);
+  obj.. dummy =e= 1;
+  L.l = 0.25;
+  <font color="#3D9970">model</font> detL /equ,obj/;
+  <font color="#3D9970">solve</font> detL minimizing dummy using nlp;
+  <font color="#3D9970">display</font> L.l;
+
+<font color="red"><b>par:</b></font>
+  lambda = L.l
+
+<font color="red"><b>dyn:</b></font>
+  <font color="#808080"><i># State variables</i></font>
+  R		<font color="#808080"><i># resting cells</i></font>
+  Ptilde	<font color="#808080"><i># proliferating cells phase 1+2 (weighted)</i></font>
+  P2tilde	<font color="#808080"><i># proliferating cells phase 2 (weighted)</i></font>
+  k		<font color="#808080"><i># fraction of inhibited (resting) cells</i></font>
+  y		<font color="#808080"><i># effect of cytotoxic \int_t-tau^tau u(s)\ \mathrm{d}s</i></font>
+  U		<font color="#808080"><i># cumulative cytotoxic dose</i></font>
+  P		<font color="#808080"><i># non weighted populations		</i></font>
+  P2		<font color="#808080"><i># non weighted populations</i></font>
+  <font color="#808080"><i># Control variables</i></font>
+  u		<font color="#808080"><i># cytotoxic</i></font>
+  v		<font color="#808080"><i># cytostatic</i></font>
+
+<font color="red"><b>lim:</b></font>
+  0 &lt;= R &lt;= +<font color="#3D9970">inf</font>
+  0 &lt;= Ptilde &lt;= +<font color="#3D9970">inf</font>
+  0 &lt;= P2tilde &lt;= +<font color="#3D9970">inf</font>
+  0 &lt;= k &lt;= +<font color="#3D9970">inf</font>
+  0 &lt;= U &lt;= Ubar
+  0 &lt;= P &lt;= +<font color="#3D9970">inf</font>
+  0 &lt;= P2 &lt;= +<font color="#3D9970">inf</font>
+  0 &lt;= u &lt;= ubar
+  0 &lt;= v &lt;= vbar
+
+<font color="red"><b>t=t0:</b></font>
+  R = 400000
+  Ptilde = 2*p0/(lambda+gamma)*(1-<font color="#2ECC40">exp</font>(-(lambda+gamma)*2*tau))
+  P2tilde = 2*p0/(lambda+gamma)*(1-<font color="#2ECC40">exp</font>(-(lambda+gamma)*tau))
+  k = 0
+  y = 0
+  U = 0
+  P = p0*2*tau
+  P2 = p0*tau
+
+<font color="red"><b>ini:</b></font>
+  R = <font color="#0074D9">initial</font>(R)/2
+  Ptilde = R
+  P2tilde = R/2
+  k = 0.5
+  y = 0
+  U = 0
+  P = p0*2*tau
+  P2 = p0*tau
+  u = 0
+  v = 0
+
+<font color="red"><b>sca:</b></font>
+  R = 1e5
+  Ptilde = 1e5
+  P2tilde = 1e5
+  k = 1e-1
+  y = 1
+  U = 1
+  P = 1e5
+  P2 = 1e5
+  u = 1
+  v = 1
+
+<font color="red"><b>exp:</b></font>
+  <font color="#808080"><i># ptilde(t,0)</i></font>
+  pt0 == (1-k)*(lambda+beta)*R
+
+  <font color="#808080"><i># ptilde(t,tau)</i></font>
+  pttau == <font color="#2ECC40">ifthen</font>(<font color="#0074D9">Time</font> &lt; tau, \
+    p0*(tau-<font color="#0074D9">Time</font>)*2*<font color="#2ECC40">exp</font>(-gamma*<font color="#0074D9">Time</font>-(lambda+gamma)*tau), \
+    (1-<font color="#0074D9">delay</font>(k,tau))*(lambda+beta)*<font color="#0074D9">delay</font>(R,tau)*<font color="#2ECC40">exp</font>(lambda*tau))
+
+  <font color="#808080"><i># ptilde(t,2tau)</i></font>
+  pt2tau == <font color="#2ECC40">ifthen</font>(<font color="#0074D9">Time</font> &lt; 2*tau, \
+    p0*(2*tau-<font color="#0074D9">Time</font>)*2*<font color="#2ECC40">exp</font>(-gamma*<font color="#0074D9">Time</font>-y), \
+    (1-<font color="#0074D9">delay</font>(k,2*tau))*(lambda+beta)*<font color="#0074D9">delay</font>(R,2*tau)*<font color="#2ECC40">exp</font>(lambda*2*tau-y))
+
+  uprev == <font color="#2ECC40">ifthen</font>(<font color="#0074D9">Time</font> &lt; tau, 0, <font color="#0074D9">delay</font>(u,tau))
+
+  auxP0 == (1-k)*beta*R
+  auxP == pttau * 0.5 * <font color="#2ECC40">exp</font>((lambda+gamma)*tau)
+  auxP2 == pt2tau * 0.5
+
+<font color="red"><b>equ:</b></font>
+  R&acute; == -(1-k)*beta*R + pt2tau
+  Ptilde&acute; == lambda*Ptilde - u*P2tilde + pt0 - pt2tau
+  P2tilde&acute; == (lambda-u)*P2tilde + pttau - pt2tau
+  k&acute; == v*(1-k) - alpha*k
+  y&acute; == u - uprev
+  U&acute; == u
+  P&acute; == - gamma*P - u*P2 + auxP0 - auxP2
+  P2&acute; == (-gamma-u)*P2 + auxP - auxP2
+
+<font color="red"><b>obj:</b></font>
+  <font color="#808080"><i># Knitro does a very good job here and much better then ipopt or conopt</i></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(R)+<font color="#0074D9">final</font>(Ptilde) <font color="#8A2BE2">using</font> dnlp <font color="#8A2BE2">with</font> knitro
+</pre>
+</body>
+</html>

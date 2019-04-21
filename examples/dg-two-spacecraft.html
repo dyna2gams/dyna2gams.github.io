@@ -1,0 +1,95 @@
+<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">A Pursuit-Evasion Game Involving Two Spacecraft</h1>
+<pre>
+<font color="red"><b>rem:</b></font> A Pursuit-Evasion Game Involving Two Spacecraft
+</pre>
+<p>
+  This example considers a spacecraft pursuit-evasion problem taking place in low
+  earth orbit. The problem is formulated as a zero-sum differential game in which
+  there are two players, a pursuing spacecraft that attempts to minimize a payoff,
+  and an evading spacecraft that attempts to maximize the same payoff.
+<p>
+  Reference:
+  <ol>
+  <li>Songtao Sun, Qiuhua Zhang, Ryan Loxton and Bin Li,
+  <em>Numerical Solution Of A Pursuit-Evasion Differential Game Involving Two Spacecraft
+  In Low Earth Orbit</em>,
+  Journal Of Industrial And Management Optimization, Volume 11, Number 4, October 2015.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  r0 = 6371	<font color="#808080"><i># km</i></font>
+  mu = 3.986e+5	<font color="#808080"><i># km^3</i></font>
+  w = <font color="#2ECC40">sqrt</font>(mu/r0^3)
+  g = 9.8e-3	<font color="#808080"><i># km/s^2</i></font>
+  <font color="#808080"><i># T{P E} = {0.0330 0.01}*g	# version 1</i></font>
+  T{P E} = {0.1820 0.01}*g	<font color="#808080"><i># version 2</i></font>
+  tf = 500	<font color="#808080"><i># s</i></font>
+  
+<font color="red"><b>var:</b></font>
+  Jf
+
+<font color="red"><b>dyn:</b></font>
+  sx{P E} sy{P E}
+  vx{P E} vy{P E}
+  ux{P E} uy{P E}
+
+<font color="red"><b>t=t0:</b></font>
+  <font color="#808080"><i># version 1</i></font>
+  <font color="#808080"><i># sx{P E} = {0 9.958}</i></font>
+  <font color="#808080"><i># sy{P E} = {0 24.01}</i></font>
+  <font color="#808080"><i># vx{P E} = {0 -0.027}</i></font>
+  <font color="#808080"><i># vy{P E} = {0 -0.0056}</i></font>
+  <font color="#808080"><i># version 2</i></font>
+  sx{P E} = {-1.046 9.906}
+  sy{P E} = {-119.9 36.02}
+  vx{P E} = {0.133 -0.04}
+  vy{P E} = {-0.001 -0.006}
+  
+<font color="red"><b>exp:</b></font>
+  J == 0.5*(<font color="#2ECC40">sqr</font>(sxP-sxE)+<font color="#2ECC40">sqr</font>(syP-syE))
+  
+<font color="red"><b>equ:</b></font>
+  eqsx{P E}.. sx{P E}&acute; == vx{P E}
+  eqsy{P E}.. sy{P E}&acute; == vy{P E}  
+  eqvx{P E}.. vx{P E}&acute; == 2*mu/r0^3*sx{P E} + 2*w*vy{P E} + w*w*sx{P E} + T{P E}*ux{P E}
+  eqvy{P E}.. vy{P E}&acute; ==  -mu/r0^3*sy{P E} - 2*w*vx{P E} + w*w*sy{P E} + T{P E}*uy{P E}
+  equu{P E}.. <font color="#2ECC40">sqr</font>(ux{P E}) + <font color="#2ECC40">sqr</font>(uy{P E}) &lt;= 1
+  eqjf.. Jf == <font color="#0074D9">final</font>(J)
+  
+<font color="red"><b>gms:</b></font>
+  <font color="#3D9970">file</font> info / '%emp.info%' /;
+  <font color="#3D9970">put</font> info;
+  <font color="#3D9970">put</font> 'bilevel' /;
+  <font color="#3D9970">put</font> 'max Jf' /;
+  <font color="#8A2BE2">@alltimeput</font> sxE / syE / vxE / vyE / uxE / uyE /;
+  <font color="#8A2BE2">@abltimeput</font> eqsxE / eqsyE / eqvxE / eqvyE /;
+  <font color="#8A2BE2">@alltimeput</font> equuE /;
+  <font color="#3D9970">put</font> 'eqjf' /;
+  <font color="#3D9970">putclose</font>;  
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> Jf <font color="#8A2BE2">using</font> emp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#8A2BE2">@solveloop</font> Method=movavg, Paraml=3 1.00, Varl=uxE uyE uxP uyP
+  <font color="#8A2BE2">@solveloop</font> Method=movavg, Paraml=3 0.95, Varl=uxE uyE uxP uyP
+</pre>
+</body>
+</html>

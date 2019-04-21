@@ -1,0 +1,87 @@
+<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Nonlinear One-Dimensional Initial-Value Problem</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Nonlinear One-Dimensional Initial-Value Problem
+</pre>
+<p>
+  Consider the following optimal control problem taken from [1].
+  Determine the state, \(y(t)\), and the control, \(u(t)\), on \(t \in [0, t_f]\) that maximize
+  the cost functional
+  \[
+  J = y(t_f)
+  \]
+  subject to the dynamic constraint
+  \[
+  \dot y = \dfrac{5}{2}(-y+yu-u^2)
+  \]
+  and the boundary condition
+  \[
+  y(0) = 1
+  \]
+  where \(t_f=2\) The optimal solution to this problem is
+  \[
+  y^*(t) = 4/(1+3\exp(5t/2)) \\
+  u^*(t) = y^*(t)/2 \\
+  \lambda^*_y(t) = -\exp(2\log(1+3\exp(5t/2))-5t/2)/(\exp(-5)+6+9\exp(5))
+  \]
+<p>
+  Reference:
+  <ol>
+  <li>Divya Garg,
+  <em>Advances In Global Pseudospectral Methods For Optimal Control</em>,
+  PhD thesis, University of Florida, 2011.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  tf = 2
+
+<font color="red"><b>dyn:</b></font>
+  y
+  u
+  yopt
+  uopt
+  lambda
+
+<font color="red"><b>lim:</b></font>
+  0 &lt;= y &lt;= +<font color="#3D9970">inf</font>
+
+<font color="red"><b>t=t0:</b></font>
+  y = 1
+
+<font color="red"><b>ini:</b></font>
+  y = 1
+
+<font color="red"><b>equ:</b></font>
+  <font color="#808080"><i># numerical solution follows</i></font>
+  e.. y&acute; == 5/2*(-y + y*u - u*u)
+  <font color="#808080"><i># analytical solution follows</i></font>
+  yopt == 4/(1 + 3*<font color="#2ECC40">exp</font>(5*<font color="#0074D9">Time</font>/2))
+  uopt == yopt/2
+  lambda == <font color="#2ECC40">exp</font>(2*<font color="#2ECC40">log</font>(1+3*<font color="#2ECC40">exp</font>(5*<font color="#0074D9">Time</font>/2))-5*<font color="#0074D9">Time</font>/2)/(<font color="#2ECC40">exp</font>(-5)+6+9*<font color="#2ECC40">exp</font>(5))
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">maximize</font> <font color="#0074D9">final</font>(y) <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#8A2BE2">@costates</font>
+  <font color="#8A2BE2">@tpa</font> se = <font color="#0074D9">costate</font>(e)
+  <font color="#8A2BE2">@csvsave</font> se
+</pre>
+</body>
+</html>

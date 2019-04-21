@@ -1,0 +1,86 @@
+<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Marine Population Dynamics (COPS Problem 6)</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Marine Population Dynamics (COPS Problem 6)
+</pre>
+<p>
+  See: <a href="http://www.mcs.anl.gov/~more/cops/">COPS: Large-Scale Optimization Problems</a>
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  tf = 10
+
+<font color="red"><b>var:</b></font>
+  g{1:7}     <font color="#808080"><i># growth rates</i></font>
+  m{1:8}     <font color="#808080"><i># mortality rates</i></font>
+
+<font color="red"><b>dyn:</b></font>
+  x{1:8}
+
+<font color="red"><b>obs:</b></font>
+  <font color="#0074D9">Time</font>    x1    x2    x3    x4    x5    x6    x7    x8
+   0.0 20000 17000 10000 15000 12000  9000  7000  3000
+   0.5 12445 15411 13040 13338 13484  8426  6615  4022
+   1.0  7705 13074 14623 11976 12453  9272  6891  5020
+   1.5  4664  8579 12434 12603 11738  9710  6821  5722
+   2.0  2977  7053 11219 11340 13665  8534  6242  5695
+   2.5  1769  5054 10065 11232 12112  9600  6647  7034
+   3.0   943  3907  9473 10334 11115  8826  6842  7348
+   3.5   581  2624  7421 10297 12427  8747  7199  7684
+   4.0   355  1744  5369  7748 10057  8698  6542  7410
+   4.5   223  1272  4713  6869  9564  8766  6810  6961
+   5.0   137   821  3451  6050  8671  8291  6827  7525
+   5.5    87   577  2649  5454  8430  7411  6423  8388
+   6.0    49   337  2058  4115  7435  7627  6268  7189
+   6.5    32   228  1440  3790  6474  6658  5859  7467
+   7.0    17   168  1178  3087  6524  5880  5562  7144
+   7.5    11    99   919  2596  5360  5762  4480  7256
+   8.0     7    65   647  1873  4556  5058  4944  7538
+   8.5     4    44   509  1571  4009  4527  4233  6649
+   9.0     2    27   345  1227  3677  4229  3805  6378
+   9.5     1    20   231   934  3197  3695  3159  6454
+  10.0     1    12   198   707  2562  3163  3232  5566
+
+<font color="red"><b>lim:</b></font>
+  0 &lt;= g{1:7} &lt;= 1
+  0 &lt;= m{1:8} &lt;= 1
+  0 &lt;= x{1:8} &lt;= 1.2*<font color="#0074D9">ObservedMax</font>(x{1:8})
+
+<font color="red"><b>ini:</b></font>
+  x{1:8} = <font color="#0074D9">ObservedVal</font>(x{1:8})
+  g{1:7} = 0.5
+  m{1:8} = 0.3
+
+<font color="red"><b>equ:</b></font>
+  x1&acute; == -(m1+g1)*x1
+  x{2:7}&acute; == g{1:6}*x{1:6} - (m{2:7}+g{2:7})*x{2:7}
+  x8&acute; == g7*x7 - m8*x8
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#3D9970">sum</font>{1:8,<font color="#0074D9">ObservedErr</font>(x{:})} <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#3D9970">parameter</font> report(*,*);
+  <font color="#3D9970">set</font> o(<font color="#0074D9">Observation</font>);
+  <font color="#0074D9">ObservedSet</font>(x{1:8},o); 
+  <font color="#8B0000">$$ondotL</font>
+  report(o,'x{1:8}') = <font color="#0074D9">ObservedGap</font>(x{1:8},o);
+  <font color="#3D9970">display</font> report;
+</pre>
+</body>
+</html>

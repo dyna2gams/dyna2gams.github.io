@@ -1,0 +1,92 @@
+<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Control of the heat equation - Neumann</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Control of the heat equation - Neumann
+</pre>
+<p>
+  We describe here a simple example for the one dimensional heat equation,
+  over the domain \(\Omega=[0,1]\). We set \(Q=\Omega\times [0,T]\), where the
+  final time is fixed. The control \(u(t)\) is either (i) over a part of the
+  domain, with Dirichlet conditions, or (ii) at the boundary by the Neumann
+  condition. So the state equation is in case (i)
+<p>
+  \[
+  \dfrac{d}{dt} y(x,t)- c_0\ y_{xx}(x,t) = \chi_{[0,a]} c_1\ u(t), \quad (x,t) \in Q,\\
+  y(\cdot,0)=y_0(x); \quad y(0,t)=y(1,t) = 0, \quad t\in [0,T],
+  \]
+<p>
+  where \(0\leq a\leq 1\), and \(\chi_{[0,a]}\) is the characteristic function of \([0,a]\), and in case (ii)
+<p>
+  \[
+  \dfrac{d}{dt} y(x,t) - c_0\ y_{xx}(x,t) = 0, \quad (x,t) \in Q,\\
+  y(\cdot,0)=y_0(x); \quad y_x(0,t)=-c_1 u(t); \quad y_x(1,t) = 0, \quad t\in [0,T].
+  \]
+<p>
+  The cost function is, for \(\gamma\geq 0\) and \(\delta\geq 0\):
+<p>
+  \[\dfrac{1}{2} \int_Q y^2(x,t) \ \mathrm{d}x \ \mathrm{d}t + \int_0^T \left( \gamma u(t) + \delta u^2(t)\right) \ \mathrm{d}t.\]
+<p>
+  We discretize in space by standard finite difference approximations.
+<p>
+  See: <a href="https://project.inria.fr/bocop/control-of-the-heat-equation-2/">BOCOP - The optimal control solver</a>
+<p>
+<pre>
+<font color="red"><b>set:</b></font>
+  x = x0:x50
+  xl(x) = x0
+  xx(x) = x1:x49
+  xr(x) = x50
+
+<font color="red"><b>par:</b></font>
+  c0 = 0.2
+  c1 = 1
+  gamma = 0
+  delta = 0
+  h = 1/(<font color="#3D9970">card</font>(x)-1)
+  vx[x] = (<font color="#3D9970">ord</font>(x)-1)*h
+  ah = c0/<font color="#2ECC40">sqr</font>(h)
+  tf = 20
+
+<font color="red"><b>dyn:</b></font> y[x] j u
+
+<font color="red"><b>lim:</b></font>
+  -1 &lt;= u &lt;= 1
+
+<font color="red"><b>t=t0:</b></font>
+  y[x] = 1
+  j = 0
+
+<font color="red"><b>ini:</b></font>
+  u = 0
+  y[x] = 1
+  j = 0
+
+<font color="red"><b>equ:</b></font>
+  $xl(x)..  y&acute;[x] == ah*(       -   y[x] + y[x+1] + c1*u*h)
+  $xx(x)..  y&acute;[x] == ah*(y[x-1] - 2*y[x] + y[x+1]         )
+  $xr(x)..  y&acute;[x] == ah*(y[x-1] -   y[x]                  )
+  j&acute; == (0.5*<font color="#3D9970">sum</font>(xl(x),<font color="#2ECC40">sqr</font>(y[x]))+<font color="#3D9970">sum</font>(xx(x),<font color="#2ECC40">sqr</font>(y[x]))+0.5*<font color="#3D9970">sum</font>(xr(x),<font color="#2ECC40">sqr</font>(y[x])))*h/2 + gamma*u + delta*<font color="#2ECC40">sqr</font>(u)
+
+<font color="red"><b>obj:</b></font>
+  minxxize <font color="#0074D9">final</font>(j) <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gpl:</b></font>
+  <font color="#8A2BE2">@splotZXT</font> y, vx, "<font color="#FF4500">@TITLE@</font>", "y[x,t]", "x"
+</pre>
+</body>
+</html>

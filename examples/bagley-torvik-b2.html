@@ -1,0 +1,81 @@
+<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Bagley-Torvik equation</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Bagley-Torvik equation
+</pre>
+<p>
+  The fractional Bagley-Torvik equation is of the form
+  \[
+  A_1 \mathcal{D}^{2}x(t) + A_2 \mathcal{D}^{\nu}x(t) + A_3 x(t) = f(t) \\
+  0 \leq t \leq t_f  \\
+  1  < \nu < 2
+  \]
+  subject to the initial conditions
+  \[
+  x(0) = \alpha_0, \quad \dot{x}(0) = \alpha_1
+  \]
+  or the boundary conditions
+  \[
+  x(0) = \beta_0, \quad x(t_f) = \beta_1
+  \]
+  where \(A_1, A_2, A_3, \alpha_0, \alpha_1, \beta_0, \beta_1\) are constants with \(A_1 \neq 0\).
+<p>
+  Reference:
+  <ol>
+  <li>Fakhrodin Mohammadi and Syed Tauseef Mohyud-Din,
+  <em>A fractional-order Legendre collocation method for solving the Bagley-Torvik equations</em>,
+  Advances in Difference Equations (2016) 2016:269
+  </ol>
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  A1 = 1
+  A2 = 8/17
+  A3 = 13/51
+  nu = 1.5; gam = nu - 1
+  beta0 = 0
+  beta1 = 0
+  tf = 1
+
+<font color="red"><b>gms:</b></font>
+  <font color="#8B0000">$$batinclude</font> "%gams.ldir%dyna-fractder" JG gam
+
+<font color="red"><b>dyn:</b></font>
+  x y w
+  
+<font color="red"><b>t=t0:</b></font>
+  x = beta0
+  
+<font color="red"><b>t=tf:</b></font>
+  x = beta1
+  
+<font color="red"><b>exp:</b></font>
+  f(t) == (48*<font color="#2ECC40">sqrt</font>(t)*p(t)/<font color="#2ECC40">sqrt</font>(Pi)+7*q(t))/89250
+  p(t) == <font color="#0074D9">Poly3</font>(t,16000,-32480,21280,-4746)
+  q(t) == <font color="#0074D9">Poly5</font>(t,3250,-9425,264880,-448107,233262,-34578)
+
+<font color="red"><b>equ:</b></font>
+  x&acute; == y
+  A1*y&acute; == f(<font color="#0074D9">Time</font>) - A2*<font color="#0074D9">fractder</font>(y,gam) - A3*x
+  w == <font color="#0074D9">Poly5</font>(<font color="#0074D9">Time</font>,1,-29/10,76/25,-339/250,27/125,0)	<font color="#808080"><i># the exact solution</i></font>
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> 0 <font color="#8A2BE2">using</font> lp	<font color="#808080"><i># dummy optimization  </i></font>
+</pre>
+</body>
+</html>

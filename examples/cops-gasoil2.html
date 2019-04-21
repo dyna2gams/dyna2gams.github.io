@@ -1,0 +1,118 @@
+<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Catalytic Cracking of Gas Oil (COPS Problem 12)</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Catalytic Cracking of Gas Oil (COPS Problem 12)
+</pre>
+<p>
+  See: <a href="http://www.mcs.anl.gov/~more/cops/">COPS: Large-Scale Optimization Problems</a>
+<p>
+<pre>
+<font color="red"><b>set:</b></font>
+  ne = e1:e2   <font color="#808080"><i># number of differential equations</i></font>
+  np = p1:p3   <font color="#808080"><i># number of ODE parameters</i></font>
+  nm = m1:m21  <font color="#808080"><i># set of measurements</i></font>
+
+<font color="red"><b>par:</b></font> bc[ne]; tau[nm]; z[nm,ne]
+
+<font color="red"><b>gms:</b></font>
+  <font color="#808080"><i># Boundary conditions</i></font>
+  <font color="#3D9970">parameter</font> bc(ne)
+  /
+  e1 1
+  e2 0
+  /;
+
+  <font color="#808080"><i># Times at which observations are made</i></font>
+  <font color="#3D9970">parameter</font> tau(nm)
+  /
+   m1  0
+   m2  0.025
+   m3  0.05
+   m4  0.075
+   m5  0.10
+   m6  0.125
+   m7  0.150
+   m8  0.175
+   m9  0.20
+  m10  0.225
+  m11  0.250
+  m12  0.30
+  m13  0.35
+  m14  0.40
+  m15  0.45
+  m16  0.50
+  m17  0.55
+  m18  0.65
+  m19  0.75
+  m20  0.85
+  m21  0.95
+  /;
+
+  <font color="#808080"><i># Concentrations (observations)</i></font>
+  <font color="#3D9970">table</font> z(nm,ne)
+             e1        e2
+     m1    1.0000    0.0000
+     m2    0.8105    0.2000
+     m3    0.6208    0.2886
+     m4    0.5258    0.3010
+     m5    0.4345    0.3215
+     m6    0.3903    0.3123
+     m7    0.3342    0.2716
+     m8    0.3034    0.2551
+     m9    0.2735    0.2258
+    m10    0.2405    0.1959
+    m11    0.2283    0.1789
+    m12    0.2071    0.1457
+    m13    0.1669    0.1198
+    m14    0.1530    0.0909
+    m15    0.1339    0.0719
+    m16    0.1265    0.0561
+    m17    0.1200    0.0460
+    m18    0.0990    0.0280
+    m19    0.0870    0.0190
+    m20    0.0770    0.0140
+    m21    0.0690    0.0100;
+
+<font color="red"><b>par:</b></font> tf = <font color="#3D9970">smax</font>(nm, tau[nm])
+
+<font color="red"><b>var:</b></font> theta[np]
+
+<font color="red"><b>dyn:</b></font> x[ne]
+
+<font color="red"><b>lim:</b></font>
+  0 &lt;= theta[np] &lt;= 20
+
+<font color="red"><b>t=t0:</b></font>
+  x[ne] = bc[ne]
+
+<font color="red"><b>t=tf:</b></font>
+
+<font color="red"><b>ini:</b></font>
+  x[ne] = bc[ne]
+  theta[np] = 2
+
+<font color="red"><b>equ:</b></font>
+  x&acute;['e1'] == - (theta['p1']+theta['p3'])*<font color="#2ECC40">sqr</font>(x['e1'])
+  x&acute;['e2'] == theta['p1']*<font color="#2ECC40">sqr</font>(x['e1']) - theta['p2']*x['e2']
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#3D9970">sum</font>(nm, <font color="#3D9970">sum</font>(ne, <font color="#2ECC40">sqr</font>(<font color="#0074D9">eval</font>(x[ne],tau[nm]) - z[nm,ne]))) <font color="#8A2BE2">using</font> nlp
+
+</pre>
+</body>
+</html>
