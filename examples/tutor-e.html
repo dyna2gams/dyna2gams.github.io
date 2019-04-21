@@ -1,0 +1,213 @@
+<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Minimum Time-to-Climb of a Supersonic Aircraft</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Minimum Time-to-Climb of a Supersonic Aircraft
+</pre>
+<p>
+  The minimum time-to-climb of a supersonic aircraft optimal control problem is stated as follows.
+<p>
+  Minimize the cost functional
+<p>
+  \[
+  J = t_f
+  \]
+<p>
+  subject to the dynamic constraints
+<p>
+  \[
+  \dot{h}(t) = v(t)\sin\alpha(t) \\
+  \dot{v}(t) = \frac{T\cos\alpha(t)-D}{m(t)} \\
+  \dot{\gamma}(t) = \frac{T\sin\alpha(t)+L}{m(t)v(t)} + \big(\frac{v(t)}{r(t)} - \frac{\mu}{v(t)r^2(t)}\big) \cos\gamma(t) \\
+  \dot{m}(t) = -\frac{T}{g_0 I_{sp}}
+  \]
+<p>
+  and the boundary conditions
+<p>
+  \[
+  h(0)=0, \ h(t_f)=19994.88 \\
+  v(0)=129.314, \ v(t_f)=295.092 \\
+  \gamma(0)=0, \ \gamma(t_f)=0 \\
+  m(0)=19050.864
+  \]
+<p>
+  This example is taken verbatim from the following reference:
+  <ol>
+  <li>Bryson, A. E., Desai, M. N. and Hoffman, W. C.,
+  <em>Energy-State Approximation in Performance Optimization of Supersonic Aircraft</em>,
+  Journal of Aircraft, Vol. 6, No. 6, November-December, 1969, pp. 481-488.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>fun:</b></font>	<font color="#808080"><i># character &sect; (hexadecimal A7, decimal 167) denotes a DYNA tabulated function</i></font>
+  <font color="#808080"><i># Bryson Minimum Time To Climb Aero Data</i></font>
+  <font color="#808080"><i># U.S. 1976 Standard Atmosphere</i></font>
+  <font color="#808080"><i># Column 1: Altitude (m)</i></font>
+  <font color="#808080"><i># Column 2: Atmospheric Density (kg/m^3)</i></font>
+  <font color="#808080"><i># Column 3: Speed of Sound (m/s)</i></font>
+    ALT       &sect;AD       &sect;SS
+  -2000 1.478e+00 3.479e+02
+      0 1.225e+00 3.403e+02
+   2000 1.007e+00 3.325e+02
+   4000 8.193e-01 3.246e+02
+   6000 6.601e-01 3.165e+02
+   8000 5.258e-01 3.081e+02
+  10000 4.135e-01 2.995e+02
+  12000 3.119e-01 2.951e+02
+  14000 2.279e-01 2.951e+02
+  16000 1.665e-01 2.951e+02
+  18000 1.216e-01 2.951e+02
+  20000 8.891e-02 2.951e+02
+  22000 6.451e-02 2.964e+02
+  24000 4.694e-02 2.977e+02
+  26000 3.426e-02 2.991e+02
+  28000 2.508e-02 3.004e+02
+  30000 1.841e-02 3.017e+02
+  32000 1.355e-02 3.030e+02
+  34000 9.887e-03 3.065e+02
+  36000 7.257e-03 3.101e+02
+  38000 5.366e-03 3.137e+02
+  40000 3.995e-03 3.172e+02
+  42000 2.995e-03 3.207e+02
+  44000 2.259e-03 3.241e+02
+  46000 1.714e-03 3.275e+02
+  48000 1.317e-03 3.298e+02
+  50000 1.027e-03 3.298e+02
+  52000 8.055e-04 3.288e+02
+  54000 6.389e-04 3.254e+02
+  56000 5.044e-04 3.220e+02
+  58000 3.962e-04 3.186e+02
+  60000 3.096e-04 3.151e+02
+  62000 2.407e-04 3.115e+02
+  64000 1.860e-04 3.080e+02
+  66000 1.429e-04 3.044e+02
+  68000 1.091e-04 3.007e+02
+  70000 8.281e-05 2.971e+02
+  72000 6.236e-05 2.934e+02
+  74000 4.637e-05 2.907e+02
+  76000 3.430e-05 2.880e+02
+  78000 2.523e-05 2.853e+02
+  80000 1.845e-05 2.825e+02
+  82000 1.341e-05 2.797e+02
+  84000 9.690e-06 2.769e+02
+  86000 6.955e-06 2.741e+02
+
+  <font color="#808080"><i># Propulsion Data for Bryson Aircraft</i></font>
+  <font color="#808080"><i># The thrust for the aircraft considered by Bryson in 1969 depends</i></font>
+  <font color="#808080"><i># upon the Mach number and the altitude. This data is taken verbatim</i></font>
+  <font color="#808080"><i># from the 1969 Journal of Aircraft paper (see reference above) and</i></font>
+  <font color="#808080"><i># is copied for use in this example. The data are stored in the</i></font>
+  <font color="#808080"><i># following table:</i></font>
+  <font color="#808080"><i># Column 1: Mach number</i></font>
+  <font color="#808080"><i># Row 1   : altitude (meters)</i></font>
+  <font color="#808080"><i># Data    : Thrust (Newton)</i></font>
+  &sect;Thrust = <font color="#7FDBFF">GridXY</font>
+      	     0		  1524		  3048		  4572		  6096		  7620		  9144		12192		15240		21336
+  0 	107646.9724	106757.328	 90298.9066	 76954.2406	 64499.219	 54268.3084	 45371.8644	25354.8654	15123.9548	  444.8222
+  0.2	124550.216	109426.2612	 93857.4842	 80512.8182	 67612.9744	 56937.2416	 47595.9754	28913.443	17348.0658	  889.6444
+  0.4	125884.6826	112095.1944	 97416.0618	 83181.7514	 70726.7298	 59606.1748	 49820.0864	32472.0206	19572.1768	 1779.2888
+  0.6	137005.2376	120991.6384	105867.6836	 91188.551	 76954.2406	 65388.8634	 54713.1306	36030.5982	21796.2878	 3558.5776
+  0.8	153463.659	134781.1266	118322.7052	103198.7504	 88074.7956	 74730.1296	 62719.9302	41813.2868	24910.0432	 4893.0442
+  1	168587.6138	152574.0146	135225.9488	119212.3496	103643.5726	 88074.7956	 74730.1296	49820.0864	30247.9096	 6227.5108
+  1.2	160580.8142	169032.436	155242.9478	139229.3486	121436.4606	104978.0392	 89409.2622	59606.1748	36920.2426	 7561.9774
+  1.4	160580.8142	162804.9252	171256.547	160580.8142	140563.8152	124995.0382	107646.9724	72061.1964	44482.22	 9786.0884
+  1.6	160580.8142	156577.4144	187270.1462	172146.1914	158801.5254	142343.104	124995.0382	85850.6846	52933.8418	12899.8438
+  1.8	160580.8142	150349.9036	203283.7454	183711.5686	177039.2356	153908.4812	138339.7042	96526.4174	59161.3526	13789.4882
+
+  <font color="#808080"><i># Aerodynamic Data for Bryson Aircraft</i></font>
+  <font color="#808080"><i># M: Mach number values</i></font>
+  <font color="#808080"><i># Clalpha: coefficient of lift values</i></font>
+  <font color="#808080"><i># CD0: zero-lift coefficient of drag values</i></font>
+  <font color="#808080"><i># eta: load factors</i></font>
+    M &sect;CLalpha  &sect;CD0   &sect;eta
+  0.0   3.44   0.013   0.54
+  0.4   3.44   0.013   0.54
+  0.8   3.44   0.013   0.54
+  0.9   3.58   0.014   0.75
+  1.0   4.44   0.031   0.79
+  1.2   3.44   0.041   0.78
+  1.4   3.01   0.039   0.89
+  1.6   2.86   0.036   0.93
+  1.8   2.44   0.035   0.93
+
+<font color="red"><b>par:</b></font>
+  Re = 6378145
+  mu = 3.986e14
+  S = 49.2386
+  g0 = 9.80665
+  Isp = 1600
+
+<font color="red"><b>var:</b></font>
+  tf
+
+<font color="red"><b>dyn:</b></font>
+  h v fpa m                     <font color="#808080"><i># state variables</i></font>
+  alpha                         <font color="#808080"><i># control variable</i></font>
+
+<font color="red"><b>lim:</b></font>
+  100 &lt;= tf &lt;= 600
+  0 &lt;= h &lt;= 21031.2
+  5 &lt;= v &lt;= 1000
+  -40/180*pi &lt;= fpa &lt;= +40/180*pi
+  22 &lt;= m &lt;= 20410
+  -45/180*pi &lt;= alpha &lt;= +45/180*pi
+
+<font color="red"><b>t=t0:</b></font>
+  h = 0           <font color="#808080"><i># Initial altitude (meters)</i></font>
+  v = 129.314     <font color="#808080"><i># Initial speed (m/s)</i></font>
+  fpa = 0         <font color="#808080"><i># Initial flight path angle (rad)</i></font>
+  m = 19050.864   <font color="#808080"><i># Initial mass (kg)</i></font>
+
+<font color="red"><b>t=tf:</b></font>
+  h = 19994.88    <font color="#808080"><i># Final altitude (meters)</i></font>
+  v = 295.092     <font color="#808080"><i># Final speed (m/s)</i></font>
+  fpa = 0         <font color="#808080"><i># Final flight path angle (rad)</i></font>
+
+<font color="red"><b>exp:</b></font>
+  CD == CD0 + eta * CLalpha * alpha * alpha
+  CL == CLalpha * alpha
+  q == 0.5 * rho * v * v
+  D == q * S * CD     <font color="#808080"><i># D is the magnitude of the drag force</i></font>
+  L == q * S * CL     <font color="#808080"><i># L is the magnitude of the lift force</i></font>
+  r == h + Re
+  rho == &sect;AD(h)
+  sos == &sect;SS(h)
+  Mach    == v / sos
+  CD0     == &sect;CD0(Mach)
+  CLalpha == &sect;CLalpha(Mach)
+  eta     == &sect;eta(Mach)
+  Thrust  == &sect;Thrust(Mach,h)
+
+<font color="red"><b>ini:</b></font>
+  tf = 300
+  h = <font color="#0074D9">linspace</font>(<font color="#0074D9">initial</font>(h),<font color="#0074D9">final</font>(h))
+  v = <font color="#0074D9">linspace</font>(<font color="#0074D9">initial</font>(v),<font color="#0074D9">final</font>(v))
+  fpa = <font color="#0074D9">linspace</font>(<font color="#0074D9">initial</font>(fpa),<font color="#0074D9">final</font>(fpa))
+  m = <font color="#0074D9">initial</font>(m)
+  alpha = <font color="#0074D9">linspace</font>(45/180*pi,-45/180*pi)
+
+<font color="red"><b>equ:</b></font>
+  h&acute;   == v * <font color="#2ECC40">sin</font>(fpa)
+  v&acute;   == (Thrust * <font color="#2ECC40">cos</font>(alpha) - D) / m - mu * <font color="#2ECC40">sin</font>(fpa) / (r * r)
+  fpa&acute; == (Thrust * <font color="#2ECC40">sin</font>(alpha) + L) / (m * v) + <font color="#2ECC40">cos</font>(fpa) * (v / r - mu / (v * r * r))
+  m&acute;   == -Thrust / (g0 * Isp)
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> tf <font color="#8A2BE2">using</font> nlp
+</pre>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Time Optimal Car</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Time Optimal Car
+</pre>
+<p>
+  References:
+  <ol>
+  <li>Cuthrell J.E., Biegler L.T.,
+  <em>On the optimization of differential-algebraic process systems</em>,
+  AIChE Journal 33(8) pp. 1257-1270, 1987.
+  <li>Logsdon J.S., L.T. Biegler,
+  <em>Decomposition strategies for large-scale dynamic optimization problems</em>,
+  Chemical Engineering Science 47(4) pp. 851-864, 1992.
+  </ol>
+<p>
+  See: <a href="https://mintoc.de/index.php/Time_optimal_car_problem_(TACO)">mintoc.de</a>
+<p>
+<pre>
+<font color="red"><b>var:</b></font> tf
+
+<font color="red"><b>dyn:</b></font> s v gas p
+
+<font color="red"><b>lim:</b></font>
+  5 &lt;= tf &lt;= 50
+  0 &lt;= s &lt;= 330
+  0 &lt;= v &lt;= 30
+  -2 &lt;= gas &lt;= 1
+  0 &lt;= p &lt;= 0.1
+
+<font color="red"><b>t=t0:</b></font>
+  s = 0
+  v = 0
+
+<font color="red"><b>t=tf:</b></font>
+  s = 300
+  v = 0
+
+<font color="red"><b>ini:</b></font>
+  tf = 20
+  s = 0
+  v = 0
+  gas = 0
+  p = 0.05
+
+<font color="red"><b>equ:</b></font>
+  s&acute; == v
+  v&acute; == gas - p
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> tf <font color="#8A2BE2">using</font> nlp
+</pre>
+</body>
+</html>

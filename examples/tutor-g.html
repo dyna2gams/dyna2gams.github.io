@@ -1,0 +1,167 @@
+<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Optimal Control of a Jojo (Multi-stage OCP)</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Optimal Control of a Jojo (Multi-stage OCP)
+</pre>
+<p>
+  As an example for a multi-stage optimization problem, we consider the simple jojo
+  described in [1].
+  Here, the altitude of the jojo is denoted by the state variable \(y\), while \(w =
+  dy/dt\) is the associated velocity. The hand playing with the jojo is described by
+  the altitude \(x\), while \(v = dx/dt\) is the velocity of the hand. The distance
+  \(l\) between hand and jojo is defined as \(l = x - y\). As soon as the jojo is
+  released from the hand, the equations of motion are given by
+<p>
+  \[
+  \dot{x}(t) = v(t) \\
+  \dot{v}(t) = u(t) \\
+  \dot{y}(t) = w(t) \\
+  \dot{w}(t) = -\mu g + k u + a(w-v)
+  \]
+<p>
+  Here, we define the jojo&rsquo;s damping ratio \(k  =  J / (m r^2 + J)\) as well as
+  the effective mass ratio \(\mu = 1 - k\), which depend on the inertia \(J\), the
+  mass \(m\) and the (inner) coiling radius \(r\) of the jojo. Moreover, \(g\) denotes
+  the acceleration due to gravity while \(a\) is the jojo&rsquo;s coiling friction. Note
+  that we assume here that the hand can directly be controlled by the input function
+  \(u\).
+<p>
+  Let us assume that the sum of \(r\) and the total length of the rope is given by
+  \(L\). When the distance \(l = x - y\) happens to be equal to this length \(L\), the
+  kinetic energy of the jojo is suddenly absorbed, while for the rotational energy a
+  conservation law is satisfied. Thus, the jump is given by
+<p>
+  \[
+  x(t^+_j) = x(t^-_j) \\
+  v(t^+_j) = v(t^-_j) \\
+  y(t^+_j) = y(t^-_j) \\
+  w(t^+_j) = k v(t^-_j) + \sqrt{k^2 v^2(t^-_j) + k(w^2(t^-_j) - 2 w(t^-_j) v(t^-_j))}
+  \]
+<p>
+  In order to understand this expression, it is helpful to remark that for the passive
+  case  \(v = 0\) (i.e. for the case that the hand is at rest during the jump) the
+  jump condition simplifies to
+<p>
+  \[
+  w(t^+_j) = \sqrt{k} \ w(t^-_j)
+  \]
+<p>
+  i.e. the damping ratio \(k\) measures the loss of kinetic energy for a passive jump.
+  After the jump, the equations of motion are again given by the above dynamic system.
+<p>
+  Now, our aim is to minimize the control action of the hand defined as
+<p>
+  \[
+  \Phi = \int_0^{t_f} u^2(t) \ \textrm{d}t
+  \]
+<p>
+  while starting and stopping the jojo under the following conditions:
+<p>
+  \[
+  x(0) = y(0) = 0 \ \textrm{m}\\
+  v(0) = w(0) = 0\ \textrm{m}\backslash\textrm{s} \\
+  x(t_j) - y(t_j) = L \\
+  x(t_f) = y(t_f) = -0.1\ \textrm{m} \\
+  v(t_f) = w(t_f) = 0\ \textrm{m}\backslash\textrm{s}
+  \]
+<p>
+  i.e. we start both the hand and the jojo at rest at the position 0. Moreover at the
+  time \(t_j\) we require that the length of the rope is equal to \(L = 1\) m. Finally,
+  the jojo should be stopped when softly touching the hand \(-10\) cm below the
+  starting point. Note that the durations of the two phases, represented by the time
+  variables \(t_j\) and \(t_f-t_j\), are optimized, too.
+<p>
+  Note that the velocity of the hand has a peek at the time, where the jump is.
+  The velocity of the jojo is discontinuous at this time. One interpretation of this
+  result is that the energy loss during the jump can be reduced by moving the hand
+  quickly upwards during this phase.
+<p>
+  Reference:
+  <ol>
+  <li>B. Houska, H.J. Ferreau and M. Diehl,
+  <em>ACADO Toolkit - An open-source framework for automatic control and dynamic optimization</em>,
+  Optimal Control Applications and Methods 32.3, pg. 298-312, 2011.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>set:</b></font>
+  phase = ph1*ph2
+
+<font color="red"><b>par:</b></font>
+  m = 0.200	<font color="#808080"><i># the mass of the jojo (200g)</i></font>
+  J = 1e-4	<font color="#808080"><i># the inertia of the jojo (1e-4kg*m^2)</i></font>
+  r = 0.010	<font color="#808080"><i># the coiling radius of the jojo (1cm)</i></font>
+  g = 9.81	<font color="#808080"><i># the gravitational constant (9.81m/s^2)</i></font>
+  a = 1e-2	<font color="#808080"><i># the coiling friction (1e-2/s)</i></font>
+  L = 1.00	<font color="#808080"><i># the length of the rope (1m)</i></font>
+  k  = J/(m*r*r+J)	<font color="#808080"><i># the jojo&rsquo;s damping ratio</i></font>
+  mu = 1.0 - k	<font color="#808080"><i># the effective mass ratio</i></font>
+  tf = 1	<font color="#808080"><i># simulation time</i></font>
+
+<font color="red"><b>var:</b></font>
+  tlen[phase]	<font color="#808080"><i># the duration of the phases</i></font>
+
+<font color="red"><b>dyn:</b></font>
+  t[phase]	<font color="#808080"><i># the real time</i></font>
+  x[phase]	<font color="#808080"><i># the position of the "hand"</i></font>
+  v[phase]	<font color="#808080"><i># the velocity of the "hand"</i></font>
+  y[phase]	<font color="#808080"><i># the position of the jojo</i></font>
+  w[phase]	<font color="#808080"><i># the velocity of the jojo</i></font>
+  u[phase]	<font color="#808080"><i># the control action of the "hand"</i></font>
+  phi[phase]	<font color="#808080"><i># the cost functional</i></font>
+
+<font color="red"><b>lim:</b></font>
+  0.1 &lt;= tlen[phase] &lt;= 2
+  -10 &lt;= u[phase] &lt;= 10
+
+<font color="red"><b>t=t0:</b></font>
+  t['ph1'] = 0
+  x['ph1'] = 0
+  v['ph1'] = 0
+  y['ph1'] = 0
+  w['ph1'] = 0
+  phi['ph1'] = 0
+
+<font color="red"><b>t=tf:</b></font>
+  x['ph2'] = -0.1
+  v['ph2'] = 0
+  y['ph2'] = -0.1
+  w['ph2'] = 0
+
+<font color="red"><b>exp:</b></font>
+  TimeDot == tlen[phase] / tf
+
+<font color="red"><b>mac:</b></font>
+  @ssqrt(x) <font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqr</font>(&x)))
+
+<font color="red"><b>equ:</b></font>
+  t&acute;[phase] / TimeDot == 1
+  x&acute;[phase] / TimeDot == v[phase]
+  v&acute;[phase] / TimeDot == u[phase]
+  y&acute;[phase] / TimeDot == w[phase]
+  w&acute;[phase] / TimeDot == -mu*g + k*u[phase] + a*(v[phase]-w[phase])
+  phi&acute;[phase] == <font color="#2ECC40">sqr</font>(u[phase])
+  <font color="#8A2BE2">@linkphases</font> -x w	<font color="#808080"><i># link final and initial conditions across phases for state variables, except for variable w, which is given here after</i></font>
+  [phase]$((<font color="#3D9970">ord</font>(phase)&lt;<font color="#3D9970">card</font>(phase))<font color="#8A2BE2">$once</font>).. <font color="#0074D9">initial</font>(w[phase+1]) == <font color="#0074D9">final</font>(k*v[phase] + @ssqrt(<font color="#2ECC40">sqr</font>(k*v[phase]) + k*(<font color="#2ECC40">sqr</font>(w[phase])-2*w[phase]*v[phase])))
+  <font color="#8A2BE2">$once</font>.. <font color="#0074D9">final</font>(x['ph1'])-<font color="#0074D9">final</font>(y['ph1']) == L
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(phi['ph2']) <font color="#8A2BE2">using</font> nlp
+</pre>
+</body>
+</html>

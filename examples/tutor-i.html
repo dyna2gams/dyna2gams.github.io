@@ -1,0 +1,66 @@
+<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Heat Equation (PDE)</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Heat Equation (PDE)
+</pre>
+<p>
+  The heat equation is a parabolic partial differential equation that describes the
+  distribution of heat (or variation in temperature) in a given region over time. 
+<p>
+  In this example, we seek \(u(x,t)\) over \(x \in [0,1]\) and \(t \in [0,1]\) such that
+<p>
+  \[
+  \frac{\partial{u}}{\partial{t}} = D \ \nabla^2 u \\
+  u(0,t) = 0 \\
+  u(1,t) = 0 \\
+  u(x,0) = a \sin \pi x
+  \]  
+<p>
+<pre>
+<font color="red"><b>set:</b></font>
+  x = x0*x20
+  xl(x) = x0
+  xx(x) = x1*x19
+  xr(x) = x20
+
+<font color="red"><b>par:</b></font>
+  DeltaX = 1/(<font color="#3D9970">card</font>(x)-1)
+  TickX[x] = DeltaX*(<font color="#3D9970">ord</font>(x)-1)
+  D = 1
+  a = 1
+  tf = 1
+
+<font color="red"><b>dyn:</b></font>
+  u[x]
+
+<font color="red"><b>t=t0:</b></font>
+  u[x]$xx(x) = a*<font color="#2ECC40">sin</font>(pi*TickX[x])
+
+<font color="red"><b>equ:</b></font>
+  $xl(x).. u[x] == 0
+  $xx(x).. u&acute;[x] == D * (u[x-1]-2*u[x]+u[x+1])/<font color="#2ECC40">sqr</font>(DeltaX)
+  $xr(x).. u[x] == 0
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">initial</font>(u['x0']) <font color="#8A2BE2">using</font> lp	<font color="#808080"><i># dummy objective</i></font>
+
+<font color="red"><b>gpl:</b></font>
+  <font color="#8A2BE2">@splotZXT</font> u, TickX, "<font color="#FF4500">@TITLE@</font>", "u[x,t]", "x"
+</pre>
+</body>
+</html>
