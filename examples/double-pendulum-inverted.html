@@ -29,7 +29,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   The equations of motion are derived according the principles of the Lagrangian mechanics with generalized coordinates. We used casADI
   symbolic calculation to write them down. CasADI breaks down the calculation in small pieces and therefore uses many intermediates variables.
   They are implemented as symbolic variables in DYNA, and later on as macro in GAMS. Unfortunately the number of macro chain substitutions
-  allowed in GAMS is limited. As a workaround, some of the intermediate expressions are coded as dynamic variables, though they don't have any
+  allowed in GAMS is limited. As a workaround, some of the intermediate expressions are coded as dynamic variables, though they don&rsquo;t have any
   particular physical interpretation nor interest.
 <p>
   We seek a swing-up maneuver in a minimum time. 
