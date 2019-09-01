@@ -1,0 +1,158 @@
+<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Novak-Tyson model</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Novak-Tyson model
+</pre>
+<p>
+  Novak and Tyson have proposed a realistic mathematical model of the
+  biochemical mechanism that regulates M-phase promoting factor (MPF), the
+  major enzymatic activity controlling mitotic cycles in frog eggs, early
+  embryos, and cell-free egg extracts.
+<p>
+  Borisuk and Tyson [1] find a rich array of physiologically distinct
+  behaviors exhibited by the model as the parameters are varied around values
+  that seem plausible for frog eggs and extracts. In addition to unique
+  stable steady states (cell cycle arrest) and limit cycle oscillations
+  (autonomous, periodic cell division), they find parameter combinations
+  where the control system is bistable. For instance, an interphase-arrested
+  state may coexist with a metaphase-arrested state, or two stable limit
+  cycles of different amplitude and period may coexist.
+<p>
+  For instance, for \(k_1\) greater than about 0.2 \(\text{min}^{-1}\), there
+  exists a single stable steady-state solution, and all initial conditions
+  lead eventually (as \(t \rightarrow +\infty\)) to this steady state. For
+  \(k_1\) somewhat less than 0.2, this steady-state solution has lost
+  stability and the only stable self-perpetuating solution of the
+  differential equations is an oscillatory state for which MPF activity
+  fluctuates periodically between maximum and minimum values.
+  <br>
+  The value of \(k_1\) where the steady state loses stability and is replaced
+  by a stable limit cycle oscillation is called a supercritical Hopf
+  bifurcation point, \(k^H_1 = 0.18226\). As \(k_1\) is decreased slightly
+  below the bifurcation point, the period of oscillation stays nearly
+  constant and the amplitude of oscillation increases in proportion to
+  \(\sqrt{k^H_1-k_1}\).
+  <br>
+  As the rate of cyclin synthesis is decreased further, they find that the
+  stable periodic solution persists to very small values of \(k_1\). Its
+  period is roughly constant at 35-40 min until \(k_1\) drops below about
+  0.03, after which the period of oscillation increases rapidly and the
+  oscillatory solution disappears at \(k^{SNIC}_1 = 0.0040975\).
+<p>
+  References:
+  <ol>
+  <li>M. Borisuk, J. Tyson,
+  <em>Bifurcation Analysis of a Model of Mitotic Control in Frog Eggs</em>,
+  Journal of Theoretical Biology, 195:69-85, 1998.
+  <li>IQM tools from https://www.intiquan.com/iqm-tools/
+  <li>https://gitlab.ida.liu.se/willo18/CasADi-tbmtlab/tree/master
+  </ol>
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">simulation-loops-number</font> = 16
+
+<font color="red"><b>par:</b></font>
+  Ka = 0.1
+  Kb = 1
+  Kc = 0.01
+  Kd = 1
+  Ke = 0.1
+  Kf = 1
+  Kg = 0.01
+  Kh = 0.01
+  k1 = 0.01
+  k3 = 0.5
+  V2p = 0.005
+  V2pp = 0.25
+  V25p = 0.017
+  V25pp = 0.17
+  Vweep = 0.01
+  Vweepp = 1
+  kcak = 0.64
+  kpp = 0.004
+  kas = 2
+  kbs = 0.1
+  kcs = 0.13
+  kds = 0.13
+  kes = 2
+  kfs = 0.1
+  kgs = 2
+  khs = 0.15
+  tf = 400
+
+<font color="red"><b>dyn:</b></font>
+  Cyclin
+  YT
+  PYT
+  PYTP
+  MPF
+  Cdc25P
+  Wee1P
+  IEP
+  APCstar
+
+<font color="red"><b>t=t0:</b></font>
+  Cyclin = 0.0172
+  YT = 0.0116
+  PYT = 0.0009
+  PYTP = 0.0198
+  MPF = 0.073
+  Cdc25P = 0.95
+  Wee1P = 0.95
+  IEP = 0.242
+  APCstar = 0.3132
+
+<font color="red"><b>exp:</b></font>
+  k2 == V2p+APCstar*(V2pp-V2p)
+  kwee == Vweepp+Wee1P*(Vweep-Vweepp)
+  k25 == V25p+Cdc25P*(V25pp-V25p)
+  <font color="#808080"><i># Model reactions</i></font>
+  R1 == k1
+  R2 == k2*Cyclin
+  R3 == k3*Cyclin
+  R4 == kpp*MPF
+  R5 == kwee*YT
+  R6 == kcak*YT
+  R7 == k2*YT
+  R8 == k25*PYT
+  R9 == kcak*PYT
+  R10 == k2*PYT
+  R11 == kpp*PYTP
+  R12 == kwee*MPF
+  R13 == k25*PYTP
+  R14 == k2*PYTP
+  R15 == k2*MPF
+  R16 == kas*MPF*(1-Cdc25P)/(1+Ka-Cdc25P)-kbs*Cdc25P/(Kb+Cdc25P)
+  R17 == kes*MPF*(1-Wee1P)/(1+Ke-Wee1P)-kfs*Wee1P/(Kf+Wee1P)
+  R18 == kgs*MPF*(1-IEP)/(1+Kg-IEP)-khs*IEP/(Kh+IEP)
+  R19 == kcs*IEP*(1-APCstar)/(1+Kc-APCstar)-kds*APCstar/(Kd+APCstar)
+
+<font color="red"><b>sim:</b></font>
+  Cyclin&acute; := R1-R2-R3
+  YT&acute; := R4-R5-R6-R7+R8+R3
+  PYT&acute; := R5-R8-R9-R10+R11
+  PYTP&acute; := R12-R11-R13-R14+R9
+  MPF&acute; := R6-R4-R12-R15+R13
+  Cdc25P&acute; := R16
+  Wee1P&acute; := R17
+  IEP&acute; := R18
+  APCstar&acute; := R19
+</pre>
+</body>
+</html>

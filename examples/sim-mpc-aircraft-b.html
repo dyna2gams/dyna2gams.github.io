@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -49,7 +49,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   <font color="#39CCCC">sampling-time</font> = te
   <font color="#39CCCC">horizon</font> = K0:K10
   <font color="#39CCCC">states</font> = x{1:4}
-  <font color="#39CCCC">inputs</font> = u
+  <font color="#39CCCC">input</font> = u
   <font color="#39CCCC">outputs</font> = z{1:3}
   <font color="#39CCCC">A</font> =     x1        x2        x3        x4
     x1    -1.2822   0         0.9800    0
@@ -78,7 +78,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
     z2   0   1   0
     z3   0   0   0
   <font color="#39CCCC">horizon-Q</font> = K1:K10
-  <font color="#39CCCC">R</font> =    u  
+  <font color="#39CCCC">R&acute;</font> =   u  
     u    1
   <font color="#39CCCC">horizon-R</font> = K0:K2
   <font color="#39CCCC">decay</font> = 0

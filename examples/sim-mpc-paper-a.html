@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -22,19 +22,19 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   This problem contemplates the control of consistency (percentage of pulp fibers in aqueous
   suspension) and liquid level in a paper machine headbox.
 <p>
-  Simplified version assuming no disturbance and full states and disturbances measurability.
+  Simplified version assuming no disturbance and full states measurability.
 <p>
   References:
   <ol>
-  <li>Maciejowski, J.M.,
+  <li>J.M. Maciejowski,
   <em>Predictive control with constraints</em>,
   Prentice Hall, 2000.
-  <li>Morari, M. and Ricker, N.L.,
+  <li>M. Morari and N.L. Ricker,
   <em>Model Predictive Control Toolbox: User&rsquo;s Guide</em>,
   The Mathworks, 1995.
-  <li>Ying, Y., Rao, M., and Sun, Y.,
+  <li>Y. Ying, M. Rao and Y. Sun,
   <em>Bilinear Control Strategy For Paper-Making Process</em>,
-  Chemical Engineering Communications, 111(1), 13-28, 1992.
+  Chemical Engineering Communications, 111(1):13-28, 1992.
   </ol>
 <p>
 <pre>
@@ -79,7 +79,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
     z1   0.2  0
     z2   0    1
   <font color="#39CCCC">horizon-Q</font> = K1:K10
-  <font color="#39CCCC">R</font> =    u1   u2
+  <font color="#39CCCC">R&acute;</font> =   u1   u2
     u1   0.6  0
     u2   0    0.6
   <font color="#39CCCC">horizon-R</font> = K0:K2

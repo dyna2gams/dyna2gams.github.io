@@ -1,0 +1,271 @@
+<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">NMPC control scheme for a wind turbine generator</h1>
+<pre>
+<font color="red"><b>rem:</b></font> NMPC control scheme for a wind turbine generator
+</pre>
+<p>
+  This example implements a NMPC scheme for the control of wind turbine generators (WTGs).
+  The presented scheme maximizes directly the captured power as opposed to using a more
+  conventional reference-tracking scheme as a proxy. The operational constraints (speed,
+  power, torque and actuator limitations) of the WTG are treated in the form of relaxed
+  constraints. A regularization of the generated power is added, so as to provide a means
+  to include the power quality in the objective function.
+<p>
+  References:
+  <ol>
+  <li>S. Gros, M. Vukov, M. Diehl,
+  <em>A Real-time MHE and NMPC Scheme for Wind Turbine Control</em>,
+  IEEE Conference on Decision and Control, December 2013.
+  <li>S. Gros,
+  <em>An Economic NMPC Formulation for Wind Turbine Control</em>,
+  IEEE Conference on Decision and Control, December 2013.
+  <li>S. Gros, R. Quirynen, M. Diehl,
+  <em>An Improved Real-time Economic NMPC Scheme for Wind Turbine Control
+  Using Spline-Interpolated Aerodynamic Coefficients</em>,
+  IEEE Conference on Decision and Control, December 2014.
+  <li>S. Gros, A. Schil,
+  <em>Real-time Economic Nonlinear Model Predictive Control for Wind Turbine Control</em>,
+  International Journal of Control, December 2016.
+  <li>S. Gros, M. Zanon,
+  <em>ACADO WTGen Model</em>,
+  https://github.com/sebchalmers/WTGen, October 2012.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">tabulation-knots-number</font> = 6600
+  <font color="#39CCCC">model-option</font> = optfile=1
+  conopt.opt &lt; lkdebg=0
+  <font color="#39CCCC">default-time-steps-number</font> = 12000
+  <font color="#39CCCC">iterations-number</font> = 1
+
+<font color="red"><b>fun:</b></font>
+  &sect;Cp = <font color="#7FDBFF">GridXY</font>
+  <font color="#8A2BE2">@readcsv</font> ifile=<font color="#FF4500"><font color="#FF4500">@home@</font></font>\examples\wtgen-cp3.csv		<font color="#808080"><i># (X=beta,Y=lambda)</i></font>
+  &sect;Ct = <font color="#7FDBFF">GridXY</font>
+  <font color="#8A2BE2">@readcsv</font> ifile=<font color="#FF4500"><font color="#FF4500">@home@</font></font>\examples\wtgen-ct3.csv		<font color="#808080"><i># (X=beta,Y=lambda)</i></font>
+
+<font color="red"><b>par:</b></font>
+  rho = 1.23				<font color="#808080"><i># Air density [kg/m³]</i></font>
+  R = 63				<font color="#808080"><i># Rotor radius [m]</i></font>
+  eta = 0.95				<font color="#808080"><i># Generator efficiency [-]</i></font>
+  mT = 347460
+  mN = 240000
+  mB = 17740
+  mH = 56780
+  mTe = mT/4 + mN + mH + 3*mB		<font color="#808080"><i># Tower fore-aft inertia [kg]</i></font>
+  iratio = 0.010309278350515		<font color="#808080"><i># Gearbox ratio [-]</i></font>
+  JH = 115926				<font color="#808080"><i># Hub inertia [kg/m²]</i></font>
+  JB = 11776047				<font color="#808080"><i># Blade inertia [kg/m²]</i></font>
+  JG = 534.116				<font color="#808080"><i># Generator inertia [kg/m²]</i></font>
+  J = JH + 3*JB + JG/<font color="#2ECC40">sqr</font>(iratio)	<font color="#808080"><i># Total turbine inertia seen from the rotor [kg/m²]</i></font>
+  f0 = 0.32
+  ds = 0.01
+  dT = 4*pi*mTe*ds*f0			<font color="#808080"><i># Tower damping [Ns/m]</i></font>
+  kT = mTe*<font color="#2ECC40">sqr</font>(2*pi*f0)			<font color="#808080"><i># Tower stiffness [N/m]</i></font>
+  a_Pow = 5e-2				<font color="#808080"><i># Coefficient of thermic dissipation [1/s]</i></font>
+  Prated = 5				<font color="#808080"><i># Rated power [MW]</i></font>
+  Pmax = 1.01*Prated			<font color="#808080"><i># Maximum steady-state power [MW]</i></font>
+  Tgfactor = 1e+4			<font color="#808080"><i># Scale generator torque</i></font>
+  tf = 600				<font color="#808080"><i># Horizon [s]</i></font>
+  te = 0.2				<font color="#808080"><i># Sampling time [s]</i></font>
+  censored = 0				<font color="#808080"><i># Used in MPC</i></font>
+
+<font color="red"><b>mpc:</b></font>
+  <font color="#39CCCC">sampling-time</font> = te
+  <font color="#39CCCC">horizon</font> = K0:K50
+  <font color="#39CCCC">states</font> = Omega xT dxT beta dbeta Tg Sigma_Pow
+  <font color="#39CCCC">inputs</font> = ddbeta dTg S_Omega S_Pow
+  <font color="#39CCCC">ancillaries</font> = vrel lambda TA FA dOmega ddxT Pelec dPelec
+  <font color="#39CCCC">outputs</font> = Out1 Out2 Out3 Out4 Out5
+  <font color="#39CCCC">disturbance</font> = W
+  <font color="#39CCCC">equations</font> =
+    vrel == W - dxT
+    $(censored=0).. lambda*vrel == Omega*R
+    TA*Omega == 0.5*rho*pi*R*R*&sect;Cp(beta,max(2,min(17,lambda)))*power(vrel,3)
+    FA == 0.5*rho*pi*R*R*&sect;Ct(beta,max(2,min(17,lambda)))*sqr(vrel)
+    dOmega == (TA - Tgfactor*Tg/iratio)/J
+    ddxT == (FA - dT*dxT - kT*xT)/mTe
+    Pelec == (1e-6*eta*Tgfactor/iratio)*Tg*Omega
+    dPelec == (1e-6*eta*Tgfactor/iratio)*(dTg*Omega+Tg*dOmega)
+    Omega&acute; == dOmega
+    xT&acute; == dxT
+    dxT&acute; == ddxT
+    beta&acute; == dbeta
+    dbeta&acute; == ddbeta
+    Tg&acute; == dTg
+    Sigma_Pow&acute; == S_Pow - a_Pow*Sigma_Pow
+    0.837758040957278 - S_Omega &lt;= Omega
+    Omega &lt;= 1.267109036947883 + S_Omega
+    Pelec &lt;= Prated + S_Pow
+    Out1 == dxT
+    Out2 == dPelec
+    Out3 == Sigma_Pow
+    Out4 == Pelec
+    Out5 == 1
+  <font color="#39CCCC">lb</font> =
+    Tg 0
+    beta -5
+    dbeta -7
+    ddbeta -20
+    dTg -4.5
+    S_Omega 0
+    S_Pow 0
+  <font color="#39CCCC">ub</font> =
+    Tg 1.05*4.282138171017305
+    beta 30
+    dbeta 7
+    ddbeta 20
+    dTg 4.5
+    Sigma_Pow 10*(Pmax-Prated)/a_Pow	<font color="#808080"><i># maximum value expected to be 10 times lower thanks to penalization</i></font>
+    S_Omega 0.5				<font color="#808080"><i># id.</i></font>
+    S_Pow 0.5*Prated			<font color="#808080"><i># id.</i></font>
+  <font color="#39CCCC">Q</font> =     Out1 Out2 Out3 Out4 Out5
+    Out1  1e+1
+    Out2  0    1
+    Out3  0    0    5e-2
+    Out4
+    Out5  0    0    0    -1
+  <font color="#39CCCC">horizon-Q</font> = K1:K50
+  <font color="#39CCCC">R</font> =        ddbeta dTg S_Omega S_Pow
+    ddbeta   1e+0
+    dTg
+    S_Omega  0      0   5e+2
+    S_Pow    0      0   0       5e+1
+  <font color="#39CCCC">horizon-R</font> = K0:K50
+
+<font color="red"><b>tpa:</b></font>
+  W = \		<font color="#808080"><i># Wind profile [m/s]</i></font>
+    (<font color="#2ECC40">uniform</font>( 7, 9)+<font color="#2ECC40">normal</font>(6,2)*(<font color="#0074D9">Time</font>               )/140)$(<font color="#0074D9">Time</font>&lt;=140) +\
+    (<font color="#2ECC40">uniform</font>(13,15)-<font color="#2ECC40">normal</font>(9,2)*(<font color="#0074D9">Time</font>-<font color="#2ECC40">normal</font>(140,15))/260)$((<font color="#0074D9">Time</font>&gt;=140)$(<font color="#0074D9">Time</font>&lt;=400)) +\
+    (<font color="#2ECC40">uniform</font>( 4, 6)+<font color="#2ECC40">normal</font>(3,2)*(<font color="#0074D9">Time</font>-<font color="#2ECC40">normal</font>(400,15))/100)$((<font color="#0074D9">Time</font>&gt;=400)$(<font color="#0074D9">Time</font>&lt;=500)) +\
+    (<font color="#2ECC40">uniform</font>( 7, 9)-<font color="#2ECC40">normal</font>(4,2)*(<font color="#0074D9">Time</font>-<font color="#2ECC40">normal</font>(500,15))/100)$(<font color="#0074D9">Time</font>&gt;=500)
+
+<font color="red"><b>dyn:</b></font>
+  Omega		<font color="#808080"><i># Rotor speed (state) [rad/sec]</i></font>
+  xT		<font color="#808080"><i># Nacelle fore-aft position (state) [m]</i></font>
+  dxT		<font color="#808080"><i># Nacelle fore-aft speed (state) [m/s]</i></font>
+  beta		<font color="#808080"><i># Pitch angle (state) [deg]</i></font>
+  dbeta		<font color="#808080"><i># Pitch rate (state) [deg/s]</i></font>
+  Tg		<font color="#808080"><i># Generator torque (state) [1e-4Nm]</i></font>
+  ddbeta	<font color="#808080"><i># Pitch acceleration (control input) [deg/s²]</i></font>
+  dTg		<font color="#808080"><i># Generator torque rate (control input) [1e+4Nm/s]</i></font>
+  Pelec  	<font color="#808080"><i># Generated power (ancillary) [MW]</i></font>
+  Eelec		<font color="#808080"><i># Generated energy (state) [MWh]</i></font>
+  Sigma_Pow	<font color="#808080"><i># Accumulated constraint violation over time (state) [MWs]</i></font>
+  dcc_Pelec	<font color="#808080"><i># Generated power estimated by the digital regulator [MW]</i></font>
+  dcc_ksi	<font color="#808080"><i># Optimized criterion of the digital regulator</i></font>
+
+<font color="red"><b>t=t0:</b></font>
+  Omega = 1
+  xT = 0.25
+  dxT = 0
+  beta = 0
+  dbeta = 0
+  Tg = 2
+  Eelec = 0
+  Sigma_Pow = 0
+
+<font color="red"><b>par:</b></font>					<font color="#808080"><i># pseudo parameters updated by dcc</i></font>
+  tm = 0
+  tk = 0
+  u{1:2}e
+  y{1:2}e
+
+<font color="red"><b>mac:</b></font>
+  @dcc(ddbeta,dTg,Pelec,ksi)		<font color="#808080"><i># digital computer control</i></font>
+    <font color="#3D9970">if</font>(tm = 0,				<font color="#808080"><i># one shot initialization</i></font>
+      mpc_u.l('ddbeta',kk_) = 0;
+      mpc_u.l('dTg',kk_) = 0;
+      mpc_x.l('Omega',kk_) = <font color="#0074D9">last</font>(Omega);
+      mpc_x.l('xT',kk_) = <font color="#0074D9">last</font>(xT);
+      mpc_x.l('dxT',kk_) = <font color="#0074D9">last</font>(dxT);
+      mpc_x.l('beta',kk_) = <font color="#0074D9">last</font>(beta);
+      mpc_x.l('dbeta',kk_) = <font color="#0074D9">last</font>(dbeta);
+      mpc_x.l('Tg',kk_) = <font color="#0074D9">last</font>(Tg);
+      mpc_x.l('Sigma_Pow',kk_) = <font color="#0074D9">last</font>(Sigma_Pow);
+      mpc.optfile = 1;
+      );
+    <font color="#3D9970">if</font>(<font color="#0074D9">Time</font> &gt;= tm,			<font color="#808080"><i># compare current time and sampling time</i></font>
+      mpc_uo('ddbeta') = <font color="#0074D9">last</font>(ddbeta);		<font color="#808080"><i># sampling</i></font>
+      mpc_uo('dTg') = <font color="#0074D9">last</font>(dTg);		<font color="#808080"><i># sampling</i></font>
+      mpc_x.fx('Omega','K0') = <font color="#0074D9">last</font>(Omega);	<font color="#808080"><i># Simplification: I assume measurability of all states</i></font>
+      mpc_x.fx('xT','K0') = <font color="#0074D9">last</font>(xT);		<font color="#808080"><i># id.</i></font>
+      mpc_x.fx('dxT','K0') = <font color="#0074D9">last</font>(dxT);		<font color="#808080"><i># id.</i></font>
+      mpc_x.fx('beta','K0') = <font color="#0074D9">last</font>(beta);	<font color="#808080"><i># id.</i></font>
+      mpc_x.fx('dbeta','K0') = <font color="#0074D9">last</font>(dbeta);	<font color="#808080"><i># id.</i></font>
+      mpc_x.fx('Tg','K0') = <font color="#0074D9">last</font>(Tg);		<font color="#808080"><i># id.</i></font>
+      mpc_x.fx('Sigma_Pow','K0') = <font color="#0074D9">last</font>(Sigma_Pow);
+      mpc_w('W',kk_) = <font color="#0074D9">last</font>(W);			<font color="#808080"><i># sampling</i></font>
+      tm = tm + te				<font color="#808080"><i># reset sampling time</i></font>
+      );
+    <font color="#3D9970">if</font>(<font color="#0074D9">Time</font> &gt;= tk,			<font color="#808080"><i># compare current time and control time</i></font>
+      <font color="#3D9970">solve</font> mpc minimizing mpc_ksi using dnlp;
+      <font color="#3D9970">if</font>(mpc.modelstat=5 or mpc.modelstat=6,	<font color="#808080"><i># if infeasible...</i></font>
+        execerror = 0;
+        censored = 1;
+        mpc_t.fx('lambda',kk_) = <font color="#2ECC40">max</font>(2,<font color="#2ECC40">min</font>(17,mpc_t.l('lambda',kk_)));
+        <font color="#3D9970">solve</font> mpc minimizing mpc_ksi using dnlp;
+        mpc_t.lo('lambda',kk_) = -<font color="#3D9970">inf</font>; mpc_t.up('lambda',kk_) = +<font color="#3D9970">inf</font>;
+        censored = 0;
+        );
+      <font color="#3D9970">if</font>(mpc.modelstat=2,			<font color="#808080"><i># if optimal...</i></font>
+        &ddbeta = mpc_u.l('ddbeta','K0');	<font color="#808080"><i># update control with outcome of the MPC</i></font>
+        &dTg = mpc_u.l('dTg','K0');		<font color="#808080"><i># update control with outcome of the MPC</i></font>
+        &Pelec = mpc_t.l('Pelec','K0');
+        &ksi = mpc_ksi.l;
+      <font color="#3D9970">else</font>					<font color="#808080"><i># if not optimal...</i></font>
+        &ddbeta = <font color="#0074D9">last</font>(ddbeta);			<font color="#808080"><i># keep control untouched</i></font>
+        &dTg = <font color="#0074D9">last</font>(dTg);			<font color="#808080"><i># keep control untouched</i></font>
+        &Pelec = <font color="#0074D9">last</font>(Pelec);
+        &ksi = <font color="#3D9970">NA</font>;
+        );
+      tk = tk + te				<font color="#808080"><i># reset control time</i></font>
+      );
+
+<font color="red"><b>exp:</b></font>
+  vrel == W - dxT				<font color="#808080"><i># Nacelle relative velocity wrt the wind field</i></font>
+  lambda == Omega*R/vrel			<font color="#808080"><i># Tip-speed ratio</i></font>
+  Cp == &sect;Cp(beta,lambda)			<font color="#808080"><i># Value of Cp</i></font>
+  Ct == &sect;Ct(beta,lambda)			<font color="#808080"><i># Value of Ct</i></font>
+  TA == 0.5*rho*pi*R*R*Cp*<font color="#2ECC40">power</font>(vrel,3)/Omega	<font color="#808080"><i># Aerodynamic torque perceived by the rotor</i></font>
+  FA == 0.5*rho*pi*R*R*Ct*<font color="#2ECC40">sqr</font>(vrel)		<font color="#808080"><i># Aerodynamic force perceived by the hub</i></font>
+  dOmega == (TA - Tgfactor*Tg/iratio)/J		<font color="#808080"><i># Rotor acceleration</i></font>
+  ddxT == (FA - dT*dxT - kT*xT)/mTe		<font color="#808080"><i># Tower acceleration</i></font>
+
+<font color="red"><b>sim:</b></font>
+  @dcc(u1e,u2e,y1e,y2e)
+  ddbeta := u1e
+  dTg := u2e
+  dcc_Pelec := y1e
+  dcc_ksi := y2e
+  Omega&acute; := dOmega
+  xT&acute; := dxT
+  dxT&acute; := ddxT
+  beta&acute; := dbeta
+  dbeta&acute; := ddbeta
+  Tg&acute; := dTg
+  Pelec := (1e-6*eta*Tgfactor/iratio)*Tg*Omega
+  Eelec&acute; := Pelec/3600
+  Sigma_Pow&acute; := <font color="#2ECC40">max</font>(0,Pelec-Prated) - a_Pow*Sigma_Pow
+
+<font color="red"><b>gms:</b></font>
+  <font color="#8A2BE2">@csvsave</font> W
+</pre>
+</body>
+</html>

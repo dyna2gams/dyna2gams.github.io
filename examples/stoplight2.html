@@ -1,0 +1,107 @@
+<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Timing a stoplight just right (MINLP)</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Timing a stoplight just right (MINLP)
+</pre>
+<p>
+  You are driving your car on a perfectly flat, straight road. You are the only one on
+  the road and you can see anything ahead of you perfectly. At time \(t=0\), you are at
+  Point \(A\), cruising along at a speed of 100 kilometers per hour, which is the speed
+  limit for the whole road. You want to reach Point \(C\), exactly 4 kilometers ahead,
+  in the shortest time possible. But, at Point \(B\), 2 kilometers ahead of you, there
+  is a traffic light.
+<p>
+  At time \(t=0\), the light is green, but you don&rsquo;t know how long it has been green.
+  You do know that at the beginning of each second, there is a 1 percent chance that
+  the light will turn yellow. Once it turns yellow, it remains yellow for 5 seconds and
+  then turns red for 20 seconds. Your car can accelerate or decelerate at a maximum
+  rate of 2 meters per second-squared. You must always drive at or below the speed
+  limit. You can pass through the intersection when the traffic light is yellow, but
+  not when it is red.
+<p>
+  What is the best strategy to reach your destination as soon as possible ?
+<p>
+  Reference:
+  <ol>
+  <li>https://laurentlessard.com/bookproofs/timing-a-stoplight-just-right/
+  </ol>
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">default-iterations-number</font> = 2
+  <font color="#39CCCC">gams-option</font> = reslim=3600
+
+<font color="red"><b>set:</b></font>
+  scen = K0:K25
+  <font color="#8A2BE2">alias</font>(s,scen)
+
+<font color="red"><b>par:</b></font>
+  xlight = 2000		<font color="#808080"><i># position of the traffic light [m]</i></font>
+  xend   = 4000		<font color="#808080"><i># position of the finish line [m]</i></font>
+  vmax   = 100/3.6	<font color="#808080"><i># speed limit [m/s]</i></font>
+  amax   = 2		<font color="#808080"><i># maximum acceleration [m/s²]</i></font>
+  ty     = 5		<font color="#808080"><i># time that a yellow light lasts [s]</i></font>
+  tr     = 20		<font color="#808080"><i># time that a red light lasts [s]</i></font>
+  ds = (ty+tr)/(<font color="#3D9970">card</font>(scen)-1)
+
+<font color="red"><b>var:</b></font>
+  tf
+
+<font color="red"><b>dyn:</b></font>
+  x
+  v
+  u
+  xhat[s]	<font color="#808080"><i># contingency planning</i></font>
+  vhat[s]
+  uhat[s]
+  zy:<font color="#3D9970">binary</font>	<font color="#808080"><i># can we run the yellow if light turns yellow at t ?</i></font>
+  zr:<font color="#3D9970">binary</font>	<font color="#808080"><i># are we safe from running the red if light turns yellow at t ?</i></font>
+  J
+
+<font color="red"><b>lim:</b></font>
+  xend/vmax &lt;= tf &lt;= 1.1*xend/vmax
+  0 &lt;= v &lt;= vmax
+  -amax &lt;= u &lt;= amax
+  0 &lt;= vhat[s] &lt;= vmax
+  -amax &lt;= uhat[s] &lt;= amax
+
+<font color="red"><b>t=t0:</b></font>
+  x = 0
+  v = vmax
+  J = 0
+
+<font color="red"><b>t=tf:</b></font>
+  x &gt;= xend
+
+<font color="red"><b>equ:</b></font>
+  x&acute; == v
+  v&acute; == u
+  J&acute; == <font color="#2ECC40">sqr</font>(u)
+  xhat[s+1] == xhat[s] + vhat[s]*ds + 0.5*uhat[s]*ds*ds
+  vhat[s+1] == vhat[s] + uhat[s]*ds
+  $(<font color="#3D9970">ord</font>(s)=1).. xhat[s] == x
+  $(<font color="#3D9970">ord</font>(s)=1).. vhat[s] == v
+  $((<font color="#3D9970">ord</font>(s)-1)*ds=ty).. xhat[s] &gt;= xlight*zy
+  $((<font color="#3D9970">ord</font>(s)-1)*ds=ty+tr).. xhat[s] &lt;= xlight + (1-zr)*xend
+  zy + zr &gt;= 1	<font color="#808080"><i># ensures that we can run the yellow or we are safe from running the red at any time</i></font>
+  
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> tf+1e-2*<font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> minlp
+</pre>
+</body>
+</html>

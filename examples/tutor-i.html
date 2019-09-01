@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -20,22 +20,22 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 </pre>
 <p>
   The heat equation is a parabolic partial differential equation that describes the
-  distribution of heat (or variation in temperature) in a given region over time. 
+  distribution of heat (or variation in temperature) in a given region over time.
 <p>
-  In this example, we seek \(u(x,t)\) over \(x \in [0,1]\) and \(t \in [0,1]\) such that
+  In this example, we seek \(z(x,t)\) over \(x \in [0,1]\) and \(t \in [0,1]\) such that
 <p>
   \[
-  \frac{\partial{u}}{\partial{t}} = D \ \nabla^2 u \\
-  u(0,t) = 0 \\
-  u(1,t) = 0 \\
-  u(x,0) = a \sin \pi x
-  \]  
+  \frac{\partial{z}}{\partial{t}} = D \ \nabla^2 z \\
+  z(0,t) = 0 \\
+  z(1,t) = 0 \\
+  z(x,0) = a \sin \pi x
+  \]
 <p>
 <pre>
 <font color="red"><b>set:</b></font>
-  x = x0*x20
+  x = x0:x20
   xl(x) = x0
-  xx(x) = x1*x19
+  xx(x) = x1:x19
   xr(x) = x20
 
 <font color="red"><b>par:</b></font>
@@ -46,21 +46,21 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   tf = 1
 
 <font color="red"><b>dyn:</b></font>
-  u[x]
+  z[x]
 
 <font color="red"><b>t=t0:</b></font>
-  u[x]$xx(x) = a*<font color="#2ECC40">sin</font>(pi*TickX[x])
+  z[x]$xx(x) = a*<font color="#2ECC40">sin</font>(pi*TickX[x])
 
 <font color="red"><b>equ:</b></font>
-  $xl(x).. u[x] == 0
-  $xx(x).. u&acute;[x] == D * (u[x-1]-2*u[x]+u[x+1])/<font color="#2ECC40">sqr</font>(DeltaX)
-  $xr(x).. u[x] == 0
+  $xl(x).. z[x] == 0
+  $xx(x).. z&acute;[x] == D * (z[x-1]-2*z[x]+z[x+1])/<font color="#2ECC40">sqr</font>(DeltaX)
+  $xr(x).. z[x] == 0
 
 <font color="red"><b>obj:</b></font>
-  <font color="#8A2BE2">minimize</font> <font color="#0074D9">initial</font>(u['x0']) <font color="#8A2BE2">using</font> lp	<font color="#808080"><i># dummy objective</i></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">initial</font>(z['x0']) <font color="#8A2BE2">using</font> lp	<font color="#808080"><i># dummy objective</i></font>
 
 <font color="red"><b>gpl:</b></font>
-  <font color="#8A2BE2">@splotZXT</font> u, TickX, "<font color="#FF4500">@TITLE@</font>", "u[x,t]", "x"
+  <font color="#8A2BE2">@splotZXT</font> z, TickX, "<font color="#FF4500">@TITLE@</font>", "z[x,t]", "x"
 </pre>
 </body>
 </html>

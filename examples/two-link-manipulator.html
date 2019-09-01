@@ -1,0 +1,131 @@
+<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Governance of a two-link manipulator</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Governance of a two-link manipulator
+</pre>
+<p>
+  We consider the two-link robotic manipulator which is a classic example studied
+  in introductory robotics courses. The mathematic model of the manipulator is
+  taken from the write-up [1] with a correction related to the torques.
+<p>
+  References:
+  <ol>
+  <li>S. Dodds,
+  <em>A two-link manipulator: simulation and control design</em>,
+  https://www.academia.edu/9726014
+  <li>H.H. Asada,
+  <em>Introduction to Robotics</em>,
+  Lecture notes, fall 2005.
+  https://ocw.mit.edu/courses/mechanical-engineering/2-12-introduction-to-robotics-fall-2005/lecture-notes/chapter7.pdf
+  </ol>
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  l1 = 1
+  l2 = 1
+  m1 = 1
+  m2 = 1
+  g = 9.81
+  r{1 3} = <font color="#0074D9">deg2rad</font>({48.5 32})
+  tf = 2
+  qf{1:4} = <font color="#0074D9">deg2rad</font>({45 0 30 0})
+
+<font color="red"><b>dyn:</b></font>
+  q{1:4}
+  u{1:2}
+  J
+
+<font color="red"><b>lim:</b></font>
+  -pi &lt;= q1 &lt;= pi
+  -pi &lt;= q3 &lt;= pi
+  
+<font color="red"><b>t=t0:</b></font>
+  q{1:4} = 0
+  J = 0
+
+<font color="#808080"><i>###:</i></font><font color="#808080"><i></i></font>
+<font color="#808080"><i>t=tf</i></font>
+<font color="#808080"><i>  q{1:4} = deg2rad({45 0 30 0})</i></font>
+<font color="#808080"><i></i></font>
+<font color="red"><b>equ:</b></font>
+  q1&acute; == q2
+  q2&acute; == (- m2*l1*q2*q2*<font color="#2ECC40">sin</font>(q1-q3)*<font color="#2ECC40">cos</font>(q1-q3) + m2*g*<font color="#2ECC40">cos</font>(q3)*<font color="#2ECC40">cos</font>(q1-q3) \
+          - m2*l2*q4*q4*<font color="#2ECC40">sin</font>(q1-q3) - (m1+m2)*g*<font color="#2ECC40">cos</font>(q1) + (u1-u2)/l1 - <font color="#2ECC40">cos</font>(q1-q3)*u2/l2) \ 
+         / ((m1+m2)*l1 - m2*l1*<font color="#2ECC40">sqr</font>(<font color="#2ECC40">cos</font>(q1-q3)))
+  q3&acute; == q4
+  q4&acute; == (m2*l2*q4*q4*<font color="#2ECC40">sin</font>(q1-q3)*<font color="#2ECC40">cos</font>(q1-q3) + (m1+m2)*g*<font color="#2ECC40">cos</font>(q1)*<font color="#2ECC40">cos</font>(q1-q3) \
+          + (m1+m2)*l1*q2*q2*<font color="#2ECC40">sin</font>(q1-q3) - (m1+m2)*g*<font color="#2ECC40">cos</font>(q3) - <font color="#2ECC40">cos</font>(q1-q3)*(u1-u2)/l1 + (m1+m2)*u2/m2/l2) \
+         / ((m1+m2)*l2 - m2*l2*<font color="#2ECC40">sqr</font>(<font color="#2ECC40">cos</font>(q1-q3)))
+  J&acute; == 5000*<font color="#2ECC40">sqr</font>(q1-r1) + 5000*<font color="#2ECC40">sqr</font>(q3-r3) + <font color="#2ECC40">sqr</font>(u1-u2) + <font color="#2ECC40">sqr</font>(u2)
+
+<font color="red"><b>ini:</b></font>
+  q{1:4} = <font color="#0074D9">linspace</font>(<font color="#0074D9">initial</font>(q{1:4}),<font color="#0074D9">final</font>(q{1:4}))
+  u{1:2} = 0
+
+<font color="red"><b>exp:</b></font>
+  P == <font color="#3D9970">sum</font>{1:4,<font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(q{:})-qf{:})}
+
+<font color="red"><b>par:</b></font>
+  penalty = 1e+3
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J)+penalty*P <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#8B0000">$$ondotl</font>
+  <font color="#3D9970">while</font>(penalty*P &gt; 1e-4,
+    penalty = penalty*10;
+    <font color="#8A2BE2">@solve</font>
+    );
+  <font color="#8A2BE2">@solveloop</font> Method=bndobj
+  penalty = 0;
+  <font color="#8A2BE2">@setlimf</font> Var=q{1:4}, Vlo=qf{1:4}, Vup=qf{1:4}
+  <font color="#8A2BE2">@solve</font>
+  <font color="#8A2BE2">@solveloop</font> Method=bndobj
+
+<font color="#808080"><i>###:</i></font><font color="#808080"><i></i></font>
+<font color="#808080"><i>  </i></font><font color="#808080"><i># Maxima program to calculate the equations of motion</i></font>
+<font color="#808080"><i>  kill(all)$</i></font>
+<font color="#808080"><i>  display2d:false$  </i></font>
+<font color="#808080"><i>  depends(theta1,t)$</i></font>
+<font color="#808080"><i>  depends(theta2,t)$  </i></font>
+<font color="#808080"><i>  x1 : l1*cos(theta1)$</i></font>
+<font color="#808080"><i>  y1 : l1*sin(theta1)$</i></font>
+<font color="#808080"><i>  x2 : x1+l2*cos(theta2)$</i></font>
+<font color="#808080"><i>  y2 : y1+l2*sin(theta2)$</i></font>
+<font color="#808080"><i>  PE : m1*g*y1 + m2*g*y2$</i></font>
+<font color="#808080"><i>  v1x : diff(x1,t)$</i></font>
+<font color="#808080"><i>  v1y : diff(y1,t)$</i></font>
+<font color="#808080"><i>  v2x : diff(x2,t)$</i></font>
+<font color="#808080"><i>  v2y : diff(y2,t)$</i></font>
+<font color="#808080"><i>  KE : 1/2*m1*(v1x^2+v1y^2) + 1/2*m2*(v2x^2+v2y^2)$</i></font>
+<font color="#808080"><i>  LAG : KE - PE$  </i></font>
+<font color="#808080"><i>  load ("./m/lagrangian-mechanics.mac")$</i></font>
+<font color="#808080"><i>  qL : [theta1,theta2]$</i></font>
+<font color="#808080"><i>  uL : [u1-u2,u2]$</i></font>
+<font color="#808080"><i>  eqN : trigsimp(trigreduce(lefN(qL,LAG,uL)))$</i></font>
+<font color="#808080"><i>  dtheta1 : diff(theta1,t)$</i></font>
+<font color="#808080"><i>  dtheta2 : diff(theta2,t)$</i></font>
+<font color="#808080"><i>  ddtheta1 : diff(dtheta1,t)$</i></font>
+<font color="#808080"><i>  ddtheta2 : diff(dtheta2,t)$</i></font>
+<font color="#808080"><i>  ddqL : [ddtheta1,ddtheta2]$</i></font>
+<font color="#808080"><i>  solve(eqN,ddqL)$</i></font>
+<font color="#808080"><i>  subst([diff(theta1,t)=q2,theta1=q1,diff(theta2,t)=q4,theta2=q3],%);</i></font>
+</pre>
+</body>
+</html>

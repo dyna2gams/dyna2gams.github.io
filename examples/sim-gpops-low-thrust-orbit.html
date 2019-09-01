@@ -1,0 +1,198 @@
+<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Low-Thrust Orbit Transfer Example</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Low-Thrust Orbit Transfer Example
+</pre>
+<p>
+  This example is taken verbatim from [2]. The difference is the scaling of \(p\) with respect to \(R_e\).
+<p>
+  The purpose of this simulation is to provide an initial guess of the state variables for the optimal
+  control problem.
+<p>
+  References:
+  <ol>
+  <li>A.V. Rao, D.A. Benson, C.L. Darby, M.A. Patterson, C. Francolin, I. Sanders and G.T. Huntington,
+  <em>Algorithm 902: GPOPS, A MATLAB Software for Solving Multiple-Phase Optimal Control Problems
+  Using the Gauss Pseudospectral Method</em>,
+  ACM Transactions on Mathematical Software, 37(2):1-39, April-June 2010.
+  <li>J.T. Betts,
+  <em>Practical Methods for Optimal Control Using Nonlinear Programming</em>,
+  SIAM Press, Philadelphia, 2009.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  T = 4.446618e-3        <font color="#808080"><i># [lb]</i></font>
+  Isp = 450              <font color="#808080"><i># [s]</i></font>
+  mu = 1.407645794e16    <font color="#808080"><i># [ft^3/s^2]</i></font>
+  gs = 32.174            <font color="#808080"><i># [ft/s^2]</i></font>
+  Re = 20925662.73       <font color="#808080"><i># [ft]</i></font>
+  J2 = 1082.639e-6
+  J3 = -2.565e-6
+  J4 = -1.608e-6
+  tf = 86700
+
+<font color="red"><b>fun:</b></font>
+  <font color="#0074D9">Time</font>   &sect;UR    &sect;UT    &sect;UH
+      0  0.194  0.817  0.542
+   1500  0.051  0.901 -0.431
+   3920 -0.074  0.995 -0.063
+   5420  0.256  0.801  0.541
+   6920  0.126  0.970  0.206
+   9340 -0.160  0.919 -0.360
+  10800  0.124  0.918  0.376
+  12300  0.330  0.770  0.546
+  14800 -0.242  0.675 -0.697
+  16300 -0.123  0.969 -0.216
+  17800  0.198  0.855  0.480
+  20200  0.124  0.981 -0.149
+  21700 -0.240  0.614 -0.752
+  23200 -0.194  0.922 -0.336
+  25600  0.311  0.782  0.540
+  27100  0.370  0.726  0.579
+  28600  0.074  0.776 -0.626
+  31000 -0.380  0.740 -0.555
+  32500 -0.059  0.998 -0.023
+  34000  0.457  0.784  0.421
+  36400  0.592  0.597  0.541
+  37900 -0.023  0.717 -0.697
+  39400 -0.370  0.414 -0.832
+  41900 -0.128  0.928 -0.350
+  43400  0.017  0.997  0.074
+  44800  0.130  0.881  0.454
+  47300  0.394  0.578  0.714
+  48800  0.770  0.343  0.537
+  50300 -0.139 -0.012 -0.990
+  52700 -0.401  0.413 -0.818
+  54200 -0.331  0.751 -0.571
+  55700 -0.171  0.956 -0.237
+  58100  0.204  0.922  0.329
+  59600  0.400  0.704  0.587
+  61100  0.568  0.434  0.699
+  63500  0.647 -0.116  0.754
+  65000  0.457 -0.682  0.571
+  66500  0.062 -0.925 -0.375
+  68900 -0.305 -0.424 -0.853
+  70400 -0.427 -0.147 -0.892
+  71900 -0.507  0.147 -0.849
+  74400 -0.328  0.741 -0.586
+  75900 -0.044  0.989 -0.138
+  77400  0.294  0.901  0.319
+  79800  0.654  0.179  0.735
+  81300  0.696 -0.104  0.710
+  82800  0.693 -0.235  0.682
+  85200  0.583 -0.385  0.716
+  86700  0.392 -0.506  0.769
+
+<font color="red"><b>tpa:</b></font>
+  tau = -25
+  ur = &sect;UR(<font color="#0074D9">Time</font>)/<font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqr</font>(&sect;UR(<font color="#0074D9">Time</font>))+<font color="#2ECC40">sqr</font>(&sect;UT(<font color="#0074D9">Time</font>))+<font color="#2ECC40">sqr</font>(&sect;UH(<font color="#0074D9">Time</font>)))
+  ut = &sect;UT(<font color="#0074D9">Time</font>)/<font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqr</font>(&sect;UR(<font color="#0074D9">Time</font>))+<font color="#2ECC40">sqr</font>(&sect;UT(<font color="#0074D9">Time</font>))+<font color="#2ECC40">sqr</font>(&sect;UH(<font color="#0074D9">Time</font>)))
+  uh = &sect;UH(<font color="#0074D9">Time</font>)/<font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqr</font>(&sect;UR(<font color="#0074D9">Time</font>))+<font color="#2ECC40">sqr</font>(&sect;UT(<font color="#0074D9">Time</font>))+<font color="#2ECC40">sqr</font>(&sect;UH(<font color="#0074D9">Time</font>)))
+
+<font color="red"><b>dyn:</b></font>
+  <font color="#808080"><i># state variables</i></font>
+  p f g h k L w
+  <font color="#808080"><i># ancillary variables</i></font>
+  Delta{1:3}
+  r{X Y Z}
+
+<font color="red"><b>t=t0:</b></font>
+  p = 21837080.052835/Re
+  f = 0
+  g = 0
+  h = -0.25396764647494
+  k = 0
+  L = pi
+  w = 1
+
+<font color="red"><b>exp:</b></font>
+  <font color="#808080"><i># Gravitational disturbing acceleration</i></font>
+  q == 1 + f*<font color="#2ECC40">cos</font>(L) + g*<font color="#2ECC40">sin</font>(L)
+  r == (Re*p)/q
+  alpha2 == h*h - k*k
+  s2 == 1 + h*h + k*k
+  rX_def == (r/s2) * (<font color="#2ECC40">cos</font>(L) + alpha2*<font color="#2ECC40">cos</font>(L) + 2*h*k*<font color="#2ECC40">sin</font>(L))
+  rY_def == (r/s2) * (<font color="#2ECC40">sin</font>(L) - alpha2*<font color="#2ECC40">sin</font>(L) + 2*h*k*<font color="#2ECC40">cos</font>(L))
+  rZ_def == (2*r/s2) * (h*<font color="#2ECC40">sin</font>(L) - k*<font color="#2ECC40">cos</font>(L))
+  rM == <font color="#2ECC40">sqrt</font>(rX*rX+rY*rY+rZ*rZ)
+  rXZM == <font color="#2ECC40">sqrt</font>(rX*rX+rZ*rZ)
+  vX == -(1/s2)*<font color="#2ECC40">sqrt</font>(mu/(Re*p))*( <font color="#2ECC40">sin</font>(L) + alpha2*<font color="#2ECC40">sin</font>(L) - 2*h*k*<font color="#2ECC40">cos</font>(L) + g - 2*f*h*k + alpha2*g)
+  vY == -(1/s2)*<font color="#2ECC40">sqrt</font>(mu/(Re*p))*(-<font color="#2ECC40">cos</font>(L) + alpha2*<font color="#2ECC40">cos</font>(L) + 2*h*k*<font color="#2ECC40">sin</font>(L) - f + 2*g*h*k + alpha2*f)
+  vZ == (2/s2)*<font color="#2ECC40">sqrt</font>(mu/(Re*p))*(h*<font color="#2ECC40">cos</font>(L) + k*<font color="#2ECC40">sin</font>(L) + f*h + g*k)
+  rCv1 == rY*vZ - rZ*vY
+  rCv2 == rZ*vX - rX*vZ
+  rCv3 == rX*vY - rY*vX
+  rCvM == <font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqr</font>(rCv1)+<font color="#2ECC40">sqr</font>(rCv2)+<font color="#2ECC40">sqr</font>(rCv3))
+  rCvCr1 == rCv2*rZ - rCv3*rY
+  rCvCr2 == rCv3*rX - rCv1*rZ
+  rCvCr3 == rCv1*rY - rCv2*rX
+  ir{1:3} == r{X Y Z}/rM
+  it{1:3} == rCvCr{1:3}/(rCvM * rM)
+  ih{1:3} == rCv{1:3}/rCvM
+  enenirir{1:3} == {0 0 1}-ir3*ir{1:3}
+  enenirirM == <font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqr</font>(enenirir1)+<font color="#2ECC40">sqr</font>(enenirir2)+<font color="#2ECC40">sqr</font>(enenirir3))
+  in{1:3} == enenirir{1:3}/enenirirM
+  <font color="#808080"><i># Geocentric latitude</i></font>
+  sinphi == rZ/rXZM
+  cosphi == <font color="#2ECC40">sqrt</font>(1-sinphi*sinphi)
+  <font color="#808080"><i># Legendre polynomials</i></font>
+  P2 == (3*<font color="#2ECC40">power</font>(sinphi,2) - 2)/2
+  P3 == (5*<font color="#2ECC40">power</font>(sinphi,3) - 3*sinphi)/2
+  P4 == (35*<font color="#2ECC40">power</font>(sinphi,4) - 30*<font color="#2ECC40">power</font>(sinphi,2) + 3)/8
+  dP2 == 3*sinphi
+  dP3 == (15*sinphi - 3)/2
+  dP4 == (140*<font color="#2ECC40">power</font>(sinphi,3) - 60*sinphi)/8
+  <font color="#808080"><i># Oblate earth perturbations</i></font>
+  sumn == (Re/r)^2 * dP2 * J2 + (Re/r)^3 * dP3 * J3 + (Re/r)^4 * dP4 * J4
+  sumr == (2+1) * (Re/r)^2 * P2 * J2 + (3+1) * (Re/r)^3 * P3 * J3 + (4+1) * (Re/r)^4 * P4 * J4
+  Dgn == -(mu * cosphi/(r^2)) * sumn
+  Dgr == -(mu/(r^2)) * sumr
+  Dg{1:3} == Dgn*in{1:3} - Dgr*ir{1:3}
+  DeltaG1 == ir1*Dg1 +ir2*Dg2 + ir3*Dg3
+  DeltaG2 == it1*Dg1 +it2*Dg2 + it3*Dg3
+  DeltaG3 == ih1*Dg1 +ih2*Dg2 + ih3*Dg3
+  <font color="#808080"><i># Thrust acceleration</i></font>
+  DeltaT1 == ((gs * T * (1+0.01*tau))/w) * ur
+  DeltaT2 == ((gs * T * (1+0.01*tau))/w) * ut
+  DeltaT3 == ((gs * T * (1+0.01*tau))/w) * uh
+  <font color="#808080"><i># Total acceleration</i></font>
+  Delta{1:3}_def == DeltaG{1:3} + DeltaT{1:3}
+
+<font color="red"><b>sim:</b></font>
+  r{X Y Z} := (1/Re)*r{X Y Z}_def
+  Delta{1:3} := Delta{1:3}_def
+  <font color="#808080"><i># Equations of motion</i></font>
+  p&acute; := (1/Re)*(2*(Re*p)/q) * <font color="#2ECC40">sqrt</font>((Re*p)/mu) * Delta2
+  f&acute; := <font color="#2ECC40">sqrt</font>((Re*p)/mu) * <font color="#2ECC40">sin</font>(L) * Delta1 \
+      + <font color="#2ECC40">sqrt</font>((Re*p)/mu) * (1/q) * ((q+1)*<font color="#2ECC40">cos</font>(L)+f) * Delta2 \
+      - <font color="#2ECC40">sqrt</font>((Re*p)/mu) * (g/q) * (h*<font color="#2ECC40">sin</font>(L)-k*<font color="#2ECC40">cos</font>(L)) * Delta3
+  g&acute; := -<font color="#2ECC40">sqrt</font>((Re*p)/mu) * <font color="#2ECC40">cos</font>(L) * Delta1 \
+      + <font color="#2ECC40">sqrt</font>((Re*p)/mu) * (1/q) * ((q+1)*<font color="#2ECC40">sin</font>(L)+g) * Delta2 \
+      + <font color="#2ECC40">sqrt</font>((Re*p)/mu) * (f/q) * (h*<font color="#2ECC40">sin</font>(L)-k*<font color="#2ECC40">cos</font>(L)) * Delta3
+  h&acute; := <font color="#2ECC40">sqrt</font>((Re*p)/mu) * (s2*<font color="#2ECC40">cos</font>(L)/(2*q)) * Delta3
+  k&acute; := <font color="#2ECC40">sqrt</font>((Re*p)/mu) * (s2*<font color="#2ECC40">sin</font>(L)/(2*q)) * Delta3
+  L&acute; := <font color="#2ECC40">sqrt</font>((Re*p)/mu) * (1/q) * (h*<font color="#2ECC40">sin</font>(L)-k*<font color="#2ECC40">cos</font>(L)) * Delta3 \
+      + <font color="#2ECC40">sqrt</font>(mu*(Re*p)) * <font color="#2ECC40">sqr</font>(q/(Re*p))
+  w&acute; := -(T * (1+0.01*tau)/Isp)
+
+<font color="red"><b>gms:</b></font>
+  <font color="#8A2BE2">@csvsave</font> ur ut uh
+</pre>
+</body>
+</html>

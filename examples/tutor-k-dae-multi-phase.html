@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -33,20 +33,20 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   \mu' =1-\mu
   \]
 <p>
-  We explicitly look for a periodic solution. The simulation of the ODE version (tutor-k-
-  ode) provides the initial guess. The objective of the non linear programm is the period of
-  the solution. We formulate a multi-phase model to work with a coarser time grid.
+  We explicitly look for a periodic solution. The simulation of the ODE version (tutor-k-ode)
+  provides the initial guess. The objective of the non linear program is the period of the
+  solution. We formulate a multi-phase model to work with a coarser time grid.
 <p>
   Reference:
   <ol>
-  <li>Hairer Norsett Wanner,
+  <li>E. Hairer, S.P. Norsett, G. Wanner,
   <em>Solving Ordinary Differential Equations I - Nonstiff Problems</em>,
   Springer Series in Computational Mathematics, page 129.
   </ol>
 <p>
 <pre>
 <font color="red"><b>run:</b></font>
-  <font color="#39CCCC">model-options</font> = optfile=1
+  <font color="#39CCCC">model-option</font> = optfile=1
   conopt.opt &lt; lkdebg=0
   <font color="#39CCCC">default-collocation-method</font> = L3A7/IL
   <font color="#39CCCC">default-time-steps-number</font> = 384
