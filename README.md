@@ -8,14 +8,14 @@ governed by differential equations such that a certain optimality criterion is a
 Optimal control problems arise in many exciting applications in science, economy, and
 engineering. Examples are trajectory optimization in robotics, aerospace engineering
 (ascent/descent/emergency trajectories, orbit transfers...), vehicle simulation (avoidance
-trajectories, virtual testdriving, chassis control...), controller design (Linear quadratic
+trajectories, virtual test-driving, chassis control...), controller design (Linear quadratic
 regulator, model- predictive control...), process engineering (chemical processes...),
 fishing strategies, biology, etc.
 
-The General Algebraic Modeling System ([GAMS](http://www.gams.com)) is a high-level modeling system for
-mathematical programming and optimization. It consists of a language compiler and a stable
-of integrated high-performance solvers. GAMS is specifically designed for modeling linear,
-nonlinear and mixed integer optimization problems.
+The General Algebraic Modeling System ([GAMS](http://www.gams.com)) is a high-level modeling
+system for mathematical programming and optimization. It consists of a language compiler and a
+stable of integrated high-performance solvers. GAMS is specifically designed for modeling
+linear, nonlinear and mixed integer optimization problems.
 
 In a nutshell, optimal control problems (OCP) are usually described by:
 - A state-space model of a system. This can be either a set of ordinary differential
@@ -40,11 +40,11 @@ DYNA dialect allows to formulate optimal control problems in a way that is very 
 their mathematical description. Take a look at the Tutorial to grasp the basic structure and
 characteristics of a DYNA model and how it relates to the mathematical formulation.
 
-__DYNA2GAMS__ has been developed in the course of the year 2018. A first prototype is available
+__DYNA2GAMS__ has been developed in the course of the year 2018 and afterwards. It is available
 for download on this web site. On top, it comes with a very large set of examples borrowed
 from the literature and various academic or commercial OCP solvers.
 
-__DYNA2GAMS__ is free of charge for non-commercial use throughout the year 2019. It is licensed under the 
+__DYNA2GAMS__ is free of charge for non-commercial use throughout the year 2020. It is licensed under the 
 [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International terms](https://creativecommons.org/licenses/by-nc-sa/4.0/).
 It is based on [Regina Rexx Interpreter](https://regina-rexx.sourceforge.io/).
 Regina is distributed under the terms of the GNU Library General Public License Version 2.

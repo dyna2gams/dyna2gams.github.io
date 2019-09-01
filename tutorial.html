@@ -7,7 +7,7 @@
 <html>
 	<head>
 		<title>Dyna2Gams &#8211; Optimal Control with GAMS</title>
-		<meta charset="ISO-8859-1" />
+		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<meta property="og:type" content="website" />
 		<meta property="og:title" content="Dyna2Gams" />
@@ -271,7 +271,7 @@ Calling Gams...
 [Dyna2Gams] D:\DYNA2GAMS>dir /w *tutor-a* | find "."
 $tutor-a.gms        $tutor-a.log        $tutor-a.lst
 </pre>
-							<p><p>The "compilation" checks that the model syntax is fine, both for DYNA and GAMS.  It should end by "Normal completion".
+							<p><p>The &ldquo;compilation&rdquo; checks that the model syntax is fine, both for DYNA and GAMS.  It should end by &ldquo;Normal completion&rdquo;.
 							<p>Three files have been created: a <em>.gms</em> file with the model translated in the GAMS language as well as a <em>.log</em> and
 							a <em>.lst</em> created by GAMS during the compilation phase.  The compilation step is optional: the sole purpose is to check
 							that the syntax is correct.
@@ -545,12 +545,12 @@ $tutor-a.gms        $tutor-a.log        $tutor-a.lst
 							\]
 							<p>References:
 							<ol class="compact">
-							<li>Fahroo, F. and Ross, I.M.,
+							<li>F. Fahroo and I.M. Ross,
 							<em>Pseudospectral Methods for Infinite-Horizon Nonlinear Optimal Control Problems</em>,
-							Journal of Guidance, Control, and Dynamics, Vol. 31, No. 4, 2008, pp. 927-936.
-							<li>Divya Garg, William W. Hager, Anil V. Rao,
+							Journal of Guidance, Control, and Dynamics, 31(4):927-936, 2008.
+							<li>D. Garg, W.W. Hager, A.V. Rao,
 							<em>Gauss Pseudospectral Method for Solving Infinite-Horizon Optimal Control Problems</em>,
-							AIAA Guidance, Navigation, and Control Conference 2 - 5 August 2010, Toronto, Ontario Canada
+							AIAA Guidance, Navigation, and Control Conference 2-5 August 2010, Toronto, Ontario Canada
 							</ol><p>
 <pre class="syntax">
 <font color="red"><b>par:</b></font>	<font color="#808080"><i># define the parameters</i></font>
@@ -656,9 +656,9 @@ Press any key to continue...
 							\]
 							This example is taken verbatim from the following reference:
 							<ol class="compact">
-							<li>Bryson, A. E., Desai, M. N. and Hoffman, W. C.,
+							<li>A.E. Bryson, M.N. Desai, W.C. Hoffman,
 							<em>Energy-State Approximation in Performance Optimization of Supersonic Aircraft</em>,
-							Journal of Aircraft, Vol. 6, No. 6, November-December, 1969, pp. 481-488.
+							Journal of Aircraft, 6(6):481-488, November-December 1969.
 							</ol><p>
 <pre class="syntax">
 <font color="red"><b>fun:</b></font>	<font color="#808080"><i># character &sect; (hexadecimal A7, decimal 167) denotes a DYNA tabulated function</i></font>
@@ -832,7 +832,7 @@ Press any key to continue...
 							<p>Source: <a href="http://www.mcs.anl.gov/~more/cops/">COPS - Large-Scale Optimization Problems</a>
 							<p>Reference:
 							<ol class="compact">
-							<li id="cops">E. D. Dolan, J. J. Mor&eacute; and T. S. Munson,
+							<li id="cops">E.D. Dolan, J.J. Mor&eacute; and T.S. Munson,
 							<em>Benchmarking Optimization Software with COPS 3.0</em>,
 							Argonne National Laboratory, Technical Report ANL/MCS-TM-273, February 2004.
 							</ol><p>
@@ -959,11 +959,11 @@ Press any key to continue...
 							<ol class="compact">
 							<li>B. Houska, H.J. Ferreau and M. Diehl,
 							<em>ACADO Toolkit - An open-source framework for automatic control and dynamic optimization</em>,
-							Optimal Control Applications and Methods 32.3, pg. 298-312, 2011.
+							Optimal Control Applications and Methods, 32(3):298-312, 2011.
 							</ol><p>
 <pre class="syntax">
 <font color="red"><b>set:</b></font>
-  phase = ph1*ph2
+  phase = ph1:ph2
 
 <font color="red"><b>par:</b></font>
   m = 0.200	<font color="#808080"><i>the mass of the jojo (200g)</i></font>
@@ -981,11 +981,11 @@ Press any key to continue...
 
 <font color="red"><b>dyn:</b></font>
   t[phase]	<font color="#808080"><i>the real time</i></font>
-  x[phase]	<font color="#808080"><i>the position of the "hand"</i></font>
-  v[phase]	<font color="#808080"><i>the velocity of the "hand"</i></font>
+  x[phase]	<font color="#808080"><i>the position of the &ldquo;hand&rdquo;</i></font>
+  v[phase]	<font color="#808080"><i>the velocity of the &ldquo;hand&rdquo;</i></font>
   y[phase]	<font color="#808080"><i>the position of the jojo</i></font>
   w[phase]	<font color="#808080"><i>the velocity of the jojo</i></font>
-  u[phase]	<font color="#808080"><i>the control action of the "hand"</i></font>
+  u[phase]	<font color="#808080"><i>the control action of the &ldquo;hand&rdquo;</i></font>
   phi[phase]	<font color="#808080"><i>the cost functional</i></font>
 
 <font color="red"><b>lim:</b></font>
@@ -1059,7 +1059,7 @@ File '$$tutor-g.384.rsh.csv' created.
 							<ol class="compact">
 							<li>S. Sager, M. Jung, C. Kirches,
 							<em>Combinatorial integral approximation</em>,
-							Mathematical Methods of Operations Research June 2011, 73:363
+							Mathematical Methods of Operations Research, 73:363, June 2011.
 							</ol><p>
 <pre class="syntax">
 <font color="red"><b>set:</b></font>
@@ -1103,18 +1103,18 @@ File '$$tutor-g.384.rsh.csv' created.
 							<h3 id="tuti">Tutorial I: Heat Equation (PDE)</h3>
 							<p>The heat equation is a parabolic partial differential equation that describes the
 							distribution of heat (or variation in temperature) in a given region over time.
-							<p>In this example, we seek \(u(x,t)\) over \(x \in [0,1]\) and \(t \in [0,1]\) such that
+							<p>In this example, we seek \(z(x,t)\) over \(x \in [0,1]\) and \(t \in [0,1]\) such that
 							\[
-							\frac{\partial{u}}{\partial{t}} = D \ \nabla^2 u \\
-							u(0,t) = 0 \\
-							u(1,t) = 0 \\
-							u(x,0) = a \sin \pi x
+							\frac{\partial{z}}{\partial{t}} = D \ \nabla^2 z \\
+							z(0,t) = 0 \\
+							z(1,t) = 0 \\
+							z(x,0) = a \sin \pi x
 							\]
 <pre class="syntax">
 <font color="red"><b>set:</b></font>
-  x = x0*x20
+  x = x0:x20
   xl(x) = x0
-  xx(x) = x1*x19
+  xx(x) = x1:x19
   xr(x) = x20
 
 <font color="red"><b>par:</b></font>
@@ -1125,21 +1125,21 @@ File '$$tutor-g.384.rsh.csv' created.
   tf = 1
 
 <font color="red"><b>dyn:</b></font>
-  u[x]
+  z[x]
 
 <font color="red"><b>t=t0:</b></font>
-  u[x]$xx(x) = a*<font color="#2ECC40">sin</font>(pi*TickX[x])
+  z[x]$xx(x) = a*<font color="#2ECC40">sin</font>(pi*TickX[x])
 
 <font color="red"><b>equ:</b></font>
-  $xl(x).. u[x] == 0
-  $xx(x).. u&acute;[x] == D * (u[x-1]-2*u[x]+u[x+1])/<font color="#2ECC40">sqr</font>(DeltaX)
-  $xr(x).. u[x] == 0
+  $xl(x).. z[x] == 0
+  $xx(x).. z&acute;[x] == D * (z[x-1]-2*z[x]+z[x+1])/<font color="#2ECC40">sqr</font>(DeltaX)
+  $xr(x).. z[x] == 0
 
 <font color="red"><b>obj:</b></font>
-  <font color="#8A2BE2">minimize</font> <font color="#0074D9">initial</font>(u['x0']) <font color="#8A2BE2">using</font> lp	<font color="#808080"><i># dummy objective</i></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">initial</font>(z['x0']) <font color="#8A2BE2">using</font> lp	<font color="#808080"><i># dummy objective</i></font>
 
 <font color="red"><b>gpl:</b></font>
-  <font color="#8A2BE2">@splotZXT</font> u, TickX, "<font color="#FF4500">@TITLE@</font>", "u[x,t]", "x"
+  <font color="#8A2BE2">@splotZXT</font> z, TickX, "<font color="#FF4500">@TITLE@</font>", "z[x,t]", "x"
 </pre>
 							<p><p>Visualizing the results
 <pre class="console">
@@ -1148,7 +1148,7 @@ Dyna-CSV-SPlot Version 1.0 - Copyright (c) 2018 Alain J. Michiels. All rights re
 Reading '$tutor-i.gpl'...
 Reading '$$tutor-i.384.gpl'...
 Reading '$$tutor-i.384.csv'...
-   Header: "_N_","Time","u[x0]" ... ]","u[x19]","u[x20]"
+   Header: "_N_","Time","z[x0]" ... ]","z[x19]","z[x20]"
 File 'gnuplot.csv' created.
 File 'gnuplot.gpl' created.
 Invoking Gnuplot...
@@ -1164,9 +1164,9 @@ Press any key to continue...
 							as the control variable.
 							<p>Reference:
 							<ol class="compact">
-							<li>Singh M.G.,
+							<li>M.G. Singh,
 							<em>Dynamical Hierarchical Control</em>,
-							North-Holland, pp. 135-137 (1980).
+							North-Holland, pp. 135-137, 1980.
 							</ol><p>
 <pre class="syntax">
 <font color="red"><b>run:</b></font>
@@ -1223,7 +1223,7 @@ Press any key to continue...
 							\]
 							<p>Reference:
 							<ol class="compact">
-							<li>Hairer Norsett Wanner,
+							<li>E. Hairer, S.P. Norsett, G. Wanner,
 							<em>Solving Ordinary Differential Equations I - Nonstiff Problems</em>,
 							Springer Series in Computational Mathematics, page 129.
 							</ol><p>
@@ -1254,7 +1254,7 @@ Press any key to continue...
 </pre>
 							<p><p>Let&rsquo;s run this model.
 <pre class="console">
-[Dyna2Gams] D:\DYNA2GAMS>dyna-compile .\examples\tutor-k.dyn
+[Dyna2Gams] D:\DYNA2GAMS>dyna-execute .\examples\tutor-k-ode.dyn
 Dyna-to-Gams Version 1.0 - Copyright (c) 2018 Alain J. Michiels. All rights reserved.
 Translating '.\examples\tutor-k.dyn'...
 Model name: tutor_k
@@ -1281,16 +1281,21 @@ Simulation launched (N=384|SM=DP853|SF=SH)
 <font color="#808080"><i>**** SIMULATION STATUS    1 Solving looks successful</i></font>
 <font color="#808080"><i>**** BENCHMARK VALUE                0.0260</i></font>
 <font color="#808080"><i>**** MODEL EVALUATIONS                5904</i></font>
-[Dyna2Gams] D:\DYNA2GAMS>dir /w *tutor-k* | find "."
-$$tutor-k.192.csv   $$tutor-k.192.log   $$tutor-k.192.lst   $$tutor-k.192.nfs
-$$tutor-k.384.csv   $$tutor-k.384.log   $$tutor-k.384.lst   $$tutor-k.384.nfs
-$$tutor-k.48.csv    $$tutor-k.48.log    $$tutor-k.48.lst    $$tutor-k.48.nfs
-$$tutor-k.96.csv    $$tutor-k.96.log    $$tutor-k.96.lst    $$tutor-k.96.nfs
-$tutor-k.gms        $tutor-k.log        $tutor-k.lst
+[Dyna2Gams] D:\DYNA2GAMS>dir /w *tutor-k-ode* | find "."
+$$tutor-k-ode.192.csv   $$tutor-k-ode.192.log   $$tutor-k-ode.192.lst
+$$tutor-k-ode.192.nfs   $$tutor-k-ode.384.csv   $$tutor-k-ode.384.log
+$$tutor-k-ode.384.lst   $$tutor-k-ode.384.nfs   $$tutor-k-ode.48.csv
+$$tutor-k-ode.48.log    $$tutor-k-ode.48.lst    $$tutor-k-ode.48.nfs
+$$tutor-k-ode.96.csv    $$tutor-k-ode.96.log    $$tutor-k-ode.96.lst
+$$tutor-k-ode.96.nfs    $tutor-k-ode.gms        $tutor-k-ode.log
+$tutor-k-ode.lst
 </pre>
-							<p><p>The "benchmark value" is the sum of the end values of the state variables. It allows to compare the accuracy of the
+							<p><p>The &ldquo;benchmark value&rdquo; is the sum of the end values of the state variables. It allows to compare the accuracy of the
 							integration across the simulations. By using finer time grids, we expect that the benchmark values would converge to some
 							number, which is not the case and unfortunately denotes some inaccuracy in the integration.
+							<p>In the versions tutor-k-dae and tutor-k-dae-multi-phase, we explicitly look for a periodic solution. The simulation of
+							the ODE version (tutor-k-ode) provides the initial guess. The objective of the non linear program is the period of the
+							solution.
 
 <!-- reference manual ---------------------------------><p>
 							<h3 id="refr">Reference Manual</h3>

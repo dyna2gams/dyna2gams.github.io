@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -126,14 +126,14 @@ declares an object must appear before the sections that use the said object.
 <p>Parameters
 <pre class="syntax">
 <font color="red"><b>run:</b></font>									<font color="#808080"><i>Default values:</i></font>
-  <font color="#39CCCC">COLLOCATION-FAMILY</font> | <font color="#39CCCC">CF</font>	= IL|IR|IG|DL|DR|DG|NA			<font color="#808080"><i>default-collocation-family</i></font>
-  <font color="#39CCCC">COLLOCATION-METHOD</font> | <font color="#39CCCC">CM</font>	= &lt;c-meth&gt;
-  <font color="#39CCCC">DEFAULT-COLLOCATION-FAMILY</font>	= IL|IR|IG|DL|DR|DG|NA			<font color="#808080"><i>IL</i></font>
-  <font color="#39CCCC">DEFAULT-COLLOCATION-METHOD</font>	= &lt;c-meth&gt;				<font color="#808080"><i>L3A4</i></font>
+  <font color="#39CCCC">COLLOCATION-FAMILY</font> | <font color="#39CCCC">CF</font>	= &lt;c-family&gt;				<font color="#808080"><i>default-collocation-family</i></font>
+  <font color="#39CCCC">COLLOCATION-METHOD</font> | <font color="#39CCCC">CM</font>	= &lt;c-method&gt;[/&lt;c-family&gt;]		<font color="#808080"><i>default-collocation-method</i></font>
+  <font color="#39CCCC">DEFAULT-COLLOCATION-FAMILY</font>	= &lt;c-family&gt;				<font color="#808080"><i>IL</i></font>
+  <font color="#39CCCC">DEFAULT-COLLOCATION-METHOD</font>	= &lt;c-method&gt;[/&lt;c-family&gt;]		<font color="#808080"><i>L3A4</i></font>
   <font color="#39CCCC">DEFAULT-ITERATIONS-NUMBER</font>	= &lt;number&gt;				<font color="#808080"><i>4</i></font>
   <font color="#39CCCC">DEFAULT-QUADRATURE-METHOD</font>	= Rectangle | Trapeze			<font color="#808080"><i>Trapeze</i></font>
-  <font color="#39CCCC">DEFAULT-SIMULATION-FAMILY</font>	= SI | SH				<font color="#808080"><i>SH</i></font>
-  <font color="#39CCCC">DEFAULT-SIMULATION-METHOD</font>	= &lt;s-meth&gt;				<font color="#808080"><i>DP853</i></font>
+  <font color="#39CCCC">DEFAULT-SIMULATION-FAMILY</font>	= &lt;s-family&gt;				<font color="#808080"><i>SH</i></font>
+  <font color="#39CCCC">DEFAULT-SIMULATION-METHOD</font>	= &lt;s-method&gt;[/&lt;s-family&gt;]		<font color="#808080"><i>DP853</i></font>
   <font color="#39CCCC">DEFAULT-TIME-STEPS-NUMBER</font>	= &lt;number&gt;				<font color="#808080"><i>48</i></font>
   <font color="#39CCCC">DEFAULT-VARIABLE</font>		= L|{&lt;var&gt;=&lt;string&gt;}
   <font color="#39CCCC">DEFAULT-VARIABLES</font>		= L|{&lt;var&gt;=&lt;string&gt;}
@@ -142,15 +142,15 @@ declares an object must appear before the sections that use the said object.
   <font color="#39CCCC">GAMS-OPTION</font>			= L|{&lt;option&gt;=&lt;option-value&gt;}
   <font color="#39CCCC">GAMS-OPTIONS</font>			= L|{&lt;option&gt;=&lt;option-value&gt;}
   <font color="#39CCCC">ITERATIONS-NUMBER</font> | <font color="#39CCCC">IN</font>	= &lt;number&gt;				<font color="#808080"><i>default-iterations-number</i></font>
-  <font color="#39CCCC">MODEL-NAME</font>			= &lt;ident&gt;
+  <font color="#39CCCC">MODEL-NAME</font>			= &lt;ident&gt;				<font color="#808080"><i>input file name</i></font>
   <font color="#39CCCC">MODEL-OPTION</font>			= L|{&lt;option&gt;=&lt;option-value&gt;}
   <font color="#39CCCC">MODEL-OPTIONS</font>			= L|{&lt;option&gt;=&lt;option-value&gt;}
-  <font color="#39CCCC">QUADRATURE-METHOD</font> | <font color="#39CCCC">QM</font>	= Rectangle | Trapeze
+  <font color="#39CCCC">QUADRATURE-METHOD</font> | <font color="#39CCCC">QM</font>	= Rectangle | Trapeze			<font color="#808080"><i>default-quadrature-method</i></font>
   <font color="#39CCCC">SAMPLING-TIME-SYMBOL</font>		= &lt;ident&gt;				<font color="#808080"><i>ts</i></font>
   <font color="#39CCCC">SEARCH-STRING</font> | <font color="#39CCCC">SS</font>		= &lt;string&gt;				<font color="#808080"><i>""</i></font>
-  <font color="#39CCCC">SIMULATION-FAMILY</font> | <font color="#39CCCC">SF</font>	= SI | SH
+  <font color="#39CCCC">SIMULATION-FAMILY</font> | <font color="#39CCCC">SF</font>	= &lt;s-family&gt;				<font color="#808080"><i>default-simulation-family</i></font>
   <font color="#39CCCC">SIMULATION-LOOPS-NUMBER</font>	= &lt;number&gt;				<font color="#808080"><i>1</i></font>
-  <font color="#39CCCC">SIMULATION-METHOD</font> | <font color="#39CCCC">SM</font>	= &lt;s-meth&gt;
+  <font color="#39CCCC">SIMULATION-METHOD</font> | <font color="#39CCCC">SM</font>	= &lt;s-method&gt;[/&lt;s-family&gt;]		<font color="#808080"><i>default-simulation-method</i></font>
   <font color="#39CCCC">SIMULATION-REORDER-EQUATIONS</font>	= YES | NO				<font color="#808080"><i>Yes</i></font>
   <font color="#39CCCC">SIMULATION-TOLERANCE-ABSOLUTE</font>	= &lt;val&gt;					<font color="#808080"><i>1e-6</i></font>
   <font color="#39CCCC">SIMULATION-TOLERANCE-RELATIVE</font>	= &lt;val&gt;					<font color="#808080"><i>1e-6</i></font>
@@ -167,15 +167,20 @@ declares an object must appear before the sections that use the said object.
   <font color="#39CCCC">VARIABLE</font>			= L|{&lt;var&gt;=&lt;string&gt;}
   <font color="#39CCCC">VARIABLES</font>			= L|{&lt;var&gt;=&lt;string&gt;}
 
-&lt;c-meth&gt; :-
+&lt;c-family&gt; :-
+  IL|IR|IG|DL|DR|DG|NA
+&lt;c-method&gt; :-
   L3A2|L3A3|L3A4|L3A5|L3A6|L3A7|L3A8 <font color="#808080"><i>when</i></font> CF=IL|DL
   LGR2|LGR3|LGR4|LGR5|LGR6|LGR7|LGR8 <font color="#808080"><i>when</i></font> CF=IR|DR
   MP1|GL2|GL3|GL4|GL5|GL6|CN2|R1A3|R2A2|R2A3|L3A2|L3A3|L3A4|L3A5|L3B4|L3C4|RK4 <font color="#808080"><i>when</i></font> CF=IG
   MP1|GL2|GL3|GL4|GL5|GL6|R1A3|R2A2|R2A3|L3B4|L3C4|RK4 <font color="#808080"><i>when</i></font> CF=DG
-&lt;s-meth&gt; :-
+&lt;s-family&gt; :-
+  SI|SH|SS|NA
+&lt;s-method&gt; :-
   NA|RK4|ODE23|ODE45|ODE78|F23|F34|F45|F56|F65|F78|DP54|DPS54|CK54|BS32|BS54| ...
-  V56|V65|V67|V65E|V65R|V76E|V76R|V87E|V87R|V98E|V98R|T54|H65|M45|Z43 <font color="#808080"><i>when</i></font> SF=SI
+  V56|V65|V67|V65E|V65R|V76E|V76R|V87E|V87R|V98E|V98R|T54|H65|M45|Z43|SDE <font color="#808080"><i>when</i></font> SF=SI
   NA|RK4HC|DP853 <font color="#808080"><i>when</i></font> SF=SH
+  NA|SHAMP|GRK4A|GRK4T|VELDS|VELDD|LSTAB <font color="#808080"><i>when</i></font> SF=SS
 </pre>
 
 <!------------------------------------------------------------->
@@ -244,7 +249,7 @@ The degree of the polynomial is deduced from the number of coefficients.
   L{&lt;dyn&gt;[:&lt;decl&gt;]} [:: &lt;cast&gt;]
 
 &lt;decl&gt; :- <font color="#3D9970">sos1</font> | <font color="#3D9970">sos2</font> | <font color="#3D9970">positive</font> | <font color="#3D9970">negative</font> | <font color="#3D9970">binary</font> | <font color="#3D9970">integer</font>
-&lt;cast&gt; :- <font color="#7FDBFF">control</font> | <font color="#7FDBFF">controls</font> | <font color="#7FDBFF">state</font> | <font color="#7FDBFF">states</font> | <font color="#7FDBFF">auxiliary</font> | <font color="#7FDBFF">auxiliaries</font>
+&lt;cast&gt; :- <font color="#7FDBFF">control</font> | <font color="#7FDBFF">controls</font> | <font color="#7FDBFF">state</font> | <font color="#7FDBFF">states</font> | <font color="#7FDBFF">ancillary</font> | <font color="#7FDBFF">ancillaries</font>
 </pre>
 <p>By default, DYNA casts as state all the variables that are differentiated in the equations section.
 
@@ -340,6 +345,36 @@ Undeclared symbols at this stage will be declared as static or dynamic variables
 
 <!------------------------------------------------------------->
 <h2 id="mpc" style="color:#7EAEAC">Model predictive control</h2>
+<p>Model predictive control (MPC) is an effective means of dealing with large multivariable constrained control
+problems. The main idea is to choose the control action by repeatedly solving online an optimal control problem,
+aiming to minimize a performance criterion over a future horizon, possibly subject to constraints on the manipulated
+inputs and outputs. Future behavior is computed according to a model of the plant.
+<p>The cost function which DYNA actually minimizes is
+\[
+J(k) = \sum_{i \in \mathbb{Q}} \|\hat{y}(k+i|k)-z(k+i)\|^2_{Q(i)}
+     + \sum_{i \in \mathbb{R}} \|\hat{u}(k+i|k)\|^2_{R(i)}
+     + \sum_{i \in \mathbb{R}} \|\Delta \hat{u}(k+i|k)\|^2_{R&acute;(i)}
+\]
+under the constraints
+\[
+x(k+1) = A x(k) + B u(k) + G w(k) \qquad \text{if linear} \\
+x(k+1) = f \big(x(k),u(k),w(k)\big) \qquad \text{if non-linear} \\
+y(k) = C x(k) + D u(k) \qquad \text{if linear} \\
+y(k) = g \big(x(k),u(k))\big) \qquad \text{if non-linear} \\
+\Delta \hat{u}(k+i|k) = \hat{u}(k+i|k) - \hat{u}(k+i-1|k) \\
+z(k+i) = y_d(k+i) - \lambda^i \big(y_d(k+i)-\hat{y}(k+i|k)\big) \\
+x_{\text{LB}} \leq x \leq x_{\text{UB}} \\
+u_{\text{LB}} \leq u \leq u_{\text{UB}} \\
+\Delta u_{\text{LB}} \leq \Delta u \leq \Delta u_{\text{UB}}
+\]
+where
+\(x\) is the vector of state variables,
+\(u\) is the vector of input variables,
+\(w\) is the vector of disturbances,
+\(y\) is the vector of output variables,
+\(y_d\) is the vector of desired outputs,
+\(\mathbb{Q}\) and \(\mathbb{R}\) are subsets of the controller horizon \(\mathbb{H}\), and
+\(\lambda\) is the decay factor.
 <pre class="syntax">
 <font color="red"><b>mpc:</b></font>
   &lt;mpc-statement&gt;
@@ -348,11 +383,12 @@ Undeclared symbols at this stage will be declared as static or dynamic variables
   [<font color="#39CCCC">SAMPLING-TIME</font> = &lt;val&gt;|&lt;par&gt;]				<font color="#808080"><i>Needed if predictive model is continuous.</i></font>
   [<font color="#39CCCC">STAGES</font> = &lt;val&gt;|&lt;par&gt;]				<font color="#808080"><i>Number of stages for a continuous model. Default is 1.</i></font>
   <font color="#39CCCC">HORIZON</font> = &lt;set-definition&gt;
-  <font color="#39CCCC">STATES</font> = L{&lt;dyn&gt;}
-  <font color="#39CCCC">INPUTS</font> = L{&lt;dyn&gt;}
-  [<font color="#39CCCC">DISTURBANCES</font> = L{&lt;dyn&gt;|&lt;tpa&gt;}]
-  <font color="#39CCCC">OUTPUTS</font> = L{&lt;dyn&gt;}
-  <font color="#39CCCC">EQUATIONS</font> = L{&lt;equ&gt;}
+  <font color="#39CCCC">STATE</font>|<font color="#39CCCC">STATES</font> = L{&lt;dyn&gt;}
+  <font color="#39CCCC">INPUT</font>|<font color="#39CCCC">INPUTS</font> = L{&lt;dyn&gt;}
+  [<font color="#39CCCC">DISTURBANCE</font>|<font color="#39CCCC">DISTURBANCES</font> = L{&lt;dyn&gt;|&lt;tpa&gt;}]
+  <font color="#39CCCC">OUTPUT</font>|<font color="#39CCCC">OUTPUTS</font> = L{&lt;dyn&gt;}
+  [<font color="#39CCCC">ANCILLARY</font>|<font color="#39CCCC">ANCILLARIES</font> = L{&lt;dyn&gt;}]
+  <font color="#39CCCC">EQUATION</font>|<font color="#39CCCC">EQUATIONS</font> = L{&lt;equ&gt;}
   [<font color="#39CCCC">A</font> = &lt;matrix&gt;]					<font color="#808080"><i>Alternative definition of linear equations by the usual matrix notation.</i></font>
   [<font color="#39CCCC">B</font> = &lt;matrix&gt;]
   [<font color="#39CCCC">G</font> = &lt;matrix&gt;]
@@ -363,6 +399,7 @@ Undeclared symbols at this stage will be declared as static or dynamic variables
   <font color="#39CCCC">Q</font> = &lt;matrix&gt;						<font color="#808080"><i>Weighting matrix for states.</i></font>
   <font color="#39CCCC">HORIZON-Q</font> = &lt;set-definition&gt;
   <font color="#39CCCC">R</font> = &lt;matrix&gt;						<font color="#808080"><i>Weighting matrix for inputs.</i></font>
+  <font color="#39CCCC">R&acute;</font> = &lt;matrix&gt;						<font color="#808080"><i>Weighting matrix for derivatives of inputs.</i></font>
   <font color="#39CCCC">HORIZON-R</font> = &lt;set-definition&gt;
   <font color="#39CCCC">DECAY</font> = &lt;val&gt;|&lt;par&gt;
 </pre>
@@ -400,12 +437,17 @@ Special keywords for $&lt;condition&gt;, $ONCE and $ALL, alter this behavior:
 <li>$ONCE: when an equation will implicitly be indexed over time, $ONCE forces its execution only once
 <li>$ALL: when an equation won&rsquo;t implicitly be indexed over time, $ALL forces its declaration over time
 </ul>
-So, if the left hand term is a constant, the equation won't be indexed over time. This is a useful feature to express for instance
+So, if the left hand term is a constant, the equation won&rsquo;t be indexed over time. This is a useful feature to express for instance
 that a final value and an initial value of a variable have to be equal.
 On the other hand, it is a difficulty when the equation has to be enforced on every time segment. In that event,
 instead of adding the dummy condition $ALL, another workaround is to add zero times a variable with the right dimension.
 Anyway, in case of doubt, the user can provide explicit indexes.
 He can also provide an explicit name for the equations, which is useful if attention is paid to the costate variables.
+<p>In addition, two keywords limit the scope of the time indexation:
+<ul>
+<li>$NT0: all over the time horizon but 0
+<li>$NTF: all over the time horizon but tf
+</ul>
 <p>Note 1:
 Unknown symbols in @pid will be declared as static or dynamic variables.
 <p>Note 2:
@@ -421,9 +463,12 @@ a way that all the variables listed on the right of the assignment operator (:=)
 <font color="red"><b>sim:</b></font>
   [[$&lt;condition&gt;]..] &lt;dyn&gt;&acute; := &lt;expression&gt;
   [[$&lt;condition&gt;]..] &lt;dyn&gt; := &lt;expression&gt; [:+ L{&lt;dyn&gt;] [:- L{&lt;dyn&gt;}]
+  [[$&lt;condition&gt;]..] &lt;dyn&gt; :: &lt;stoch-cast&gt;
   <font color="#8A2BE2">@tfm</font> L,{&lt;tfm-statement&gt;}				<font color="#808080"><i>Transfer function model</i></font>
   <font color="#8A2BE2">@pid</font> L,{&lt;pid-statement&gt;}				<font color="#808080"><i>PID function model</i></font>
   <font color="#8A2BE2">@dcm</font> L,{&lt;dcm-statement&gt;}				<font color="#808080"><i>Digital control model (for continuous model only)</i></font>
+
+&lt;stoch-cast&gt; :- <font color="#7FDBFF">Wiener</font> | <font color="#7FDBFF">PJump</font>(arg) | <font color="#7FDBFF">NPJump</font>(arg1,arg2) | <font color="#7FDBFF">EPJump</font>(arg1,arg2)
 
 &lt;dcm-statement&gt; :-					<font color="#808080"><i>The transfer function is written in polynomials of z</i></font>
   Num = &lt;polynomial&gt;[*&lt;polynomial&gt;]
@@ -516,7 +561,7 @@ when all the dependent variables are known.
   [Vup = &lt;tex&gt;|+<font color="#3D9970">INF</font>]					<font color="#808080"><i>Upper bound</i></font>
 
 &lt;solveloop-statement&gt;} :-
-  Method = MOVAVG
+  Method = MOVAVG|BNDOBJ
   Paraml = L{&lt;number&gt;}
   Varl = L{&lt;dyn&gt;|&lt;tpa&gt;}
   [Target = OPTIM|INFES]
@@ -685,7 +730,7 @@ oper :-  +  |  *   |   ,   | &lt;space&gt;
 <pre class="syntax">
 sum{1:2:5,x{:}}
   x1+x3+x5
-space(1:3,x{:}}
+space{1:3,x{:}}
   x1 x2 x3
 </pre>
 
