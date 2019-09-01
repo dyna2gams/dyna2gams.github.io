@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -22,15 +22,15 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   The optimal trajectory presented here is for three active control moment gyroscopes
   and takes 7200 sec (just over two orbits) to complete the manoeuvre.
 <p>
-  So called "near eigenaxis" solution.
+  So called &ldquo;near eigenaxis&rdquo; solution.
 <p>
-  Source: PSOPT - Optimal Control Solver, User Manual, Release 4 build 2015
+  Source: PSOPT - Optimal Control Solver, User Manual, Release 4 build 2015.
 <p>
 <pre>
 <font color="red"><b>run:</b></font>
   <font color="#39CCCC">default-time-steps-number</font> = 24
   <font color="#39CCCC">default-iterations-number</font> = 3
-  <font color="#39CCCC">model-option</font> = optfile=1 | bratio=0
+  <font color="#39CCCC">model-options</font> = optfile=1 | bratio=0
   conopt.opt &lt; rtnwmi=4e-9
 
 <font color="red"><b>mac:</b></font>
@@ -73,7 +73,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 
   <font color="#808080"><i># This function approximates the aerodynamic torque by using the model and</i></font>
   <font color="#808080"><i># parameters given in the following reference:</i></font>
-  <font color="#808080"><i># A. Chun Lee (2003) "Robust Momentum Manager Controller for Space Station Applications".</i></font>
+  <font color="#808080"><i># A. Chun Lee (2003) &ldquo;Robust Momentum Manager Controller for Space Station Applications&rdquo;.</i></font>
   <font color="#808080"><i># Master of Arts Thesis, Rice University.</i></font>
   @compute_aerodynamic_torque(tau,op,t) \	<font color="#808080"><i># Aerodynamic torque in [lb-ft]</i></font>
     &tau1 &op alpha11 + alpha21*<font color="#2ECC40">sin</font>(rr*&t) + alpha31*<font color="#2ECC40">sin</font>(2*rr*&t); \
@@ -94,18 +94,12 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
     &q3 &op <font color="#2ECC40">cos</font>(&phi/2)*<font color="#2ECC40">sin</font>(&theta/2)*<font color="#2ECC40">cos</font>(&psi/2) + <font color="#2ECC40">sin</font>(&phi/2)*<font color="#2ECC40">cos</font>(&theta/2)*<font color="#2ECC40">sin</font>(&psi/2); \
     &q4 &op <font color="#2ECC40">cos</font>(&phi/2)*<font color="#2ECC40">cos</font>(&theta/2)*<font color="#2ECC40">sin</font>(&psi/2) - <font color="#2ECC40">sin</font>(&phi/2)*<font color="#2ECC40">sin</font>(&theta/2)*<font color="#2ECC40">cos</font>(&psi/2);
 
-  <font color="#808080"><i># Project point A onto the hypersphere Q of radius one </i></font>
+  <font color="#808080"><i># Project point A onto the hypersphere Q of radius one</i></font>
   @hypersphere(q,op,a) \
-    &q1 &op &a1/<font color="#2ECC40">sqrt</font>(&a1*&a1+&a2*&a2+&a3*&a3+&a4*&a4); \
-    &q2 &op &a2/<font color="#2ECC40">sqrt</font>(&a2*&a2+&a3*&a3+&a4*&a4)*<font color="#2ECC40">sqrt</font>(1-&q1*&q1); \
-    &q3 &op &a3/<font color="#2ECC40">sqrt</font>(&a3*&a3+&a4*&a4)*<font color="#2ECC40">sqrt</font>(1-&q1*&q1-&q2*&q2); \
-    &q4 &op <font color="#2ECC40">sign</font>(&a4)*<font color="#2ECC40">sqrt</font>(1-&q1*&q1-&q2*&q2-&q3*&q3);
-
-  @hyperspherel(q,op,a) \
-    &q1.l &op &a1.l/<font color="#2ECC40">sqrt</font>(&a1.l*&a1.l+&a2.l*&a2.l+&a3.l*&a3.l+&a4.l*&a4.l); \
-    &q2.l &op &a2.l/<font color="#2ECC40">sqrt</font>(&a2.l*&a2.l+&a3.l*&a3.l+&a4.l*&a4.l)*<font color="#2ECC40">sqrt</font>(1-&q1.l*&q1.l); \
-    &q3.l &op &a3.l/<font color="#2ECC40">sqrt</font>(&a3.l*&a3.l+&a4.l*&a4.l)*<font color="#2ECC40">sqrt</font>(1-&q1.l*&q1.l-&q2.l*&q2.l); \
-    &q4.l &op <font color="#2ECC40">sign</font>(&a4.l)*<font color="#2ECC40">sqrt</font>(1-&q1.l*&q1.l-&q2.l*&q2.l-&q3.l*&q3.l);
+    &q1&op &a1/<font color="#2ECC40">sqrt</font>(&a1*&a1+&a2*&a2+&a3*&a3+&a4*&a4); \
+    &q2&op &a2/<font color="#2ECC40">sqrt</font>(&a2*&a2+&a3*&a3+&a4*&a4)*<font color="#2ECC40">sqrt</font>(1-&q1*&q1); \
+    &q3&op &a3/<font color="#2ECC40">sqrt</font>(&a3*&a3+&a4*&a4)*<font color="#2ECC40">sqrt</font>(1-&q1*&q1-&q2*&q2); \
+    &q4&op <font color="#2ECC40">sign</font>(&a4)*<font color="#2ECC40">sqrt</font>(1-&q1*&q1-&q2*&q2-&q3*&q3);
 
 <font color="red"><b>par:</b></font>
   Kp = 0.000128		<font color="#808080"><i># proportional gain</i></font>
@@ -256,18 +250,16 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 
 <font color="red"><b>gms:</b></font>
   <font color="#808080"><i># make sure norm of quaternions is one for initial guess</i></font>
-  @hyperspherel(q,=,q)
-  @hyperspherel(qc,=,qc)
+  <font color="#8B0000">$$ondotl</font>
+  @hypersphere(q,.l=,q)
+  @hypersphere(qc,.l=,qc)
 
 <font color="red"><b>obj:</b></font>
   <font color="#8A2BE2">minimize</font> 1e-6*end_point_weight*gamma+running_cost_weight*<font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp <font color="#8A2BE2">with</font> conopt
 
 <font color="red"><b>gms:</b></font>
   <font color="#8A2BE2">@solveloop</font> Method=movavg, Paraml=3 0.95, Varl=q1 q2 q3 q4 omega1 omega2 omega3 h1 h2 h3, Target=infes, Maxiter=4
-  <font color="#3D9970">if</font>(<font color="#8A2BE2">%MODEL%</font>.modelstat=7,
-    <font color="#8A2BE2">%OBJECTIVE%</font>.lo = <font color="#8A2BE2">%OBJECTIVE%</font>.l;
-    <font color="#8A2BE2">@solve</font>
-    );
+  <font color="#8A2BE2">@solveloop</font> Method=bndobj
   <font color="#8A2BE2">@tpa</font> phi; <font color="#8A2BE2">@tpa</font> theta; <font color="#8A2BE2">@tpa</font> psi;
   <font color="#8B0000">$$ondotl</font>
   @quaternion2euler(phi,theta,psi,=,q)

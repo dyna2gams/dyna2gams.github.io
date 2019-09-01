@@ -1,0 +1,229 @@
+<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Two burn orbit transfer</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Two burn orbit transfer
+</pre>
+<p>
+  The goal of this problem is to compute a trajectory for an spacecraft to go from a standard
+  space shuttle park orbit to a geosynchronous final orbit. It is assumed that the engines
+  operate over two short periods during the mission, and it is desired to compute the timing
+  and duration of the burn periods, as well as the instantaneous direction of the thrust
+  during these two periods, to maximise the final weight of the spacecraft. The problem is
+  described in detail by Betts [1]. The mission then involves four phases: coast, burn, coast
+  and burn.
+<p>
+  We provide a crude initial guess for all the variables.
+<p>
+  Reference:
+  <ol>
+  <li>J.T. Betts,
+  <em>Practical Methods for Optimal Control Using Nonlinear Programming</em>,
+  SIAM Press, Philadelphia, 2009.
+  </ol>
+<p>
+  Source: PSOPT - Optimal Control Solver, User Manual, Release 4 build 2015.
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">substitute-symbol</font> = T &gt; TT
+
+<font color="red"><b>set:</b></font>
+  phase = ph1:ph4
+  ph24(phase) = ph2,ph4
+
+<font color="red"><b>par:</b></font>
+  T = 1.2		<font color="#808080"><i># [lb]</i></font>
+  Isp = 300		<font color="#808080"><i># [sec]</i></font>
+  mu = 1.407645794e16	<font color="#808080"><i># [ft^2/sec^2]</i></font>
+  gs = 32.174		<font color="#808080"><i># [ft/s^2]</i></font>
+  Re = 20925662.73	<font color="#808080"><i># [ft]</i></font>
+  sigma = 1/6076.1154855643
+  J2 = 1082.639e-6
+  J3 = -2.565e-6
+  J4 = -1.608e-6
+
+<font color="red"><b>par:</b></font>
+  tf = 1
+
+<font color="red"><b>var:</b></font>
+  tlen[phase]
+
+<font color="red"><b>dyn:</b></font>
+  <font color="#808080"><i># state variables</i></font>
+  t[phase]
+  p[phase] f[phase] g[phase] h[phase] k[phase] L[phase] w[phase]
+  <font color="#808080"><i># control variables</i></font>
+  theta[phase] phi[phase]
+  <font color="#808080"><i># ancillary variables (needed otherwise line too long in Gams code)</i></font>
+  r{X Y Z}[phase]
+  Delta{1:3}[phase]
+  DeltaT{1:3}[phase]
+  Tvel{1:3}[phase]
+
+<font color="red"><b>lim:</b></font>
+   2000 &lt;= tlen['ph1'] &lt;=  3000
+      1 &lt;= tlen['ph2'] &lt;=  1100
+  18500 &lt;= tlen['ph3'] &lt;= 19700
+      1 &lt;= tlen['ph4'] &lt;=   300
+  1e+7/Re &lt;= p[phase] &lt;= 2e+8/Re
+  -1 &lt;= f[phase] &lt;= +1
+  -1 &lt;= g[phase] &lt;= +1
+  -1 &lt;= h[phase] &lt;= +1
+  -1 &lt;= k[phase] &lt;= +1
+  pi &lt;= L[phase] &lt;= 4*pi
+  0 &lt;= w[phase] &lt;= 1
+  -pi &lt;= theta[phase] &lt;= pi
+  -pi &lt;= phi[phase] &lt;= pi
+  -3e+8/Re &lt;= rX[phase] &lt;= 3e+8/Re
+  -1e+8/Re &lt;= rY[phase] &lt;= 1e+8/Re
+  -1e+8/Re &lt;= rZ[phase] &lt;= 1e+8/Re
+
+<font color="red"><b>t=t0:</b></font>
+  t['ph1'] = 0
+  p['ph1'] = 21837080.052835/Re
+  f['ph1'] = 0
+  g['ph1'] = 0
+  h['ph1'] = 0
+  k['ph1'] = 0
+  L['ph1'] = pi
+  w['ph1'] = 1
+
+<font color="red"><b>t=tf:</b></font>
+  p['ph4'] = (19323/sigma + Re)/Re
+  f['ph4'] = 0
+  g['ph4'] = 0
+  h['ph4'] = 0
+  k['ph4'] = 0
+
+<font color="red"><b>exp:</b></font>
+  TimeDot == tlen[phase] / tf
+  <font color="#808080"><i># Gravitational disturbing acceleration</i></font>
+  q == 1 + f[phase]*<font color="#2ECC40">cos</font>(L[phase]) + g[phase]*<font color="#2ECC40">sin</font>(L[phase])
+  r == (Re*p[phase])/q
+  alpha2 == h[phase]*h[phase] - k[phase]*k[phase]
+  s2 == 1 + h[phase]*h[phase] + k[phase]*k[phase]
+  rX_def == (r/s2) * (<font color="#2ECC40">cos</font>(L[phase]) + alpha2*<font color="#2ECC40">cos</font>(L[phase]) + 2*h[phase]*k[phase]*<font color="#2ECC40">sin</font>(L[phase]))
+  rY_def == (r/s2) * (<font color="#2ECC40">sin</font>(L[phase]) - alpha2*<font color="#2ECC40">sin</font>(L[phase]) + 2*h[phase]*k[phase]*<font color="#2ECC40">cos</font>(L[phase]))
+  rZ_def == (2*r/s2) * (h[phase]*<font color="#2ECC40">sin</font>(L[phase]) - k[phase]*<font color="#2ECC40">cos</font>(L[phase]))
+  rM == <font color="#2ECC40">sqrt</font>(rX[phase]*rX[phase]+rY[phase]*rY[phase]+rZ[phase]*rZ[phase])
+  vX == -(1/s2)*<font color="#2ECC40">sqrt</font>(mu/(Re*p[phase]))*( <font color="#2ECC40">sin</font>(L[phase]) + alpha2*<font color="#2ECC40">sin</font>(L[phase]) - 2*h[phase]*k[phase]*<font color="#2ECC40">cos</font>(L[phase]) + g[phase] - 2*f[phase]*h[phase]*k[phase] + alpha2*g[phase])
+  vY == -(1/s2)*<font color="#2ECC40">sqrt</font>(mu/(Re*p[phase]))*(-<font color="#2ECC40">cos</font>(L[phase]) + alpha2*<font color="#2ECC40">cos</font>(L[phase]) + 2*h[phase]*k[phase]*<font color="#2ECC40">sin</font>(L[phase]) - f[phase] + 2*g[phase]*h[phase]*k[phase] + alpha2*f[phase])
+  vZ == (2/s2)*<font color="#2ECC40">sqrt</font>(mu/(Re*p[phase]))*(h[phase]*<font color="#2ECC40">cos</font>(L[phase]) + k[phase]*<font color="#2ECC40">sin</font>(L[phase]) + f[phase]*h[phase] + g[phase]*k[phase])
+  rCv1 == rY[phase]*vZ - rZ[phase]*vY
+  rCv2 == rZ[phase]*vX - rX[phase]*vZ
+  rCv3 == rX[phase]*vY - rY[phase]*vX
+  rCvM == <font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqr</font>(rCv1)+<font color="#2ECC40">sqr</font>(rCv2)+<font color="#2ECC40">sqr</font>(rCv3))
+  rCvCr1 == rCv2*rZ[phase] - rCv3*rY[phase]
+  rCvCr2 == rCv3*rX[phase] - rCv1*rZ[phase]
+  rCvCr3 == rCv1*rY[phase] - rCv2*rX[phase]
+  ir{1:3} == r{X Y Z}[phase]/rM			<font color="#808080"><i># ir = r / ||r||</i></font>
+  it{1:3} == rCvCr{1:3}/(rCvM * rM)		<font color="#808080"><i># it = (r x v) x r / ||r x v|| / ||r||</i></font>
+  ih{1:3} == rCv{1:3}/rCvM			<font color="#808080"><i># ih = r x v / ||r x v||</i></font>
+  en{1:3} == {0 0 1}
+  enir == en1*ir1+en2*ir2+en3*ir3
+  enenirir{1:3} == en{1:3}-enir*ir{1:3}
+  enenirirM == <font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqr</font>(enenirir1)+<font color="#2ECC40">sqr</font>(enenirir2)+<font color="#2ECC40">sqr</font>(enenirir3))
+  in{1:3} == enenirir{1:3}/enenirirM		<font color="#808080"><i># in = (en-(en'*ir)*ir) / ||en-(en'*ir)*ir||</i></font>
+  vM == <font color="#2ECC40">sqrt</font>(vX*vX+vY*vY+vZ*vZ)
+  jr{1:3} == v{X Y Z}/vM			<font color="#808080"><i># jr = v / ||v||</i></font>
+  vCr1 == vY*rZ[phase] - vZ*rY[phase]
+  vCr2 == vZ*rX[phase] - vX*rZ[phase]
+  vCr3 == vX*rY[phase] - vY*rX[phase]
+  vCrM == <font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqr</font>(vCr1)+<font color="#2ECC40">sqr</font>(vCr2)+<font color="#2ECC40">sqr</font>(vCr3))
+  jt{1:3} == vCr{1:3}/vCrM			<font color="#808080"><i># jt = v x r / ||v x r||</i></font>
+  jh1 == jr2*jt3 - jr3*jt2			<font color="#808080"><i># jh = jr x jt = v x (v x r) / ||v|| / ||v x r||</i></font>
+  jh2 == jr3*jt1 - jr1*jt3
+  jh3 == jr1*jt2 - jr2*jt1
+  <font color="#808080"><i># Geocentric latitude</i></font>
+  sinphi == rZ[phase]/rM
+  cosphi == <font color="#2ECC40">sqrt</font>(1-sinphi*sinphi)
+  <font color="#808080"><i># Legendre polynomials</i></font>
+  P2 == (3*<font color="#2ECC40">power</font>(sinphi,2) - 2)/2
+  P3 == (5*<font color="#2ECC40">power</font>(sinphi,3) - 3*sinphi)/2
+  P4 == (35*<font color="#2ECC40">power</font>(sinphi,4) - 30*<font color="#2ECC40">power</font>(sinphi,2) + 3)/8
+  dP2 == 3*sinphi
+  dP3 == (15*sinphi - 3)/2
+  dP4 == (140*<font color="#2ECC40">power</font>(sinphi,3) - 60*sinphi)/8
+  <font color="#808080"><i># Oblate earth perturbations</i></font>
+  sumn == <font color="#2ECC40">power</font>(Re/r,2) * dP2 * J2 + <font color="#2ECC40">power</font>(Re/r,3) * dP3 * J3 + <font color="#2ECC40">power</font>(Re/r,4) * dP4 * J4
+  sumr == (2+1) * <font color="#2ECC40">power</font>(Re/r,2) * P2 * J2 + (3+1) * <font color="#2ECC40">power</font>(Re/r,3) * P3 * J3 + (4+1) * <font color="#2ECC40">power</font>(Re/r,4) * P4 * J4
+  Dgn == -(mu * cosphi/<font color="#2ECC40">sqr</font>(r)) * sumn
+  Dgr == -(mu/<font color="#2ECC40">sqr</font>(r)) * sumr
+  Dg{1:3} == Dgn*in{1:3} - Dgr*ir{1:3}
+  DeltaG1 == ir1*Dg1 +ir2*Dg2 + ir3*Dg3
+  DeltaG2 == it1*Dg1 +it2*Dg2 + it3*Dg3
+  DeltaG3 == ih1*Dg1 +ih2*Dg2 + ih3*Dg3
+  <font color="#808080"><i># Thrust acceleration (phases 2 & 4)</i></font>
+  Tacc == gs*T/w[phase]
+  Tvec1 == Tacc*<font color="#2ECC40">cos</font>(theta[phase])*<font color="#2ECC40">cos</font>(phi[phase])
+  Tvec2 == Tacc*<font color="#2ECC40">cos</font>(theta[phase])*<font color="#2ECC40">sin</font>(phi[phase])
+  Tvec3 == Tacc*<font color="#2ECC40">sin</font>(theta[phase])
+  Tvel1_def == jr1*Tvec1 + jr2*Tvec2 + jr3*Tvec3
+  Tvel2_def == jt1*Tvec1 + jt2*Tvec2 + jt3*Tvec3
+  Tvel3_def == jh1*Tvec1 + jh2*Tvec2 + jh3*Tvec3
+  DeltaT{1:3}_def == ir{1:3}*Tvel1[phase] + it{1:3}*Tvel2[phase] + ih{1:3}*Tvel3[phase]
+  <font color="#808080"><i># Total acceleration</i></font>
+  Delta{1:3}_def == DeltaG{1:3} + DeltaT{1:3}[phase]$ph24(phase)
+
+<font color="red"><b>equ:</b></font>
+  r{X Y Z}[phase] == (1/Re)*r{X Y Z}_def
+  $ph24(phase).. Tvel{1:3}[phase] == Tvel{1:3}_def
+  $ph24(phase).. DeltaT{1:3}[phase] == DeltaT{1:3}_def
+  Delta{1:3}[phase] == Delta{1:3}_def
+  t&acute;[phase]  / TimeDot == 1
+  <font color="#808080"><i># Equations of motion</i></font>
+  p&acute;[phase]  / TimeDot == (1/Re)*(2*(Re*p[phase])/q) * <font color="#2ECC40">sqrt</font>((Re*p[phase])/mu) * Delta2[phase]
+  f&acute;[phase]  / TimeDot == <font color="#2ECC40">sqrt</font>((Re*p[phase])/mu) * <font color="#2ECC40">sin</font>(L[phase]) * Delta1[phase] \
+                        + <font color="#2ECC40">sqrt</font>((Re*p[phase])/mu) * (1/q) * ((q+1)*<font color="#2ECC40">cos</font>(L[phase])+f[phase]) * Delta2[phase] \
+                        - <font color="#2ECC40">sqrt</font>((Re*p[phase])/mu) * (g[phase]/q) * (h[phase]*<font color="#2ECC40">sin</font>(L[phase])-k[phase]*<font color="#2ECC40">cos</font>(L[phase])) * Delta3[phase]
+  g&acute;[phase]  / TimeDot == -<font color="#2ECC40">sqrt</font>((Re*p[phase])/mu) * <font color="#2ECC40">cos</font>(L[phase]) * Delta1[phase] \
+                        + <font color="#2ECC40">sqrt</font>((Re*p[phase])/mu) * (1/q) * ((q+1)*<font color="#2ECC40">sin</font>(L[phase])+g[phase]) * Delta2[phase] \
+                        + <font color="#2ECC40">sqrt</font>((Re*p[phase])/mu) * (f[phase]/q) * (h[phase]*<font color="#2ECC40">sin</font>(L[phase])-k[phase]*<font color="#2ECC40">cos</font>(L[phase])) * Delta3[phase]
+  h&acute;[phase]  / TimeDot == <font color="#2ECC40">sqrt</font>((Re*p[phase])/mu) * (s2*<font color="#2ECC40">cos</font>(L[phase])/(2*q)) * Delta3[phase]
+  k&acute;[phase]  / TimeDot == <font color="#2ECC40">sqrt</font>((Re*p[phase])/mu) * (s2*<font color="#2ECC40">sin</font>(L[phase])/(2*q)) * Delta3[phase]
+  L&acute;[phase]  / TimeDot == <font color="#2ECC40">sqrt</font>((Re*p[phase])/mu) * (1/q) * (h[phase]*<font color="#2ECC40">sin</font>(L[phase])-k[phase]*<font color="#2ECC40">cos</font>(L[phase])) * Delta3[phase] \
+                        + <font color="#2ECC40">sqrt</font>(mu*(Re*p[phase])) * <font color="#2ECC40">sqr</font>(q/(Re*p[phase]))
+  w&acute;[phase]  / TimeDot == (-T/Isp)$ph24(phase)
+  <font color="#8A2BE2">@linkphases</font>
+  theta[phase] :: <font color="#7FDBFF">spline3</font>
+  phi[phase] :: <font color="#7FDBFF">spline3</font>
+
+<font color="red"><b>ini:</b></font>
+  tlen['ph{1:4}'] = {2600 260 19000 50}
+  t[phase] = 0
+  p[phase] = <font color="#0074D9">initial</font>(p['ph1'])
+  f[phase] = 0
+  g[phase] = 0
+  h[phase] = 0
+  k[phase] = 0
+  L['ph1'] = <font color="#0074D9">linspace</font>(pi,2*pi)
+  L['ph3'] = <font color="#0074D9">Poly4</font>(<font color="#0074D9">Time</font>,-18.825,45.425,-38.989,14.948,6.7576)
+  L['ph{2 4}'] = <font color="#0074D9">final</font>(L['ph{1 3}'])
+  w[phase] = 1
+  theta['ph{2 4}'] = {-1.568 1.571}
+  phi['ph{2 4}'] = {-1.596 -0.294}
+  r{X Y Z}[phase] = (1/Re)*r{X Y Z}_def
+  Tvel{1:3}[phase]$ph24(phase) = Tvel{1:3}_def
+  DeltaT{1:3}[phase]$ph24(phase) = DeltaT{1:3}_def
+  Delta{1:3}[phase] = Delta{1:3}_def
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">maximize</font> <font color="#0074D9">final</font>(w['ph4']) <font color="#8A2BE2">using</font> nlp
+</pre>
+</body>
+</html>

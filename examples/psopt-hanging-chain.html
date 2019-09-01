@@ -14,62 +14,47 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
 </head>
 <body>
-<h1 align="center" style="color:#7EAEAC">Production of Secreted Protein in a Fed-batch Reactor</h1>
+<h1 align="center" style="color:#7EAEAC">Hanging chain problem</h1>
 <pre>
-<font color="red"><b>rem:</b></font> Production of Secreted Protein in a Fed-batch Reactor
+<font color="red"><b>rem:</b></font> Hanging chain problem
 </pre>
 <p>
-  Optimal production of secreted protein in a fed-batch reactor.
-<p>
-  Reference:
-  <ol>
-  <li>S. Park, W.F. Ramirez,
-  <em>Optimal production of secreted protein in fed-batch reactors</em>,
-  AIChE Journal, 34:1550-1558, 1988.
-  </ol>
+  Source: PSOPT - Optimal Control Solver, User Manual, Release 4 build 2015.
 <p>
 <pre>
 <font color="red"><b>par:</b></font>
-  tf = 10
-
+  tf = 1
+  
 <font color="red"><b>dyn:</b></font>
-  x{1:5}
-  u
-
+  x	<font color="#808080"><i># state variable</i></font>
+  u	<font color="#808080"><i># control variable</i></font>
+  Q	<font color="#808080"><i># integral constraint</i></font>
+  J	<font color="#808080"><i># cost criterion</i></font>
+  
 <font color="red"><b>lim:</b></font>
-  0 &lt;= x{1:5} &lt;= 20
-  0 &lt;= u &lt;= 5
-
+  -10 &lt;= x &lt;= 10
+  -20 &lt;= u &lt;= 20
+  
 <font color="red"><b>t=t0:</b></font>
-  x1 = 1
-  x2 = 5
-  x3 = 0
-  x4 = 0
-  x5 = 1
+  x = 1
+  J = 0
+  Q = 0
+  
+<font color="red"><b>t=tf:</b></font>
+  x = 3
+  Q = 4
   
 <font color="red"><b>ini:</b></font>
-  x1 = 1
-  x2 = 5
-  x3 = 0
-  x4 = 0
-  x5 = 1
-  u  = 0
-
-<font color="red"><b>exp:</b></font>
-  a1 == 21.87*x2/((x2+0.4)*(x2+62.5))
-  a2 == (x2*<font color="#2ECC40">exp</font>(-5*x2))/(0.1+x2)
-  a3 == 4.75*a1/(0.12+a1)
+  x = <font color="#0074D9">linspace</font>(1,3)
+  u = <font color="#0074D9">linspace</font>(-5,15)
 
 <font color="red"><b>equ:</b></font>
-  x1&acute; == a1*x1 - u*x1/x5
-  x2&acute; == -7.3*a1*x1 - u*(x2-20)/x5
-  x3&acute; == a2*x1 - u*x3/x5
-  x4&acute; == a3*(x3-x4) - u*x4/x5
-  x5&acute; == u
-  u :: <font color="#7FDBFF">spline3</font>
+  x&acute; == u
+  J&acute; == x*<font color="#2ECC40">sqrt</font>(1+u*u)
+  Q&acute; == <font color="#2ECC40">sqrt</font>(1+u*u)
 
-<font color="red"><b>obj:</b></font>
-  <font color="#8A2BE2">maximize</font> <font color="#0074D9">final</font>(x4*x5) <font color="#8A2BE2">using</font> nlp
+<font color="red"><b>obj:</b></font> 
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp
 </pre>
 </body>
 </html>
