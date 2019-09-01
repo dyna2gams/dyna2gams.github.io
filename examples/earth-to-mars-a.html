@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -40,22 +40,22 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   velocity, \(\theta\) the polar angle, \(T\) the propulsive thrust, \(\eta\) the throttle
   setting, \(m\) the mass, \(\alpha\) the thrust angle and \(\mu\) the gravitational constant.
 <p>
-  The thrust angle is defined relative to the "local horizontal" or tangential direction at
+  The thrust angle is defined relative to the &ldquo;local horizontal&rdquo; or tangential direction at
   the current position. It is measured positive above the local horizontal plane and negative
   below. The in-plane thrust angle \(\alpha\) is the single control variable for this
   problem. The throttle setting is normally a value greater than or equal to zero and less
   than or equal to one.
 <p>
-  To "streamline" the numerical calculations, the fundamental distance, velocity and time in
+  To &ldquo;streamline&rdquo; the numerical calculations, the fundamental distance, velocity and time in
   the equations of motion are normalized. In the setting here after, all heliocentric
   distances are normalized with respect to the Astronomical Unit. Likewise, all velocity
-  values are normalized with respect to the "local circular velocity" at the heliocentric
+  values are normalized with respect to the &ldquo;local circular velocity&rdquo; at the heliocentric
   distance of the Earth&rsquo;s circular orbit. Therefore, the velocity unit is \(\sqrt{\mu}\).
   Furthermore, all time values are normalized with respect to \(\sqrt{1/\mu}\).
 <p>
   Reference:
   <ol>
-  <li>David Eagle,
+  <li>D. Eagle,
   <em>Two-dimensional, Low-thrust Earth-to-Mars Trajectory Analysis with MATLAB</em>,
   https://www.mathworks.com/matlabcentral/fileexchange/42374
   </ol>
@@ -72,7 +72,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   acc_thrust = (0.001*thrmag/mass0)/(xmu/aunit^2)	<font color="#808080"><i># compute non-dimensional thrust acceleration ratio</i></font>
   mdot = (thrmag/(9.80665*xisp))*86400			<font color="#808080"><i># compute normalized propellant flow rate</i></font>
   mp_dot = (mdot/mass0)*tfactor
-  case = 2			<font color="#808080"><i># 1 = minimize tranfer time   2 = maximize final mass  </i></font>
+  case = 2			<font color="#808080"><i># 1 = minimize tranfer time   2 = maximize final mass</i></font>
 
 <font color="red"><b>var:</b></font>
   throttle

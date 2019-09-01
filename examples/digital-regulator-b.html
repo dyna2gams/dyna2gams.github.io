@@ -1,0 +1,85 @@
+<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Optimization of a digital regulator</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Optimization of a digital regulator
+</pre>
+<p>
+  Optimization of the parameters of a digital transfer function (<i>a la</i> Graham Lathrop).
+<p>
+  The objective is to minimize the gap between the step response and the
+  control setpoint.
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">time-model</font> = Discrete
+  <font color="#39CCCC">N</font> = 21
+  <font color="#39CCCC">gams-option</font> = decimals=4
+  
+<font color="red"><b>par:</b></font>
+  ts = 1			<font color="#808080"><i># sample time</i></font>
+  yd = 1			<font color="#808080"><i># desired output</i></font>
+  case = 1
+ 
+<font color="red"><b>dyn:</b></font>
+  J
+  
+<font color="red"><b>var:</b></font>
+  a1 a0 b1 b0
+  
+<font color="red"><b>lim:</b></font>
+  -1 &lt;= a1 &lt;= 1
+  -1 &lt;= a0 &lt;= 1
+  -1 &lt;= b1 &lt;= 1
+  -1 &lt;= b0 &lt;= 1
+
+<font color="red"><b>k=k0:</b></font>
+  J = 0
+  
+<font color="red"><b>ini:</b></font>  
+  a1 = 0.5
+  a0 = 0.5
+  b1 = 0.5
+  b0 = 0.5
+
+<font color="red"><b>mac:</b></font>
+  @report(i) \
+    report('&i','a1') = a1.l; \
+    report('&i','a0') = a0.l; \
+    report('&i','b1') = b1.l; \
+    report('&i','b0') = b0.l;
+    
+<font color="red"><b>exp:</b></font>
+  e == 1 - y
+
+<font color="red"><b>equ:</b></font>
+  <font color="#8A2BE2">@tfm</font> Num=b1 b0, Den=1 a1 a0, In=1, Out=y
+  J&acute; == J + <font color="#2ECC40">sqrt</font>(1e-6+<font color="#2ECC40">sqr</font>(e))$(case=1) + <font color="#2ECC40">sqr</font>(e)$(case=2) + <font color="#0074D9">Time</font>*<font color="#2ECC40">sqrt</font>(1e-6+<font color="#2ECC40">sqr</font>(e))$(case=3) + <font color="#0074D9">Time</font>*<font color="#2ECC40">sqr</font>(e)$(case=4)
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp 
+  
+<font color="red"><b>gms:</b></font>
+  <font color="#3D9970">parameter</font> report(*,*); 
+  @report(1)
+  case = 2; <font color="#8A2BE2">@solve</font>; @report(2)
+  case = 3; <font color="#8A2BE2">@solve</font>; @report(3)
+  case = 4; <font color="#8A2BE2">@solve</font>; @report(4)
+  <font color="#3D9970">display</font> report;
+</pre>
+</body>
+</html>

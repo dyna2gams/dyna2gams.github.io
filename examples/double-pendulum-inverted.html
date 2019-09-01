@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -26,19 +26,15 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   deviation of the rods from the upright position at time \(t\). By \(pos = pos(t)\) we denote the horizontal position of the cart and we
   assume that the cart cannot move vertically.
 <p>
-  The equations of motion are derived according the principles of the Lagrangian mechanics with generalized coordinates. We used casADI
-  symbolic calculation to write them down. CasADI breaks down the calculation in small pieces and therefore uses many intermediates variables.
-  They are implemented as symbolic variables in DYNA, and later on as macro in GAMS. Unfortunately the number of macro chain substitutions
-  allowed in GAMS is limited. As a workaround, some of the intermediate expressions are coded as dynamic variables, though they don&rsquo;t have any
-  particular physical interpretation nor interest.
+  The equations of motion are derived according the principles of the Lagrangian mechanics with generalized coordinates. We used Maxima
+  symbolic calculation (http://maxima.sourceforge.net/) to write them down.
 <p>
-  We seek a swing-up maneuver in a minimum time. 
+  We seek a swing-up maneuver in a minimum time.
 <p>
   To help the numerical resolution, two tricks are used:
   <ul>
   <li>the final conditions are replaced by a penalty in the objective function;
-  <li>we first solve a slightly different set of equations to avoid numerical difficulties (division by a very small factor) due to missing
-  proper initialization of the intermediate variables and revert to the original problem once convergence has been achieved.
+  <li>we first solve a slightly different problem and revert to the original problem once convergence has been achieved.
   </ul>
 <p>
   The problem exhibits numerous local minima and it is easy to get trapped in a poor solution. Missing initialization and bounds on the
@@ -49,7 +45,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <font color="red"><b>run:</b></font>
   <font color="#39CCCC">default-time-steps-number</font> = 24
   <font color="#39CCCC">default-iterations-number</font> = 5
-  
+
 <font color="red"><b>par:</b></font>
   mcart = 0.1
   m1 = 1
@@ -57,8 +53,6 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   l1 = 0.3
   l2 = 0.3
   g = 9.81
-  ease1 = 1
-  ease2 = 1
 
 <font color="red"><b>var:</b></font>
   tf
@@ -67,8 +61,6 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   pos theta1 theta2
   dpos dtheta1 dtheta2
   u
-  c_theta1 s_theta1 c_theta2 s_theta2
-  v18 v23 v24 v25 v28 v29 v45 v54
   J
 
 <font color="red"><b>lim:</b></font>
@@ -87,7 +79,8 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   dtheta2 = 0
   J = 0
 
-<font color="#808080"><i>###:</i></font><font color="#808080"><i> t=tf</i></font>
+<font color="#808080"><i>###:</i></font><font color="#808080"><i></i></font>
+<font color="#808080"><i>t=tf</i></font>
 <font color="#808080"><i>  pos = 0</i></font>
 <font color="#808080"><i>  theta1 = 0</i></font>
 <font color="#808080"><i>  theta2 = 0</i></font>
@@ -100,113 +93,90 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   theta2 = <font color="#0074D9">linspace</font>(pi,0)
   tf = 1
 
-<font color="red"><b>exp:</b></font>
-  v4  == (l1*c_theta1)
-  v5  == ((0.5*m2)*(v4+v4))
-  v8  == (l1*c_theta1)
-  v9  == ((0.5*m1)*(v8+v8))
-  v10 == (v5+v9)
-  v13 == (l2*s_theta2)
-  v14 == ((0.5*m2)*(v13+v13))
-  v16 == (l2*c_theta2)
-  v17 == ((0.5*m2)*(v16+v16))
-  v19 == (l1*s_theta1)
-  v20 == ((0.5*m2)*(v19+v19))
-  v22 == (l1*s_theta1)
-  v26 == (c_theta2*(l2*m2))
-  v30 == ((l1*(s_theta1*dtheta1))+(l2*(s_theta2*dtheta2)))
-  v31 == ((v30+v30)*(0.5*m2))
-  v32 == (c_theta2*dtheta2)
-  v33 == (c_theta1*dtheta1)
-  v34 == ((l1*(dtheta1*v33))+(l2*(dtheta2*v32)))
-  v35 == ((0.5*m2)*(v34+v34))
-  v36 == (s_theta1*dtheta1)
-  v37 == (s_theta2*dtheta2)
-  v38 == ((l1*(dtheta1*v36))+(l2*(dtheta2*v37)))
-  v39 == ((0.5*m2)*(v38+v38))
-  v40 == ((dpos+(l1*(c_theta1*dtheta1)))+(l2*(c_theta2*dtheta2)))
-  v41 == ((v40+v40)*(0.5*m2))
-  v43 == ((v30+v30)*(0.5*m2))
-  v44 == ((v40+v40)*(0.5*m2))
-  v46 == (s_theta1*dtheta1)
-  v47 == (l1*(dtheta1*v46))
-  v48 == ((0.5*m1)*(v47+v47))
-  v49 == ((v39+v48)+u)
-  v50 == (l1*(s_theta1*dtheta1))
-  v51 == (c_theta1*dtheta1)
-  v52 == (l1*(dtheta1*v51))
-  v53 == (dpos+(l1*(c_theta1*dtheta1)))
-
 <font color="red"><b>equ:</b></font>
   pos&acute; == dpos
   theta1&acute; == dtheta1
   theta2&acute; == dtheta2
-  $(1-ease1).. dpos&acute; == (((((v10*v18)-(v17*v23))/v29)*v45)-(((((v23*v25)-(v18*v28))/v29)*v49)+((((v10*v25)-(v17*v28))/v29)*v54)))
-  $(1-ease1).. dtheta1&acute; == ((((((v24*v25)-(v18*v26))/v29)*v49)+(((((m2+m1+mcart)*v25)-(v17*v26))/v29)*v54))-(((((m2+m1+mcart)*v18)-(v17*v24))/v29)*v45))
-  $(1-ease1).. dtheta2&acute; == ((((((m2+m1+mcart)*v23)-(v10*v24))/v29)*v45)-(((((v24*v28)-(v23*v26))/v29)*v49)+(((((m2+m1+mcart)*v28)-(v10*v26))/v29)*v54)))
-  $ease1.. v29*dpos&acute; == (((((v10*v18)-(v17*v23)))*v45)-(((((v23*v25)-(v18*v28)))*v49)+((((v10*v25)-(v17*v28)))*v54)))
-  $ease1.. v29*dtheta1&acute; == ((((((v24*v25)-(v18*v26)))*v49)+(((((m2+m1+mcart)*v25)-(v17*v26)))*v54))-(((((m2+m1+mcart)*v18)-(v17*v24)))*v45))
-  $ease1.. v29*dtheta2&acute; == ((((((m2+m1+mcart)*v23)-(v10*v24)))*v45)-(((((v24*v28)-(v23*v26)))*v49)+(((((m2+m1+mcart)*v28)-(v10*v26)))*v54)))
-  c_theta1 == <font color="#2ECC40">cos</font>(theta1)
-  s_theta1 == <font color="#2ECC40">sin</font>(theta1)
-  c_theta2 == <font color="#2ECC40">cos</font>(theta2)
-  s_theta2 == <font color="#2ECC40">sin</font>(theta2)
-  v18 == ((s_theta1*(l1*v14))+(c_theta1*(l1*v17)))
-  v23 == ((((s_theta1*(l1*v20))+(c_theta1*(l1*v5)))+(s_theta1*(l1*((0.5*m1)*(v22+v22)))))+(c_theta1*(l1*v9)))
-  v24 == ((c_theta1*(l1*m2))+(c_theta1*(l1*m1)))
-  v25 == ((s_theta2*(l2*v14))+(c_theta2*(l2*v17)))
-  v28 == ((s_theta2*(l2*v20))+(c_theta2*(l2*v5)))
-  v29 == (((v10*((v24*v25)-(v18*v26)))-((m2+m1+mcart)*((v23*v25)-(v18*v28))))-(v17*((v24*v28)-(v23*v26))))
-  v45 == (((((l2*v31)*v32)+(s_theta2*(l2*v35)))-((c_theta2*(l2*v39))+((l2*v41)*v37)))-(((s_theta2*(l2*(m2*g)))+(c_theta2*(dtheta2*(l2*v43))))-(s_theta2*(dtheta2*(l2*v44)))))
-  v54 == (((((((l1*v31)*v33)+(s_theta1*(l1*v35)))-((c_theta1*(l1*v39))+((l1*v41)*v36)))+(((l1*((v50+v50)*(0.5*m1)))*v51)+(s_theta1*(l1*((0.5*m1)*(v52+v52))))))\
-    -((c_theta1*(l1*v48))+((l1*((v53+v53)*(0.5*m1)))*v46)))-(((((s_theta1*(l1*((m2*g)+(m1*g))))+(c_theta1*(dtheta1*(l1*v43))))-(s_theta1*(dtheta1*(l1*v44))))\
-    +(c_theta1*(dtheta1*(l1*((v50+v50)*(0.5*m1))))))-(s_theta1*(dtheta1*(l1*((v53+v53)*(0.5*m1)))))))
+  dpos&acute; == ((m2*<font color="#2ECC40">cos</font>(2*theta2-2*theta1)-m2-2*m1)*u+l2*m1*m2*<font color="#2ECC40">sqr</font>(dtheta2)*<font color="#2ECC40">sin</font>(theta2-2*theta1)-l2*m1*m2*<font color="#2ECC40">sin</font>(theta2)*<font color="#2ECC40">sqr</font>(dtheta2)\
+    +(g*m1*m2+g*m1^2)*<font color="#2ECC40">sin</font>(2*theta1)+(-2*l1*m1*m2-2*l1*m1^2)*<font color="#2ECC40">sin</font>(theta1)*<font color="#2ECC40">sqr</font>(dtheta1))\
+    /(m2*mcart*<font color="#2ECC40">cos</font>(2*theta2-2*theta1)+(m1*m2+m1^2)*<font color="#2ECC40">cos</font>(2*theta1)+(-m2-2*m1)*mcart-m1*m2-m1^2)
+  dtheta1&acute; == -((m2*<font color="#2ECC40">cos</font>(2*theta2-theta1)+(-m2-2*m1)*<font color="#2ECC40">cos</font>(theta1))*u-g*m2*mcart*<font color="#2ECC40">sin</font>(2*theta2-theta1)\
+    +l1*m2*mcart*<font color="#2ECC40">sqr</font>(dtheta1)*<font color="#2ECC40">sin</font>(2*theta2-2*theta1)-l2*m1*m2*<font color="#2ECC40">sqr</font>(dtheta2)*<font color="#2ECC40">sin</font>(theta2+theta1)\
+    +(2*l2*m2*mcart+l2*m1*m2)*<font color="#2ECC40">sqr</font>(dtheta2)*<font color="#2ECC40">sin</font>(theta2-theta1)+(-l1*m1*m2-l1*m1^2)*<font color="#2ECC40">sqr</font>(dtheta1)*<font color="#2ECC40">sin</font>(2*theta1)\
+    +((g*m2+2*g*m1)*mcart+2*g*m1*m2+2*g*m1^2)*<font color="#2ECC40">sin</font>(theta1))\
+    /(l1*m2*mcart*<font color="#2ECC40">cos</font>(2*theta2-2*theta1)+(l1*m1*m2+l1*m1^2)*<font color="#2ECC40">cos</font>(2*theta1)+(-l1*m2-2*l1*m1)*mcart-l1*m1*m2-l1*m1^2)
+  dtheta2&acute; == -(((m2+m1)*<font color="#2ECC40">cos</font>(theta2-2*theta1)+(-m2-m1)*<font color="#2ECC40">cos</font>(theta2))*u-l2*m2*mcart*<font color="#2ECC40">sqr</font>(dtheta2)*<font color="#2ECC40">sin</font>(2*theta2-2*theta1)\
+    +(-2*l1*m2-2*l1*m1)*mcart*<font color="#2ECC40">sqr</font>(dtheta1)*<font color="#2ECC40">sin</font>(theta2-theta1)+(g*m2+g*m1)*mcart*<font color="#2ECC40">sin</font>(theta2-2*theta1)\
+    +(g*m2+g*m1)*mcart*<font color="#2ECC40">sin</font>(theta2))\
+    /(l2*m2*mcart*<font color="#2ECC40">cos</font>(2*theta2-2*theta1)+(l2*m1*m2+l2*m1^2)*<font color="#2ECC40">cos</font>(2*theta1)+(-l2*m2-2*l2*m1)*mcart-l2*m1*m2-l2*m1^2)
   J&acute; == <font color="#2ECC40">sqr</font>(u)
 
+<font color="red"><b>exp:</b></font>
+  P == <font color="#2ECC40">sqr</font>(pos)+<font color="#2ECC40">sqr</font>(theta1)+<font color="#2ECC40">sqr</font>(theta2)+<font color="#2ECC40">sqr</font>(dpos)+<font color="#2ECC40">sqr</font>(dtheta1)+<font color="#2ECC40">sqr</font>(dtheta2)
+
+<font color="red"><b>par:</b></font>
+  penaltyP = 1e+3
+  penaltyJ = 1e-3
+
 <font color="red"><b>obj:</b></font>
-  <font color="#8A2BE2">minimize</font> tf+ease2*1e-3*<font color="#0074D9">final</font>(J)+1e3*<font color="#0074D9">final</font>(<font color="#2ECC40">sqr</font>(pos)+<font color="#2ECC40">sqr</font>(theta1)+<font color="#2ECC40">sqr</font>(theta2)+<font color="#2ECC40">sqr</font>(dpos)+<font color="#2ECC40">sqr</font>(dtheta1)+<font color="#2ECC40">sqr</font>(dtheta2)) <font color="#8A2BE2">using</font> nlp <font color="#8A2BE2">with</font> conopt
+  <font color="#8A2BE2">minimize</font> tf+penaltyJ*<font color="#0074D9">final</font>(J)+penaltyP*<font color="#0074D9">final</font>(P) <font color="#8A2BE2">using</font> nlp
 
 <font color="red"><b>gms:</b></font>
-  ease1 = 0;   <font color="#808080"><i># revert to the genuine model equations</i></font>
+  <font color="#8B0000">$$ondotl</font>
+  <font color="#808080"><i># deal with terminal values</i></font>
+  <font color="#3D9970">while</font>(penaltyP*<font color="#0074D9">final</font>(P) &gt; 1e-4,
+    penaltyP = penaltyP*10;
+    <font color="#8A2BE2">@solve</font>
+    );
+  <font color="#8A2BE2">@solveloop</font> Method=bndobj
+  penaltyP = 0;
+  <font color="#8A2BE2">@setlimf</font> Var={pos theta1 theta2 dpos dtheta1 dtheta2}, Vlo=0, Vup=0
   <font color="#8A2BE2">@solve</font>
-  ease2 = 0;   <font color="#808080"><i># revert to the genuine model objective</i></font>
+  <font color="#8A2BE2">@solveloop</font> Method=bndobj
+  <font color="#808080"><i># revert to the genuine model objective</i></font>
+  <font color="#3D9970">while</font>(penaltyJ*<font color="#0074D9">final</font>(J) &gt; 1e-4,
+    penaltyJ = penaltyJ/10;
+    <font color="#8A2BE2">@solve</font>
+    );
+  <font color="#8A2BE2">@solveloop</font> Method=bndobj
   <font color="#8A2BE2">@solve</font>
 
 <font color="#808080"><i>###:</i></font><font color="#808080"><i></i></font>
-<font color="#808080"><i>  % Octave/Matlab program using casADI to get the ODE's</i></font>
-<font color="#808080"><i>  import casadi.*</i></font>
-<font color="#808080"><i>  mcart = SX.sym('mcart');</i></font>
-<font color="#808080"><i>  m1 = SX.sym('m1');</i></font>
-<font color="#808080"><i>  m2 = SX.sym('m2');</i></font>
-<font color="#808080"><i>  l1 = SX.sym('l1');</i></font>
-<font color="#808080"><i>  l2 = SX.sym('l2');</i></font>
-<font color="#808080"><i>  g = SX.sym('g');</i></font>
-<font color="#808080"><i>  pos = SX.sym('pos');</i></font>
-<font color="#808080"><i>  theta1 = SX.sym('theta1');</i></font>
-<font color="#808080"><i>  theta2 = SX.sym('theta2');</i></font>
-<font color="#808080"><i>  dpos = SX.sym('dpos');</i></font>
-<font color="#808080"><i>  dtheta1 = SX.sym('dtheta1');</i></font>
-<font color="#808080"><i>  dtheta2 = SX.sym('dtheta2');</i></font>
-<font color="#808080"><i>  q = [pos;theta1;theta2];</i></font>
-<font color="#808080"><i>  dq = [dpos;dtheta1;dtheta2];</i></font>
-<font color="#808080"><i>  ddq = SX.sym('ddq',size(q));</i></font>
-<font color="#808080"><i>  x0 = pos;</i></font>
-<font color="#808080"><i>  y0 = 0;</i></font>
-<font color="#808080"><i>  x1 = x0+l1*sin(theta1);</i></font>
-<font color="#808080"><i>  y1 = y0+l1*cos(theta1);</i></font>
-<font color="#808080"><i>  x2 = x1+l2*sin(theta2);</i></font>
-<font color="#808080"><i>  y2 = y1+l2*cos(theta2);</i></font>
-<font color="#808080"><i>  E_pot = m1*g*y1+m2*g*y2;</i></font>
-<font color="#808080"><i>  v0 = jtimes([x0;y0],q,dq);</i></font>
-<font color="#808080"><i>  v1 = jtimes([x1;y1],q,dq);</i></font>
-<font color="#808080"><i>  v2 = jtimes([x2;y2],q,dq);</i></font>
-<font color="#808080"><i>  E_kin = 1/2*mcart*(v0'*v0)+1/2*m1*(v1'*v1)+1/2*m2*(v2'*v2);</i></font>
-<font color="#808080"><i>  Lag = E_kin-E_pot; % Lagrange function</i></font>
-<font color="#808080"><i>  u = SX.sym('u');</i></font>
-<font color="#808080"><i>  eq = jtimes(gradient(Lag,dq),[q;dq],[dq;ddq]) - gradient(Lag,q) - [u;0;0];</i></font>
-<font color="#808080"><i>  ddqsol = -jacobian(eq,ddq)\substitute(eq,ddq,0); % Write ddq as function of q,dq,u</i></font>
-<font color="#808080"><i>  [dq;ddqsol]</i></font>
-<font color="#808080"><i>  % ODE's are d/dt[q;dq] == [dq;ddqsol]</i></font>
+<font color="#808080"><i>  </i></font><font color="#808080"><i># Maxima program to calculate the equations of motion</i></font>
+<font color="#808080"><i>  kill(all)$</i></font>
+<font color="#808080"><i>  display2d:false$</i></font>
+<font color="#808080"><i>  depends(pos,t)$</i></font>
+<font color="#808080"><i>  depends(theta1,t)$</i></font>
+<font color="#808080"><i>  depends(theta2,t)$</i></font>
+<font color="#808080"><i>  x0 : pos$</i></font>
+<font color="#808080"><i>  y0 : 0$</i></font>
+<font color="#808080"><i>  x1 : x0+l1*sin(theta1)$</i></font>
+<font color="#808080"><i>  y1 : y0+l1*cos(theta1)$</i></font>
+<font color="#808080"><i>  x2 : x1+l2*sin(theta2)$</i></font>
+<font color="#808080"><i>  y2 : y1+l2*cos(theta2)$</i></font>
+<font color="#808080"><i>  PE : m1*g*y1 + m2*g*y2$</i></font>
+<font color="#808080"><i>  v0x : diff(x0,t)$</i></font>
+<font color="#808080"><i>  v0y : diff(y0,t)$</i></font>
+<font color="#808080"><i>  v1x : diff(x1,t)$</i></font>
+<font color="#808080"><i>  v1y : diff(y1,t)$</i></font>
+<font color="#808080"><i>  v2x : diff(x2,t)$</i></font>
+<font color="#808080"><i>  v2y : diff(y2,t)$</i></font>
+<font color="#808080"><i>  KE : 1/2*mcart*(v0x^2+v0y^2) + 1/2*m1*(v1x^2+v1y^2) + 1/2*m2*(v2x^2+v2y^2)$</i></font>
+<font color="#808080"><i>  LAG : KE - PE$</i></font>
+<font color="#808080"><i>  load ("./m/lagrangian-mechanics.mac")$</i></font>
+<font color="#808080"><i>  qL : [pos,theta1,theta2]$</i></font>
+<font color="#808080"><i>  uL : [u,0,0]$</i></font>
+<font color="#808080"><i>  eqN : trigsimp(trigreduce(lefN(qL,LAG,uL)))$</i></font>
+<font color="#808080"><i>  dpos : diff(pos,t)$</i></font>
+<font color="#808080"><i>  dtheta1 : diff(theta1,t)$</i></font>
+<font color="#808080"><i>  dtheta2 : diff(theta2,t)$</i></font>
+<font color="#808080"><i>  ddpos : diff(dpos,t)$</i></font>
+<font color="#808080"><i>  ddtheta1 : diff(dtheta1,t)$</i></font>
+<font color="#808080"><i>  ddtheta2 : diff(dtheta2,t)$</i></font>
+<font color="#808080"><i>  ddqL : [ddpos,ddtheta1,ddtheta2]$</i></font>
+<font color="#808080"><i>  solve(eqN,ddqL)$</i></font>
+<font color="#808080"><i>  trigsimp(trigreduce(%))$</i></font>
+<font color="#808080"><i>  subst([diff(pos,t)=dpos,diff(theta1,t)=dtheta1,diff(theta2,t)=dtheta2],%);</i></font>
 </pre>
 </body>
 </html>

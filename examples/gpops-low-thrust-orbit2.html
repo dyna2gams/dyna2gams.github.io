@@ -1,0 +1,189 @@
+<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Low-Thrust Orbit Transfer Example</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Low-Thrust Orbit Transfer Example
+</pre>
+<p>
+  This example is taken verbatim from [2]. The difference is the scaling of \(p, rX, rY\) and \(rZ\) with
+  respect to \(R_e\).
+<p>
+  We provide a crude initial guess for all the variables, which is not as effective and as good as as the one
+  obtained by an ODE simulation for a given control policy.
+<p>
+  References:
+  <ol>
+  <li>A.V. Rao, D.A. Benson, C.L. Darby, M.A. Patterson, C. Francolin, I. Sanders and G.T. Huntington,
+  <em>Algorithm 902: GPOPS, A MATLAB Software for Solving Multiple-Phase Optimal Control Problems
+  Using the Gauss Pseudospectral Method</em>,
+  ACM Transactions on Mathematical Software, 37(2):1-39, April-June 2010.
+  <li>J.T. Betts,
+  <em>Practical Methods for Optimal Control Using Nonlinear Programming</em>,
+  SIAM Press, Philadelphia, 2009.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">gams-option</font> = reslim=3600
+
+<font color="red"><b>par:</b></font>
+  T = 4.446618e-3        <font color="#808080"><i># [lb]</i></font>
+  Isp = 450              <font color="#808080"><i># [s]</i></font>
+  mu = 1.407645794e16    <font color="#808080"><i># [ft^3/s^2]</i></font>
+  gs = 32.174            <font color="#808080"><i># [ft/s^2]</i></font>
+  Re = 20925662.73       <font color="#808080"><i># [ft]</i></font>
+  J2 = 1082.639e-6
+  J3 = -2.565e-6
+  J4 = -1.608e-6
+
+<font color="red"><b>var:</b></font>
+  tf
+  tau
+
+<font color="red"><b>dyn:</b></font>
+  <font color="#808080"><i># state variables</i></font>
+  p f g h k L w
+  <font color="#808080"><i># control variables</i></font>
+  ur ut uh
+  <font color="#808080"><i># ancillary variables</i></font>
+  Delta{1:3}
+  r{X Y Z}
+
+<font color="red"><b>lim:</b></font>
+  50000 &lt;= tf &lt;= 100000
+  20000000/Re &lt;= p &lt;= 60000000/Re
+  -1 &lt;= f &lt;= +1
+  -1 &lt;= g &lt;= +1
+  -1 &lt;= h &lt;= +1
+  -1 &lt;= k &lt;= +1
+  pi &lt;= L &lt;= 9*2*pi
+  1e-3 &lt;= w &lt;= +1
+  -1 &lt;= ur &lt;= +1
+  -1 &lt;= ut &lt;= +1
+  -1 &lt;= uh &lt;= +1
+  -50 &lt;= tau &lt;= 0
+
+<font color="red"><b>t=t0:</b></font>
+  p = 21837080.052835/Re
+  f = 0
+  g = 0
+  h = -0.25396764647494
+  k = 0
+  L = pi
+  w = 1
+
+<font color="red"><b>t=tf:</b></font>
+  p = 40007346.015232/Re
+
+<font color="red"><b>exp:</b></font>
+  <font color="#808080"><i># Gravitational disturbing acceleration</i></font>
+  q == 1 + f*<font color="#2ECC40">cos</font>(L) + g*<font color="#2ECC40">sin</font>(L)
+  r == (Re*p)/q
+  alpha2 == h*h - k*k
+  s2 == 1 + h*h + k*k
+  rX_def == (r/s2) * (<font color="#2ECC40">cos</font>(L) + alpha2*<font color="#2ECC40">cos</font>(L) + 2*h*k*<font color="#2ECC40">sin</font>(L))
+  rY_def == (r/s2) * (<font color="#2ECC40">sin</font>(L) - alpha2*<font color="#2ECC40">sin</font>(L) + 2*h*k*<font color="#2ECC40">cos</font>(L))
+  rZ_def == (2*r/s2) * (h*<font color="#2ECC40">sin</font>(L) - k*<font color="#2ECC40">cos</font>(L))
+  rM == <font color="#2ECC40">sqrt</font>(rX*rX+rY*rY+rZ*rZ)
+  rXZM == <font color="#2ECC40">sqrt</font>(rX*rX+rZ*rZ)
+  vX == -(1/s2)*<font color="#2ECC40">sqrt</font>(mu/(Re*p))*( <font color="#2ECC40">sin</font>(L) + alpha2*<font color="#2ECC40">sin</font>(L) - 2*h*k*<font color="#2ECC40">cos</font>(L) + g - 2*f*h*k + alpha2*g)
+  vY == -(1/s2)*<font color="#2ECC40">sqrt</font>(mu/(Re*p))*(-<font color="#2ECC40">cos</font>(L) + alpha2*<font color="#2ECC40">cos</font>(L) + 2*h*k*<font color="#2ECC40">sin</font>(L) - f + 2*g*h*k + alpha2*f)
+  vZ == (2/s2)*<font color="#2ECC40">sqrt</font>(mu/(Re*p))*(h*<font color="#2ECC40">cos</font>(L) + k*<font color="#2ECC40">sin</font>(L) + f*h + g*k)
+  rCv1 == rY*vZ - rZ*vY
+  rCv2 == rZ*vX - rX*vZ
+  rCv3 == rX*vY - rY*vX
+  rCvM == <font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqr</font>(rCv1)+<font color="#2ECC40">sqr</font>(rCv2)+<font color="#2ECC40">sqr</font>(rCv3))
+  rCvCr1 == rCv2*rZ - rCv3*rY
+  rCvCr2 == rCv3*rX - rCv1*rZ
+  rCvCr3 == rCv1*rY - rCv2*rX
+  ir{1:3} == r{X Y Z}/rM
+  it{1:3} == rCvCr{1:3}/(rCvM * rM)
+  ih{1:3} == rCv{1:3}/rCvM
+  enenirir{1:3} == {0 0 1}-ir3*ir{1:3}
+  enenirirM == <font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqr</font>(enenirir1)+<font color="#2ECC40">sqr</font>(enenirir2)+<font color="#2ECC40">sqr</font>(enenirir3))
+  in{1:3} == enenirir{1:3}/enenirirM
+  <font color="#808080"><i># Geocentric latitude</i></font>
+  sinphi == rZ/rXZM
+  cosphi == <font color="#2ECC40">sqrt</font>(1-sinphi*sinphi)
+  <font color="#808080"><i># Legendre polynomials</i></font>
+  P2 == (3*<font color="#2ECC40">power</font>(sinphi,2) - 2)/2
+  P3 == (5*<font color="#2ECC40">power</font>(sinphi,3) - 3*sinphi)/2
+  P4 == (35*<font color="#2ECC40">power</font>(sinphi,4) - 30*<font color="#2ECC40">power</font>(sinphi,2) + 3)/8
+  dP2 == 3*sinphi
+  dP3 == (15*sinphi - 3)/2
+  dP4 == (140*<font color="#2ECC40">power</font>(sinphi,3) - 60*sinphi)/8
+  <font color="#808080"><i># Oblate earth perturbations</i></font>
+  sumn == (Re/r)^2 * dP2 * J2 + (Re/r)^3 * dP3 * J3 + (Re/r)^4 * dP4 * J4
+  sumr == (2+1) * (Re/r)^2 * P2 * J2 + (3+1) * (Re/r)^3 * P3 * J3 + (4+1) * (Re/r)^4 * P4 * J4
+  Dgn == -(mu * cosphi/(r^2)) * sumn
+  Dgr == -(mu/(r^2)) * sumr
+  Dg{1:3} == Dgn*in{1:3} - Dgr*ir{1:3}
+  DeltaG1 == ir1*Dg1 +ir2*Dg2 + ir3*Dg3
+  DeltaG2 == it1*Dg1 +it2*Dg2 + it3*Dg3
+  DeltaG3 == ih1*Dg1 +ih2*Dg2 + ih3*Dg3
+  <font color="#808080"><i># Thrust acceleration</i></font>
+  DeltaT1 == ((gs * T * (1+0.01*tau))/w) * ur
+  DeltaT2 == ((gs * T * (1+0.01*tau))/w) * ut
+  DeltaT3 == ((gs * T * (1+0.01*tau))/w) * uh
+  <font color="#808080"><i># Total acceleration</i></font>
+  Delta{1:3}_def == DeltaG{1:3} + DeltaT{1:3}
+
+<font color="red"><b>equ:</b></font>
+  r{X Y Z} == (1/Re)*r{X Y Z}_def
+  Delta{1:3} == Delta{1:3}_def
+  <font color="#808080"><i># Equations of motion</i></font>
+  p&acute; == (1/Re)*(2*(Re*p)/q) * <font color="#2ECC40">sqrt</font>((Re*p)/mu) * Delta2
+  f&acute; == <font color="#2ECC40">sqrt</font>((Re*p)/mu) * <font color="#2ECC40">sin</font>(L) * Delta1 \
+      + <font color="#2ECC40">sqrt</font>((Re*p)/mu) * (1/q) * ((q+1)*<font color="#2ECC40">cos</font>(L)+f) * Delta2 \
+      - <font color="#2ECC40">sqrt</font>((Re*p)/mu) * (g/q) * (h*<font color="#2ECC40">sin</font>(L)-k*<font color="#2ECC40">cos</font>(L)) * Delta3
+  g&acute; == -<font color="#2ECC40">sqrt</font>((Re*p)/mu) * <font color="#2ECC40">cos</font>(L) * Delta1 \
+      + <font color="#2ECC40">sqrt</font>((Re*p)/mu) * (1/q) * ((q+1)*<font color="#2ECC40">sin</font>(L)+g) * Delta2 \
+      + <font color="#2ECC40">sqrt</font>((Re*p)/mu) * (f/q) * (h*<font color="#2ECC40">sin</font>(L)-k*<font color="#2ECC40">cos</font>(L)) * Delta3
+  h&acute; == <font color="#2ECC40">sqrt</font>((Re*p)/mu) * (s2*<font color="#2ECC40">cos</font>(L)/(2*q)) * Delta3
+  k&acute; == <font color="#2ECC40">sqrt</font>((Re*p)/mu) * (s2*<font color="#2ECC40">sin</font>(L)/(2*q)) * Delta3
+  L&acute; == <font color="#2ECC40">sqrt</font>((Re*p)/mu) * (1/q) * (h*<font color="#2ECC40">sin</font>(L)-k*<font color="#2ECC40">cos</font>(L)) * Delta3 \
+      + <font color="#2ECC40">sqrt</font>(mu*(Re*p)) * <font color="#2ECC40">sqr</font>(q/(Re*p))
+  w&acute; == -(T * (1+0.01*tau)/Isp)
+  <font color="#808080"><i># Path constraint</i></font>
+  ur*ur + ut*ut + uh*uh == 1
+  <font color="#808080"><i># Boundary conditions</i></font>
+  <font color="#8A2BE2">$once</font>.. <font color="#0074D9">final</font>(f)*<font color="#0074D9">final</font>(f) + <font color="#0074D9">final</font>(g)*<font color="#0074D9">final</font>(g) == <font color="#2ECC40">sqr</font>(0.73550320568829)
+  <font color="#8A2BE2">$once</font>.. <font color="#0074D9">final</font>(h)*<font color="#0074D9">final</font>(h) + <font color="#0074D9">final</font>(k)*<font color="#0074D9">final</font>(k) == <font color="#2ECC40">sqr</font>(0.61761258786099)
+  <font color="#8A2BE2">$once</font>.. <font color="#0074D9">final</font>(f)*<font color="#0074D9">final</font>(h) + <font color="#0074D9">final</font>(g)*<font color="#0074D9">final</font>(k) == 0
+  <font color="#8A2BE2">$once</font>.. <font color="#0074D9">final</font>(g)*<font color="#0074D9">final</font>(h) - <font color="#0074D9">final</font>(k)*<font color="#0074D9">final</font>(f) &lt;= 0
+
+<font color="red"><b>ini:</b></font>
+  tf = 90000
+  tau = -25
+  p = <font color="#0074D9">linspace</font>(<font color="#0074D9">initial</font>(p),<font color="#0074D9">final</font>(p))
+  f = 0
+  g = 0
+  h = <font color="#0074D9">initial</font>(h)
+  k = 0
+  L = <font color="#0074D9">Poly3</font>(<font color="#0074D9">Time</font>/tf,13.687,-75.476,114.606,3.222)
+  w = 1
+  ur = <font color="#2ECC40">sin</font>(0.888*pi)*<font color="#2ECC40">cos</font>(1.33*pi)
+  ut = <font color="#2ECC40">sin</font>(0.888*pi)*<font color="#2ECC40">sin</font>(1.33*pi)
+  uh = <font color="#2ECC40">cos</font>(0.888*pi)
+  r{X Y Z} = (1/Re)*r{X Y Z}_def
+  Delta{1:3} = Delta{1:3}_def
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">maximize</font> <font color="#0074D9">final</font>(w) <font color="#8A2BE2">using</font> nlp
+</pre>
+</body>
+</html>

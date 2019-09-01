@@ -1,0 +1,168 @@
+<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Planetary descent of a spacecraft (6DOF)</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Planetary descent of a spacecraft (6DOF)
+</pre>
+<p>
+  Model for the OCP of a planetary descent (6DOF spacecraft with one main engine and 6
+  lateral engines for attitude).
+<p>
+  Source: Dario Izzo (Nov 2012) - https://github.com/esa/SpaceAMPL
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">substitute-symbols</font> = r&gt;rr
+
+<font color="red"><b>par:</b></font>
+  <font color="#808080"><i># Generic</i></font>
+  g0 = 9.81					<font color="#808080"><i># [m/s^2]	Earth gravity constant at sea level</i></font>
+  gmoon = 1.6229				<font color="#808080"><i># [m/s^2]	Moon gravity constant</i></font>
+  <font color="#808080"><i># Spacecraft</i></font>
+  Isp = 311					<font color="#808080"><i># [s]		Specific Impulse of the engine</i></font>
+  maxthrust = 44000				<font color="#808080"><i># [N]		Max Thrust</i></font>
+  maxthrustL = 440				<font color="#808080"><i># [N]		Max Thrust (lateral engines)</i></font>
+  mass = 9472.06				<font color="#808080"><i># [kg]		Wet mass</i></font>
+  R = 3						<font color="#808080"><i># [m]		Lateral thrusters offset</i></font>
+  A = 30550 * 0.62				<font color="#808080"><i># [kg m^2]	Ixx</i></font>
+  B = 33014 * 0.62				<font color="#808080"><i># [kg m^2]	Iyy</i></font>
+  C = 33826 * 0.62				<font color="#808080"><i># [kg m^2]	Izz</i></font>
+  <font color="#808080"><i># Initial Conditions</i></font>
+  x0 = 0					<font color="#808080"><i># [m]		Initial x</i></font>
+  y0 = 500					<font color="#808080"><i># [m]		Initial y</i></font>
+  z0 = 2300					<font color="#808080"><i># [m]		Initial z</i></font>
+  vx0 = 150					<font color="#808080"><i># [m/s]		Initial velocity in x</i></font>
+  vy0 = 0					<font color="#808080"><i># [m/s]		Initial velocity in y</i></font>
+  vz0 = -44	 				<font color="#808080"><i># [m/s]		Initial velocity in z</i></font>
+  m0 = mass					<font color="#808080"><i># [kg]		Initial total mass</i></font>
+  p0 = 0					<font color="#808080"><i># [kg]		Initial angular velocity x (rad/s)</i></font>
+  q0 = 0					<font color="#808080"><i># [kg]		Initial angular velocity y (rad/s)</i></font>
+  r0 = 0					<font color="#808080"><i># [kg]		Initial angular velocity z (rad/s)</i></font>
+  e10 = 0					<font color="#808080"><i># 		Initial euler parameter</i></font>
+  e20 = 0					<font color="#808080"><i># 		Initial euler parameter</i></font>
+  e30 = 0					<font color="#808080"><i># 		Initial euler parameter</i></font>
+  eta0 = 1					<font color="#808080"><i># 		Initial euler parameter</i></font>
+  <font color="#808080"><i># Final Conditions</i></font>
+  xn = 4500					<font color="#808080"><i># [m]		Final x position</i></font>
+  yn = 0					<font color="#808080"><i># [m]		Final y position</i></font>
+  zn = 10					<font color="#808080"><i># [m]		Final z position</i></font>
+  vxn = 0.1					<font color="#808080"><i># [m/s]		Final velocity x (tolerance)</i></font>
+  vyn = 0.1					<font color="#808080"><i># [m/s]		Final velocity y (tolerance)</i></font>
+  vzn = -2.5					<font color="#808080"><i># [m/s]		Final velocity z (absolute value)</i></font>
+  <font color="#808080"><i># Other</i></font>
+  tn = (vz0 + <font color="#2ECC40">sqrt</font>(vz0*vz0 + 2*z0*gmoon))/gmoon	<font color="#808080"><i># [s]		Guess for the final time</i></font>
+
+<font color="red"><b>var:</b></font>
+  tf
+
+<font color="red"><b>dyn:</b></font>
+  x y z
+  vx vy vz
+  p q r
+  e1 e2 e3
+  eta
+  m
+  uT upL upR uqL uqR urL urR
+
+<font color="red"><b>lim:</b></font>
+  1e-3 &lt;= tf &lt;= +<font color="#3D9970">inf</font>
+  0 &lt;= x &lt;= +<font color="#3D9970">inf</font>
+  0 &lt;= z &lt;= +<font color="#3D9970">inf</font>
+  -<font color="#3D9970">inf</font> &lt;= vz &lt;=0
+  -1 &lt;= {p q r} &lt;= 1
+  -1 &lt;= e{1:3} &lt;= 1
+  -1 &lt;= eta &lt;= 1
+  1 &lt;= m &lt;= m0
+  0.1 &lt;= uT &lt;= maxthrust
+  0.1 &lt;= {upL upR uqL uqR urL urR} &lt;= maxthrustL
+
+<font color="red"><b>t=t0:</b></font>
+  x = x0
+  y = y0
+  z = z0
+  vx = vx0
+  vy = vy0
+  vz = vz0
+  m = m0
+  p = p0
+  q = q0
+  r = r0
+  e1 = e10
+  e2 = e20
+  e3 = e30
+  eta = eta0
+
+<font color="red"><b>t=tf:</b></font>
+  <font color="#808080"><i># Un-comment the two lines below to activate pin-point landing</i></font>
+  <font color="#808080"><i># x = xn</i></font>
+  <font color="#808080"><i># y = yn</i></font>
+  0 &lt;= z &lt;= zn
+  vx = vxn
+  vy = vyn
+  -<font color="#3D9970">inf</font> &lt;= vz &lt;= vzn
+  <font color="#808080"><i># e1 = e10</i></font>
+  <font color="#808080"><i># e2 = e20</i></font>
+  <font color="#808080"><i># e3 = e30</i></font>
+  <font color="#808080"><i># eta = eta0</i></font>
+
+<font color="red"><b>exp:</b></font>
+  <font color="#808080"><i># Thrust projection to the inertial frame</i></font>
+  uTx == (uT+upL+upR+uqL+uqR) * 2 * (e1*e3 - e2*eta) + (urR + urL) * 2 * (e1*e2 + e3*eta)
+  uTy == (uT+upL+upR+uqL+uqR) * 2 * (e2*e3 + e1*eta) + (urR + urL) * (1 - 2*(e3*e3+e1*e1))
+  uTz == (uT+upL+upR+uqL+uqR) * (1 - 2 * (e2*e2+e1*e1)) + (urR + urL) * 2 * (e3*e2 - e1*eta)
+  uTsum == uT+upL+upR+uqL+uqR+urL+urR
+
+<font color="red"><b>equ:</b></font>
+  x&acute; == vx
+  vx&acute; == uTx / m
+  y&acute; == vy
+  vy&acute; == uTy / m
+  z&acute; == vz
+  vz&acute; == uTz / m - gmoon
+  m&acute; == -uTsum / (Isp*g0)
+  p&acute; == (B-C) / A * q * r + (upR-upL) * R / A
+  q&acute; == (C-A) / B * p * r + (uqR-uqL) * R / B
+  r&acute; == (A-B) / C * q * p + (urR-urL) * R / C
+  e1&acute; == 0.5 * ( e2*r - e3*q + eta*p)
+  e2&acute; == 0.5 * (-e1*r + e3*p + eta*q)
+  e3&acute; == 0.5 * ( e1*q - e2*p + eta*r)
+  eta&acute; == -0.5 * ( e1*p + e2*q + e3*r)
+  -1e-6 &lt;= e1*e1 + e2*e2 + e3*e3 + eta*eta - 1 &lt;= 1e-6
+
+<font color="red"><b>ini:</b></font>
+  tf = tn
+  m = m0
+  vx = vx0
+  x = x0 + vx0*<font color="#0074D9">linspace</font>(0,tf)
+  vy = vy0
+  y = y0 + vy0*<font color="#0074D9">linspace</font>(0,tf)
+  vz = vz0 - gmoon*<font color="#0074D9">linspace</font>(0,tf)
+  z = z0 + vz0*<font color="#0074D9">linspace</font>(0,tf) - 0.5*gmoon*<font color="#0074D9">linspace</font>(0,tf)^2
+  eta = 1
+  uT = maxthrust/2
+  {upL upR uqL uqR urL urR} = maxthrustL/2
+
+<font color="red"><b>obj:</b></font>
+  <font color="#808080"><i># minimize tf using nlp</i></font>
+  <font color="#8A2BE2">minimize</font> m0-<font color="#0074D9">final</font>(m) <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#8A2BE2">@solveloop</font> Method=movavg, Paraml=3 0.95, Varl=uT upL upR uqL uqR urL urR
+  <font color="#8A2BE2">@solveloop</font> Method=bndobj
+</pre>
+</body>
+</html>

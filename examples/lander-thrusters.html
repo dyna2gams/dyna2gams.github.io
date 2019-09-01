@@ -1,0 +1,110 @@
+<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Planetary descent of a spacecraft (thrusters)</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Planetary descent of a spacecraft (thrusters)
+</pre>
+<p>
+  Model for the OCP of a planetary descent: attitude dynamics actuated by thrusters.
+<p>
+  Source: Dario Izzo (Nov 2012) - https://github.com/esa/SpaceAMPL
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  g0 = 9.81					<font color="#808080"><i># [m/s^2]	Earth gravity constant at sea level</i></font>
+  gmoon = 1.6229				<font color="#808080"><i># [m/s^2]	Moon gravity constant</i></font>
+  <font color="#808080"><i># Spacecraft</i></font>
+  R = 3						<font color="#808080"><i># [m]		Radius of the spacecraft (disc)</i></font>
+  Isp = 311					<font color="#808080"><i># [s]		Specific Impulse of the engine, Low Thrust = 2000s, Chemical =300s</i></font>
+  maxthrust = 44000				<font color="#808080"><i># [N]		Max Thrust (main engine)</i></font>
+  maxthrustL = 880				<font color="#808080"><i># [N]		Max Thrust (lateral engines)</i></font>
+  <font color="#808080"><i># Initial conditions</i></font>
+  x0 = 0					<font color="#808080"><i># [m]		Initial x</i></font>
+  z0 = 2300					<font color="#808080"><i># [m]		Initial z (height)</i></font>
+  vx0 = 150					<font color="#808080"><i># [m/s]		Initial velocity in x</i></font>
+  vz0 = -44					<font color="#808080"><i># [m/s]		Initial Velocity in z</i></font>
+  theta0 = -60*3.14159/180			<font color="#808080"><i># [rad]		Initial pitch</i></font>
+  omega0 = 0					<font color="#808080"><i># [rad/s]	Initial pitch rate</i></font>
+  m0 = 9472.06					<font color="#808080"><i># [kg]		Initial total mass	</i></font>
+  <font color="#808080"><i># Final conditions</i></font>
+  xn = 8900					<font color="#808080"><i># [m]		Final x position (used only for pin-point landing)</i></font>
+  zn = 10					<font color="#808080"><i># [m]		Final z position</i></font>
+  vxn = 0					<font color="#808080"><i># [m/s]		Final velocity x</i></font>
+  vzn = -2.5					<font color="#808080"><i># [m/s]		Final velocity z</i></font>
+  thetan = -16*3.14159/180			<font color="#808080"><i># [rad]		Final pitch angle</i></font>
+  omegan = 0.001				<font color="#808080"><i># [rad/s]	Final pitch rate</i></font>
+  <font color="#808080"><i># Other</i></font>
+  tn = (vz0 + <font color="#2ECC40">sqrt</font>(vz0*vz0 + 2*z0*gmoon))/gmoon <font color="#808080"><i># [s]		Guess for the final time</i></font>
+
+<font color="red"><b>var:</b></font>
+  tf
+
+<font color="red"><b>dyn:</b></font>
+  x z
+  vx vz
+  theta
+  omega
+  m
+  u1 uL uR
+
+<font color="red"><b>lim:</b></font>
+  1e-3 &lt;= tf &lt;= +<font color="#3D9970">inf</font>
+  -pi/2 &lt;= theta &lt;= pi/2
+  1 &lt;= m &lt;= m0
+  0 &lt;= u1 &lt;= maxthrust
+  0 &lt;= {uL uR} &lt;= maxthrustL
+
+<font color="red"><b>t=t0:</b></font>
+  x = x0
+  z = z0
+  vx = vx0
+  vz = vz0
+  theta = theta0
+  omega = omega0
+  m = m0
+
+<font color="red"><b>t=tf:</b></font>
+  <font color="#808080"><i># Un-comment the line below for pin-point landing</i></font>
+  <font color="#808080"><i># xn &lt;= x &lt;= +inf</i></font>
+  -<font color="#3D9970">inf</font> &lt;= z &lt;= zn
+  vzn &lt;= vz &lt;= +<font color="#3D9970">inf</font>
+  -<font color="#3D9970">inf</font> &lt;= vx &lt;= vxn
+  thetan &lt;= theta &lt;= pi/2
+
+<font color="red"><b>equ:</b></font>
+  x&acute; == vx
+  vx&acute; == (u1+uL+uR) * <font color="#2ECC40">sin</font>(theta) / m
+  z&acute; == vz
+  vz&acute; == (u1+uL+uR) * <font color="#2ECC40">cos</font>(theta) / m - gmoon
+  theta&acute; == omega
+  omega&acute; == (uR-uL) / m / R
+  m&acute; == -(u1+uR+uL) / (Isp*g0)
+
+<font color="red"><b>ini:</b></font>
+  tf = tn
+  m = m0
+
+<font color="red"><b>obj:</b></font>
+  <font color="#808080"><i># minimize tf using nlp</i></font>
+  <font color="#808080"><i># maximize final(m) using nlp</i></font>
+  <font color="#8A2BE2">minimize</font> m0-<font color="#0074D9">final</font>(m) <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#8A2BE2">@solveloop</font> Method=bndobj
+</pre>
+</body>
+</html>

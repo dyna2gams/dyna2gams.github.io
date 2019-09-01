@@ -1,0 +1,100 @@
+<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">The driver and the evader particles</h1>
+<pre>
+<font color="red"><b>rem:</b></font> The driver and the evader particles
+</pre>
+<p>
+  Time Optimization in Guidance by repulsion.
+<p>
+  The system includes two particles, the driver and the evader. The objective of the
+  control is to &ldquo;make the evader (\(u_e\)) passes some point \(u_f\)&rdquo;.
+<p>
+  The dynamics are in two-dimensional space, where \(u_d\) and \(u_e\) are positions of the
+  driver and evader, and \(v_d\) and \(v_e\) are velocities of them. Then, the dynamics are
+  given by relative interactions,
+<p>
+  \[
+  \dot v_d = -f_d(\|u_d - u_e\|) \ (u_d - u_e) - \nu_d v_d + \kappa(t) (u_d - u_e)^{\perp} \\
+  \dot u_d = -f_e(\|u_d - u_e\|) \ (u_d - u_e) - \nu_e v_e
+  \]
+<p>
+  for some interactions kernels \(f_d\) and \(f_e\). 
+<p>
+  We set the cost with three components: (a) closedness of the target, (b) final time and 
+  (c) regularization on control. Hence, we may define the cost:
+<p>
+  \[
+  J = 1 \|u_e(T)-u_f\|^2 + 0.1 T + 0.001 \int_0^T \|\kappa(t)\|^2 \mathrm{d}t
+  \]
+<p>
+  See: <a href="https://cmc.deusto.eus/dycon/">DyCon project</a>
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  nu_e = 2
+  nu_d = 2
+  uf{1:2} = {-1 1}
+  
+<font color="red"><b>var:</b></font>
+  tf
+
+<font color="red"><b>dyn:</b></font>
+  ud{1:2}			<font color="#808080"><i># States vectors for positions and velocities</i></font>
+  ue{1:2}
+  vd{1:2}
+  ve{1:2}
+  kappa				<font color="#808080"><i># Control</i></font>
+  J				<font color="#808080"><i># Criterion</i></font>
+
+<font color="red"><b>lim:</b></font>
+  0.1 &lt;= tf &lt;= 10
+
+<font color="red"><b>t=t0:</b></font>
+  ud{1:2} = {-3 0}
+  ue{1:2} = 0
+  vd{1:2} = 0
+  ve{1:2} = 0
+  J = 0
+
+<font color="red"><b>mac:</b></font>
+  @f_e2(x) (2/(&x))
+  @f_d2(x) (5.5/(&x)-10/<font color="#2ECC40">sqr</font>(&x)+2)
+
+<font color="red"><b>exp:</b></font>
+  ur{1:2} == ud{1:2}-ue{1:2}	<font color="#808080"><i># Relative position, driver - evader</i></font>
+
+<font color="red"><b>equ:</b></font>
+  ud{1:2}&acute; == vd{1:2}
+  ue{1:2}&acute; == ve{1:2}
+  vd{1:2}&acute; == -@f_d2(ur1*ur1+ur2*ur2)*ur{1:2} - nu_d*vd{1:2} + kappa*({-1 1})*ur{2:1}
+  ve{1:2}&acute; == -@f_e2(ur1*ur1+ur2*ur2)*ur{1:2} - nu_e*ve{1:2}
+  J&acute; == kappa*kappa
+
+<font color="red"><b>ini:</b></font>
+  tf = 5.1725
+  kappa = 1.5662
+  ud{1:2} = <font color="#0074D9">initial</font>(ud{1:2})
+  ue{1:2} = <font color="#0074D9">initial</font>(ue{1:2})
+  vd{1:2} = <font color="#0074D9">initial</font>(vd{1:2})
+  ve{1:2} = <font color="#0074D9">initial</font>(ve{1:2})
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#3D9970">sum</font>{1:2,<font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(ue{:})-uf{:})} + 0.1*tf + 0.001*<font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp
+</pre>
+</body>
+</html>

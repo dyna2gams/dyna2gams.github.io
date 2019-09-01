@@ -1,0 +1,90 @@
+<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Rotors imbalance suppression by optimal control</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Rotors imbalance suppression by optimal control
+</pre>
+<p>
+  Consider a rotor rotating around a fixed axis. Because of wear and damage, the mass
+  distribution is not homogeneous. This leads to dangerous vibrations in the rotation. A
+  prototypical example can be a wind turbine, affected by misalignment of the blades and/or
+  mass imbalance of the hub and blades [1].
+<p>
+  In order to compensate the imbalance, two balancing heads are mounted at the endpoints of
+  the axle, as in figure 1. Each balancing head is made of two masses free to rotate.
+<p>
+  Our goal is to determine the optimal movement of the balancing masses to minimize the
+  vibrations. Control theoretical techniques are employed. For further details, see [2].
+<p>
+  References:
+  <ol>
+  <li>M. Jeffrey, M. Melsheimer and J. Liersch,
+  <em>Method and system for determining an imbalance of a wind turbine rotor</em>,
+  September 11 2012. US Patent 8,261,599.
+  <li>M. Gnuffi, D. Pighin and N. Sakamoto,
+  <em>Rotors imbalance suppression by optimal control</em>,
+  Preprint.
+  <li>https://deustotech.github.io/DyCon-Blog//tutorial/wp02/P0005
+  </ol>
+<p>
+  See: <a href="https://cmc.deusto.eus/dycon/">DyCon project</a>
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  m1 = 1
+  m2 = 1
+  a = 1
+  b = 1
+  r1 = 1
+  r2 = 1
+  omega = 2000*(2*pi)/60
+  Fx = -2*m1*r1*omega^2
+  Fy = -2*m2*r2*omega^2
+  Nx = 0
+  Ny = 0
+  F1x = (b*Fx-Ny)/(a+b)
+  F1y = (b*Fy+Nx)/(a+b)
+  F2x = (a*Fx+Ny)/(a+b)
+  F2y = (a*Fy-Nx)/(a+b)
+  beta = 0.25*(2*omega^2)^(-2)	<font color="#808080"><i># alternatively omega^4*(1000/120)</i></font>
+  tf = 120
+
+<font color="red"><b>gms:</b></font>
+  <font color="#808080"><i># The conditions below must be fulfilled</i></font>
+  <font color="#3D9970">abort</font> $ (m{1:2}*r{1:2} &lt;= <font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqr</font>(F{1:2}x)+<font color="#2ECC40">sqr</font>(F{1:2}y))/2/<font color="#2ECC40">sqr</font>(omega)) "Condition {1:2} is not fulfilled";
+
+<font color="red"><b>dyn:</b></font>
+  Phi{1:4}	<font color="#808080"><i># states</i></font>
+  psi{1:4}	<font color="#808080"><i># control</i></font>
+  J
+
+<font color="red"><b>t=t0:</b></font>
+  Phi{1:4} = {0 pi 0 pi}	<font color="#808080"><i># alternatively {1 0.3 0.6 0.3}</i></font>
+  J = 0
+
+<font color="red"><b>equ:</b></font>
+  Phi{1:4}&acute; == psi{1:4}
+  J&acute; == 0.5*(\
+    <font color="#3D9970">sum</font>{1:4, <font color="#2ECC40">sqr</font>(psi{:})} +\
+    beta*(<font color="#2ECC40">sqr</font>(2*m1*r1*omega^2*<font color="#2ECC40">cos</font>(Phi2)*<font color="#2ECC40">cos</font>(Phi1)+F1x)+<font color="#2ECC40">sqr</font>(2*m1*r1*omega^2*<font color="#2ECC40">cos</font>(Phi2)*<font color="#2ECC40">sin</font>(Phi1)+F1y)) +\
+    beta*(<font color="#2ECC40">sqr</font>(2*m2*r2*omega^2*<font color="#2ECC40">cos</font>(Phi4)*<font color="#2ECC40">cos</font>(Phi3)+F2x)+<font color="#2ECC40">sqr</font>(2*m2*r2*omega^2*<font color="#2ECC40">cos</font>(Phi4)*<font color="#2ECC40">sin</font>(Phi3)+F2y)))
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp
+</pre>
+</body>
+</html>

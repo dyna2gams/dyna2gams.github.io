@@ -1,0 +1,83 @@
+<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">The Optimal control on the Kuramoto adaptative coupling model</h1>
+<pre>
+<font color="red"><b>rem:</b></font> The Optimal control on the Kuramoto adaptative coupling model
+</pre>
+<p>
+  The Kuramoto model describes the phases \(\theta_i\) of active oscillators, which is
+  described by the following dynamics:
+<p>
+  \[
+  \dot \theta_i = \omega_i + \frac{1}{N}\sum_{j=1}^N K_{ij} \sin(\theta_j-\theta_i),\quad i = 1,\dots,N.
+  \]
+<p>
+  Here the first constant terms \(w_i\) denote the natural oscillatory behaviors, and the
+  interactions are nonlinearly affected by the relative phases. The amplitude of interactions
+  is determined by the coupling strength, \(K_{ij}\).
+<p>
+  The control interface is on the coupling strength as follows:
+<p>
+  \[
+  \dot \theta_i(t) = \omega_i + \frac{u(t)}{N}\sum_{j=1}^N K_{ij} \sin(\theta_j(t)-\theta_i(t)),\quad i = 1,\dots,N.
+  \]
+<p>
+  This is a nonlinear version of bi-linear control problem for the Kuramoto interactions. The
+  idea is as follows;
+  <ul>
+  <li>There are \(N\) number of oscillators, oscillating with their own natural frequencies.
+  <li>We want to make a collective behavior using their own decision process. The interaction
+  is given by the Kuramoto model, or may follow other interaction rules. The network can be
+  given or flexible with control.
+  <li>The cost of control will be related to the collective dynamics we want, such as the
+  variance of frequencies or phases.
+  </ul>
+<p>
+  See: <a href="https://cmc.deusto.eus/dycon/">DyCon project</a>
+<p>
+<pre>
+<font color="red"><b>set:</b></font>
+  i = 1:5
+  <font color="#8A2BE2">alias</font>(j,i)
+
+<font color="red"><b>par:</b></font>
+  omega[i] = <font color="#2ECC40">normal</font>(0,0.1)	<font color="#808080"><i># natural frequencies of oscillators</i></font>
+  omega[i] = omega[i] - <font color="#3D9970">sum</font>(j,omega[j])/<font color="#3D9970">card</font>(j)
+  K[i,j] = 1			<font color="#808080"><i># the coupling network matrix</i></font>
+  tf = 5
+  
+<font color="red"><b>dyn:</b></font>
+  theta[i]			<font color="#808080"><i># phases of oscillators</i></font>
+  u
+  L
+
+<font color="red"><b>lim:</b></font>
+  -10 &lt;= u &lt;= 10
+
+<font color="red"><b>t=t0:</b></font>
+  theta[i] = <font color="#2ECC40">uniform</font>(-pi,pi)
+  L = 0
+
+<font color="red"><b>equ:</b></font>
+  theta&acute;[i] == omega[i] + u/<font color="#3D9970">card</font>(i)*<font color="#3D9970">sum</font>(j$(<font color="#3D9970">not</font> <font color="#2ECC40">sameas</font>(j,i)), <font color="#2ECC40">sin</font>(theta[j]-theta[i]))
+  L&acute; == u*u
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(<font color="#3D9970">sum</font>((i,j),<font color="#2ECC40">sqr</font>(100*<font color="#2ECC40">sin</font>(theta[i]-theta[j])))+L) <font color="#8A2BE2">using</font> nlp
+</pre>
+</body>
+</html>
