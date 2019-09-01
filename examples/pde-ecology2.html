@@ -1,0 +1,185 @@
+<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">An optimal control problem arised in ecology</h1>
+<pre>
+<font color="red"><b>rem:</b></font> An optimal control problem arised in ecology
+</pre>
+<p>
+  The following explanation is borrowed from [1].
+<p>
+  We are interested in optimal control problems subject to a class of diffusion-reaction
+  systems that describes the growth and spread of an introduced population of organisms
+<p>
+  \[
+  y_t - y_{xx} = f(y), \quad x\in \mathbb{R}, \quad t \in \mathbb{R}^+, \quad (\mathcal{S})
+  \]
+<p>
+  where
+<p>
+  \[
+  f(y)=a y(1-y)(\theta-y),
+  \]
+<p>
+  is the reaction term that represents local reactions, and \(y(t,x) : \mathbb{R}^+ \times
+  \mathbb{R} \rightarrow \mathbb{R}\) is the state of the system. Here \(a<0\) and \(\theta
+  \in [0,1]\) are two real parameters. State \(y\) represents the local population density.
+  The &ldquo;growth&rdquo; of \(y\) is subject to an Allee effect (described by the reaction term \(f\))
+  in addition to migration (described by the term \(y_{xx}\)). Allee effect exists for a wide
+  variety of reasons such as less efficient feeding at low densities and reduced effectiveness
+  of vigilance and anti-predator defenses. The value of \(|a|\) represents the reproductive
+  rate, and the parameter \(\theta \in (0,1)\) is the local critical density or Allee
+  threshold \(\theta\) that determines the sign (positive or negative) of the population
+  growth. Note that, in some literature, the parameter \(\theta\) (Allee threshold) has been
+  supposed to be a dynamic parameter that changes with respect to the evolution of the
+  species. Therefore, by means of biological control (e.g. importation of predators),
+  environmental control (e.g. food supply), modern technology (e.g. DNA manipulations), the
+  birth rate and the Allee threshold should be able to be modified. That is to say, we can
+  consider the parameters \(a\) and \(\theta\) as the control of the system \(S\). Note that
+  the reaction term \(f\) has three zeros \(0\), \(\theta\), and \(1\), which correspond to
+  three constant solutions of the system \(\mathcal{S}\). For system \(\mathcal{S}\), there is
+  a propagation phenomenon: one of the state \(y=0\), or \(y=1\), or \(y=\theta\), propagates
+  in the space. This phenomenon is generally described by <em>traveling wave solution</em> of
+  the form,
+<p>
+  \[
+  y(t,x) = Y(x - ct), \quad x \in \mathbb{R} \quad (\mathcal{F})
+  \]
+<p>
+  which connects two of the three constant solutions of the system \(\mathcal{S}\). Here the
+  constant \(c \in \mathbb{R}\) is the wave speed, and \(Y\) is called the wave profile.
+  Typically, the wave speed and the wave profile depend on the parameters \(a\) and \(\theta\).
+<p>
+  Given a bounded domain \(\Omega \subset \mathbb{R}\), our optimal problem is then to choose
+  optimal (control) parameters \(a\) and \(\theta\) such that the system \(\mathcal{S}\) goes
+  from a given initial state \(y(0,x) = y_0(x) \in [0,1]\), \(x \in \Omega\) to a final state
+  \(y(T,x)\), \(x\in \Omega\) which minimizes the distance between this final state and an
+  expected traveling wave solution \(y^d\) of the form \(\mathcal{F}\).
+<p>
+  We consider the following optimal control problem.
+<p>
+  Let \(\Omega=[-L,L]\subset\mathbb{{R}}\) and \(T\in\mathbb{{R}^{+}}\) be the given domain
+  and final time, respectively. Find \(u=(a,\theta)\) that minimizes the cost functional
+<p>
+  \[
+  J(u)=\int_{\Omega}|y(T,x)-y^{d}(x)|^{2}\mathrm{d}x
+  +K\int_{0}^{T}|\dot{{a}}(t)|^{2}+|\dot{{\theta}}(t)|^{2}\mathrm{d}t,
+  \]
+<p>
+  such that the state \(y\) satisfies
+<p>
+  \[
+  y_{t}(t,x)-\triangle y(t,x)=f(x,u(t)),\quad (t,x)\in[0,T]\times\Omega, \\
+  \partial_{x}y(t,x)=0,\quad t\in[0,T],\quad x\in\partial\Omega,
+  \]
+<p>
+  where \(f(x,u(t))=a(t)y(t,x)(1-y(t,x))(\theta(t)-y(t,x))\), and the control \(u=(a,\theta)\)
+  satisfies \(a(t) \in[a_{min},a_{max}],\ \theta(t)\in[\theta_{min},\theta_{max}],\ t\in[0,T]\),
+  where \(y^{d}\) is a desired traveling wave solution of the form (\\mathcal{F}\),
+  \(a_{min},a_{max}\) are non positive constants, and \(\theta_{max},\theta_{min}\) are
+  constants between \(0\) and \(1\).
+<p>
+  Straightforward solving approach.
+<p>
+  Reference:
+  <ol>
+  <li>J. Zhu and E. Zuazua,
+  <em>Solving an optimal control problem arised in ecology with AMPL</em>,
+  https://cmc.deusto.eus/optimal-control-ecology-ampl/
+  </ol>
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">substitute-symbols</font> = A0&gt;AA0 | Af&gt;AAf
+  <font color="#39CCCC">model-option</font> = optfile=1
+  conopt.opt &lt; Rtnwmi=4e-8
+
+<font color="red"><b>par:</b></font>
+  L = 30
+  tf = 50
+  <font color="#808080"><i># Parameters of control problem</i></font>
+  a_max = 1
+  a_min = -1
+  tet_max = 1
+  tet_min = -1
+  tet0 = 0.7
+  tetf = 0.4
+  a0 = -1
+  af = -0.2
+  Ktet = 0.01
+  Ka = 0.01
+  <font color="#808080"><i># Parameters of desired solution</i></font>
+  Af = <font color="#2ECC40">sqrt</font>(-af)
+  cf = -Af*<font color="#2ECC40">sqrt</font>(2)*(1/2-tetf)
+
+<font color="red"><b>set:</b></font>
+  x = x0:x32
+  xl(x) = x0
+  xx(x) = x1:x31
+  xr(x) = x32
+
+<font color="red"><b>par:</b></font>
+  DeltaX = 2*L/(<font color="#3D9970">card</font>(x)-1)
+  TickX[x] = DeltaX*(<font color="#3D9970">ord</font>(x)-1)-L
+  y0[x] = (tet0-0.01)$(TickX[x]&gt;=0)
+  yd[x] = <font color="#2ECC40">exp</font>(Af*(TickX[x]-cf*tf)/<font color="#2ECC40">sqrt</font>(2))/(1+<font color="#2ECC40">exp</font>(Af*(TickX[x]-cf*tf)/<font color="#2ECC40">sqrt</font>(2)))
+
+<font color="red"><b>dyn:</b></font>
+  y[x]
+  a
+  tet
+  J
+
+<font color="red"><b>lim:</b></font>
+  0 &lt;= y[x] &lt;= 1
+  a_min &lt;= a &lt;= a_max
+  tet_min &lt;= tet &lt;= tet_max
+
+<font color="red"><b>t=t0:</b></font>
+  y[x] = y0[x]
+  tet = tet0
+  a = a0
+  J = 0
+
+<font color="red"><b>t=tf:</b></font>
+  tet = tetf
+  a = af
+
+<font color="red"><b>equ:</b></font>
+  $xx(x).. y&acute;[x] == (y[x-1]-2*y[x]+y[x+1])/<font color="#2ECC40">sqr</font>(DeltaX) + a*y[x]*(1-y[x])*(tet-y[x])
+  $(xl(x)<font color="#8A2BE2">$NT0</font>).. y[x] == y[x+1]
+  $(xr(x)<font color="#8A2BE2">$NT0</font>).. y[x] == y[x-1]
+  J&acute; == Ktet*<font color="#2ECC40">sqr</font>(<font color="#0074D9">slope</font>(tet)) + Ka*<font color="#2ECC40">sqr</font>(<font color="#0074D9">slope</font>(a))
+  a :: <font color="#7FDBFF">spline3</font>
+  tet :: <font color="#7FDBFF">spline3</font>
+
+<font color="red"><b>ini:</b></font>
+  tet = <font color="#0074D9">linspace</font>(tet0,tetf)
+  a = <font color="#0074D9">linspace</font>(a0,af)
+  y[x] = <font color="#0074D9">linspace</font>(y0[x],yd[x])
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> DeltaX*<font color="#3D9970">sum</font>(x,(0.5+0.5$xx(x))*<font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(y[x])-yd[x]))+<font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp <font color="#8A2BE2">with</font> conopt
+
+<font color="red"><b>gms:</b></font>
+  <font color="#8A2BE2">@solveloop</font> Method=movavg, Paraml=3 0.95, Varl=y[x], Target=infes, Maxiter=3
+  <font color="#8A2BE2">@solveloop</font> Method=bndobj
+
+<font color="red"><b>gpl:</b></font>
+  <font color="#8A2BE2">@splotZXT</font> y, TickX, "OCP in Ecology", "y[x,t]", "x"
+</pre>
+</body>
+</html>

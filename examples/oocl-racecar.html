@@ -1,0 +1,94 @@
+<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Racecar problem</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Racecar problem
+</pre>
+<p>
+  Source: OpenOCL - Open Optimal Control Library.
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  m = 1			<font color="#808080"><i># mass [kg]</i></font>
+  A = 1			<font color="#808080"><i># section area car [m^2]</i></font>
+  cd = 0.35		<font color="#808080"><i># drag coefficient [mini cooper 2008]</i></font>
+  rho = 1.23		<font color="#808080"><i># air density [kg/m^3]</i></font>
+  Vmax = 1		<font color="#808080"><i># max velocity [m/s]</i></font>
+  Fmax = 1		<font color="#808080"><i># maximal force on the car [N]</i></font>
+  road_bound = 0.4	<font color="#808080"><i># lane road relative to the middle lane [m]</i></font>
+  
+<font color="red"><b>tpa:</b></font>
+  x_road = <font color="#0074D9">linspace</font>(0,2*pi)
+  y_center = <font color="#2ECC40">sin</font>(x_road)
+
+<font color="red"><b>var:</b></font>
+  tf
+
+<font color="red"><b>dyn:</b></font>
+  <font color="#808080"><i># states</i></font>
+  x		<font color="#808080"><i># position x [m]</i></font>
+  vx		<font color="#808080"><i># velocity vx [m/s]</i></font>
+  y		<font color="#808080"><i># position y [m]</i></font>
+  vy		<font color="#808080"><i># velocity vy [m/s]</i></font>
+  Fx		<font color="#808080"><i># Force x [N]</i></font>
+  Fy		<font color="#808080"><i># Force y [N]</i></font>
+  <font color="#808080"><i># controls</i></font>
+  dFx		<font color="#808080"><i># Rate of force x [N/s]</i></font>
+  dFy		<font color="#808080"><i># Rate of force y [N/s]</i></font>
+
+<font color="red"><b>lim:</b></font>
+  0.1 &lt;= tf &lt;= 20
+  -1 &lt;= dFx &lt;= 1
+  -1 &lt;= dFy &lt;= 1
+
+<font color="red"><b>t=t0:</b></font>
+  x = 0
+  vx = 0
+  y = 0
+  vy = 0
+  
+<font color="red"><b>t=tf:</b></font>
+  x = 2*pi
+  vx = 0
+  y = 0
+  vy = 0
+
+<font color="red"><b>equ:</b></font>
+  x&acute; == vx
+  vx&acute; == 1/m*Fx - 0.5*rho*cd*A*<font color="#2ECC40">sqr</font>(vx)
+  y&acute; == vy
+  vy&acute; == 1/m*Fy - 0.5*rho*cd*A*<font color="#2ECC40">sqr</font>(vy)			<font color="#808080"><i># sqr(vy) instead of sqr(vx)</i></font>
+  Fx&acute; == dFx
+  Fy&acute; == dFy
+  <font color="#2ECC40">sqr</font>(vx) + <font color="#2ECC40">sqr</font>(vy) &lt;= Vmax^2				<font color="#808080"><i># speed constraint</i></font>
+  <font color="#2ECC40">sqr</font>(Fx) + <font color="#2ECC40">sqr</font>(Fy) &lt;= Fmax^2				<font color="#808080"><i># force constraint</i></font>
+  -0.5*road_bound &lt;= y - <font color="#2ECC40">sin</font>(x) &lt;= 0.5*road_bound	<font color="#808080"><i># road bounds</i></font>
+
+<font color="red"><b>ini:</b></font>
+  x = x_road
+  y = y_center
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> tf <font color="#8A2BE2">using</font> nlp
+  
+<font color="red"><b>gms:</b></font>
+  <font color="#8A2BE2">@tpa</font> ylo; ylo = <font color="#2ECC40">sin</font>(x.l) - 0.5*road_bound;
+  <font color="#8A2BE2">@tpa</font> yup; yup = <font color="#2ECC40">sin</font>(x.l) + 0.5*road_bound;
+  <font color="#8A2BE2">@csvsave</font> ylo yup
+</pre>
+</body>
+</html>

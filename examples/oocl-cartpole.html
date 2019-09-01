@@ -1,0 +1,86 @@
+<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Cartpole problem</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Cartpole problem
+</pre>
+<p>
+  Source: OpenOCL - Open Optimal Control Library.
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  g = 9.8
+  cm = 1
+  pm = 0.1
+  phl = 0.5	<font color="#808080"><i># pole half length</i></font>
+  m = cm+pm
+  pml = pm*phl	<font color="#808080"><i># pole mass length</i></font>
+  p0 = 0
+  v0 = 0
+  theta0 = pi
+  omega0 = 0
+
+<font color="red"><b>var:</b></font>
+  tf
+
+<font color="red"><b>dyn:</b></font>
+  p		<font color="#808080"><i># states</i></font>
+  theta
+  v
+  omega
+  F		<font color="#808080"><i># control</i></font>
+  
+<font color="red"><b>lim:</b></font>
+  0.1 &lt;= tf &lt;= 10
+  -5 &lt;= p &lt;= 5
+  -2*pi &lt;= theta &lt;= 2*pi
+  -12 &lt;= F &lt;= 12
+
+<font color="red"><b>t=t0:</b></font>
+  p = p0
+  v = v0
+  theta = theta0
+  omega = omega0
+
+<font color="red"><b>t=tf:</b></font>
+  p = 0
+  v = 0
+  theta = 0
+  omega = 0
+
+<font color="red"><b>exp:</b></font>
+  ctheta == <font color="#2ECC40">cos</font>(theta)
+  stheta == <font color="#2ECC40">sin</font>(theta)
+  domega == (g*stheta + ctheta*(-F-pml*<font color="#2ECC40">sqr</font>(omega)*stheta)/m) / (phl*(4/3 - pm*<font color="#2ECC40">sqr</font>(ctheta)/m))
+
+<font color="red"><b>equ:</b></font>
+  p&acute; == v
+  theta&acute; == omega
+  v&acute; == (F + pml*(<font color="#2ECC40">sqr</font>(omega)*stheta-domega*ctheta)) / m
+  omega&acute; == domega
+
+<font color="red"><b>ini:</b></font>
+  p = <font color="#0074D9">linspace</font>(p0,0)
+  v = <font color="#0074D9">linspace</font>(v0,0)
+  theta = <font color="#0074D9">linspace</font>(theta0,0)
+  omega = <font color="#0074D9">linspace</font>(omega0,0)
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> tf <font color="#8A2BE2">using</font> nlp
+</pre>
+</body>
+</html>

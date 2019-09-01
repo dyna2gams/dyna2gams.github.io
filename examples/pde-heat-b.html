@@ -1,0 +1,96 @@
+<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Heat Diffusion Process with Inequality</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Heat Diffusion Process with Inequality
+</pre>
+<p>
+  We seek \(z(x,t)\) over \(x \in [0,\pi]\) and \(t \in [0,5]\) such that
+<p>
+  \[
+  \min_{z_0,z_n} \quad \int_0^{5} \Big( \big( \frac{1}{2}\delta + q_1 \big) z^2_0 + \sum_{k=1}^{n-1} \delta z_k^2 + \big( \frac{1}{2}\delta + q_2 \big) z^2_n \Big) \ \mathrm{d}t
+  \]
+<p>
+  subject to
+<p>
+  \[
+  \dot{z}_k = \frac{1}{\delta^2} \left( z_{k-1} - 2 z_k + z_{k+1} \right) \qquad k = 1, \dots, n-1 \\
+  g_k(t) \leq z_k(t) \qquad k = 0, \dots, n \\
+  z_k(0) = 0 \qquad k = 0, \dots, n
+  \]
+<p>
+  where
+<p>
+  \[
+  \delta = \pi/n \\
+  g_k(t) = c \big( \sin(k\delta) \sin(\frac{\pi t}{5}) - a \big) - b \\
+  z_k(t) = z(k \delta,t) \qquad k = 0, \dots, n
+  \]
+<p>
+  Reference:
+  <ol>
+  <li>J.T. Betts,
+  <em>Practical Methods for Optimal Control and Estimation Using Nonlinear Programming: Second Edition</em>,
+  Advances in Design and Control, Society for Industrial and Applied Mathematics, 2010.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>set:</b></font>
+  x = x0:x20
+  xl(x) = x0
+  xx(x) = x1:x19
+  xr(x) = x20
+
+<font color="red"><b>par:</b></font>
+  a = 0.5
+  b = 0.2
+  c = 1
+  q1 = 1e-3
+  q2 = 1e-3
+  DeltaX = pi/(<font color="#3D9970">card</font>(x)-1)
+  TickX[x] = DeltaX*(<font color="#3D9970">ord</font>(x)-1)
+  tf = 5
+
+<font color="red"><b>dyn:</b></font>
+  z[x]
+  J
+
+<font color="red"><b>t=t0:</b></font>
+  z[x] = 0
+  J = 0
+
+<font color="red"><b>exp:</b></font>
+  g == c*(<font color="#2ECC40">sin</font>(TickX[x])*<font color="#2ECC40">sin</font>(pi*<font color="#0074D9">Time</font>/5)-a) - b
+
+<font color="red"><b>equ:</b></font>
+  $xx(x).. z&acute;[x] == (z[x-1] - 2*z[x] + z[x+1]) / <font color="#2ECC40">sqr</font>(DeltaX)
+  z[x] &gt;= g
+  J&acute; == <font color="#3D9970">sum</font>(x,((0.5*DeltaX+q1)$xl(x)+DeltaX$xx(x)+(0.5*DeltaX+q2)$xr(x))*<font color="#2ECC40">sqr</font>(z[x]))
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#8A2BE2">@solveloop</font> Method=bndobj
+  <font color="#8A2BE2">@solveloop</font> Method=movavg, Paraml=3 0.95, Varl=z[x], Target=infes, Maxiter=3
+  <font color="#8A2BE2">@solveloop</font> Method=bndobj
+
+<font color="red"><b>gpl:</b></font>
+  <font color="#8A2BE2">@splotZXT</font> z, TickX, "<font color="#FF4500">@TITLE@</font>", "z[x,t]", "x"
+</pre>
+</body>
+</html>

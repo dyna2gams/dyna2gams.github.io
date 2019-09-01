@@ -1,0 +1,76 @@
+<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Ball and beam problem</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Ball and beam problem
+</pre>
+<p>
+  Source: OpenOCL - Open Optimal Control Library.
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">substitute-symbol</font> = R&gt;RR
+
+<font color="red"><b>par:</b></font>
+  r_b = 1			<font color="#808080"><i># beam length [m]</i></font>
+  theta_b = <font color="#0074D9">deg2rad</font>(30)		<font color="#808080"><i># max angle [deg]</i></font>
+  dtheta_b = <font color="#0074D9">deg2rad</font>(50)	<font color="#808080"><i># max angular speed [deg/s]</i></font>
+  tau_b = 20			<font color="#808080"><i># bound torque [Nm]</i></font>
+  L = 1				<font color="#808080"><i># length of beam [m]</i></font>
+  I = 0.5			<font color="#808080"><i># Inertia beam</i></font>
+  J = 25e-3			<font color="#808080"><i># Inertia ball</i></font>
+  m = 2				<font color="#808080"><i># mass ball</i></font>
+  R = 0.05			<font color="#808080"><i># radius ball</i></font>
+  g = 9.81			<font color="#808080"><i># gravity</i></font>
+  tf = 5
+
+<font color="red"><b>dyn:</b></font>
+  r dr theta dtheta	<font color="#808080"><i># states</i></font>
+  tau			<font color="#808080"><i># control</i></font>
+  JJ			<font color="#808080"><i># criterion</i></font>
+
+<font color="red"><b>lim:</b></font>
+  -r_b &lt;= r &lt;= r_b
+  -theta_b &lt;= theta &lt;= theta_b
+  -dtheta_b &lt;= dtheta &lt;= dtheta_b
+  -tau_b &lt;= tau &lt;= tau_b
+
+<font color="red"><b>t=t0:</b></font>
+  r = -0.8
+  dr = 0.3
+  theta = <font color="#0074D9">deg2rad</font>(5)
+  dtheta = 0
+  JJ = 0
+
+<font color="red"><b>t=tf:</b></font>
+  r = 0
+  dr = 0
+  theta = 0
+  dtheta = 0
+
+<font color="red"><b>equ:</b></font>
+  theta&acute; == dtheta
+  dtheta&acute; == (tau - m*g*r*<font color="#2ECC40">cos</font>(theta) - 2*m*r*dr*dtheta) / (I + m*<font color="#2ECC40">sqr</font>(r))
+  r&acute; == dr
+  dr&acute; == (-m*g*<font color="#2ECC40">sin</font>(theta) + m*r*<font color="#2ECC40">sqr</font>(dtheta)) / (m + J/R^2)
+  JJ&acute; == <font color="#2ECC40">sqr</font>(theta) + <font color="#2ECC40">sqr</font>(dtheta) + <font color="#2ECC40">sqr</font>(r) + <font color="#2ECC40">sqr</font>(dr) + <font color="#2ECC40">sqr</font>(tau)
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(JJ) <font color="#8A2BE2">using</font> nlp
+</pre>
+</body>
+</html>
