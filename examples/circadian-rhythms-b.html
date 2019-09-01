@@ -1,0 +1,145 @@
+<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Control of the Circadian Rhythms</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Control of the Circadian Rhythms
+</pre>
+<p>
+  Circadian rhythms governed by the oscillating expression of a set of genes based on feedback regulation by their
+  products have become an important issue in biology and medicine.  Here, we study a circadian oscillator model of
+  the central clock mechanism for the fruit fly Drosophila and show how model-based optimal control allows for
+  optimal phase resetting, design of chronomodulated pulse-stimuli schemes for achieving circadian rhythm restoration
+  in mutants and optimal phase synchronization between the clock and its environment.
+<p>
+  References:
+  <ol>
+  <li>A. Goldbeter,
+  <em>Computational approaches to cellular rhythms</em>,
+  Nature, 420:238-245, 2002.
+  <li>J.C. Leloup and A. Goldbeter,
+  <em>A model for circadian rhythms in Drosophila incorporating the formation of a complex between PER and TIM proteins</em>,
+  Journal of Biological Rhythms, 13:70-87, 1998.
+  <li>O.S. Shaik, S. Sager, O. Slaby and D. Lebiedz,
+  <em>Phase tracking and restoration of circadian rhythms by model-based optimal control</em>,
+  IET Systems Biology, 2:16-23, 2008.
+  <li>O. Slaby, S. Sager, O.S. Shaik and D. Lebiedz,
+  <em>Optimal control of self-organized dynamics in cellular signal transduction</em>,
+  Mathematical and Computer Modelling of Dynamical Systems, 13:487-502, 2007.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">substitute-symbol</font> = <font color="#0074D9">n</font>&gt;nnn
+
+<font color="red"><b>par:</b></font>
+  vsP = 1.1
+  vsT = 1
+  vmP = 0.7
+  vmT = 0.7
+  KmP = 0.2
+  KmT = 0.2
+  ksP = 0.9
+  ksT = 0.9
+  vdP = 2
+  vdT = 1.8532
+  k1 = 0.6
+  k2 = 0.2
+  k3 = 1.2
+  k4 = 0.6
+  KiP = 1
+  KiT = 1
+  KdP = 0.2
+  KdT = 0.2
+  <font color="#0074D9">n</font> = 4
+  kd = 0.01
+  kdC = 0.01
+  kdN = 0.01
+  v1P = 8
+  v1T = 8
+  v2P = 1
+  v2T = 1
+  v3P = 8
+  v3T = 8
+  v4P = 1
+  v4T = 1
+  K4T = 2
+  K4P = 2
+  K3T = 2
+  K3P = 2
+  K2T = 2
+  K2P = 2
+  K1T = 2
+  K1P = 2
+  w = 100
+  tf = 72
+
+<font color="red"><b>dyn:</b></font>
+  {x y}MP {x y}P0 {x y}P1 {x y}P2 {x y}MT {x y}T0 {x y}T1 {x y}T2 {x y}C {x y}CN
+  u{x y}
+  J
+
+<font color="red"><b>lim:</b></font>
+  0 &lt;= {x y}CN &lt;= +<font color="#3D9970">inf</font>
+  1 &lt;= ux &lt;= 1
+  1 &lt;= uy &lt;= 3
+
+<font color="red"><b>t=t0:</b></font>
+  {xMP xP0 xP1 xP2 xMT xT0 xT1 xT2 xC xCN} = {1.50 0.42 0.36 0.23 1.22 0.33 0.29 0.19 0.14 0.62}
+  {yMP yP0 yP1 yP2 yMT yT0 yT1 yT2 yC yCN} = {8.06e-2 4.78e-2 9.37e-2 1.75e-1 1.94e-2 8.07e-3 1.51e-2 3.97e-2 4.28e-1 1.99}
+  J = 0
+
+<font color="red"><b>exp:</b></font>
+  {x y}MPdot == vsP*KiP^<font color="#0074D9">n</font>/(KiP^<font color="#0074D9">n</font>+{x y}CN^<font color="#0074D9">n</font>) - vmP*{x y}MP/(KmP+{x y}MP) - kd*{x y}MP
+  {x y}P0dot == ksP*{x y}MP - v1P*{x y}P0/(K1P+{x y}P0) + v2P*{x y}P1/(K2P+{x y}P1) - kd*{x y}P0
+  {x y}P1dot == v1P*{x y}P0/(K1P+{x y}P0) - v2P*{x y}P1/(K2P+{x y}P1) - v3P*{x y}P1/(K3P+{x y}P1) + v4P*{x y}P2/(K4P+{x y}P2) - kd*{x y}P1
+  {x y}P2dot == v3P*{x y}P1/(K3P+{x y}P1) - v4P*{x y}P2/(K4P+{x y}P2) - k3*{x y}P2*{x y}T2 + k4*{x y}C - vdP*{x y}P2/(KdP+{x y}P2) - kd*{x y}P2
+  {x y}MTdot == vsT*KiT^<font color="#0074D9">n</font>/(KiT^<font color="#0074D9">n</font>+{x y}CN^<font color="#0074D9">n</font>) - vmT*{x y}MT/(KmT+{x y}MT) - kd*{x y}MT
+  {x y}T0dot == ksT*{x y}MT - v1T*{x y}T0/(K1T+{x y}T0) + v2T*{x y}T1/(K2T+{x y}T1) - kd*{x y}T0
+  {x y}T1dot == v1T*{x y}T0/(K1T+{x y}T0) - v2T*{x y}T1/(K2T+{x y}T1) - v3T*{x y}T1/(K3T+{x y}T1) + v4T*{x y}T2/(K4T+{x y}T2) - kd*{x y}T1
+  {x y}T2dot == v3T*{x y}T1/(K3T+{x y}T1) - v4T*{x y}T2/(K4T+{x y}T2) - k3*{x y}P2*{x y}T2 + k4*{x y}C - u{x y}*vdT*{x y}T2/(KdT+{x y}T2) - kd*{x y}T2
+  {x y}Cdot  == k3*{x y}P2*{x y}T2 - k4*{x y}C - K1*{x y}C + k2*{x y}CN - kdC*{x y}C
+  {x y}CNdot == k1*{x y}C - k2*{x y}CN - kdN*{x y}CN
+
+<font color="red"><b>equ:</b></font>
+  {x y}MP&acute; == {x y}MPdot
+  {x y}P0&acute; == {x y}P0dot
+  {x y}P1&acute; == {x y}P1dot
+  {x y}P2&acute; == {x y}P2dot
+  {x y}MT&acute; == {x y}MTdot
+  {x y}T0&acute; == {x y}T0dot
+  {x y}T1&acute; == {x y}T1dot
+  {x y}T2&acute; == {x y}T2dot
+  {x y}C&acute;  == {x y}Cdot
+  {x y}CN&acute; == {x y}CNdot
+  J&acute; == <font color="#2ECC40">sqr</font>(yMP-xMP)+<font color="#2ECC40">sqr</font>(yP0-xP0)+<font color="#2ECC40">sqr</font>(yP1-xP1)+<font color="#2ECC40">sqr</font>(yP2-xP2)+<font color="#2ECC40">sqr</font>(yMT-xMT)+<font color="#2ECC40">sqr</font>(yT0-xT0)+<font color="#2ECC40">sqr</font>(yT1-xT1)+<font color="#2ECC40">sqr</font>(yT2-xT2)+<font color="#2ECC40">sqr</font>(yC-xC)+<font color="#2ECC40">sqr</font>(yCN-xCN)
+
+<font color="red"><b>ini:</b></font>
+  {xMP xP0 xP1 xP2 xMT xT0 xT1 xT2 xC xCN} = {1.50 0.42 0.36 0.23 1.22 0.33 0.29 0.19 0.14 0.62}
+  {yMP yP0 yP1 yP2 yMT yT0 yT1 yT2 yC yCN} = {8.06e-2 4.78e-2 9.37e-2 1.75e-1 1.94e-2 8.07e-3 1.51e-2 3.97e-2 4.28e-1 1.99}
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> w*(\
+    <font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(yMP)-<font color="#0074D9">final</font>(xMP))+<font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(yP0)-<font color="#0074D9">final</font>(xP0))+<font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(yP1)-<font color="#0074D9">final</font>(xP1))+<font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(yP2)-<font color="#0074D9">final</font>(xP2))+<font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(yMT)-<font color="#0074D9">final</font>(xMT))+\
+    <font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(yT0)-<font color="#0074D9">final</font>(xT0))+<font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(yT1)-<font color="#0074D9">final</font>(xT1))+<font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(yT2)-<font color="#0074D9">final</font>(xT2))+<font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(yC )-<font color="#0074D9">final</font>(xC ))+<font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(yCN)-<font color="#0074D9">final</font>(xCN))+\
+    <font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(yMPdot)-<font color="#0074D9">final</font>(xMPdot))+<font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(yP0dot)-<font color="#0074D9">final</font>(xP0dot))+<font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(yP1dot)-<font color="#0074D9">final</font>(xP1dot))+<font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(yP2dot)-<font color="#0074D9">final</font>(xP2dot))+<font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(yMTdot)-<font color="#0074D9">final</font>(xMTdot))+\
+    <font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(yT0dot)-<font color="#0074D9">final</font>(xT0dot))+<font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(yT1dot)-<font color="#0074D9">final</font>(xT1dot))+<font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(yT2dot)-<font color="#0074D9">final</font>(xT2dot))+<font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(yCdot) -<font color="#0074D9">final</font>(xCdot)) +<font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(yCNdot)-<font color="#0074D9">final</font>(xCNdot))\
+    )+<font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp
+
+
+</pre>
+</body>
+</html>

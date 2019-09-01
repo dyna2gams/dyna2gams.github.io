@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -24,7 +24,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   \[\min \int_0^T (x^2(t) + \dot x^2(t)) \ \mathrm{d}t; \quad \dot x(t) = u(t) \in [-1,1].\]
 <p>
   The difference with Fuller&rsquo;s problem is that the cost function includes a
-  penalization of the "speed" \(\ddot x(t)\). We observe in the solution the 
+  penalization of the &ldquo;speed&rdquo; \(\ddot x(t)\). We observe in the solution the
   occurrence of a singular arc, the optimal control being of the form
   bang (-1) - singular.
 <p>
@@ -33,17 +33,19 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   <li>G.M. Aly,
   <em>The computation of optimal singular control</em>,
   International Journal of Control, 28 (5):681-688, 1978.
-  <li>S. Aronna, F.J. Bonnans, and P. Martinon,
+  <li>S. Aronna, F.J. Bonnans and P. Martinon,
   <em>A well-posed shooting algorithm for optimal control problems with singular arcs</em>,
-  J. Optim. Theory Appl., 2013. Online First, Jan. 2013.
+  Journal of Optimization Theory and Applications, 2013. Online First, January 2013.
   </ol>
 <p>
-  See <a href="https://project.inria.fr/bocop/regulator/">BOCOP - The optimal control solver</a> 
+  See: <a href="https://project.inria.fr/bocop/regulator/">BOCOP - The optimal control solver</a>.
 <p>
 <pre>
-<font color="red"><b>par:</b></font> tf = 5
+<font color="red"><b>par:</b></font>
+  tf = 5
 
-<font color="red"><b>dyn:</b></font> x1 x2 u j
+<font color="red"><b>dyn:</b></font>
+  x1 x2 u j
 
 <font color="red"><b>lim:</b></font>
   -1 &lt;= u &lt;= 1

@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -20,11 +20,19 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 </pre>
 <p>
   This batch reactor problem describes the consecutive reaction of some
-  substance A via substance B into a desired product C.
-  The system is interacted with via the control function u(t) which stands
-  for the temperature. The goal is to produce as much of substance B 
-  (which can then be converted into product C) as possible within the
-  time limit.
+  substance A via substance B into a desired product C. The system is
+  interacted with via the control function \(u(t)\) which stands for
+  the temperature. The goal is to produce as much of substance B (which
+  can then be converted into product C) as possible within the time
+  limit.
+<p>
+  Reference:
+  <ol>
+  <li>J.G. Renfro, A.M. Morshedi, O.A. Osbjornsen,
+  <em>Simultaneous optimization and solution of systems described by
+  differential/algebraic equations</em>,
+  Computer and Chemical Engineering, 11:503-517, 1987.
+  </ol>
 <p>
   See: <a href="https://mintoc.de/index.php/Batch_reactor">mintoc.de</a>
 <p>
@@ -38,29 +46,29 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   x1  <font color="#808080"><i># represent the concentration of component A</i></font>
   x2  <font color="#808080"><i># represent the concentration of component B</i></font>
   u   <font color="#808080"><i># the temperature of reactor (control variable)</i></font>
-  
+
 <font color="red"><b>lim:</b></font>
   0 &lt;= tf &lt;= 1
   298 &lt;= u &lt;= 398
-  
+
 <font color="red"><b>t=t0:</b></font>
   x1 = 1
   x2 = 0
-  
+
 <font color="red"><b>ini:</b></font>
   tf = 1
   x1 = 0
   x2 = 0
   u = 350
-  
+
 <font color="red"><b>exp:</b></font>
   k1 == 4000 * <font color="#2ECC40">exp</font>(-2500/u)
   k2 == 620000 * <font color="#2ECC40">exp</font>(-5000/u)
-  
+
 <font color="red"><b>equ:</b></font>
   x1&acute; == -k1*x1*x1
   x2&acute; == k1*x1*x1 - k2*x2
-  
+
 <font color="red"><b>obj:</b></font>
   <font color="#8A2BE2">maximize</font> <font color="#0074D9">final</font>(x2) <font color="#8A2BE2">using</font> nlp
 </pre>

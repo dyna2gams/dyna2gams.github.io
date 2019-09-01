@@ -1,0 +1,155 @@
+<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Atmospheric entry problem</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Atmospheric entry problem
+</pre>
+<p>
+  Rotating Earth - Attitude Rate Controls
+<p>
+  Source: Alejandro Gonzalez Puerta (Nov 2015) - https://github.com/esa/SpaceAMPL
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">substitute-symbols</font> = d&gt;dd | h&gt;hh | <font color="#0074D9">time</font>&gt;time_
+
+<font color="red"><b>par:</b></font>
+  <font color="#808080"><i># Constants</i></font>
+  mu_E		= 3.986e14			<font color="#808080"><i># [m^3/s^2]	Earth Gravitational Parameter</i></font>
+  <font color="#808080"><i># Non-Dimentional Units</i></font>
+  length	= 6378136			<font color="#808080"><i># [m]		Earth Radius</i></font>
+  <font color="#0074D9">time</font>		= 2*pi*<font color="#2ECC40">sqrt</font>(length^3/mu_E)	<font color="#808080"><i># [s]		Time</i></font>
+  velocity	= <font color="#2ECC40">sqrt</font>(mu_E/length)		<font color="#808080"><i># [m/s]		Velocity</i></font>
+  density	= 1.225				<font color="#808080"><i># [kg/m3]	Sea Level Density</i></font>
+  mass		= density*length^3		<font color="#808080"><i># [kg]		Reference Mass</i></font>
+  acceleration	= mu_E/length^2			<font color="#808080"><i># [m/s^2]	Gravitational Acceleration</i></font>
+  force		= mass*acceleration		<font color="#808080"><i># [N]</i></font>
+  <font color="#808080"><i># Body Parameters</i></font>
+  m		= (8913)/mass			<font color="#808080"><i># [-]		Vehicle Mass</i></font>
+  d		= 5/length			<font color="#808080"><i># [-]		Capsule Diameter</i></font>
+  S		= pi*d^2/4			<font color="#808080"><i># [-]		Reference Area</i></font>
+  RN		= 6.035/length			<font color="#808080"><i># [-]		Nose Radius</i></font>
+  <font color="#808080"><i># Entry Conditions</i></font>
+  he		= (100e3)/length		<font color="#808080"><i># [-]		Altitude</i></font>
+  long_e	= 0				<font color="#808080"><i># [rad]		Longitude</i></font>
+  lat_e		= 0				<font color="#808080"><i># [rad]		Latitude</i></font>
+  ve		= (8e3)/velocity		<font color="#808080"><i># [-]		Velocity</i></font>
+  gamma_e	= - 5*pi/180			<font color="#808080"><i># [rad]		Flight Path Angle</i></font>
+  psi_e		= -45*pi/180			<font color="#808080"><i># [rad]		Heading Angle</i></font>
+  <font color="#808080"><i># Control Constants</i></font>
+  max_alpharate	= 10*pi/180*<font color="#0074D9">time</font>		<font color="#808080"><i># [rad/s]	Maximum Angle of Attack Time Rate</i></font>
+  max_sigmarate	= 30*pi/180*<font color="#0074D9">time</font>		<font color="#808080"><i># [rad/s]	Maximum Bank Angle Time Rate</i></font>
+  alpha_zero	= 0				<font color="#808080"><i># [rad]		Entry Angle of Attack</i></font>
+  sigma_zero	= 0				<font color="#808080"><i># [rad]		Entry Bank Angle</i></font>
+  min_alpha	= -40*pi/180			<font color="#808080"><i># [rad]		Minimum Angle of Attack</i></font>
+  <font color="#808080"><i># Other Constants</i></font>
+  g0		= 1				<font color="#808080"><i># [-]		Gravitational Acceleration</i></font>
+  R_E		= 1				<font color="#808080"><i># [-]		Earth Radius</i></font>
+  rot_E		= 7.2921150e-5*<font color="#0074D9">time</font>		<font color="#808080"><i># [-]		Earth Rotational Velocity</i></font>
+  SLdensity	= 1				<font color="#808080"><i># [-]		Base Density</i></font>
+  H		= 287*250/9.81/length		<font color="#808080"><i># [-]		Atmospheric Scale Height</i></font>
+  tfinal	= 400/<font color="#0074D9">time</font>			<font color="#808080"><i># [-]		Final Time Guess</i></font>
+  heatflux_C	= 1.7415e-4			<font color="#808080"><i># [-]		Heat Flux Constant</i></font>
+  <font color="#808080"><i># Iterative solve</i></font>
+  penalty	= 1e4
+
+<font color="red"><b>var:</b></font>
+  tf
+
+<font color="red"><b>dyn:</b></font>
+  r
+  theta
+  phi
+  V
+  gamma
+  psi
+  alpha
+  sigma
+  u1 u2
+  J
+
+<font color="red"><b>lim:</b></font>
+  0 &lt;= tf &lt;= 1
+  min_alpha &lt;= alpha &lt;= 0
+  -max_alpharate &lt;= u1 &lt;= max_alpharate
+  -max_sigmarate &lt;= u2 &lt;= max_sigmarate
+  R_E &lt;= r &lt;= +<font color="#3D9970">inf</font>
+  1e-3 &lt;= V &lt;= +<font color="#3D9970">inf</font>
+
+<font color="red"><b>t=t0:</b></font>
+  r = he + R_E
+  theta = long_e
+  phi = lat_e
+  V = ve
+  gamma = gamma_e
+  psi = psi_e
+  alpha = alpha_zero
+  sigma = sigma_zero
+  J = 0
+
+<font color="red"><b>t=tf:</b></font>
+  <font color="#808080"><i># r = R_E   # relaxed at inception and re-introduced later on</i></font>
+  0 &lt;= V &lt;= 200/velocity
+
+<font color="red"><b>exp:</b></font>
+  h == r - R_E
+  rho == SLdensity*<font color="#2ECC40">exp</font>(-h/H)
+  Cd == <font color="#0074D9">poly5</font>(alpha,-0.0718,-0.6771,-2.1608,-2.4253,-0.1581,1.7072)
+  Cl == <font color="#0074D9">poly6</font>(alpha,0.0777,0.7629,2.6522,3.6395,1.0828,-0.8108,0.0037)
+  ClCd == Cl/Cd
+  heatflux == heatflux_C*<font color="#2ECC40">sqrt</font>( rho/RN)*V^3
+  q == 0.5*rho*V^2
+  L == q*Cl*S
+  D == q*Cd*S
+  aeroload == <font color="#2ECC40">sqrt</font>(L^2 + D^2)/m/g0
+
+<font color="red"><b>equ:</b></font>
+  <font color="#808080"><i># Re-Entry Dynamics</i></font>
+  r&acute; == V*<font color="#2ECC40">sin</font>(gamma)
+  theta&acute; == V*<font color="#2ECC40">cos</font>(gamma)*<font color="#2ECC40">sin</font>(psi)/r/<font color="#2ECC40">cos</font>(phi)
+  phi&acute; == V*<font color="#2ECC40">cos</font>(gamma)*<font color="#2ECC40">cos</font>(psi)/r
+  V&acute; == -D/m - g0*<font color="#2ECC40">sin</font>(gamma) + rot_E^2*r*(<font color="#2ECC40">sin</font>(gamma)*<font color="#2ECC40">cos</font>(phi) - <font color="#2ECC40">cos</font>(gamma)*<font color="#2ECC40">sin</font>(phi)*<font color="#2ECC40">sin</font>(psi))*<font color="#2ECC40">cos</font>(phi)
+  gamma&acute; == L*<font color="#2ECC40">cos</font>(sigma)/V/m - g0*<font color="#2ECC40">cos</font>(gamma)/V + V*<font color="#2ECC40">cos</font>(gamma)/r + 2*rot_E*<font color="#2ECC40">cos</font>(phi)*<font color="#2ECC40">cos</font>(psi) + rot_E^2*r*<font color="#2ECC40">cos</font>(phi)*(<font color="#2ECC40">cos</font>(gamma)*<font color="#2ECC40">cos</font>(phi) + <font color="#2ECC40">sin</font>(psi)*<font color="#2ECC40">sin</font>(phi)*<font color="#2ECC40">sin</font>(gamma))/V
+  psi&acute; == L*<font color="#2ECC40">sin</font>(sigma)/V/<font color="#2ECC40">cos</font>(gamma)/m - V*<font color="#2ECC40">cos</font>(gamma)*<font color="#2ECC40">cos</font>(psi)*<font color="#2ECC40">tan</font>(phi)/r + 2*rot_E*(<font color="#2ECC40">tan</font>(gamma)*<font color="#2ECC40">cos</font>(phi)*<font color="#2ECC40">sin</font>(psi) - <font color="#2ECC40">sin</font>(phi)) + rot_E^2*r*<font color="#2ECC40">sin</font>(phi)*<font color="#2ECC40">cos</font>(phi)*<font color="#2ECC40">cos</font>(psi)/V/<font color="#2ECC40">cos</font>(gamma)
+  alpha&acute; == u1
+  sigma&acute; == u2
+  J&acute; == aeroload
+
+<font color="red"><b>ini:</b></font>
+  <font color="#808080"><i># Initial Guess (Linear decrease in Altitude and Velocity)</i></font>
+  r = <font color="#0074D9">linspace</font>(he,0) + R_E
+  theta = 0
+  phi = 0
+  V = <font color="#0074D9">linspace</font>(ve,0) + 10/velocity
+  gamma = gamma_e
+  psi = psi_e
+  alpha = alpha_zero
+  u1 = 0
+  u2 = 0
+  tf = tfinal
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J)+penalty*(<font color="#0074D9">final</font>(r)-R_E) <font color="#8A2BE2">using</font> nlp
+  <font color="#808080"><i># minimize final(V)+penalty*(final(r)-R_E) using nlp</i></font>
+
+<font color="red"><b>gms:</b></font>
+  <font color="#8A2BE2">@setlimf</font> Var=r, Vlo=R_E, Vup=R_E
+  penalty = 0
+  <font color="#8A2BE2">@solve</font>
+</pre>
+</body>
+</html>

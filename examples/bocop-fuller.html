@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -32,18 +32,20 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   <ol>
   <li>A.T. Fuller,
   <em>Study of an optimum non-linear control system</em>,
-  J. of Electronics and Control, 15:63-71, 1963.
+  Journal of Electronics and Control, 15:63-71, 1963.
   </ol>
 <p>
-  See: <a href="https://project.inria.fr/bocop/fuller-problem/">BOCOP - The optimal control solver</a>
+  See: <a href="https://project.inria.fr/bocop/fuller-problem/">BOCOP - The optimal control solver</a>.
 <p>
 <pre>
-<font color="red"><b>par:</b></font> tf = 300
+<font color="red"><b>par:</b></font>
+  tf = 3.5
 
-<font color="red"><b>dyn:</b></font> x1 x2 u j
+<font color="red"><b>dyn:</b></font>
+  x1 x2 u j
 
 <font color="red"><b>lim:</b></font>
-  -0.01 &lt;= u &lt;= 0.01
+  -1 &lt;= u &lt;= 1
   
 <font color="red"><b>t=t0:</b></font>
   x1 = 0

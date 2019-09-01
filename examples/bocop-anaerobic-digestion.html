@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -14,9 +14,9 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
 </head>
 <body>
-<h1 align="center" style="color:#7EAEAC">Anaerobic digestion of micro-algae for biogas production</h1>
+<h1 align="center" style="color:#7EAEAC">Anaerobic digestion of microalgae for biogas production</h1>
 <pre>
-<font color="red"><b>rem:</b></font> Anaerobic digestion of micro-algae for biogas production
+<font color="red"><b>rem:</b></font> Anaerobic digestion of microalgae for biogas production
 </pre>
 <p>
   Coupling microalgae culture and anaerobic digestion is a promising process to convert solar
@@ -26,16 +26,16 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   second reactor during one day.
 <p>
   The dual-tank bioreactor can be modeled as a 3-dimensional dynamical system. The state
-  variables are the concentration of micro-algae \(y\), biomass \(x\) and substrate \(s\). The control
+  variables are the concentration of microalgae \(y\), biomass \(x\) and substrate \(s\). The control
   variable is the input flow \(u\) throughout the whole reactor. The system dynamics is given by
 <p>
   \[
-  \dot{y}=\mu(t)\dfrac{y}{1+y} - ry - uy\\  
-  \dot{s}=-\mu_2(s)x + u\beta(\gamma y-s)\\  
-  \dot{x}=(\mu_2(s)-u\beta)x  
+  \dot{y}=\mu(t)\dfrac{y}{1+y} - ry - uy\\
+  \dot{s}=-\mu_2(s)x + u\beta(\gamma y-s)\\
+  \dot{x}=(\mu_2(s)-u\beta)x
   \]
 <p>
-  where \(\mu\) is the light model, \(\mu_2(s)=\mu_2^m \frac{ s}{ K_s + s}\) the growth function in 
+  where \(\mu\) is the light model, \(\mu_2(s)=\mu_2^m \frac{ s}{ K_s + s}\) the growth function in
   reactor 2 (Monod), and \(\beta\) the volume ratio between the two tanks.
 <p>
   The optimal control problem is written as
@@ -50,15 +50,16 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <p>
   References:
   <ol>
-  <li>T. Bayen, F. Mairet, P. Martinon, and M. Sebbah,
+  <li>T. Bayen, F. Mairet, P. Martinon and M. Sebbah,
   <em>Optimizing the anaerobic digestion of microalgae in a coupled process</em>,
   In 13th European Control Conference, Z&uuml;rich, Switzerland, 2013.
-  <li>T. Bayen, F. Mairet, P. Martinon, and M. Sebbah,
+  <li>T. Bayen, F. Mairet, P. Martinon and M. Sebbah,
   <em>Analysis of a periodic optimal control problem connected to microalgae anaerobic digestion</em>,
   Optimal Control Applications and Methods, 2014.
   </ol>
 <p>
-  See: <a href="https://project.inria.fr/bocop/anaerobic-digestion-of-micro-algae-for-bio-gaz-production/">BOCOP - The optimal control solver</a>
+  See: <a href="https://project.inria.fr/bocop/anaerobic-digestion-of-micro-algae-for-bio-gaz-production/">
+  BOCOP - The optimal control solver</a>.
 <p>
 <pre>
 <font color="red"><b>par:</b></font>
@@ -74,8 +75,8 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 
 <font color="red"><b>dyn:</b></font>
   y s x
-  J
   u
+  J
 
 <font color="red"><b>lim:</b></font>
   0 &lt;= y &lt;= +<font color="#3D9970">inf</font>
@@ -88,10 +89,10 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 
 <font color="red"><b>ini:</b></font>
   y = 5.6
-  s = 0
+  s = 2.7e-2
   x = 6.4
-  J = 0
-  
+  u = 3.4e-2
+
 <font color="red"><b>exp:</b></font>
   mu2 == mu2m * s / (s+Ks)		<font color="#808080"><i># biomass growth</i></font>
   days == <font color="#0074D9">Time</font> / (halfperiod*2)
@@ -106,10 +107,10 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   0 == <font color="#0074D9">final</font>(y) - <font color="#0074D9">initial</font>(y)
   0 == <font color="#0074D9">final</font>(s) - <font color="#0074D9">initial</font>(s)
   0 == <font color="#0074D9">final</font>(x) - <font color="#0074D9">initial</font>(x)
-  u :: <font color="#7FDBFF">spline3</font>(-6)
-  
+  u :: <font color="#7FDBFF">spline3</font>
+
 <font color="red"><b>obj:</b></font>
-  <font color="#8A2BE2">maximize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp <font color="#8A2BE2">with</font> ipopt
+  <font color="#8A2BE2">maximize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp
 </pre>
 </body>
 </html>

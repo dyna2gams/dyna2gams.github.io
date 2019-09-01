@@ -1,0 +1,125 @@
+<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Control of the Circadian Rhythms</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Control of the Circadian Rhythms
+</pre>
+<p>
+  Circadian rhythms governed by the oscillating expression of a set of genes based on feedback
+  regulation by their products have become an important issue in biology and medicine.  The
+  role of circadian rhythms with a period of nearly 24 hours is of particular importance,
+  because many physiological and behavioural functions of living creatures appear to be
+  governed by this so-called &ldquo;master clock&rdquo;.  Here, we study a circadian oscillator model of
+  the central clock mechanism for the fruit fly Drosophila and compute a periodic solution
+  with a period of exactly 24 hours.
+<p>
+  References:
+  <ol>
+  <li>A. Goldbeter,
+  <em>Computational approaches to cellular rhythms</em>,
+  Nature, 420:238-245, 2002.
+  <li>J.C. Leloup and A. Goldbeter,
+  <em>A model for circadian rhythms in Drosophila incorporating the formation of a complex
+  between PER and TIM proteins</em>,
+  Journal of Biological Rhythms, 13:70-87, 1998.
+  <li>O.S. Shaik, S. Sager, O. Slaby and D. Lebiedz,
+  <em>Phase tracking and restoration of circadian rhythms by model-based optimal control</em>,
+  IET Systems Biology, 2:16-23, 2008.
+  <li>O. Slaby, S. Sager, O.S. Shaik and D. Lebiedz,
+  <em>Optimal control of self-organized dynamics in cellular signal transduction</em>,
+  Mathematical and Computer Modelling of Dynamical Systems, 13:487-502, 2007.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">substitute-symbol</font> = <font color="#0074D9">n</font>&gt;nnn
+
+<font color="red"><b>par:</b></font>
+  vsP = 1.1
+  vsT = 1
+  vmP = 0.7
+  vmT = 0.7
+  KmP = 0.2
+  KmT = 0.2
+  ksP = 0.9
+  ksT = 0.9
+  vdP = 2
+  k1 = 0.6
+  k2 = 0.2
+  k3 = 1.2
+  k4 = 0.6
+  KiP = 1
+  KiT = 1
+  KdP = 0.2
+  KdT = 0.2
+  <font color="#0074D9">n</font> = 4
+  kd = 0.01
+  kdC = 0.01
+  kdN = 0.01
+  v1P = 8
+  v1T = 8
+  v2P = 1
+  v2T = 1
+  v3P = 8
+  v3T = 8
+  v4P = 1
+  v4T = 1
+  K4T = 2
+  K4P = 2
+  K3T = 2
+  K3P = 2
+  K2T = 2
+  K2P = 2
+  K1T = 2
+  K1P = 2
+
+<font color="red"><b>var:</b></font>
+  vdT
+  tf
+
+<font color="red"><b>dyn:</b></font>
+  MP P0 P1 P2 MT T0 T1 T2 C CN
+  u
+
+<font color="red"><b>lim:</b></font>
+  1 &lt;= u &lt;= 1
+
+<font color="red"><b>t=t0:</b></font>
+  MP = 1.5
+
+<font color="red"><b>equ:</b></font>
+  MP&acute; == vsP*KiP^<font color="#0074D9">n</font>/(KiP^<font color="#0074D9">n</font>+CN^<font color="#0074D9">n</font>) - vmP*MP/(KmP+MP) - kd*MP
+  P0&acute; == ksP*MP - v1P*P0/(K1P+P0) + v2P*P1/(K2P+P1) - kd*P0
+  P1&acute; == v1P*P0/(K1P+P0) - v2P*P1/(K2P+P1) - v3P*P1/(K3P+P1) + v4P*P2/(K4P+P2) - kd*P1
+  P2&acute; == v3P*P1/(K3P+P1) - v4P*P2/(K4P+P2) - k3*P2*T2 + k4*C - vdP*P2/(KdP+P2) - kd*P2
+  MT&acute; == vsT*KiT^<font color="#0074D9">n</font>/(KiT^<font color="#0074D9">n</font>+CN^<font color="#0074D9">n</font>) - vmT*MT/(KmT+MT) - kd*MT
+  T0&acute; == ksT*MT - v1T*T0/(K1T+T0) + v2T*T1/(K2T+T1) - kd*T0
+  T1&acute; == v1T*T0/(K1T+T0) - v2T*T1/(K2T+T1) - v3T*T1/(K3T+T1) + v4T*T2/(K4T+T2) - kd*T1
+  T2&acute; == v3T*T1/(K3T+T1) - v4T*T2/(K4T+T2) - k3*P2*T2 + k4*C - u*vdT*T2/(KdT+T2) - kd*T2
+  C&acute;  == k3*P2*T2 - k4*C - K1*C + k2*CN - kdC*C
+  CN&acute; == k1*C - k2*CN - kdN*CN
+  <font color="#8A2BE2">$once</font>.. <font color="#0074D9">initial</font>({MP P0 P1 P2 MT T0 T1 T2 C CN}) == <font color="#0074D9">final</font>({MP P0 P1 P2 MT T0 T1 T2 C CN})
+
+<font color="red"><b>ini:</b></font>
+  tf = 24
+  vdT = 2
+  
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#2ECC40">sqr</font>(tf-24) <font color="#8A2BE2">using</font> nlp
+</pre>
+</body>
+</html>

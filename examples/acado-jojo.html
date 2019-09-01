@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -94,7 +94,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <p>
 <pre>
 <font color="red"><b>set:</b></font>
-  phase = ph1*ph2
+  phase = ph1:ph2
 
 <font color="red"><b>par:</b></font>
   m = 0.200	<font color="#808080"><i># the mass of the jojo (200g)</i></font>
@@ -112,11 +112,11 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 
 <font color="red"><b>dyn:</b></font>
   t[phase]	<font color="#808080"><i># the real time</i></font>
-  x[phase]	<font color="#808080"><i># the position of the "hand"</i></font>
-  v[phase]	<font color="#808080"><i># the velocity of the "hand"</i></font>
+  x[phase]	<font color="#808080"><i># the position of the &ldquo;hand&rdquo;</i></font>
+  v[phase]	<font color="#808080"><i># the velocity of the &ldquo;hand&rdquo;</i></font>
   y[phase]	<font color="#808080"><i># the position of the jojo</i></font>
   w[phase]	<font color="#808080"><i># the velocity of the jojo</i></font>
-  u[phase]	<font color="#808080"><i># the control action of the "hand"</i></font>
+  u[phase]	<font color="#808080"><i># the control action of the &ldquo;hand&rdquo;</i></font>
   phi[phase]	<font color="#808080"><i># the cost functional</i></font>
 
 <font color="red"><b>lim:</b></font>

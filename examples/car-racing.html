@@ -1,0 +1,201 @@
+<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Racecar on an eight-shape circuit</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Racecar on an eight-shape circuit
+</pre>
+<p>
+  The main interest of this example is to define an eight-shape raceway
+  as depicted here below
+<p>
+  <center><img src="car-racing.png" alt="" width="50%"/></center>
+<p>
+  and to split the problem into four phases so as to define four sets of
+  convex constraints.  A GAMS program computes the left and right boundaries
+  of the lane and the reference trajectory to initialize the optimization.
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">gams-option</font> = reslim=3600
+
+<font color="red"><b>set:</b></font>
+  phase = ph1:ph4
+
+<font color="red"><b>par:</b></font>
+  <font color="#808080"><i># parameters of the circuit</i></font>
+  D1 = 350		<font color="#808080"><i># diameter of the left turn [m]</i></font>
+  D2 = 500		<font color="#808080"><i># diameter of the right turn [m]</i></font>
+  xc1 = 200		<font color="#808080"><i># center of the left turn [m]</i></font>
+  yc1 = 350
+  xc2 = 800		<font color="#808080"><i># center of the right turn [m]</i></font>
+  yc2 = 350
+  L = 20		<font color="#808080"><i># width of the lane [m]</i></font>
+
+<font color="red"><b>tpa:</b></font>
+  <font color="#808080"><i># definition of the lane and the reference trajectory</i></font>
+  bndX1[phase]		<font color="#808080"><i># left boundary of the lane</i></font>
+  bndY1[phase]
+  bndX2[phase]		<font color="#808080"><i># right boundary of the lane</i></font>
+  bndY2[phase]
+  refX[phase]		<font color="#808080"><i># reference trajectory (middle of the lane)</i></font>
+  refY[phase]
+
+<font color="#8B0000">$macro</font> ini\
+  a.l=1000*(y1.l-y2.l)/(x1.l*y2.l-y1.l*x2.l);\
+  b.l=1000*(x2.l-x1.l)/(x1.l*y2.l-y1.l*x2.l);\
+  p1.l=1000*(yc1-y2.l)/(xc1*y2.l-yc1*x1.l);\
+  q1.l=1000*(x1.l-xc1)/(xc1*y2.l-yc1*x1.l);\
+  p2.l=1000*(yc2-y2.l)/(xc2*y2.l-yc2*x2.l);\
+  q2.l=1000*(x2.l-xc2)/(xc2*y2.l-yc2*x2.l);
+<font color="#8B0000">$macro</font> dat(i)\
+  data('x1','i') = x1.l; data('y1','i') = y1.l;\
+  data('x2','i') = x2.l; data('y2','i') = y2.l;\
+  data('a','i') = a.l; data('b','i') = b.l;\
+  data('p1','i') = p1.l; data('q1','i') = q1.l;\
+  data('p2','i') = p2.l; data('q2','i') = q2.l;
+
+<font color="red"><b>gms:</b></font>
+  <font color="#3D9970">scalars</font> r1,r2;
+  <font color="#3D9970">variables</font> a,b,p1,q1,p2,q2,x1,y1,x2,y2;
+  <font color="#3D9970">equations</font> eqa1,eqb1,eqc1,eqd1,eqe1,eqa2,eqb2,eqc2,eqd2,eqe2;
+  eqa1.. a*p1 + b*q1 =e= 0;
+  eqb1.. p1*xc1 + q1*yc1 + 1000 =e= 0;
+  eqc1.. a*x1 + b*y1 + 1000 =e= 0;
+  eqd1.. p1*x1 + q1*y1 + 1000 =e= 0;
+  eqe1.. <font color="#2ECC40">sqr</font>(x1-xc1) + <font color="#2ECC40">sqr</font>(y1-yc1) =e= <font color="#2ECC40">sqr</font>(r1);
+  eqa2.. a*p2 + b*q2 =e= 0;
+  eqb2.. p2*xc2 + q2*yc2 + 1000 =e= 0;
+  eqc2.. a*x2 + b*y2 + 1000 =e= 0;
+  eqd2.. p2*x2 + q2*y2 + 1000 =e= 0;
+  eqe2.. <font color="#2ECC40">sqr</font>(x2-xc2) + <font color="#2ECC40">sqr</font>(y2-yc2) =e= <font color="#2ECC40">sqr</font>(r2);
+  <font color="#3D9970">model</font> m_ /eqa1,eqb1,eqc1,eqd1,eqe1,eqa2,eqb2,eqc2,eqd2,eqe2/;
+  <font color="#3D9970">set</font> sdat1 /a,b,p1,q1,p2,q2,x1,y1,x2,y2/; <font color="#3D9970">set</font> sdat2 /1*6/;
+  <font color="#3D9970">parameter</font> data(sdat1,sdat2);
+  r1 = D1/2+L; r2 = D2/2; x1.l=xc1; y1.l=yc1-r1; x2.l=xc2; y2.l=yc2+r2; ini; <font color="#3D9970">solve</font> m_ using cns; dat(2);
+  r1 = D1/2; r2 = D2/2+L; <font color="#3D9970">solve</font> m_ using cns; dat(1);
+  r1 = D1/2+L/2; r2 = D2/2+L/2; <font color="#3D9970">solve</font> m_ using cns; dat(3);
+  r1 = D1/2+L; r2 = D2/2; x1.l=data('x1','2'); y1.l=2*yc1-data('y1','2'); x2.l=data('x2','2'); y2.l=2*yc2-data('y2','2'); ini; <font color="#3D9970">solve</font> m_ using cns; dat(4);
+  r1 = D1/2; r2 = D2/2+L; x1.l=data('x1','1'); y1.l=2*yc1-data('y1','1'); x2.l=data('x2','1'); y2.l=2*yc2-data('y2','1'); ini; <font color="#3D9970">solve</font> m_ using cns; dat(5);
+  r1 = D1/2+L/2; r2 = D2/2+L/2; x1.l=data('x1','3'); y1.l=2*yc1-data('y1','3'); x2.l=data('x2','3'); y2.l=2*yc2-data('y2','3'); ini; <font color="#3D9970">solve</font> m_ using cns; dat(6);
+  <font color="#3D9970">scalars</font> theta1,theta2;
+  theta1 = 2*pi-<font color="#2ECC40">arctan</font>((data('p1','1')*data('q1','4')-data('q1','1')*data('p1','4'))/(data('p1','1')*data('p1','4')+data('q1','1')*data('q1','4')));
+  theta2 = 2*pi-<font color="#2ECC40">arctan</font>((data('p2','1')*data('q2','4')-data('q2','1')*data('p2','4'))/(data('p2','1')*data('p2','4')+data('q2','1')*data('q2','4')));
+  <font color="#3D9970">display</font> data,theta1,theta2;
+
+  bndX1['ph1'] = <font color="#0074D9">linspace</font>(data('x1','1'),data('x2','1'));
+  bndY1['ph1'] = <font color="#0074D9">linspace</font>(data('y1','1'),data('y2','1'));
+  bndX2['ph1'] = <font color="#0074D9">linspace</font>(data('x1','2'),data('x2','2'));
+  bndY2['ph1'] = <font color="#0074D9">linspace</font>(data('y1','2'),data('y2','2'));
+  refX['ph1'] = <font color="#0074D9">linspace</font>(data('x1','3'),data('x2','3'));
+  refY['ph1'] = <font color="#0074D9">linspace</font>(data('y1','3'),data('y2','3'));
+
+  bndX1['ph2'] = xc2 + (D2/2+L)*<font color="#2ECC40">cos</font>(<font color="#0074D9">linspace</font>(theta2/2,-theta2/2));
+  bndY1['ph2'] = yc2 + (D2/2+L)*<font color="#2ECC40">sin</font>(<font color="#0074D9">linspace</font>(theta2/2,-theta2/2));
+  bndX2['ph2'] = xc2 + (D2/2)*<font color="#2ECC40">cos</font>(<font color="#0074D9">linspace</font>(theta2/2,-theta2/2));
+  bndY2['ph2'] = yc2 + (D2/2)*<font color="#2ECC40">sin</font>(<font color="#0074D9">linspace</font>(theta2/2,-theta2/2));
+  refX['ph2'] = xc2 + (D2/2+L/2)*<font color="#2ECC40">cos</font>(<font color="#0074D9">linspace</font>(theta2/2,-theta2/2));
+  refY['ph2'] = yc2 + (D2/2+L/2)*<font color="#2ECC40">sin</font>(<font color="#0074D9">linspace</font>(theta2/2,-theta2/2));
+
+  bndX1['ph3'] = <font color="#0074D9">linspace</font>(data('x2','5'),data('x1','5'));
+  bndY1['ph3'] = <font color="#0074D9">linspace</font>(data('y2','5'),data('y1','5'));
+  bndX2['ph3'] = <font color="#0074D9">linspace</font>(data('x2','4'),data('x1','4'));
+  bndY2['ph3'] = <font color="#0074D9">linspace</font>(data('y2','4'),data('y1','4'));
+  refX['ph3'] = <font color="#0074D9">linspace</font>(data('x2','6'),data('x1','6'));
+  refY['ph3'] = <font color="#0074D9">linspace</font>(data('y2','6'),data('y1','6'));
+
+  bndX1['ph4'] = xc1 + (D1/2)*<font color="#2ECC40">cos</font>(<font color="#0074D9">linspace</font>(pi-theta1/2,pi+theta1/2));
+  bndY1['ph4'] = yc1 + (D1/2)*<font color="#2ECC40">sin</font>(<font color="#0074D9">linspace</font>(pi-theta1/2,pi+theta1/2));
+  bndX2['ph4'] = xc1 + (D1/2+L)*<font color="#2ECC40">cos</font>(<font color="#0074D9">linspace</font>(pi-theta1/2,pi+theta1/2));
+  bndY2['ph4'] = yc1 + (D1/2+L)*<font color="#2ECC40">sin</font>(<font color="#0074D9">linspace</font>(pi-theta1/2,pi+theta1/2));
+  refX['ph4'] = xc1 + (D1/2+L/2)*<font color="#2ECC40">cos</font>(<font color="#0074D9">linspace</font>(pi-theta1/2,pi+theta1/2));
+  refY['ph4'] = yc1 + (D1/2+L/2)*<font color="#2ECC40">sin</font>(<font color="#0074D9">linspace</font>(pi-theta1/2,pi+theta1/2));
+
+<font color="red"><b>par:</b></font>
+  m = 1000		<font color="#808080"><i># mass [kg]</i></font>
+  S = 1			<font color="#808080"><i># section area car [m^2]</i></font>
+  cd = 0.35		<font color="#808080"><i># drag coefficient [mini cooper 2008]</i></font>
+  rho = 1.23		<font color="#808080"><i># air density [kg/m^3]</i></font>
+  Vmax = 50		<font color="#808080"><i># max velocity [m/s]</i></font>
+  Fmax = 1000		<font color="#808080"><i># maximal force on the car [N]</i></font>
+  tf = 1
+
+<font color="red"><b>var:</b></font>
+  tlen[phase]
+
+<font color="red"><b>dyn:</b></font>
+  <font color="#808080"><i># states</i></font>
+  t[phase]		<font color="#808080"><i># real time [s]</i></font>
+  x[phase]		<font color="#808080"><i># position x [m]</i></font>
+  vx[phase]		<font color="#808080"><i># velocity vx [m/s]</i></font>
+  y[phase]		<font color="#808080"><i># position y [m]</i></font>
+  vy[phase]		<font color="#808080"><i># velocity vy [m/s]</i></font>
+  Fx[phase]		<font color="#808080"><i># Force x [N]</i></font>
+  Fy[phase]		<font color="#808080"><i># Force y [N]</i></font>
+  <font color="#808080"><i># controls</i></font>
+  dFx[phase]		<font color="#808080"><i># Rate of force x [N/s]</i></font>
+  dFy[phase]		<font color="#808080"><i># Rate of force y [N/s]</i></font>
+
+<font color="red"><b>lim:</b></font>
+  0.1 &lt;= tlen[phase] &lt;= 600
+  -1000 &lt;= dFx[phase] &lt;= 1000
+  -1000 &lt;= dFy[phase] &lt;= 1000
+
+<font color="red"><b>t=t0:</b></font>
+  t['ph1'] = 0
+
+<font color="red"><b>exp:</b></font>
+  TimeDot == tlen[phase] / tf
+
+<font color="red"><b>equ:</b></font>
+  t&acute;[phase] / TimeDot == 1
+  x&acute;[phase] / TimeDot == vx[phase]
+  vx&acute;[phase] / TimeDot == 1/m*Fx[phase] - 0.5*rho*cd*S*<font color="#2ECC40">sqr</font>(vx[phase])
+  y&acute;[phase] / TimeDot == vy[phase]
+  vy&acute;[phase] / TimeDot == 1/m*Fy[phase] - 0.5*rho*cd*S*<font color="#2ECC40">sqr</font>(vy[phase])
+  Fx&acute;[phase] / TimeDot == dFx[phase]
+  Fy&acute;[phase] / TimeDot == dFy[phase]
+  <font color="#2ECC40">sqr</font>(vx[phase]) + <font color="#2ECC40">sqr</font>(vy[phase]) &lt;= Vmax^2
+  <font color="#2ECC40">sqr</font>(Fx[phase]) + <font color="#2ECC40">sqr</font>(Fy[phase]) &lt;= Fmax^2
+  $<font color="#2ECC40">sameas</font>(phase,'ph1').. data('a','1')*x[phase] + data('b','1')*y[phase] + 1000 &lt;= 0
+  $<font color="#2ECC40">sameas</font>(phase,'ph1').. data('a','2')*x[phase] + data('b','2')*y[phase] + 1000 &gt;= 0
+  $<font color="#2ECC40">sameas</font>(phase,'ph2').. <font color="#2ECC40">sqr</font>(x[phase]-xc2) + <font color="#2ECC40">sqr</font>(y[phase]-yc2) &gt;= <font color="#2ECC40">sqr</font>(D2/2)
+  $<font color="#2ECC40">sameas</font>(phase,'ph2').. <font color="#2ECC40">sqr</font>(x[phase]-xc2) + <font color="#2ECC40">sqr</font>(y[phase]-yc2) &lt;= <font color="#2ECC40">sqr</font>(D2/2+L)
+  $<font color="#2ECC40">sameas</font>(phase,'ph3').. data('a','4')*x[phase] + data('b','4')*y[phase] + 1000 &gt;= 0
+  $<font color="#2ECC40">sameas</font>(phase,'ph3').. data('a','5')*x[phase] + data('b','5')*y[phase] + 1000 &lt;= 0
+  $<font color="#2ECC40">sameas</font>(phase,'ph4').. <font color="#2ECC40">sqr</font>(x[phase]-xc1) + <font color="#2ECC40">sqr</font>(y[phase]-yc1) &gt;= <font color="#2ECC40">sqr</font>(D1/2)
+  $<font color="#2ECC40">sameas</font>(phase,'ph4').. <font color="#2ECC40">sqr</font>(x[phase]-xc1) + <font color="#2ECC40">sqr</font>(y[phase]-yc1) &lt;= <font color="#2ECC40">sqr</font>(D1/2+L)
+  <font color="#8A2BE2">@linkphases</font>
+  0 == <font color="#0074D9">final</font>(x['ph4']) - <font color="#0074D9">initial</font>(x['ph1'])
+  0 == <font color="#0074D9">final</font>(y['ph4']) - <font color="#0074D9">initial</font>(y['ph1'])
+  0 == <font color="#0074D9">final</font>(vx['ph4']) - <font color="#0074D9">initial</font>(vx['ph1'])
+  0 == <font color="#0074D9">final</font>(vy['ph4']) - <font color="#0074D9">initial</font>(vy['ph1'])
+
+<font color="red"><b>ini:</b></font>
+  x[phase] = refX[phase]
+  y[phase] = refY[phase]
+  vx[phase] = <font color="#0074D9">slope</font>(refX[phase])/TimeDot
+  vy[phase] = <font color="#0074D9">slope</font>(refY[phase])/TimeDot
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(t['ph4']) <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#8A2BE2">@solveloop</font> Method=bndobj
+  <font color="#8A2BE2">@csvsave</font> refX[phase] refY[phase] bndX1[phase] bndY1[phase] bndX2[phase] bndY2[phase]
+</pre>
+</body>
+</html>

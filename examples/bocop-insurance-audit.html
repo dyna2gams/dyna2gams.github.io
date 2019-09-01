@@ -1,0 +1,151 @@
+<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Optimal health insurance (auditable)</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Optimal health insurance (auditable)
+</pre>
+<p>
+  In [1] the authors analyze the design of optimal medical insurance under ex post moral
+  hazard, i.e., when illness severity cannot be observed by insurers and policyholders decide
+  for themselves on their health expenditures. The trade-off between ex ante risk sharing and
+  ex post incentive compatibility is analyzed in an optimal revelation mechanism under hidden
+  information and risk aversion. The optimal contract provides partial insurance at the
+  margin, with a deductible when insurers&rsquo; rates are affected by a positive loading, and it
+  may also include an upper limit on coverage. The potential to audit the health state leads
+  to an upper limit on out-of-pocket expenses.
+<p>
+  Let&rsquo;s assume that coverage is offered by risk neutral insurers operating in a competitive
+  market without transaction costs, and that each individual can be insured through only one
+  contract. An insurance contract is characterized by a schedule \(I(m)\) that defines the
+  indemnity as a function of health expenditures and by premium \(p\). Function \(I(.) :
+  \mathbb{R}_+ \rightarrow \mathbb{R}_+\) is supposed to be continuous, non-decreasing,
+  piecewise continuously differentiable and such that \(I(0) = 0\). A type \(x\) individual
+  chooses her health care expenses \(m(x)\) in order to maximize her utility \(U(R(x),H(x))\)
+  where \(R(x)=w-m(x)+I(x)-p\) is the revenue and \(H = h_0 - \gamma x (1-\nu(m))\) is the
+  health. The goal is to determine the allocation \(\{m(x), I(x)\}_{| x \in [0,a]}\) where
+  truthfully announcing the health state is an optimal strategy.
+<p>
+  Assume that illness severity \(x\) is randomly distributed over \([0,a]\) with continuous
+  density \(f(x)\). Let us denote \(h(x) = m'(x)\). Then the optimal revelation mechanism can
+  be rewritten as the optimal control problem
+<p>
+  \[
+  \max \int_0^a U(R(x),H(x)f(x) \ \mathrm{d}x \\
+  I'(x) = \Big[1 - \frac{\gamma x v'(m(x))}{u'(R(x))}\Big] h(x) \\
+  m'(x) = h(x) \\
+  I(0) = m(0) = 0 \\
+  h(x) \geq 0, \ I(x) \geq 0, \quad \forall x \\
+  p = \int_0^a I(x) f(x) \ \mathrm{d}x
+  \]
+<p>
+  Reference:
+  <ol>
+  <li>P. Martinon, P. Picard, and A. Raj,
+  <em>On the Design of Optimal Health Insurance Contracts under Ex Post Moral Hazard</em>,
+  Geneva Risk and Insurance Review, 43(2):137{185, July 2018.
+  </ol>
+<p>
+  See:
+  <a href="https://www.bocop.org/">BOCOP - The optimal control solver</a>.
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">substitute-symbol</font> = H1&gt;HH1 | H2&gt;HH2
+
+<font color="red"><b>par:</b></font>
+  gamma = 0.2
+  lambda = 0.25
+  h0 = 1.5
+  w = 1
+  s = 10
+  a = 10
+  c = 0.25
+  sigma = 0
+  vtype = 0	<font color="#808080"><i># 0=power alpha | 1=corner solution | 2=multiplicative alpha</i></font>
+  alpha = 1
+  tf = 1
+
+<font color="red"><b>var:</b></font>
+  p
+  xlen1
+
+<font color="red"><b>dyn:</b></font>
+  x{1:2}	<font color="#808080"><i># Population</i></font>
+  I{1:2}        <font color="#808080"><i># States</i></font>
+  m{1:2}
+  P{1:2}
+  J{1:2}
+  R{1:2}
+  H{1:2}
+  U{1:2}
+  h{1:2}        <font color="#808080"><i># Controls</i></font>
+  g{1:2}
+
+<font color="red"><b>lim:</b></font>
+  0 &lt;= I{1:2} &lt;= +<font color="#3D9970">inf</font>
+  1e-3 &lt;= m{1:2} &lt;= +<font color="#3D9970">inf</font>
+  0 &lt;= h{1:2} &lt;= 2
+  0 &lt;= g{1:2} &lt;= {0 1}
+  0 &lt;= R{1:2} &lt;= +<font color="#3D9970">inf</font>
+  0 &lt;= H{1:2} &lt;= +<font color="#3D9970">inf</font>
+  0 &lt;= U{1:2} &lt;= +<font color="#3D9970">inf</font>
+  0 &lt;= p &lt;= +<font color="#3D9970">inf</font>
+  0.01 &lt;= xlen1 &lt;= 9.99
+
+<font color="red"><b>t=t0:</b></font>
+  I1 = 0
+  m1 = 0.001
+  P1 = 0
+  J1 = 0
+
+<font color="red"><b>exp:</b></font>
+  dUdR{1:2} == s * <font color="#2ECC40">exp</font>(-s*R{1:2})
+  <font color="#808080"><i># Expenses effect</i></font>
+  vprime1 == ( alpha/2 * rpower(m1,alpha/2-1) / rpower(1+rpower(m1,alpha/2),2) )$(vtype=0) \
+    + ( (<font color="#2ECC40">log</font>(m1+2)/(m1+1) - <font color="#2ECC40">log</font>(m1+1)/(m1+2)) / rpower(<font color="#2ECC40">log</font>(m1+2),2) )$(vtype=1) \
+    + ( alpha * 1 / (2 * <font color="#2ECC40">sqrt</font>(alpha*m1) * rpower(1+<font color="#2ECC40">sqrt</font>(alpha*m1),2)) )$(vtype=2)
+  v{1:2} == ( rpower(m{1:2},alpha/2) / (1+rpower(m{1:2},alpha/2)) )$(vtype=0) \
+    + ( <font color="#2ECC40">log</font>(m{1:2}+1) / <font color="#2ECC40">log</font>(m{1:2}+2) )$(vtype=1) \
+    + ( <font color="#2ECC40">sqrt</font>(alpha*m{1:2}) / (1+<font color="#2ECC40">sqrt</font>(alpha*m{1:2})) )$(vtype=2)
+  <font color="#808080"><i># Illness distribution</i></font>
+  fx{1:2} == lambda*<font color="#2ECC40">exp</font>(-lambda*x{1:2})
+
+<font color="red"><b>equ:</b></font>
+  x1 == <font color="#0074D9">Time</font> * xlen1
+  x2 == xlen1 + <font color="#0074D9">Time</font> * (a - xlen1)
+  R{1:2} == w - p + I{1:2} - m{1:2}
+  H{1:2} == h0 - gamma * x{1:2} * (1 - v{1:2})
+  U{1:2} == 1 - <font color="#2ECC40">exp</font>(-s*R{1:2}) + H{1:2}
+  I1&acute; == xlen1 * (1 - gamma*x1*vprime1/dUdR1) * h1
+  I2&acute; == (a-xlen1) * g2 * h2
+  m{1:2}&acute; == {xlen1 (a-xlen1)} * h{1:2}
+  P1&acute; == xlen1 * (1 + sigma) * I1 * fx1
+  P2&acute; == (a-xlen1) * (1 + sigma) * (I2 + c) * fx2
+  J{1:2}&acute; == {xlen1 (a-xlen1)} * U{1:2} * fx{1:2}
+  <font color="#808080"><i># Junction phase 1-2 for P, J, I, m</i></font>
+  0 == <font color="#0074D9">initial</font>(P2) - <font color="#0074D9">final</font>(P1)
+  0 == <font color="#0074D9">initial</font>(J2) - <font color="#0074D9">final</font>(J1)
+  <font color="#808080"><i># Upper bound on jump ie I(x*+) - I(x*-) &lt;= m(x*+) - m(x*-)</i></font>
+  0 &gt;= (<font color="#0074D9">initial</font>(I2) - <font color="#0074D9">final</font>(I1)) - (<font color="#0074D9">initial</font>(m2) - <font color="#0074D9">final</font>(m1))
+  p == <font color="#0074D9">final</font>(P2)
+
+<font color="red"><b>obj:</b></font>
+  <font color="#808080"><i># maximize integral of utility over population</i></font>
+  <font color="#8A2BE2">maximize</font> <font color="#0074D9">final</font>(J2) <font color="#8A2BE2">using</font> nlp
+</pre>
+</body>
+</html>

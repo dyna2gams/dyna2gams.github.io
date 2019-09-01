@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -37,22 +37,25 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <p>
   References:
   <ol>
-  <li>H. M. Robbins,
+  <li>H.M. Robbins,
   <em>Junction phenomena for optimal control with state-variable inequality constraints of third order</em>,
-  J. of Optimization Theory and Applications, 31:85-99, 1980.
-  <li>Audrey Hermant,
+  Journal of Optimization Theory and Applications, 31:85-99, 1980.
+  <li>A. Hermant,
   <em>Sur l&rsquo;algorithme de tir pour les probl&egrave;mes de commande optimale avec contraintes sur l&rsquo;&eacute;tat</em>, 
   PhD thesis, Ecole Polytechnique X, 2008.
   </ol>
 <p>
-  See: <a href="https://project.inria.fr/bocop/robbins/">BOCOP - The optimal control solver</a>
+  See: <a href="https://project.inria.fr/bocop/robbins/">BOCOP - The optimal control solver</a>.
 <p>
 <pre>
 <font color="red"><b>par:</b></font>
   tf = 10
   alpha = 3
+  beta = 0
+  gamma = 0.5
 
-<font color="red"><b>dyn:</b></font> x1 x2 x3 u j
+<font color="red"><b>dyn:</b></font>
+  x1 x2 x3 u j
 
 <font color="red"><b>lim:</b></font>
   0 &lt;= x1 &lt;= 2
@@ -63,6 +66,11 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   x2 = -2
   x3 = 0
   j  = 0
+
+<font color="red"><b>t=tf:</b></font>
+  x1 = 0
+  x2 = 0
+  x3 = 0
 
 <font color="red"><b>ini:</b></font>
   x1 = <font color="#0074D9">linspace</font>(1,0)
@@ -75,10 +83,10 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   x1&acute; == x2
   x2&acute; == x3
   x3&acute; == u
-  j&acute;  == 0.5*(alpha*x1 + 0.5*u*u)
+  j&acute;  == 0.5*(alpha*x1 + beta*x1*x1 + gamma*u*u)
 
 <font color="red"><b>obj:</b></font>
-  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(j) <font color="#8A2BE2">using</font> nlp <font color="#8A2BE2">with</font> minos
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(j) <font color="#8A2BE2">using</font> nlp
 </pre>
 </body>
 </html>

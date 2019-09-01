@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -27,8 +27,9 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   \[
   \min\ \int_0^T e^{-\beta t}(C_E\frac{u(t)^3}{x(t)} -pu(t))\ \mathrm{d}t +0.1 T^2\\
   \dot x = a x(t) (1 - \frac{x(t-h)}{b}) - u(t)\\  
-  x(t) = 2\ \forall t \in [-h,0] \quad,\quad x(t) \ge 2\ \forall t \in [0,T]\\  
-  u(t) \ge 0\ \forall t \in [0,T]\\  
+  x(t) = 2\ \ \forall t \in [-h,0]\\
+  x(t) \ge 2\ \ \forall t \in [0,T]\\  
+  u(t) \ge 0\ \ \forall t \in [0,T]\\  
   T\ \text{free}.
   \]
 <p>
@@ -42,10 +43,10 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <p>
   References:
   <ol>
-  <li>A. Boccia, P. Falugi, H. Maurer, and R. Vinter,
+  <li>A. Boccia, P. Falugi, H. Maurer and R. Vinter,
   <em>Free time optimal control problems with time delays</em>,
-  pages 520-525. IEEE, 2013.
-  <li>L. Goellmann, D. Kern, and H. Maurer,
+  Proceedings of the 52nd IEEE Conference on Decision and Control, pp. 520-525, 2013.
+  <li>L. Goellmann, D. Kern and H. Maurer,
   <em>Optimal control problems with delays in state and control variables subject to mixed control-state constraints</em>,
   Optimal Control Applications and Methods, 30(4):341-365, 2009.
   <li>T. Guinn,
@@ -58,7 +59,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <p>
   See:
   <a href="https://project.inria.fr/bocop/harvest/">
-  BOCOP - The optimal control solver</a>
+  BOCOP - The optimal control solver</a>.
 <p>
 <pre>
 <font color="red"><b>run:</b></font>

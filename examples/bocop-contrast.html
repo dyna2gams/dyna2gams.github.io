@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -48,8 +48,8 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   \]
 <p>
   Considering two different particles with spins \(q_1, q_2\), the contrast is  linked to 
-  \(|\|q_1\| - \|q_2\| |\) at the end of the excitation phase. The classical "contrast by
-  saturation" method consists in bringing one  spin to the origin (saturation) and the other as
+  \(|\|q_1\| - \|q_2\| |\) at the end of the excitation phase. The classical &ldquo;contrast by
+  saturation&rdquo; method consists in bringing one spin to the origin (saturation) and the other as
   far as possible. Assuming both spins start from the equilibrium point at the north pole, the
   optimal control problem is
 <p>
@@ -78,16 +78,16 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   <em>Comparison of Numerical Methods in the Contrast Imaging Problem in NMR</em>,
   In 52nd IEEE Conference on Decision and Control, Firenze, Italy, 2013.
   <li>B. Bonnard, M. Claeys, O. Cots and P. Martinon,
-  <em>Geometric and numerical methods in the contrast imaging problem in the contrast imaging problem</em>,
-  In nuclear magnetic resonance. Acta Applicandae Mathematicae, pages 1-41, 2015.
+  <em>Geometric and Numerical Methods in the Contrast Imaging Problem</em>,
+  In nuclear magnetic resonance. Acta Applicandae Mathematicae, pp. 1-41, 2015.
   <li>O. Cots,
   <em>Contrôle optimal g&eacute;om&eacute;trique: m&eacute;thodes homotopiques et applications</em>,
   PhD thesis, 2012.
   </ol>
 <p>
   See:
-  <a href="https://project.inria.fr/bocop/anaerobic-digestion-of-micro-algae-for-bio-gaz-production/">
-  BOCOP - The optimal control solver</a>
+  <a href="https://www.bocop.org/contrast-in-nuclear-magnetic-resonance-imagery/">
+  BOCOP - The optimal control solver</a>.
 <p>
 <pre>
 <font color="red"><b>par:</b></font>
@@ -135,9 +135,9 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 
 <font color="red"><b>equ:</b></font>
   <font color="#808080"><i># dynamics for 1st and 2nd spin</i></font>
-  y1&acute; == - (biggamma1 * y1 - ux * z1) * Tmin * tmincoeff * 2 * pi
+  y1&acute; == (-biggamma1 * y1 - ux * z1) * Tmin * tmincoeff * 2 * pi
   z1&acute; == (smallgamma1 * (1 - z1) + ux * y1) * Tmin * tmincoeff * 2 * pi
-  y2&acute; == - (biggamma2 * y2 - ux * z2)  * Tmin * tmincoeff * 2 * pi
+  y2&acute; == (-biggamma2 * y2 - ux * z2)  * Tmin * tmincoeff * 2 * pi
   z2&acute; == (smallgamma2 * (1 - z2) + ux * y2) * Tmin * tmincoeff * 2 * pi	
   <font color="#808080"><i># quadratic regularization</i></font>
   reg&acute; == 10**(-regcoeff) * <font color="#2ECC40">sqr</font>(ux) * Tmin * tmincoeff * 2 * pi

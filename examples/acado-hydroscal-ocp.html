@@ -1,0 +1,368 @@
+<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Distillation column</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Distillation column
+</pre>
+<p>
+  The distillation column is used for the separation of a binary mixture of Methanol and
+  n-Propanol. It consists of 40 bubble cap trays. The overhead vapor is totally
+  condensed in a water cooled condenser which is open to atmosphere. The preheated feed
+  stream enters the column at the feed tray as saturated liquid. In the considered
+  configuration, the process inputs that are available for control purposes are the heat
+  input to the reboiler and the reflux flow rate.  Control aim is to maintain high purity
+  specifications for the distillate and bottom product streams.
+<p>
+  The simulated scenario is a step change in the feed flow rate.  Another possible one is
+  a step change in the feed composition.
+<p>
+  Reference:
+  <ol>
+  <li>M. Diehl,
+  <em>Real-Time Optimization for Large Scale Nonlinear Processes</em>,
+  PhD thesis, Universit&auml;t Heidelberg, 2001.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">substitute-symbols</font> = A1&gt;AA1 | B1&gt;BB1 | C1&gt;CC1 | A2&gt;AA2 | B2&gt;BB2 | C2&gt;CC2 | <font color="#0074D9">n</font>&gt;nm | T&gt;TT | L&gt;LL | B&gt;BB | D&gt;DD | F&gt;FF | TC&gt;TTC | TF&gt;TTF
+  <font color="#39CCCC">default-collocation-family</font> = DL
+  <font color="#39CCCC">default-time-steps-number</font> = 6
+  <font color="#39CCCC">simulation-method</font> = NA
+
+<font color="red"><b>set:</b></font>
+  rtcFC = reboiler,tray1:tray40,condenser,'F','C'	<font color="#808080"><i># C for condensate, F for feed</i></font>
+  rtc(rtcFC) = reboiler,tray1:tray40,condenser
+  t(rtc) = tray1:tray40
+  t_40(rtc) = tray1:tray39
+  t40(rtc) = tray40
+  strip(rtc) = tray1:tray20
+  rect(rtc) = tray21:tray40
+  rt(rtc) = reboiler,tray1:tray40
+  tc(rtc) = tray1:tray40,condenser
+  feed(rtc) = tray20
+  r(rtc) = reboiler
+  c(rtc) = condenser
+  rc(rtc) = reboiler,condenser
+  <font color="#8A2BE2">alias</font>(l,rtc)
+
+<font color="red"><b>par:</b></font>
+  a1 = 2.288		<font color="#808080"><i># [mol/l]</i></font>
+  b1 = 0.2685		<font color="#808080"><i># [-]</i></font>
+  c1 = 512.4		<font color="#808080"><i># [K]</i></font>
+  d1 = 0.2453		<font color="#808080"><i># [-]</i></font>
+  a2 = 1.235		<font color="#808080"><i># [mol/l</i></font>
+  b2 = 0.27136		<font color="#808080"><i># [-]</i></font>
+  c2 = 536.4		<font color="#808080"><i># [K]</i></font>
+  d2 = 0.2400		<font color="#808080"><i># [-]</i></font>
+
+  A1 = 23.48		<font color="#808080"><i># [-]</i></font>
+  B1 = 3626.6		<font color="#808080"><i># [K]</i></font>
+  C1 = -34.39		<font color="#808080"><i># [K]</i></font>
+  A2 = 22.437		<font color="#808080"><i># [-]</i></font>
+  B2 = 3166.4		<font color="#808080"><i># [K]</i></font>
+  C2 = -80.15		<font color="#808080"><i># [K]</i></font>
+
+  h11 = 18.31		<font color="#808080"><i># [K^{-1}]</i></font>
+  h21 = 1.713e-2	<font color="#808080"><i># [K^{-2}]</i></font>
+  h31 = 6.399e-5	<font color="#808080"><i># [K^{-3}]</i></font>
+  Tc1 = 512.6		<font color="#808080"><i># [K]</i></font>
+  Pc1 = 8.096e+6	<font color="#808080"><i># [Pa]</i></font>
+  Omega1 = 0.557
+  h12 = 31.92		<font color="#808080"><i># [K^{-1}]</i></font>
+  h22 = 4.49e-2		<font color="#808080"><i># [K^{-2}]</i></font>
+  h32 = 9.663e-5	<font color="#808080"><i># [K^{-3}]</i></font>
+  Tc2 = 536.7		<font color="#808080"><i># [K]</i></font>
+  Pc2 = 5.166e+6	<font color="#808080"><i># [Pa]</i></font>
+  Omega2 = 0.612
+
+  RV = 8.3147		<font color="#808080"><i># [J/mol/K]</i></font>
+  aV = 6.09648
+  bV = 1.28862
+  cV = 1.016
+  dV = 15.6875
+  eV = 13.4721
+  fV = 2.615
+
+  C0 = 4.186		<font color="#808080"><i># [J/mol]</i></font>
+  K0 = 273.15		<font color="#808080"><i># [K]</i></font>
+
+  nv_r = 8.5		<font color="#808080"><i># [l]</i></font>
+  nv_c = 0.17		<font color="#808080"><i># [l]</i></font>
+  nref = 0.155		<font color="#808080"><i># [l]</i></font>
+  alpha_rect = 0.35	<font color="#808080"><i># [-]</i></font>
+  alpha_strip = 0.62	<font color="#808080"><i># [-]</i></font>
+  alpha[l] = alpha_rect$rect(l) + alpha_strip$strip(l)
+  W = 0.166		<font color="#808080"><i># [l^{-0.5}/s]</i></font>
+  Qloss = 0.51e+3	<font color="#808080"><i># [W]</i></font>
+  Ptop = 9.39e+4	<font color="#808080"><i># [Pa]</i></font>
+  dP_rect = 1.9e+2	<font color="#808080"><i># [Pa]</i></font>
+  dP_strip = 2.5e+2	<font color="#808080"><i># [Pa]</i></font>
+  dP[l] = dP_rect$rect(l) + dP_strip$strip(l)
+  <font color="#808080"><i>#Fvol = 14/3600	# [l/s]		Feed flow rate</i></font>
+  <font color="#808080"><i>#XF = 0.32		# [-]		Methanol concentration in the feed</i></font>
+  TF = 71 + K0		<font color="#808080"><i># [K]		Temperature of the feed</i></font>
+  TC = 47.2 + K0	<font color="#808080"><i># [K]		Temperature of the condensate</i></font>
+
+  Lvol_d = 4.1834/3600	<font color="#808080"><i># [l/s]</i></font>
+  Q_d = 2.49e+3		<font color="#808080"><i># [W]</i></font>
+  T14_d = 88 + K0	<font color="#808080"><i># [K]</i></font>
+  T28_d = 70 + K0	<font color="#808080"><i># [K]</i></font>
+
+  tf = 6000		<font color="#808080"><i># [s]</i></font>
+
+<font color="red"><b>tpa:</b></font>
+  <font color="#808080"><i>#Fvol = 14/3600*(1-0.1$(Time&gt;1000))</i></font>
+  <font color="#808080"><i>#XF = 0.32 - 0.045$(Time&gt;1000)</i></font>
+  Fvol = 14/3600
+  XF = 0.32
+
+<font color="red"><b>var:</b></font>
+  P[rtcFC]		<font color="#808080"><i># [Pa]		Pressures of reboiler, trays and condenser</i></font>
+
+<font color="red"><b>dyn:</b></font>
+  <font color="#808080"><i># differential states</i></font>
+  X[rtcFC]		<font color="#808080"><i># [-]		Liquid Methanol concentrations of reboiler, trays and condenser</i></font>
+  <font color="#0074D9">n</font>[rtc]		<font color="#808080"><i># [mol]		Molar holdups of the tray</i></font>
+
+  <font color="#808080"><i># control inputs</i></font>
+  Lvol			<font color="#808080"><i># [l/s]		Volumetric reflux flow</i></font>
+  Q			<font color="#808080"><i># [W]		Heat input</i></font>
+
+  <font color="#808080"><i># ancillary variables</i></font>
+  T[rtcFC]		<font color="#808080"><i># [K]		Temperature</i></font>
+  V[rtc]		<font color="#808080"><i># [mol/s]	Molar vapor flux out of the reboiler and each tray</i></font>
+  L[rtc]		<font color="#808080"><i># [mol/s]	Molar liquid flux out of each tray and the condenser</i></font>
+  Y[rtc]		<font color="#808080"><i># [-]		Vapor Methanol concentrations of reboiler, trays and condenser</i></font>
+  nv[rtc]		<font color="#808080"><i># [l]		Liquid volume holdup of the tray</i></font>
+  B			<font color="#808080"><i># [mol/s]	Liquid bottom product stream</i></font>
+  D			<font color="#808080"><i># [mol/s]	Distillate stream out of the condenser</i></font>
+  F			<font color="#808080"><i># [mol/s]	Molar feed stream entering at feed tray (assumed to be liquid)</i></font>
+  X_dot[rtc]		<font color="#808080"><i># [1/s]</i></font>
+  n_dot[rtc]		<font color="#808080"><i># [mol/s]</i></font>
+  T_dot[rtc]		<font color="#808080"><i># [K/s]</i></font>
+
+  <font color="#808080"><i># criterion</i></font>
+  J
+
+<font color="red"><b>lim:</b></font>
+  0 &lt;= X[l] &lt;= 1
+  0 &lt;= Y[l] &lt;= 1
+  Ptop &lt;= P[l] &lt;= +<font color="#3D9970">inf</font>
+  K0 &lt;= T[l] &lt;= <font color="#2ECC40">min</font>(c1,c2)
+  nref &lt;= nv[l] &lt;= 100*nref
+  Lvol_d - 2/3600 &lt;= Lvol &lt;= Lvol_d + 2/3600
+  Q_d - 2e+3 &lt;= Q &lt;= Q_d + 2e+3
+  0 &lt;= <font color="#0074D9">n</font>[l] &lt;= +<font color="#3D9970">inf</font>
+  0 &lt;= L[tc] &lt;= +<font color="#3D9970">inf</font>
+  0 &lt;= V[rt] &lt;= +<font color="#3D9970">inf</font>
+  0 &lt;= B &lt;= +<font color="#3D9970">inf</font>
+  0 &lt;= D &lt;= +<font color="#3D9970">inf</font>
+  0 &lt;= F &lt;= +<font color="#3D9970">inf</font>
+
+<font color="red"><b>par:</b></font>
+  X_0[l] = /\
+    reboiler  2.193611617799063e-1,\
+    tray1     3.336302862386372e-1,\
+    tray2     3.731313325062595e-1,\
+    tray3     3.989647235465433e-1,\
+    tray4     4.153371938126047e-1,\
+    tray5     4.254839937228718e-1,\
+    tray6     4.316837935421362e-1,\
+    tray7     4.354356975123645e-1,\
+    tray8     4.376891864721443e-1,\
+    tray9     4.390326290592829e-1,\
+    tray10    4.398259731565673e-1,\
+    tray11    4.402877497904797e-1,\
+    tray12    4.405500251890295e-1,\
+    tray13    4.406923891700805e-1,\
+    tray14    4.407627240811209e-1,\
+    tray15    4.407898054346100e-1,\
+    tray16    4.407909141231114e-1,\
+    tray17    4.407764231283412e-1,\
+    tray18    4.407525567999844e-1,\
+    tray19    4.407230491123104e-1,\
+    tray20    4.406901395817392e-1,\
+    tray21    6.704192618964515e-1,\
+    tray22    7.351799737575895e-1,\
+    tray23    7.897597894363141e-1,\
+    tray24    8.348172515953903e-1,\
+    tray25    8.712537707738074e-1,\
+    tray26    9.002727507876772e-1,\
+    tray27    9.231246453639430e-1,\
+    tray28    9.409695498079861e-1,\
+    tray29    9.548173126279774e-1,\
+    tray30    9.655127114536888e-1,\
+    tray31    9.737440177301049e-1,\
+    tray32    9.800618607216670e-1,\
+    tray33    9.849010948567534e-1,\
+    tray34    9.886019477109929e-1,\
+    tray35    9.914287934200833e-1,\
+    tray36    9.935860233184747e-1,\
+    tray37    9.952310563223864e-1,\
+    tray38    9.964847878570199e-1,\
+    tray39    9.974398630174197e-1,\
+    tray40    9.981671609731486e-1,\
+    condenser 9.987208401428007e-1\
+    /
+  n_0[t] = /\
+    tray1  3.863381195673097,\
+    tray2  3.932226049802884,\
+    tray3  3.977196562639253,\
+    tray4  4.006307033386973,\
+    tray5  4.024602684414341,\
+    tray6  4.035888895882183,\
+    tray7  4.042769039878679,\
+    tray8  4.046930043347702,\
+    tray9  4.049431464802033,\
+    tray10 4.050926756002938,\
+    tray11 4.051814558339763,\
+    tray12 4.052336484637980,\
+    tray13 4.052638397746030,\
+    tray14 4.052808143763277,\
+    tray15 4.052898549113454,\
+    tray16 4.052941351027017,\
+    tray17 4.052955604932446,\
+    tray18 4.052952747144880,\
+    tray19 4.052939639227801,\
+    tray20 4.052920397049691,\
+    tray21 3.607116495091858,\
+    tray22 3.758375450343839,\
+    tray23 3.891714848144197,\
+    tray24 4.009430069874156,\
+    tray25 4.110221672579829,\
+    tray26 4.194403852062067,\
+    tray27 4.263327516656060,\
+    tray28 4.318875545210917,\
+    tray29 4.363094790985764,\
+    tray30 4.397962224784139,\
+    tray31 4.425258001249774,\
+    tray32 4.446512894719387,\
+    tray33 4.463001831479197,\
+    tray34 4.475762615001557,\
+    tray35 4.485626009494682,\
+    tray36 4.493248855180850,\
+    tray37 4.499145695962933,\
+    tray38 4.503716811689627,\
+    tray39 4.507271960563973,\
+    tray40 4.510049896978241\
+    /				
+
+<font color="red"><b>t=t0:</b></font>
+  X[l] = X_0[l]
+  <font color="#0074D9">n</font>[t] = n_0[t]
+  J = 0
+
+<font color="red"><b>ini:</b></font>
+  X[l] = <font color="#0074D9">initial</font>(X[l])
+  <font color="#0074D9">n</font>[t] = <font color="#0074D9">initial</font>(<font color="#0074D9">n</font>[t])
+  P[l] = Ptop
+  L[l]$tc(l) = <font color="#3D9970">smax</font>(t,n_0[t])
+  V[l]$rt(l) = <font color="#3D9970">smax</font>(t,n_0[t])
+  B = <font color="#3D9970">smax</font>(t,n_0[t])
+  D = <font color="#3D9970">smax</font>(t,n_0[t])
+  F = <font color="#3D9970">smax</font>(t,n_0[t])
+
+<font color="red"><b>exp:</b></font>
+  VM(l)		== X[l]*VM1(l) + (1-X[l])*VM2(l)
+  VM{1:2}(l)	== b{1:2}^(1+(1-T[l]/c{1:2})^d{1:2})/a{1:2}
+  PS{1:2}(l)	== <font color="#2ECC40">exp</font>(A{1:2}-B{1:2}/(T[l]+C{1:2}))
+  hL(l)		== X[l]*hL1(l) + (1-X[l])*hL2(l)
+  hL{1:2}(l)	== C0*<font color="#0074D9">Poly3</font>((T[l]-K0),h3{1:2},h2{1:2},h1{1:2},0)
+  hV(l)		== Y[l]*hV1(l) + (1-Y[l])*hV2(l)
+  hV{1:2}(l)	== hL{1:2}(l) + RV*Tc{1:2}*<font color="#2ECC40">sqrt</font>(1-(P[l]/Pc{1:2})*(Tc{1:2}/T[l])^3)*(aV-bV*T[l]/Tc{1:2}+cV*(T[l]/Tc{1:2})^7+Omega{1:2}*(dV-eV*T[l]/Tc{1:2}+fV*(T[l]/Tc{1:2})^7))
+  dVMdX(l)	== VM1(l) - VM2(l)
+  dVMdT(l)	== X[l]*dVM1dT(l) + (1-X[l])*dVM2dT(l)
+  dVM{1:2}dT(l)	== -<font color="#2ECC40">log</font>(b{1:2})*d{1:2}*(1+(1-T[l]/c{1:2})^(d{1:2}-1))*VM{1:2}(l)/c{1:2}
+  dPS{1:2}dT(l)	== B{1:2}/<font color="#2ECC40">sqr</font>(T[l]+C{1:2})*PS{1:2}(l)
+  dhLdX(l)	== hL1(l) - hL2(l)
+  dhLdT(l)	== X[l]*dhL1dT(l) + (1-X[l])*dhL2dT(l)
+  dhL{1:2}dT(l)	== C0*<font color="#0074D9">Poly2</font>((T[l]-K0),3*h3{1:2},2*h2{1:2},h1{1:2})
+
+<font color="red"><b>equ:</b></font>
+  [l]$t(l)..	<font color="#0074D9">n</font>&acute;[l] == n_dot[l]
+  [l]..		X&acute;[l] == X_dot[l]
+
+  [l]..		nv[l] == VM(l) * <font color="#0074D9">n</font>[l]
+  [c]..		P[c] == Ptop
+  [l]$rt(l)..	P[l] == P[l+1] + dP[l]
+  [l]..		P[l] - PS1(l)*X[l] - PS2(l)*(1-X[l]) == 0
+  [l]..		T_dot[l] == - (PS1(l)-PS2(l)) / (dPS1dT(l)*X[l]+dPS2dT(l)*(1-X[l])) * X_dot[l]
+  [l]$r(l)..	Y[l] == PS1(l)/P[l]*X[l]
+  [l]$t(l)..	Y[l] == alpha[l]*PS1(l)/P[l]*X[l] + (1-alpha[l])*Y[l-1]
+
+  <font color="#808080"><i># mass balance</i></font>
+  [l]$r(l)..	n_dot[l] ==        - V[l] + L[l+1]        - B
+  [l]$t(l)..	n_dot[l] == V[l-1] - V[l] + L[l+1] - L[l] + F$feed(l)
+  [l]$c(l)..	n_dot[l] == V[l-1]                 - L[l] - D
+  [l]$rc(l)..	n_dot[l]*VM(l) + <font color="#0074D9">n</font>[l]*(dVMdX(l)*X_dot[l] + dVMdT(l)*T_dot[l]) == 0
+
+  [feed]..	F*VM('F') == Fvol
+  		X['F'] == XF
+  		T['F'] == TF
+
+  [c].. 	L[c]*VM('C') == Lvol
+  [c].. 	X['C'] == X[c]
+  		T['C'] == TC
+
+  [l]$r(l)..	X_dot[l]*<font color="#0074D9">n</font>[l] + X[l]*n_dot[l] ==               - V[l]*Y[l] + L[l+1]*X[l+1]             - B*X[l]
+  [l]$t(l)..	X_dot[l]*<font color="#0074D9">n</font>[l] + X[l]*n_dot[l] == V[l-1]*Y[l-1] - V[l]*Y[l] + L[l+1]*X[l+1] - L[l]*X[l] + F*XF$feed(l)
+  [l]$c(l)..	X_dot[l]*<font color="#0074D9">n</font>[l] + X[l]*n_dot[l] == V[l-1]*Y[l-1]                             - L[l]*X[l] - D*X[l]
+
+  <font color="#808080"><i># enthalpy balance</i></font>
+  [l]$r(l)..	n_dot[l]*hL(l) + <font color="#0074D9">n</font>[l]*(dhLdX(l)*X_dot[l]+dhLdT(l)*T_dot[l]) == Q - Qloss      - V[l]*hV(l) + L[l+1]*hL(l+1)              - B*hL(l)
+  [l]$t_40(l)..	n_dot[l]*hL(l) + <font color="#0074D9">n</font>[l]*(dhLdX(l)*X_dot[l]+dhLdT(l)*T_dot[l]) == V[l-1]*hV(l-1) - V[l]*hV(l) + L[l+1]*hL(l+1) - L[l]*hL(l) + F*hL('F')$feed(l)
+  [l]$t40(l)..	n_dot[l]*hL(l) + <font color="#0074D9">n</font>[l]*(dhLdX(l)*X_dot[l]+dhLdT(l)*T_dot[l]) == V[l-1]*hV(l-1) - V[l]*hV(l) + L[l+1]*hL('C') - L[l]*hL(l)
+  [feed]..	P['F'] == P[feed]
+  [c]..		P['C'] == P[c]
+
+  <font color="#808080"><i># hydrodynamics</i></font>
+  [l]$t(l)..	L[l]*VM(l) == W*(nv[l]-nref)^1.5
+
+  nv[r] == nv_r
+  nv[c] == nv_c
+
+  <font color="#808080"><i># criterion</i></font>
+  J&acute; == 1/<font color="#2ECC40">sqr</font>(0.5*(T14_d+T28_d))*(<font color="#2ECC40">sqr</font>(T['tray14']-T14_d)+<font color="#2ECC40">sqr</font>(T['tray28']-T28_d)) + 1e-4*(<font color="#2ECC40">sqr</font>(Lvol-Lvol_d)/<font color="#2ECC40">sqr</font>(Lvol_d)+<font color="#2ECC40">sqr</font>(Q-Q_d)/<font color="#2ECC40">sqr</font>(Q_d))
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>par:</b></font>
+  X_00[l] = 0
+  n_00[t] = 0
+
+<font color="red"><b>gms:</b></font>
+  <font color="#8B0000">$$ifthen</font> <font color="#8A2BE2">%ITER%</font>==<font color="#8A2BE2">%ITERMAX%</font>
+  <font color="#808080"><i># A first pass stabilized the system around nominal conditions.</i></font>
+  <font color="#808080"><i># This second pass simulates a departure from those onwards.</i></font>
+  X_00[l] = <font color="#0074D9">final</font>(X.l[l]);
+  n_00[t] = <font color="#0074D9">final</font>(<font color="#0074D9">n</font>.l[t]);
+  <font color="#8A2BE2">@setlim0</font> Var=X[l], Vlo=X_00[l], Vup=X_00[l]
+  <font color="#8A2BE2">@setlim0</font> Var=<font color="#0074D9">n</font>[t], Vlo=n_00[t], Vup=n_00[t]
+  <font color="#808080"><i># response to step disturbances</i></font>
+  Fvol = 14/3600*(1-0.1$(<font color="#0074D9">Time</font>&gt;1000));
+  XF = 0.32 - 0.045$(<font color="#0074D9">Time</font>&gt;1000);
+  <font color="#808080"><i># response to noisy disturbances</i></font>
+  <font color="#808080"><i>#Fvol = 14/3600 * normal(1,0.05);</i></font>
+  <font color="#808080"><i>#XF = 0.32 * normal(1,0.05);</i></font>
+  <font color="#8A2BE2">@solve</font>
+  <font color="#8A2BE2">@csvsave</font> Fvol
+  <font color="#8B0000">$$endif</font>
+</pre>
+</body>
+</html>

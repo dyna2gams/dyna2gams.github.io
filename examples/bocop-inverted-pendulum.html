@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -36,55 +36,58 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <p>
   We want to minimize the objective
 <p>
-  \[\min \int_0^T (x^2(t) + (y(t)-1)^2 + u^2(t)) \ \mathrm{d}t\]
+  \[\min \int_0^T \big(x^2(t) + (y(t)-1)^2 + \gamma u^2(t)\big) \ \mathrm{d}t\]
 <p>
-  See: <a href="https://project.inria.fr/bocop/inverted-pendulum-2/">BOCOP - The optimal control solver</a>
-<p>
-  Comment: due to the discretization probably, lambda looks suspicious.
-  Instead of imposing the constraint \(x^2 + y^2 = 1\), using the analytical value of lambda
-  \(-(\dot x^2 + \dot y^2 + u x - m g y)\) gives better results.
+  See: <a href="https://project.inria.fr/bocop/inverted-pendulum-2/">BOCOP - The optimal control solver</a>.
 <p>
 <pre>
 <font color="red"><b>par:</b></font>
   tf = 12
   m = 1
   g = 1
+  gamma = 1
 
-<font color="red"><b>dyn:</b></font> x1 x2 y1 y2 lambda u j
+<font color="red"><b>dyn:</b></font>
+  x vx y vy lambda u j
 
 <font color="red"><b>lim:</b></font>
+  -1 &lt;= x &lt;= 1
+  -1 &lt;= y &lt;= 1
   -1 &lt;= u &lt;= 1
-  
+
 <font color="red"><b>t=t0:</b></font>
-  x1 = -0.4794255
-  x2 = 1.0530991
-  y1 = 0.8775826
-  y2 = 0.5753106
+  x = -0.4794255
+  vx = 1.0530991
+  y = 0.8775826
+  vy = 0.5753106
   j = 0
 
 <font color="red"><b>t=tf:</b></font>
-  x1 = 0
-  x2 = 0
-  y1 = 1
-  y2 = 0
-  
+  x = 0
+  vx = 0
+  y = 1
+  vy = 0
+
 <font color="red"><b>ini:</b></font>
-  x1 = -0.4794255
-  x2 = 1.0530991
-  y1 = 0.8775826
-  y2 = 0.5753106
+  x = <font color="#0074D9">linspace</font>(<font color="#0074D9">initial</font>(x),<font color="#0074D9">final</font>(x))
+  vx = <font color="#0074D9">linspace</font>(<font color="#0074D9">initial</font>(vx),<font color="#0074D9">final</font>(vx))
+  y = <font color="#0074D9">linspace</font>(<font color="#0074D9">initial</font>(y),<font color="#0074D9">final</font>(y))
+  vy = <font color="#0074D9">linspace</font>(<font color="#0074D9">initial</font>(vy),<font color="#0074D9">final</font>(vy))
   u = 0
 
 <font color="red"><b>equ:</b></font>
-  x1&acute; == x2
-  m*x2&acute; == lambda*x1 + u
-  y1&acute; == y2
-  m*y2&acute; == lambda*y1 - m*g 
-  j&acute; == <font color="#2ECC40">sqr</font>(x1) + <font color="#2ECC40">sqr</font>(y1-1) + <font color="#2ECC40">sqr</font>(u)
-  <font color="#808080"><i># sqr(x1) + sqr(y1) == 1  </i></font>
-  lambda == - <font color="#2ECC40">sqr</font>(x2) - u*x1 - <font color="#2ECC40">sqr</font>(y2) + y1
+  x&acute; == vx
+  m*vx&acute; == lambda*x + u
+  y&acute; == vy
+  m*vy&acute; == lambda*y - m*g
+  j&acute; == <font color="#2ECC40">sqr</font>(x) + <font color="#2ECC40">sqr</font>(y-1) + gamma*<font color="#2ECC40">sqr</font>(u)
+  m*vx*vx + m*vy*vy + lambda*(x*x+y*y) + u*x - m*g*y == 0
 
-<font color="red"><b>obj:</b></font> <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(j) <font color="#8A2BE2">using</font> nlp
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(j) <font color="#8A2BE2">using</font> nlp
+  
+<font color="red"><b>gms:</b></font>
+  <font color="#8A2BE2">@solveloop</font> Method=bndobj
 </pre>
 </body>
 </html>

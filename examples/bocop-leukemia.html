@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -124,12 +124,12 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <p>
   References:
   <ol>
-  <li>M. Adimy, F. Crauste, and A. El Abdllaoui,
+  <li>M. Adimy, F. Crauste and A. El Abdllaoui,
   <em>Discrete maturity-structured model of cell differentiation with applications to acute myelogenous leukemia</em>,
-  J. Biol. Systems, 16(3):395-424, 2008
+  Journal of Biological Systems, 16(3):395-424, 2008.
   <li>X. Dupuis,
   <em>Optimal control of leukemic cell population dynamics</em>,
-  Math. Model. Nat. Phenom., 9(1):4-26, 2014.
+  Mathematical Modelling of Natural Phenomena, 9(1):4-26, 2014.
   <li>M.C. Mackey,
   <em>Unified hypothesis for the origin of aplastic anemia and periodic hematopoiesis</em>,
   Blood, 51(5):941-956, 1978.
@@ -137,14 +137,14 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <p>
   See:
   <a href="https://project.inria.fr/bocop/leukemia/">
-  BOCOP - The optimal control solver</a>
-<p>
-  Note: We cannot reproduce exactly the solution of BOCOP.
+  BOCOP - The optimal control solver</a>.
 <p>
 <pre>
 <font color="red"><b>run:</b></font>
   <font color="#39CCCC">substitute-symbols</font> = U&gt;uu | Ubar&gt;uubar
   <font color="#39CCCC">default-collocation-method</font> = L3A2
+  <font color="#39CCCC">default-time-steps-number</font> = 12
+  <font color="#39CCCC">gams-option</font> = reslim=7200
 
 <font color="red"><b>par:</b></font>
   tau = 1
@@ -236,12 +236,12 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 
   <font color="#808080"><i># ptilde(t,tau)</i></font>
   pttau == <font color="#2ECC40">ifthen</font>(<font color="#0074D9">Time</font> &lt; tau, \
-    p0*(tau-<font color="#0074D9">Time</font>)*2*<font color="#2ECC40">exp</font>(-gamma*<font color="#0074D9">Time</font>-(lambda+gamma)*tau), \
+    p0*2*<font color="#2ECC40">exp</font>(-gamma*<font color="#0074D9">Time</font>-(lambda+gamma)*tau), \
     (1-<font color="#0074D9">delay</font>(k,tau))*(lambda+beta)*<font color="#0074D9">delay</font>(R,tau)*<font color="#2ECC40">exp</font>(lambda*tau))
 
   <font color="#808080"><i># ptilde(t,2tau)</i></font>
   pt2tau == <font color="#2ECC40">ifthen</font>(<font color="#0074D9">Time</font> &lt; 2*tau, \
-    p0*(2*tau-<font color="#0074D9">Time</font>)*2*<font color="#2ECC40">exp</font>(-gamma*<font color="#0074D9">Time</font>-y), \
+    p0*2*<font color="#2ECC40">exp</font>(-gamma*<font color="#0074D9">Time</font>-y), \
     (1-<font color="#0074D9">delay</font>(k,2*tau))*(lambda+beta)*<font color="#0074D9">delay</font>(R,2*tau)*<font color="#2ECC40">exp</font>(lambda*2*tau-y))
 
   uprev == <font color="#2ECC40">ifthen</font>(<font color="#0074D9">Time</font> &lt; tau, 0, <font color="#0074D9">delay</font>(u,tau))
@@ -261,8 +261,13 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   P2&acute; == (-gamma-u)*P2 + auxP - auxP2
 
 <font color="red"><b>obj:</b></font>
-  <font color="#808080"><i># Knitro does a very good job here and much better then ipopt or conopt</i></font>
-  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(R)+<font color="#0074D9">final</font>(Ptilde) <font color="#8A2BE2">using</font> dnlp <font color="#8A2BE2">with</font> knitro
+  <font color="#808080"><i># Knitro does a very good job here and much better than ipopt or conopt</i></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(R)+<font color="#0074D9">final</font>(Ptilde) <font color="#8A2BE2">using</font> dnlp <font color="#8A2BE2">with</font> knitro|conopt
+  
+<font color="red"><b>gms:</b></font>
+  <font color="#8A2BE2">@solveloop</font> Method=movavg, Paraml=3 0.95, Varl=u v, Target=infes, Maxiter=3
+  <font color="#8A2BE2">@solveloop</font> Method=bndobj
+
 </pre>
 </body>
 </html>

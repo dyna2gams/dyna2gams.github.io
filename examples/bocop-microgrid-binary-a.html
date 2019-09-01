@@ -1,0 +1,177 @@
+<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Energy management for an electric microgrid (binary variant)</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Energy management for an electric microgrid (binary variant)
+</pre>
+<p>
+  We present here a microgrid problem introduced and solved by MILP techniques in [1], later
+  studied in [2] with direct and Hamilton-Jacobi-Bellman methods. In the context of an
+  isolated village in the Chilean mountains, we consider a microgrid comprised of a diesel
+  generator, photovoltaic panels and a battery energy storage system (BESS). The aim is to
+  satisfy the energy demand (power load) from the villagers at all times, while minimizing the
+  overall diesel consumption. One of the difficulties is that the diesel generator has a turn-on
+  cost, thus we have to keep track of its on/off state over time. This problem falls in the
+  class of switched systems and can be solved with a dynamic programming approach.
+<p>
+  We consider a fixed horizon \(T = 48\) hours. For \(t \in [0, T]\), we denote by \(P_S(t)\)
+  the solar power from the photovoltaic panels, \(P_D(t)\) the diesel generator power and
+  \(P_L(t)\) the electricity load.
+<p>
+  The state of charge \(SOC(t)\) of the BESS evolves according to
+<p>
+  \[
+  \dot{SOC}(t) = \frac{1}{Q_B} (P_I(t) \rho_I - P_O(t) / \rho_O) = \frac{1}{Q_B} (P_I(t) \tilde{\rho} - P_O(t))
+  \]
+<p>
+  where \(Q_B\) is the maximum capacity of the battery, \(P_I, P_O > 0\) are the input and
+  output power of the BESS, and \(\rho_I, \rho_O\) are the efficiency ratios for the charge
+  and discharge processes, assumed constant. We introduce the slack variable \(P_{slack}\)
+  that represents the excess power \(P_{slack} < 0\), which has to be shed, or the missing
+  power in the microgrid \(P_{slack} > 0\), which turns into unmet demand. The addition of
+  this variable ensures the mathematical feasibility of the problem.
+<p>
+  We model the fuel consumption of the diesel generator by
+<p>
+  \[
+  \int_0^T K P_D(t)^{0.9} \ \mathrm{d}t, \ K = 0.471.
+  \]
+<p>
+  The fuel consumption curve is strictly concave and was extrapolated from the datasheet
+  provided by the diesel generator manufacturer as in [1]. Note that turning the diesel
+  generator on adds a fixed instantaneous consumption of 2 liter. Total cost is the sum of the
+  diesel cost and unserved energy cost \(C_{US} P_{slack}^+\), with \(C_{US} = 1000 \ \text{CLP}\)
+  and the unit price for diesel \(C_D = 500 \ \text{CLP}\) (Chilean Pesos).
+<p>
+  For physical reasons, the system is subject to the following constraints at every time \(t
+  \in [0,T]\). These include the bounds for the battery state of charge, diesel generator
+  power output, and discharge charge limits for the BESS
+<p>
+  \[
+  \begin{cases}
+  SOC(t) \in [0.2,1], \ P_D(t) \in \{0\} \cup [5,20], \ P_O(t) \in [0,40], \\
+  P_I(t,P_D(t),P_{slack}) \in [0,13.2] \text{  if  } SOC(t) < 0.9, \\
+  P_I(t,P_D(t),P_{slack}) \leq 13.2 (1-SOC(t))^2 \text{  otherwise}.
+  \end{cases}
+  \]
+<p>
+  Moreover, the power equilibrium must hold at all times:
+<p>
+  \[
+  P_D + P_O + P_S + P_{slack} - P_L - P_I = 0.
+  \]
+<p>
+  In this version, we don&rsquo;t consider the startup cost of the diesel generator.
+<p>
+  References:
+  <ol>
+  <li>R. Palma-Behnke, C. Benavides, F. Lanas, B. Severino, L. Reyes, J. Llanos, and D. Sez,
+  <em>A microgrid energy management system based on the rolling horizon strategy</em>,
+  IEEE Transactions on Smart Grid, 4(2):996-1006, 2013.
+  <li>B. Heymann, J.F Bonnans, P. Martinon, F.J. Silva, F. Lanas, and G. Jim&eacute;nez-Est&eacute;vez,
+  <em>Continuous optimal control approaches to microgrid energy management</em>,
+  Energy Systems, 2017.
+  </ol>
+<p>
+  See: <a href="https://www.bocop.org/energy-management-for-an-electric-microgrid/">
+  BOCOP - The optimal control solver</a>.
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">model-option</font> = optfile=1
+  conopt.opt &lt; lkdebg=0
+
+<font color="red"><b>par:</b></font>
+  rho = 0.85
+  capacity_bat = 123
+  U_bat = 576
+  Ah_bat = 124200
+  cost_bat = 1e+7
+  aging_bat = 0		<font color="#808080"><i># see comment at the end of the file</i></font>
+  reg_coeff = 5
+  enable_reg = 0
+  epsilon = 1e-4
+  K_D = 0.471426
+  C_diesel = 500	<font color="#808080"><i># price of 1 l in CPL$</i></font>
+  C_default = 250	<font color="#808080"><i># cost for default power, price of 1kWh in CPL$</i></font>
+  tf = 48
+
+<font color="red"><b>fun:</b></font>
+  <font color="#8A2BE2">@readcsv</font> ifile=<font color="#FF4500"><font color="#FF4500">@home@</font></font>\examples\bocop-microgrid.csv
+
+<font color="red"><b>tpa:</b></font>
+  P_solar = &sect;WinterSolar(<font color="#0074D9">Time</font>)	<font color="#808080"><i># or SummerSolar</i></font>
+  P_load = &sect;WinterLoad(<font color="#0074D9">Time</font>)	<font color="#808080"><i># or SummerLoad</i></font>
+
+<font color="red"><b>dyn:</b></font>
+  BATTERY_SOC
+  BATTERY_SOC_INDIC
+  DIESEL_COST
+  BATTERY_COST
+  REGULARIZATION
+  DIESEL_POWER
+  DIESEL_ONOFF
+  BATTERY_POWER_IN
+  BATTERY_POWER_OUT
+  SLACK_EXCESS
+  SLACK_DEFAULT
+
+<font color="red"><b>lim:</b></font>
+  0.2 &lt;= BATTERY_SOC &lt;= 1
+  0 &lt;= BATTERY_SOC_INDIC &lt;= 1
+  0 &lt;= DIESEL_POWER &lt;= 120
+  0 &lt;= DIESEL_ONOFF &lt;= 1
+  0 &lt;= BATTERY_POWER_IN &lt;= 13.2
+  0 &lt;= BATTERY_POWER_OUT &lt;= 40
+  0 &lt;= SLACK_EXCESS &lt;= 10
+  0 &lt;= SLACK_DEFAULT &lt;= 10
+
+<font color="red"><b>t=t0:</b></font>
+  DIESEL_COST = 0
+  BATTERY_COST = 0
+  REGULARIZATION = 0
+
+<font color="red"><b>exp:</b></font>
+  I_out == BATTERY_POWER_OUT * 1e+3 / U_bat
+  SF == (-4*BATTERY_SOC*BATTERY_SOC + 5) / 5	<font color="#808080"><i># severity factor</i></font>
+
+<font color="red"><b>equ:</b></font>
+  BATTERY_SOC&acute; == (BATTERY_POWER_IN*rho - BATTERY_POWER_OUT) / capacity_bat
+  DIESEL_COST&acute; == C_diesel * K_D * rpower(DIESEL_POWER + epsilon,0.9) + C_default * SLACK_DEFAULT
+  BATTERY_COST&acute; == cost_bat / Ah_bat * SF * I_out
+  REGULARIZATION&acute; == reg_coeff * BATTERY_POWER_OUT * BATTERY_POWER_OUT
+  DIESEL_POWER + P_solar + BATTERY_POWER_OUT - P_load - BATTERY_POWER_IN - SLACK_EXCESS + SLACK_DEFAULT == 0
+  0 == <font color="#0074D9">final</font>(BATTERY_SOC) - <font color="#0074D9">initial</font>(BATTERY_SOC)
+  5*DIESEL_ONOFF &lt;= DIESEL_POWER &lt;= 120*DIESEL_ONOFF
+  BATTERY_POWER_IN &lt;= 13.2*(1-BATTERY_SOC_INDIC) + 13.2*<font color="#2ECC40">sqr</font>(1-BATTERY_SOC)*BATTERY_SOC_INDIC
+  0.9*BATTERY_SOC_INDIC &lt;= BATTERY_SOC &lt;= 0.9 + 0.1*BATTERY_SOC_INDIC
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(DIESEL_COST)+<font color="#0074D9">final</font>(BATTERY_COST)$(aging_bat=1)+<font color="#0074D9">final</font>(REGULARIZATION)$(enable_reg=1) <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#808080"><i># Solving the relaxed problem with aging battery followed by the heuristics to get an integer solution </i></font>
+  <font color="#808080"><i># leads to infeasibilities.  The workaround is to first solve the problem without aging, then to</i></font>
+  <font color="#808080"><i># resolve the relaxed model with aging turned on and finally to run the heuristics.</i></font>
+  <font color="#808080"><i># Objective for N=768: 30500 (no aging) / infeas (aging) / 44778 (aging with workaround)</i></font>
+  aging_bat = 1;
+  <font color="#8A2BE2">@solve</font>
+  <font color="#8A2BE2">@seeksur</font> ControlVar=DIESEL_ONOFF
+  <font color="#8A2BE2">@seekcia</font> ControlVar=BATTERY_SOC_INDIC
+</pre>
+</body>
+</html>

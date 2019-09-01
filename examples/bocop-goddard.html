@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -51,14 +51,14 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   References:
   <ol>
   <li>R.H. Goddard,
-  <em>A Method of Reaching Extreme Altitudes, volume 71(2) of Smithsonian Miscellaneous Collections</em>,
-  Smithsonian institution, City of Washington, 1919.
+  <em>A Method of Reaching Extreme Altitudes</em>,
+  Volume 71(2) of Smithsonian Miscellaneous Collections, Smithsonian institution, City of Washington, 1919.
   <li>H. Seywald and E.M. Cliff,
   <em>Goddard problem in presence of a dynamic pressure limit</em>,
   Journal of Guidance, Control, and Dynamics, 16(4):776-781, 1993.
   </ol>
 <p>
-  See: <a href="https://project.inria.fr/bocop/goddard/">BOCOP - The optimal control solver</a>
+  See: <a href="https://project.inria.fr/bocop/goddard/">BOCOP - The optimal control solver</a>.
 <p>
 <pre>
 <font color="red"><b>par:</b></font>
@@ -71,9 +71,11 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   <font color="#808080"><i># C = 0.65</i></font>
   C = 0.8
   
-<font color="red"><b>var:</b></font> tf
+<font color="red"><b>var:</b></font>
+  tf
 
-<font color="red"><b>dyn:</b></font> r v m u
+<font color="red"><b>dyn:</b></font>
+  r v m u
 
 <font color="red"><b>lim:</b></font>
   0 &lt;= r &lt;= 10
@@ -104,7 +106,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <font color="red"><b>equ:</b></font>
   r&acute; == v
   v&acute; == (Tmax*u - drag)/m - 1/<font color="#2ECC40">sqr</font>(r)
-  m&acute; == -b*Tmax*u
+  m&acute; == -b*u
   drag &lt;= C
   
 <font color="red"><b>obj:</b></font>

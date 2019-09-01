@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.1 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -14,9 +14,9 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
 </head>
 <body>
-<h1 align="center" style="color:#7EAEAC">Control of the heat equation - Neumann</h1>
+<h1 align="center" style="color:#7EAEAC">Control of the heat equation (Neumann)</h1>
 <pre>
-<font color="red"><b>rem:</b></font> Control of the heat equation - Neumann
+<font color="red"><b>rem:</b></font> Control of the heat equation (Neumann)
 </pre>
 <p>
   We describe here a simple example for the one dimensional heat equation,
@@ -39,11 +39,13 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <p>
   The cost function is, for \(\gamma\geq 0\) and \(\delta\geq 0\):
 <p>
-  \[\dfrac{1}{2} \int_Q y^2(x,t) \ \mathrm{d}x \ \mathrm{d}t + \int_0^T \left( \gamma u(t) + \delta u^2(t)\right) \ \mathrm{d}t.\]
+  \[
+  \dfrac{1}{2} \int_Q y^2(x,t) \ \mathrm{d}x \ \mathrm{d}t + \int_0^T \left( \gamma u(t) + \delta u^2(t)\right) \ \mathrm{d}t.
+  \]
 <p>
   We discretize in space by standard finite difference approximations.
 <p>
-  See: <a href="https://project.inria.fr/bocop/control-of-the-heat-equation-2/">BOCOP - The optimal control solver</a>
+  See: <a href="https://project.inria.fr/bocop/control-of-the-heat-equation-2/">BOCOP - The optimal control solver</a>.
 <p>
 <pre>
 <font color="red"><b>set:</b></font>
@@ -54,7 +56,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 
 <font color="red"><b>par:</b></font>
   c0 = 0.2
-  c1 = 1
+  c1 = 20
   gamma = 0
   delta = 0
   h = 1/(<font color="#3D9970">card</font>(x)-1)
@@ -62,7 +64,8 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   ah = c0/<font color="#2ECC40">sqr</font>(h)
   tf = 20
 
-<font color="red"><b>dyn:</b></font> y[x] j u
+<font color="red"><b>dyn:</b></font>
+  y[x] j u
 
 <font color="red"><b>lim:</b></font>
   -1 &lt;= u &lt;= 1
@@ -77,13 +80,13 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   j = 0
 
 <font color="red"><b>equ:</b></font>
-  $xl(x)..  y&acute;[x] == ah*(       -   y[x] + y[x+1] + c1*u*h)
-  $xx(x)..  y&acute;[x] == ah*(y[x-1] - 2*y[x] + y[x+1]         )
-  $xr(x)..  y&acute;[x] == ah*(y[x-1] -   y[x]                  )
+  $xl(x)..  y&acute;[x] == ah*(       -   y[x] + y[x+1]) + c1*u
+  $xx(x)..  y&acute;[x] == ah*(y[x-1] - 2*y[x] + y[x+1])
+  $xr(x)..  y&acute;[x] == ah*(y[x-1] -   y[x]         )
   j&acute; == (0.5*<font color="#3D9970">sum</font>(xl(x),<font color="#2ECC40">sqr</font>(y[x]))+<font color="#3D9970">sum</font>(xx(x),<font color="#2ECC40">sqr</font>(y[x]))+0.5*<font color="#3D9970">sum</font>(xr(x),<font color="#2ECC40">sqr</font>(y[x])))*h/2 + gamma*u + delta*<font color="#2ECC40">sqr</font>(u)
 
 <font color="red"><b>obj:</b></font>
-  minxxize <font color="#0074D9">final</font>(j) <font color="#8A2BE2">using</font> nlp
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(j) <font color="#8A2BE2">using</font> nlp
 
 <font color="red"><b>gpl:</b></font>
   <font color="#8A2BE2">@splotZXT</font> y, vx, "<font color="#FF4500">@TITLE@</font>", "y[x,t]", "x"
