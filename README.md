@@ -44,7 +44,7 @@ __DYNA2GAMS__ has been developed in the course of the year 2018 and afterwards. 
 for download on this web site. On top, it comes with a very large set of examples borrowed
 from the literature and various academic or commercial OCP solvers.
 
-__DYNA2GAMS__ is free of charge for non-commercial use throughout the year 2020. It is licensed under the 
+__DYNA2GAMS__ is free of charge for non-commercial use throughout the year 2020. It is licensed under the
 [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International terms](https://creativecommons.org/licenses/by-nc-sa/4.0/).
 It is based on [Regina Rexx Interpreter](https://regina-rexx.sourceforge.io/).
 Regina is distributed under the terms of the GNU Library General Public License Version 2.
