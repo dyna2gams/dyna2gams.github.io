@@ -1,0 +1,103 @@
+<!-- Dyna-to-Html Version 1.3 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Electric power generation with underwater kite systems</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Electric power generation with underwater kite systems
+</pre>
+<p>
+  The article [1] investigates the problem of generating electricity through an underwater
+  kite power system (UKPS). For this problem, it develops the dynamical model
+  for the UKPS and it formulates an optimal control problem to devise the trajectories
+  and controls of the kite that maximize the total energy produced in a given time
+  interval.
+<p>
+  Reference:
+  <ol>
+  <li>L.T. Paiva, F.A.C.C. Fontes,
+  <em>Optimal electric power generation with underwater kite systems</em>,
+  Computing, 100(11):1137-1153, November 2018.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">substitute-symbol</font> = A&gt;AA
+
+<font color="red"><b>par:</b></font>
+  rho = 1000	<font color="#808080"><i># Fluid density [kg/m³]</i></font>
+  vw = 5	<font color="#808080"><i># Fluid velocity [m/s]</i></font>
+  m = 100	<font color="#808080"><i># Mass [kg]</i></font>
+  A = 2		<font color="#808080"><i># Wing reference area of kite [m²]</i></font>
+  AR = 2	<font color="#808080"><i># Wing aspect ratio [-]</i></font>
+  tf = 3
+
+<font color="red"><b>tpa:</b></font>
+  phir = pi/9*<font color="#2ECC40">sin</font>(8*pi*<font color="#0074D9">Time</font>/3)					<font color="#808080"><i># Reference angle [rad]</i></font>
+
+<font color="red"><b>dyn:</b></font>
+  r		<font color="#808080"><i># Tether length [m]</i></font>
+  dr		<font color="#808080"><i># Its derivative</i></font>
+  phi		<font color="#808080"><i># Azimuthal angle [rad]</i></font>
+  dphi		<font color="#808080"><i># Its derivative</i></font>
+  p		<font color="#808080"><i># Power produced [W]</i></font>
+  a		<font color="#808080"><i># Tether reel-out acceleration [m/s²]</i></font>
+  alpha		<font color="#808080"><i># Angle of attack [rad]</i></font>
+  E		<font color="#808080"><i># Energy produced [Ws]</i></font>
+  J
+
+<font color="red"><b>lim:</b></font>
+  -0.1 &lt;= a &lt;= 0.1
+  -pi/18 &lt;= alpha &lt;= pi/18
+  5 &lt;= r &lt;= 15							<font color="#808080"><i># rmax guessed</i></font>
+  -2*pi/5 &lt;= phi &lt;= 2*pi/5
+
+<font color="red"><b>t=t0:</b></font>
+  r = 5
+  phi = 0
+  dr = 1.5
+  dphi = 0
+  E = 0
+  J = 0
+
+<font color="red"><b>exp:</b></font>
+  T == Faer_r + Fine_r - m*a					<font color="#808080"><i># Tether tension [N]</i></font>
+  va_r == <font color="#2ECC40">cos</font>(phi)*vw - dr					<font color="#808080"><i># Apparent fluid velocity [m/s]</i></font>
+  va_phi == - <font color="#2ECC40">sin</font>(phi)*vw - r*dphi
+  va == <font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqr</font>(va_r)+<font color="#2ECC40">sqr</font>(va_phi))
+  Faer_r ==   0.5*rho*A*va*(CD*va_r   - CL*va_phi)		<font color="#808080"><i># Aerodynamic forces [N]</i></font>
+  Faer_phi == 0.5*rho*A*va*(CD*va_phi + CL*va_r )
+  Fine_r == m*r*<font color="#2ECC40">sqr</font>(dphi)					<font color="#808080"><i># Inertial forces [N]</i></font>
+  Fine_phi == -2*m*dr*dphi
+  CL == 2*pi*alpha/(1+2*<font color="#2ECC40">abs</font>(alpha)/AR)				<font color="#808080"><i># Aerodynamic lift coefficient</i></font>
+  CD == 0.0112 + 1.28*<font color="#2ECC40">sin</font>(<font color="#2ECC40">abs</font>(alpha)) + <font color="#2ECC40">sqr</font>(CL)/0.7/pi/AR	<font color="#808080"><i># Aerodynamic drag coefficient</i></font>
+
+<font color="red"><b>equ:</b></font>
+  r&acute; == dr
+  phi&acute; == dphi
+  dr&acute; == a
+  dphi&acute; == (Faer_phi + Fine_phi)/m/r
+  p == dr*T
+  E&acute; == p
+  J&acute; == <font color="#2ECC40">sqr</font>(phi-phir)
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">maximize</font> <font color="#0074D9">final</font>(E)-5e+5*<font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> dnlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#8A2BE2">@csvsave</font> phir
+</pre>
+</body>
+</html>

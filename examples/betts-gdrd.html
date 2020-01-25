@@ -1,0 +1,103 @@
+<!-- Dyna-to-Html Version 1.3 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Goddard Rocket Problem</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Goddard Rocket Problem
+</pre>
+<p>
+  Robert H. Goddard first posed the problem that bears his name in 1919. By
+  making assumptions about the atmospheric density it is possible to derive 
+  expressions that define the optimal trajectory which contains a singular 
+  arc [1].
+<p>
+  References:
+  <ol>
+  <li>A.E. Bryson and Y.-C. Ho,
+  <em>Applied Optimal Control: Optimization, Estimation, and Control</em>,
+  Hemisphere Publishing, New York, 1975.
+  <li>J.T. Betts,
+  <em>A Collection of Optimal Control Test Problems</em>,
+  Applied Mathematical Analysis, LLC, November 17, 2015.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">substitute-symbol</font> = T&gt;TT
+
+<font color="red"><b>set:</b></font>
+  phase = ph1:ph3	<font color="#808080"><i># {Maximum Thrust,Singular Arc,No Thrust}</i></font>
+
+<font color="red"><b>par:</b></font>
+  Tm = 193.044
+  g = 32.174
+  sigma = 5.49153484923381e-5
+  c = 1580.9425279876559
+  h0 = 23800
+  tf = 1
+
+<font color="red"><b>var:</b></font>
+  tlen[phase]
+
+<font color="red"><b>dyn:</b></font>
+  t[phase]
+  h[phase]
+  v[phase]
+  m[phase]
+  T[phase]
+
+<font color="red"><b>lim:</b></font>
+  1 &lt;= tlen['ph1'] &lt;= 45
+  1 &lt;= tlen['ph2'] &lt;= +<font color="#3D9970">inf</font>
+  1 &lt;= tlen['ph3'] &lt;= +<font color="#3D9970">inf</font>
+  Tm &lt;= T['ph1'] &lt;= Tm
+  0  &lt;= T['ph2'] &lt;= Tm  
+  0  &lt;= T['ph3'] &lt;= 0  
+
+<font color="red"><b>t=t0:</b></font>
+  t['ph1'] = 0
+  h['ph1'] = 0
+  v['ph1'] = 0
+  m['ph1'] = 3
+
+<font color="red"><b>t=tf:</b></font>
+  v['ph3'] = 0
+  m['ph3'] = 1
+  
+<font color="red"><b>exp:</b></font>
+  TimeDot == tlen[phase] / tf
+
+<font color="red"><b>equ:</b></font>
+  t&acute;[phase] / TimeDot == 1
+  h&acute;[phase] / TimeDot == v[phase]
+  v&acute;[phase] / TimeDot == 1/m[phase]*(T[phase] - sigma*<font color="#2ECC40">sqr</font>(v[phase])*<font color="#2ECC40">exp</font>(-h[phase]/h0)) - g
+  m&acute;[phase] / TimeDot == -T[phase]/c
+  [phase]$<font color="#2ECC40">sameas</font>(phase,'ph2').. 0 == <font color="#0074D9">initial</font>(m[phase]*g - (1+v[phase]/c)*sigma*<font color="#2ECC40">sqr</font>(v[phase])*<font color="#2ECC40">exp</font>(-h[phase]/h0))
+  [phase]$<font color="#2ECC40">sameas</font>(phase,'ph2').. T[phase] - sigma*<font color="#2ECC40">sqr</font>(v[phase])*<font color="#2ECC40">exp</font>(-h[phase]/h0) - m[phase]*g \
+    - m[phase]*g/(1+4*c/v[phase]+2*<font color="#2ECC40">sqr</font>(c/v[phase]))*(<font color="#2ECC40">sqr</font>(c)/h0/g*(1+v[phase]/c)-1-2*c/v[phase]) \
+    == 0
+  <font color="#8A2BE2">@linkphases</font>
+
+<font color="red"><b>ini:</b></font>
+  v[phase] = 500
+  m[phase] = 3
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">maximize</font> <font color="#0074D9">final</font>(h['ph3']) <font color="#8A2BE2">using</font> nlp
+   
+</pre>
+</body>
+</html>

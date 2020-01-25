@@ -1,0 +1,96 @@
+<!-- Dyna-to-Html Version 1.3 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Time Optimal Launch of a Titan-II Trajectory</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Time Optimal Launch of a Titan-II Trajectory
+</pre>
+<p>
+  See: <a href="https://github.com/Rapid-Design-of-Systems-Laboratory/beluga">Beluga</a>
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  F = 2.1e6		<font color="#808080"><i># [newton]</i></font>
+  A = 7.069		<font color="#808080"><i># [m^2]</i></font>
+  mu = 3.986004e14	<font color="#808080"><i># [m^3/s^2]</i></font>
+  Re = 6378100		<font color="#808080"><i># [m]</i></font>
+  CD = 0.5		<font color="#808080"><i># [1]</i></font>
+  rho_ref = 1.225	<font color="#808080"><i># [kg/m^3]</i></font>
+  Hscale = 8.44e3	<font color="#808080"><i># [m]</i></font>
+  g = 9.80665		<font color="#808080"><i># [m/s^2]</i></font>
+  md = -807.6		<font color="#808080"><i># [kg/s]</i></font>
+  epsilon = 1		<font color="#808080"><i># [1]</i></font>
+  x_0 = 0		<font color="#808080"><i># [m]</i></font>
+  y_0 = 0		<font color="#808080"><i># [m]</i></font>
+  vx_0 = 0		<font color="#808080"><i># [m/s]</i></font>
+  vy_0 = 0.01		<font color="#808080"><i># [m/s]</i></font>
+  mass_0 = 1.1702e5	<font color="#808080"><i># [kg]</i></font>
+  y_f = 1.8e5		<font color="#808080"><i># [m]</i></font>
+  vy_f = 0		<font color="#808080"><i># [m/s]</i></font>
+
+<font color="red"><b>var:</b></font>
+  tf
+
+<font color="red"><b>dyn:</b></font>
+  x			<font color="#808080"><i># Downrange [m]</i></font>
+  y			<font color="#808080"><i># Altitude [m]</i></font>
+  vx			<font color="#808080"><i># Horizontal velocity [m/s]</i></font>
+  vy			<font color="#808080"><i># Vertical velocity [m/s]</i></font>
+  mass			<font color="#808080"><i># [kg]</i></font>
+  theta			<font color="#808080"><i># Steering Angle [rad]</i></font>
+
+<font color="red"><b>lim:</b></font>
+  0.1 &lt;= tf &lt;= 400
+  -pi &lt;= theta &lt;= pi
+
+<font color="red"><b>t=t0:</b></font>
+  x = x_0		<font color="#808080"><i># [m]</i></font>
+  y = y_0		<font color="#808080"><i># [m]</i></font>
+  vx = vx_0		<font color="#808080"><i># [m/s]</i></font>
+  vy = vy_0		<font color="#808080"><i># [m/s]</i></font>
+  mass = mass_0		<font color="#808080"><i># [kg]</i></font>
+
+<font color="red"><b>t=tf:</b></font>
+  y = y_f			<font color="#808080"><i># [m]</i></font>
+  vx = <font color="#2ECC40">sqrt</font>(mu/(y_f+Re))	<font color="#808080"><i># [m/s]</i></font>
+  vy = vy_f			<font color="#808080"><i># [m/s]</i></font>
+
+<font color="red"><b>exp:</b></font>
+  D == 1/2*rho_ref*<font color="#2ECC40">exp</font>(-y/Hscale)*CD*A*(<font color="#2ECC40">sqr</font>(vx) + <font color="#2ECC40">sqr</font>(vy))
+
+<font color="red"><b>equ:</b></font>
+  x&acute; == vx
+  y&acute; == vy
+  vx&acute; == F/mass*<font color="#2ECC40">cos</font>(theta) - D/mass*vx/<font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqr</font>(vx) + <font color="#2ECC40">sqr</font>(vy))
+  vy&acute; == F/mass*<font color="#2ECC40">sin</font>(theta) - D/mass*vy/<font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqr</font>(vx) + <font color="#2ECC40">sqr</font>(vy)) - g
+  mass&acute; == md*epsilon
+
+<font color="red"><b>ini:</b></font>
+  x = <font color="#0074D9">initial</font>(x)
+  y = <font color="#0074D9">linspace</font>(<font color="#0074D9">initial</font>(y),<font color="#0074D9">final</font>(y))
+  vx = <font color="#0074D9">linspace</font>(<font color="#0074D9">initial</font>(vx),<font color="#0074D9">final</font>(vx))
+  vy = <font color="#0074D9">linspace</font>(<font color="#0074D9">initial</font>(vy),<font color="#0074D9">final</font>(vy))
+  mass = <font color="#0074D9">initial</font>(mass)
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> tf <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#8A2BE2">@solveloop</font> Method=movavg, Paraml=3 0.95, Varl=theta
+  
+</pre>
+</body>
+</html>

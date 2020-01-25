@@ -1,0 +1,140 @@
+<!-- Dyna-to-Html Version 1.3 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Optimal Low-Thrust Transfer Between Libration Points (Lyapunov orbits around L2)</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Optimal Low-Thrust Transfer Between Libration Points (Lyapunov orbits around L2)
+</pre>
+<p>
+  See companion for a full description of the context of this work.
+<p>
+  This part is used to obtain families of Lyapunov orbits in the
+  vicinity of the libration point L2 in the Earth-Moon system.
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">default-iterations-number</font> = 6
+
+<font color="red"><b>par:</b></font>
+  mu = 0.0121506683
+  tmax
+  L1
+  L2
+
+<font color="red"><b>gms:</b></font>
+  <font color="#808080"><i># Calculate L1 and L2 libration points</i></font>
+  <font color="#3D9970">variable</font> L;
+  <font color="#3D9970">equation</font> eL;
+  eL.. 0 =e= L - (1-mu)*(L+mu)/<font color="#2ECC40">sqr</font>(L+mu)^1.5 - mu*(L+mu-1)/<font color="#2ECC40">sqr</font>(L+mu-1)^1.5;
+  <font color="#3D9970">model</font> mL /eL/;
+  L.l = 0.8; <font color="#3D9970">solve</font> mL using cns; L1 = L.l;
+  L.l = 1.2; <font color="#3D9970">solve</font> mL using cns; L2 = L.l;
+
+<font color="red"><b>exp:</b></font>
+  r1(x_,y_) == <font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqr</font>(x_+mu)+<font color="#2ECC40">sqr</font>(y_))		<font color="#808080"><i># distance from the Earth</i></font>
+  r2(x_,y_) == <font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqr</font>(x_+mu-1)+<font color="#2ECC40">sqr</font>(y_))	<font color="#808080"><i># distance from the Moon</i></font>
+  OmegaX(x_,y_) == \
+    (- (1-mu)*(x_+mu)/r1(x_,y_)^3 - mu*(x_+mu-1)/r2(x_,y_)^3 + x_)
+  OmegaY(x_,y_) == \
+    - (1-mu)*y_/r1(x_,y_)^3 - mu*y_/r2(x_,y_)^3 + y_
+  OmegaXX(x_,y_) == \
+    (- (1-mu)/r1(x_,y_)^3 + 3*(1-mu)*<font color="#2ECC40">sqr</font>(x_+mu)/r1(x_,y_)^5 \
+    - mu/r2(x_,y_)^3 + 3*mu*<font color="#2ECC40">sqr</font>(x_+mu-1)/r2(x_,y_)^5 + 1)
+  OmegaYY(x_,y_) == \
+    (- (1-mu)/r1(x_,y_)^3 + 3*(1-mu)*<font color="#2ECC40">sqr</font>(y_)/r1(x_,y_)^5 \
+    - mu/r2(x_,y_)^3 + 3*mu*<font color="#2ECC40">sqr</font>(y_)/r2(x_,y_)^5 + 1)
+
+<font color="red"><b>gms:</b></font>
+  <font color="#3D9970">scalars</font> beta1,beta2sq,beta3,s,period,A;
+  beta1 = 2 - (OmegaXX(L2,0)+OmegaYY(L2,0))/2;
+  beta2sq = -OmegaXX(L2,0)*OmegaYY(L2,0);
+  s = <font color="#2ECC40">sqrt</font>(beta1+<font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqr</font>(beta1)+beta2sq));
+  period = 2*pi/s;
+  beta3 = (<font color="#2ECC40">sqr</font>(s) - OmegaXX(L2,0))/2/s;
+  A = 15000/385692.5;
+  tmax = 1.2*period;
+
+<font color="red"><b>var:</b></font>
+  tf
+
+<font color="red"><b>dyn:</b></font>
+  x y vx vy
+  Jacobi
+
+<font color="red"><b>lim:</b></font>
+  0.1 &lt;= tf &lt;= tmax
+
+<font color="red"><b>t=t0:</b></font>
+  x = L2+A
+  y = 0
+
+<font color="red"><b>exp:</b></font>
+  Omega == (x*x+y*y)/2 + (1-mu)/r1(x,y) + mu/r2(x,y) + mu*(1-mu)/2
+  dvx == x + 2*vy - (1-mu)*(x+mu)/r1(x,y)^3 - mu*(x+mu-1)/r2(x,y)^3
+  dvy == y - 2*vx - (1-mu)*y/r1(x,y)^3 - mu*y/r2(x,y)^3
+  dr1 == ((x+mu)*vx + y*vy)/r1(x,y)
+  dr2 == ((x+mu-1)*vx + y*vy)/r2(x,y)
+  dJacobi == 2*dOmega - 2*vx*dvx - 2*vy*dvy	<font color="#808080"><i># is zero</i></font>
+  dOmega == x*vx + y*vy - (1-mu)/<font color="#2ECC40">sqr</font>(r1(x,y))*dr1 - mu/<font color="#2ECC40">sqr</font>(r2(x,y))*dr2
+
+<font color="red"><b>equ:</b></font>
+  x&acute; == vx
+  y&acute; == vy
+  vx&acute; == dvx
+  vy&acute; == dvy
+  0 == <font color="#0074D9">initial</font>({x y vx vy}) - <font color="#0074D9">final</font>({x y vx vy})
+  Jacobi == 2*Omega-vx*vx-vy*vy			<font color="#808080"><i># is constant</i></font>
+
+<font color="red"><b>ini:</b></font>
+  x = L2 - A*<font color="#2ECC40">cos</font>(s*<font color="#0074D9">linspace</font>(0,2*pi/s)+pi)
+  y = beta3*A*<font color="#2ECC40">sin</font>(s*<font color="#0074D9">linspace</font>(0,2*pi/s)+pi)
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> tf <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#8B0000">$$ifthen</font> <font color="#8A2BE2">%ITER%</font>==<font color="#8A2BE2">%ITERMAX%</font>
+  <font color="#3D9970">set</font> family /F0*F16/;
+  <font color="#3D9970">set</font> states /T,X,Y,VX,VY/;
+  <font color="#8A2BE2">@tpa</font> orbits[family,states];
+  <font color="#3D9970">parameter</font> lfic[family,*] Lyapunov Family <font color="#0074D9">Initial</font> Conditions;
+  <font color="#8B0000">$$ondotl</font>
+  <font color="#3D9970">loop</font>(<font color="#2ECC40">sameas</font>(family,'F0'),
+    orbits[family,'T'] = <font color="#0074D9">Time</font>;
+    orbits[family,'{X Y VX VY}'] = {x y vx vy};
+    lfic[family,'{x vy J}'] = <font color="#0074D9">initial</font>({x vy Jacobi});
+    lfic[family,'T'] = tf;
+    );
+  <font color="#8A2BE2">@setlim0</font> Var=x, Vlo=0, Vup=2
+  <font color="#3D9970">scalar</font> i;
+  <font color="#3D9970">loop</font>(family$(<font color="#3D9970">ord</font>(family)&gt;1),
+    <font color="#3D9970">for</font>(i=1 to 8,
+      tf.l = tf.l * 1.04^(0.125);
+      tmax = tf.l;
+      <font color="#8A2BE2">@setlim</font> Var=tf, Vlo=tmax, Vup=tmax
+      <font color="#8A2BE2">@solve</font>
+      );
+    orbits[family,'T'] = <font color="#0074D9">Time</font>;
+    orbits[family,'{X Y VX VY}'] = {x y vx vy};
+    lfic[family,'{x vy J}'] = <font color="#0074D9">initial</font>({x vy Jacobi});
+    lfic[family,'T'] = tf;
+    );
+  <font color="#3D9970">display</font> lfic;
+  <font color="#8A2BE2">@csvsave</font> orbits[family,states]
+  <font color="#8B0000">$$endif</font>
+</pre>
+</body>
+</html>

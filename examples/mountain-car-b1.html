@@ -1,0 +1,133 @@
+<!-- Dyna-to-Html Version 1.3 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Mountain Car Problem</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Mountain Car Problem
+</pre>
+<p>
+  A car is on a one-dimensional track, positioned between two &ldquo;mountains&rdquo;. The goal is
+  to drive up the mountain on the right; however, the car&rsquo;s engine is not strong enough
+  to scale the mountain in a single pass. Therefore, the only way to succeed is to
+  drive back and forth to build up momentum.
+<p>
+  <center><img src="mountain-car.png" alt="" width="40%"/></center>
+<p>
+  The mountain car problem appeared first in Andrew Moore's PhD thesis [1] and has since
+  become a standard testing case in Reinforcement Learning.
+<p>
+  We develop here below a variant in the context of continuous optimal control, seeking
+  a minimum time policy. A crude initialization is provided and it is interesting to look
+  at the evolution of the solution over the iterations: six of them are needed to get a
+  reasonable optimal policy.
+<p>
+  Reference:
+  <ol>
+  <li>A. Moore,
+  <em>Efficient Memory-Based Learning for Robot Control</em>,
+  PhD thesis, University of Cambridge, November 1990.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">model-option</font> = optfile=1
+  conopt.opt &lt; lkdebg=0
+  <font color="#39CCCC">default-iterations-number</font> = 6
+
+<font color="red"><b>par:</b></font>
+  g = 0.0025
+  m = 1000
+
+<font color="red"><b>fun:</b></font>
+  <font color="#0074D9">Time</font>  &sect;x
+    0   -0.5
+   38   -0.7
+   93    0.0
+  130   -1
+  164    0.4
+  200   -1.2
+  250    0.5
+
+<font color="red"><b>var:</b></font>
+  tf
+  amax
+
+<font color="red"><b>dyn:</b></font>
+  x v
+  a
+  phi
+  J
+
+<font color="red"><b>lim:</b></font>
+  0.1 &lt;= tf &lt;= 300
+  -1.2 &lt;= x &lt;= 0.5
+  -0.075 &lt;= v &lt;= 0.075
+  -10 &lt;= a &lt;= 10
+  -pi/2 &lt;= phi &lt;= pi/2
+  0 &lt;= amax &lt;= 10
+
+<font color="red"><b>t=t0:</b></font>
+  x = -0.5
+  v = 0
+  J = 0
+
+<font color="red"><b>t=tf:</b></font>
+  x = 0.5
+
+<font color="red"><b>equ:</b></font>
+  v&acute; == a/m - g*<font color="#2ECC40">sin</font>(phi)
+  x&acute; == v*<font color="#2ECC40">cos</font>(phi)
+  <font color="#2ECC40">sin</font>(phi) == 3*<font color="#2ECC40">cos</font>(3*x)*<font color="#2ECC40">cos</font>(phi)	<font color="#808080"><i># important to write it in this way</i></font>
+  J&acute; == a*a
+  -amax &lt;= a &lt;= amax
+
+<font color="red"><b>ini:</b></font>
+  tf = 250
+  amax = 10
+  x = &sect;x(<font color="#0074D9">Time</font>)
+  v = <font color="#0074D9">slope</font>(x)
+  phi = <font color="#2ECC40">arctan</font>(3*<font color="#2ECC40">cos</font>(3*x))
+
+<font color="red"><b>par:</b></font>
+  theta1 = 1
+  theta2 = 0
+  theta3 = 0
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> theta1*<font color="#0074D9">final</font>(J)+theta2*amax+theta3*tf <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#8B0000">$$ifthen</font> <font color="#8A2BE2">%ITER%</font>==<font color="#8A2BE2">%ITERMAX%</font>
+  <font color="#808080"><i># find a feasible solution with |a|&lt;1</i></font>
+  theta2 = 1;
+  <font color="#3D9970">repeat</font>(
+    theta2 = 10*theta2;
+    <font color="#8A2BE2">@solve</font>
+    <font color="#3D9970">until</font> amax.l &lt; 1);
+  <font color="#808080"><i># find min J with |a|&lt;=1</i></font>
+  amax.fx = 1;
+  theta1 = 1; theta2 = 0;
+  <font color="#8A2BE2">@solve</font>
+  <font color="#808080"><i># find min tf with |a|&lt;=1</i></font>
+  theta1 = 0.01; theta2 = 0; theta3 = 1;
+  <font color="#8A2BE2">@solve</font>
+  <font color="#8B0000">$$endif</font>
+  <font color="#8A2BE2">@tpa</font> y; y = <font color="#2ECC40">sin</font>(3*x.l);
+  <font color="#8A2BE2">@tpa</font> E; E = m*<font color="#2ECC40">sqr</font>(v.l)/2 + m*g*y;
+  <font color="#8A2BE2">@csvsave</font> y E
+</pre>
+</body>
+</html>

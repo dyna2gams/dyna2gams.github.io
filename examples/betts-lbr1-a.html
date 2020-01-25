@@ -1,0 +1,140 @@
+<!-- Dyna-to-Html Version 1.3 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Optimal Low-Thrust Transfer Between Libration Points (Lyapunov orbit around L1)</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Optimal Low-Thrust Transfer Between Libration Points (Lyapunov orbit around L1)
+</pre>
+<p>
+  See companion for a full description of the context of this work.
+<p>
+  This part is used to obtain the departure Lyapunov orbit in the
+  vicinity of the libration point L1 in the Earth-Moon system.
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  mu = 0.0121506683
+  Jacobi0 = 3.178
+  L1
+  L2
+
+<font color="red"><b>gms:</b></font>
+  <font color="#808080"><i># Calculate L1 and L2 libration points</i></font>
+  <font color="#3D9970">variable</font> L;
+  <font color="#3D9970">equation</font> eL;
+  eL.. 0 =e= L - (1-mu)*(L+mu)/<font color="#2ECC40">sqr</font>(L+mu)^1.5 - mu*(L+mu-1)/<font color="#2ECC40">sqr</font>(L+mu-1)^1.5;
+  <font color="#3D9970">model</font> mL /eL/;
+  L.l = 0.8; <font color="#3D9970">solve</font> mL using cns; L1 = L.l;
+  L.l = 1.2; <font color="#3D9970">solve</font> mL using cns; L2 = L.l;
+
+<font color="red"><b>exp:</b></font>
+  r1(x_,y_) == <font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqr</font>(x_+mu)+<font color="#2ECC40">sqr</font>(y_))		<font color="#808080"><i># distance from the Earth</i></font>
+  r2(x_,y_) == <font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqr</font>(x_+mu-1)+<font color="#2ECC40">sqr</font>(y_))	<font color="#808080"><i># distance from the Moon</i></font>
+  OmegaX(x_,y_) == \
+    (- (1-mu)*(x_+mu)/r1(x_,y_)^3 - mu*(x_+mu-1)/r2(x_,y_)^3 + x_)
+  OmegaY(x_,y_) == \
+    - (1-mu)*y_/r1(x_,y_)^3 - mu*y_/r2(x_,y_)^3 + y_
+  OmegaXX(x_,y_) == \
+    (- (1-mu)/r1(x_,y_)^3 + 3*(1-mu)*<font color="#2ECC40">sqr</font>(x_+mu)/r1(x_,y_)^5 \
+    - mu/r2(x_,y_)^3 + 3*mu*<font color="#2ECC40">sqr</font>(x_+mu-1)/r2(x_,y_)^5 + 1)
+  OmegaYY(x_,y_) == \
+    (- (1-mu)/r1(x_,y_)^3 + 3*(1-mu)*<font color="#2ECC40">sqr</font>(y_)/r1(x_,y_)^5 \
+    - mu/r2(x_,y_)^3 + 3*mu*<font color="#2ECC40">sqr</font>(y_)/r2(x_,y_)^5 + 1)
+
+<font color="red"><b>gms:</b></font>
+  <font color="#3D9970">scalars</font> beta1,beta2sq,beta3,s,period,A;
+  beta1 = 2 - (OmegaXX(L1,0)+OmegaYY(L1,0))/2;
+  beta2sq = -OmegaXX(L1,0)*OmegaYY(L1,0);
+  s = <font color="#2ECC40">sqrt</font>(beta1+<font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqr</font>(beta1)+beta2sq));
+  period = 2*pi/s;
+  beta3 = (<font color="#2ECC40">sqr</font>(s) - OmegaXX(L1,0))/2/s;
+  A = 20000/385692.5;
+
+<font color="red"><b>var:</b></font>
+  tf
+
+<font color="red"><b>dyn:</b></font>
+  x y vx vy
+  Jacobi
+
+<font color="red"><b>lim:</b></font>
+  0.1 &lt;= tf &lt;= 2*period
+
+<font color="red"><b>t=t0:</b></font>
+  x = L1-A
+  y = 0
+
+<font color="red"><b>exp:</b></font>
+  Omega == (x*x+y*y)/2 + (1-mu)/r1(x,y) + mu/r2(x,y) + mu*(1-mu)/2
+  dvx == x + 2*vy - (1-mu)*(x+mu)/r1(x,y)^3 - mu*(x+mu-1)/r2(x,y)^3
+  dvy == y - 2*vx - (1-mu)*y/r1(x,y)^3 - mu*y/r2(x,y)^3
+  dr1 == ((x+mu)*vx + y*vy)/r1(x,y)
+  dr2 == ((x+mu-1)*vx + y*vy)/r2(x,y)
+  dJacobi == 2*dOmega - 2*vx*dvx - 2*vy*dvy	<font color="#808080"><i># is zero</i></font>
+  dOmega == x*vx + y*vy - (1-mu)/<font color="#2ECC40">sqr</font>(r1(x,y))*dr1 - mu/<font color="#2ECC40">sqr</font>(r2(x,y))*dr2
+
+<font color="red"><b>equ:</b></font>
+  x&acute; == vx
+  y&acute; == vy
+  vx&acute; == dvx
+  vy&acute; == dvy
+  0 == <font color="#0074D9">initial</font>({x y vx vy}) - <font color="#0074D9">final</font>({x y vx vy})
+  Jacobi == 2*Omega-vx*vx-vy*vy			<font color="#808080"><i># is constant</i></font>
+
+<font color="red"><b>ini:</b></font>
+  x = L1 - A*<font color="#2ECC40">cos</font>(s*<font color="#0074D9">linspace</font>(0,2*pi/s))
+  y = beta3*A*<font color="#2ECC40">sin</font>(s*<font color="#0074D9">linspace</font>(0,2*pi/s))
+
+<font color="red"><b>par:</b></font>
+  theta = 1
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> theta*tf + (1-theta)*<font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(Jacobi)-Jacobi0) <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#8B0000">$$ifthen</font> <font color="#8A2BE2">%ITER%</font>==<font color="#8A2BE2">%ITERMAX%</font>
+  <font color="#3D9970">set</font> family /F0*F1/;
+  <font color="#3D9970">parameter</font> lfic[family,*] Lyapunov Family <font color="#0074D9">Initial</font> Conditions;
+  <font color="#8B0000">$$ondotl</font>
+  <font color="#3D9970">loop</font>(<font color="#2ECC40">sameas</font>(family,'F0'),
+    lfic[family,'{x vy J}'] = <font color="#0074D9">initial</font>({x vy Jacobi});
+    lfic[family,'T'] = tf;
+    );
+  <font color="#8A2BE2">@setlim0</font> Var=x, Vlo=0, Vup=1
+  <font color="#8A2BE2">@setlim0</font> Var=Jacobi, Vlo=0, Vup=Jacobi0
+  <font color="#8A2BE2">@solve</font>
+  theta = 0;
+  <font color="#8A2BE2">@solve</font>
+  <font color="#3D9970">loop</font>(<font color="#2ECC40">sameas</font>(family,'F1'),
+    lfic[family,'{x vy J}'] = <font color="#0074D9">initial</font>({x vy Jacobi});
+    lfic[family,'T'] = tf;
+    );
+  <font color="#3D9970">display</font> lfic;
+  <font color="#8B0000">$$endif</font>
+
+<font color="#808080"><i>###:</i></font><font color="#808080"><i></i></font>
+<font color="#808080"><i>  </i></font><font color="#808080"><i># Maxima script to do the symbolic math</i></font>
+<font color="#808080"><i>  kill(all)$</i></font>
+<font color="#808080"><i>  r1: sqrt((x+mu)^2+(y)^2)$</i></font>
+<font color="#808080"><i>  r2: sqrt((x+mu-1)^2+(y)^2)$</i></font>
+<font color="#808080"><i>  Omega: (x*x+y*y)/2 + (1-mu)/r1 + mu/r2 + mu*(1-mu)/2$</i></font>
+<font color="#808080"><i>  dOmegaX: diff(Omega,x)$</i></font>
+<font color="#808080"><i>  dOmegaY: diff(Omega,y)$</i></font>
+<font color="#808080"><i>  diff(dOmegaX,x);</i></font>
+<font color="#808080"><i>  diff(dOmegaY,y);</i></font>
+</pre>
+</body>
+</html>

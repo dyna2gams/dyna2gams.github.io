@@ -1,0 +1,134 @@
+<!-- Dyna-to-Html Version 1.3 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Optimal Low-Thrust Transfer Between Libration Points (Long Transfer Duration)</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Optimal Low-Thrust Transfer Between Libration Points (Long Transfer Duration)
+</pre>
+<p>
+  A formulation of an optimal low thrust transfer between libration point orbits is
+  presented by Epenoy [1]. The dynamic model is based on the Planar Circular
+  Restricted Three Body Problem (PCR3BP) with Earth as one primary and the Moon as
+  the second. The equations of motion are constructed in a rotating reference frame,
+  in which the x-axis extends from the barycenter of the Earth-Moon system to the
+  Moon, and the y-axis completes the right hand coordinate frame. A set of 
+  non-dimensional units is chosen such that the unit of distance is the distance
+  between the two primaries, the unit of mass is the sum of the primaries&rsquo; masses,
+  and the unit of time is such that the angular velocity of the primaries around
+  their barycenter is one. The initial and final states must lie on a manifold
+  referred to as the Lyapunov orbit. The Lyapunov states are computed by means of an
+  ancillary problem as functions of non-dimensional parameters that determine the
+  departure and arrival locations.
+<p>
+  A single phase formulation is used by Epenoy to construct both short (given as an
+  example in a companion file) and long duration transfers. In contrast reference [2]
+  describes a formulation with multiple phases, given here as another example.
+<p>
+  References:
+  <ol>
+  <li>R. Epenoy, 
+  <em>Optimal Long-Duration Low-Thrust Transfers Between Libration Point Orbits</em>,
+  In 63rd International Astronautical Congress, no. 4 in IAC-12-C1.5.9, Naples,
+  Italy, 2012.
+  <li>J.T. Betts,
+  <em>Using Direct Transcription to Compute Optimal Low Thrust Transfers Between
+  Libration Point Orbits</em>,
+  In G. Fasano, J. Pint&eacute;r (eds), Space Engineering. Springer Optimization and Its
+  Applications, vol 114, Springer, Cham, 2016.
+  <li>J.T. Betts,
+  <em>A Collection of Optimal Control Test Problems</em>,
+  Applied Mathematical Analysis, LLC, November 17, 2015.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">tabulation-knots-number</font> = 400
+  <font color="#39CCCC">substitute-symbol</font> = Tf&gt;Tff
+  <font color="#39CCCC">model-option</font> = optfile=1
+  conopt.opt &lt; lkdebg=0
+
+<font color="red"><b>set:</b></font>
+  phase = ph1:ph4	<font color="#808080"><i># departure leg, first lunar revolution, second lunar revolution, arrival leg</i></font>
+
+<font color="red"><b>par:</b></font>
+  mu = 0.0121506683
+  tf = 1
+  PM = 27.321577	<font color="#808080"><i># orbital period of the Moon [days]</i></font>
+  Tf = 44 * 2*pi/PM	<font color="#808080"><i># transfer duration fixed to 44 days</i></font>
+
+<font color="red"><b>fun:</b></font>
+  <font color="#8A2BE2">@readcsv</font> ifile=<font color="#FF4500"><font color="#FF4500">@home@</font></font>\examples\betts-lbr1.csv
+  <font color="#8A2BE2">@readcsv</font> ifile=<font color="#FF4500"><font color="#FF4500">@home@</font></font>\examples\betts-lbr2.csv
+
+<font color="red"><b>var:</b></font>
+  tlen[phase]
+  tau0
+  tauf
+
+<font color="red"><b>dyn:</b></font>
+  t[phase]
+  x[phase] y[phase] vx[phase] vy[phase]
+  u1[phase] u2[phase]
+  J[phase]
+
+<font color="red"><b>lim:</b></font>
+  0 &lt;= tau0 &lt;= 2.776025
+  0 &lt;= tauf &lt;= 3.385292
+  1e-3 &lt;= tlen['ph{1:4}'] &lt;= {5 2 2 4}
+  -1 &lt;= u{1:2}[phase] &lt;= 1
+  {0.8 0.9 0.93 1.05} &lt;= x['ph{1:4}'] &lt;= {1-mu 1.05 1.1 1.2}
+  -0.1 &lt;= y['ph{2:3}'] &lt;= 0.1
+
+<font color="red"><b>t=t0:</b></font>
+  t['ph1'] = 0
+  J['ph1'] = 0
+
+<font color="red"><b>t=tf:</b></font>
+  -0.1 &lt;= y['ph{1:3}'] &lt;= -0.04
+  0 &lt;= vx['ph{1:3}'] &lt;= +<font color="#3D9970">inf</font>
+
+<font color="red"><b>exp:</b></font>
+  r1 == <font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqr</font>(x[phase]+mu)+<font color="#2ECC40">sqr</font>(y[phase]))
+  r2 == <font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqr</font>(x[phase]+mu-1)+<font color="#2ECC40">sqr</font>(y[phase]))
+  TimeDot == tlen[phase] / tf
+
+<font color="red"><b>equ:</b></font>
+   t&acute;[phase] / TimeDot == 1
+   x&acute;[phase] / TimeDot == vx[phase]
+   y&acute;[phase] / TimeDot == vy[phase]
+  vx&acute;[phase] / TimeDot == x[phase] + 2*vy[phase] - (1-mu)*(x[phase]+mu)/r1^3 - mu*(x[phase]+mu-1)/r2^3 + u1[phase]
+  vy&acute;[phase] / TimeDot == y[phase] - 2*vx[phase] - (1-mu)*y[phase]/r1^3 - mu*y[phase]/r2^3 + u2[phase]
+   J&acute;[phase] / TimeDot == 0.5*(<font color="#2ECC40">sqr</font>(u1[phase])+<font color="#2ECC40">sqr</font>(u2[phase]))
+  0 == <font color="#0074D9">initial</font>({x y vx vy}['ph1']) - &sect;{x y vx vy}1(tau0)
+  0 == <font color="#0074D9">final</font>({x y vx vy}['ph4']) - &sect;{x y vx vy}2(tauf)
+  <font color="#8A2BE2">@linkphases</font>
+  <font color="#3D9970">sum</font>(phase, tlen[phase]) == Tf
+
+<font color="red"><b>ini:</b></font>
+  tlen['ph{1:4}'] = {4 1 1.5 3}
+  x['ph2'] = 0.975 + 0.05*<font color="#2ECC40">cos</font>(-pi/2+<font color="#0074D9">linspace</font>(0,2*pi))
+  y['ph2'] =         0.09*<font color="#2ECC40">sin</font>(-pi/2+<font color="#0074D9">linspace</font>(0,2*pi))
+  x['ph3'] = 1.025 + 0.05*<font color="#2ECC40">cos</font>(-pi/2+<font color="#0074D9">linspace</font>(0,2*pi))
+  y['ph3'] =         0.09*<font color="#2ECC40">sin</font>(-pi/2+<font color="#0074D9">linspace</font>(0,2*pi))
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J['ph4']) <font color="#8A2BE2">using</font> nlp <font color="#8A2BE2">with</font> conopt
+
+<font color="red"><b>gms:</b></font>
+  <font color="#8A2BE2">@solveloop</font> Method=movavg, Paraml=3 0.95, Varl=u1[phase] u2[phase]
+</pre>
+</body>
+</html>

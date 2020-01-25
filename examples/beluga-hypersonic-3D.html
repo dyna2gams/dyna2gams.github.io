@@ -1,0 +1,132 @@
+<!-- Dyna-to-Html Version 1.3 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">3D Hypersonic Planetary Entry</h1>
+<pre>
+<font color="red"><b>rem:</b></font> 3D Hypersonic Planetary Entry
+</pre>
+<p>
+  Reference:
+  <ol>
+  <li>N.X. Vinh, A. Busemann and R.D. Culp,
+  <em>Hypersonic and planetary entry flight mechanics</em>,
+  NASA STI/Recon Technical Report A 81, 1980.
+  </ol>
+<p>
+  See: <a href="https://github.com/Rapid-Design-of-Systems-Laboratory/beluga">Beluga</a>
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">substitute-symbol</font> = H&gt;HH
+
+<font color="red"><b>par:</b></font>
+  mu = 3.986e5*1e9		<font color="#808080"><i># Gravitational parameter [m³/s²]</i></font>
+  rho0 = 1.2			<font color="#808080"><i># Sea-level atmospheric density [kg/m³]</i></font>
+  H = 7500			<font color="#808080"><i># Scale height for atmosphere of Earth [m]</i></font>
+  mass = 750/2.2046226		<font color="#808080"><i># Mass of vehicle [kg]</i></font>
+  re = 6378000			<font color="#808080"><i># Radius of planet [m]</i></font>
+  Aref = pi*(24*.0254/2)**2	<font color="#808080"><i># Reference area of vehicle [m²]</i></font>
+  rn = 1/12*0.3048		<font color="#808080"><i># Nose radius [m]</i></font>
+  h_0 = 40000			<font color="#808080"><i># [m]</i></font>
+  theta_0 = 0			<font color="#808080"><i># [rad]</i></font>
+  v_0 = 2000			<font color="#808080"><i># [m/s]</i></font>
+  gam_0 = 0			<font color="#808080"><i># [rad]</i></font>
+  psi_0 = 0			<font color="#808080"><i># [rad]</i></font>
+  h_f = 0			<font color="#808080"><i># [m]</i></font>
+  theta_f = <font color="#0074D9">deg2rad</font>(3)		<font color="#808080"><i># [rad]</i></font>
+  phi_f = <font color="#0074D9">deg2rad</font>(2)		<font color="#808080"><i># [rad]</i></font>
+
+<font color="red"><b>var:</b></font>
+  tf
+
+<font color="red"><b>dyn:</b></font>
+  h			<font color="#808080"><i># [m]</i></font>
+  theta			<font color="#808080"><i># [rad]</i></font>
+  phi			<font color="#808080"><i># [rad]</i></font>
+  v			<font color="#808080"><i># [m/s]</i></font>
+  gam			<font color="#808080"><i># [rad]</i></font>
+  psi			<font color="#808080"><i># [rad]</i></font>
+  alfa			<font color="#808080"><i># Control [rad]</i></font>
+  bank			<font color="#808080"><i># Control [rad]</i></font>
+
+<font color="red"><b>lim:</b></font>
+  0 &lt;= tf &lt;= 500
+  -<font color="#0074D9">deg2rad</font>(30) &lt;= alfa &lt;= <font color="#0074D9">deg2rad</font>(30)
+  -<font color="#0074D9">deg2rad</font>(180) &lt;= bank &lt;= <font color="#0074D9">deg2rad</font>(180)
+
+<font color="red"><b>t=t0:</b></font>
+  h = h_0		<font color="#808080"><i># [m]</i></font>
+  theta = theta_0	<font color="#808080"><i># [rad]</i></font>
+  phi = 0		<font color="#808080"><i># [rad]</i></font>
+  v = v_0		<font color="#808080"><i># [m/s]</i></font>
+  gam = gam_0		<font color="#808080"><i># [rad]</i></font>
+  psi = psi_0		<font color="#808080"><i># [rad]</i></font>
+
+<font color="red"><b>t=tf:</b></font>
+  h = h_f		<font color="#808080"><i># [m]</i></font>
+  <font color="#808080"><i>#theta = theta_f	# [rad]</i></font>
+  <font color="#808080"><i>#phi = phi_f		# [rad]</i></font>
+
+<font color="red"><b>exp:</b></font>
+  rho == rho0*<font color="#2ECC40">exp</font>(-h/H)
+  Cl == 1.5658*alfa
+  Cd == 1.6537*<font color="#2ECC40">sqr</font>(alfa) + 0.0612
+  D == 0.5*rho*<font color="#2ECC40">sqr</font>(v)*Cd*Aref
+  L == 0.5*rho*<font color="#2ECC40">sqr</font>(v)*Cl*Aref
+  r == re+h
+
+<font color="red"><b>equ:</b></font>
+  h&acute; == v*<font color="#2ECC40">sin</font>(gam)
+  theta&acute; == v*<font color="#2ECC40">cos</font>(gam)*<font color="#2ECC40">cos</font>(psi)/(r*<font color="#2ECC40">cos</font>(phi))
+  phi&acute; == v*<font color="#2ECC40">cos</font>(gam)*<font color="#2ECC40">sin</font>(psi)/r
+  v&acute; == -D/mass - mu*<font color="#2ECC40">sin</font>(gam)/<font color="#2ECC40">sqr</font>(r)
+  gam&acute; == L*<font color="#2ECC40">cos</font>(bank)/(mass*v) - mu/(v*<font color="#2ECC40">sqr</font>(r))*<font color="#2ECC40">cos</font>(gam) + v/r*<font color="#2ECC40">cos</font>(gam)
+  psi&acute; == L*<font color="#2ECC40">sin</font>(bank)/(mass*<font color="#2ECC40">cos</font>(gam)*v) - v/r*<font color="#2ECC40">cos</font>(gam)*<font color="#2ECC40">cos</font>(psi)*<font color="#2ECC40">tan</font>(phi)
+
+<font color="red"><b>ini:</b></font>
+  h = h_0
+  theta = theta_0
+  phi = 0
+  v = v_0
+  gam = gam_0
+  psi = psi_0
+
+<font color="red"><b>par:</b></font>
+  ksi = 0
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">maximize</font> <font color="#0074D9">final</font>(v)-ksi*<font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(phi)-phi_f)-ksi*<font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(theta)-theta_f) <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#8A2BE2">@solveloop</font> Method=movavg, Paraml=3 0.95, Varl=alfa bank
+  <font color="#3D9970">scalars</font> fphi, ftheta;
+  ksi = 1;
+  <font color="#3D9970">repeat</font>(
+    fphi = <font color="#0074D9">final</font>(phi.l);
+    ftheta = <font color="#0074D9">final</font>(theta.l);
+    ksi = ksi * 10;
+    <font color="#8A2BE2">@solve</font>
+    ksi = ksi * 10;
+    <font color="#8A2BE2">@solve</font>
+    <font color="#8A2BE2">@solveloop</font> Method=movavg, Paraml=3 0.95, Varl=alfa bank
+    <font color="#3D9970">until</font> <font color="#2ECC40">abs</font>((fphi-<font color="#0074D9">final</font>(phi.l))/(fphi+<font color="#0074D9">final</font>(phi.l))) &lt; 1e-3 and <font color="#2ECC40">abs</font>((ftheta-<font color="#0074D9">final</font>(theta.l))/(ftheta+<font color="#0074D9">final</font>(theta.l))) &lt; 1e-3);
+  <font color="#3D9970">scalars</font> ephi, etheta;
+  ephi = <font color="#0074D9">final</font>(phi.l) - phi_f;
+  etheta = <font color="#0074D9">final</font>(theta.l) - theta_f;
+  <font color="#3D9970">display</font> ephi, etheta;
+</pre>
+</body>
+</html>

@@ -1,0 +1,126 @@
+<!-- Dyna-to-Html Version 1.3 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Mountain Car Problem</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Mountain Car Problem
+</pre>
+<p>
+  A car is on a one-dimensional track, positioned between two &ldquo;mountains&rdquo;. The goal is
+  to drive up the mountain on the right; however, the car&rsquo;s engine is not strong enough
+  to scale the mountain in a single pass. Therefore, the only way to succeed is to
+  drive back and forth to build up momentum.
+<p>
+  <center><img src="mountain-car.png" alt="" width="40%"/></center>
+<p>
+  The mountain car problem appeared first in Andrew Moore's PhD thesis [1] and has since
+  become a standard testing case in Reinforcement Learning.
+<p>
+  We develop here below a variant in the context of continuous optimal control, seeking
+  a minimum time policy. The problem is decomposed into four phases: three ones to build
+  up momentum before reaching the goal in the fourth phase.
+<p>
+  Reference:
+  <ol>
+  <li>A. Moore,
+  <em>Efficient Memory-Based Learning for Robot Control</em>,
+  PhD thesis, University of Cambridge, November 1990.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>set:</b></font>
+  phase = ph1:ph4
+
+<font color="red"><b>par:</b></font>
+  g = 0.0025
+  m = 1000
+  tf = 1
+
+<font color="red"><b>var:</b></font>
+  tlen[phase]
+  amax
+
+<font color="red"><b>dyn:</b></font>
+  t[phase]
+  x[phase] v[phase]
+  a[phase]
+  phi[phase]
+  J[phase]
+
+<font color="red"><b>lim:</b></font>
+  0.1 &lt;= tlen[phase] &lt;= 100
+  -1.2 &lt;= x[phase] &lt;= 0.5
+  {-1 0 -1 0}*0.075 &lt;= v['ph{1:4}'] &lt;= {0 +1 0 +1}*0.075
+  -10 &lt;= a[phase] &lt;= 10
+  -pi/2 &lt;= phi[phase] &lt;= pi/2
+  0 &lt;= amax &lt;= 10
+
+<font color="red"><b>t=t0:</b></font>
+  t['ph1'] = 0
+  x['ph1'] = -0.5
+  v[phase] = 0
+  J['ph1'] = 0
+
+<font color="red"><b>t=tf:</b></font>
+  x['ph4'] = 0.5
+
+<font color="red"><b>exp:</b></font>
+  TimeDot == tlen[phase] / tf
+
+<font color="red"><b>equ:</b></font>
+  t&acute;[phase] / TimeDot == 1
+  v&acute;[phase] / TimeDot == a[phase]/m - g*<font color="#2ECC40">sin</font>(phi[phase])
+  x&acute;[phase] / TimeDot == v[phase]*<font color="#2ECC40">cos</font>(phi[phase])
+  J&acute;[phase] / TimeDot == a[phase]*a[phase]
+  <font color="#8A2BE2">@linkphases</font>
+  <font color="#2ECC40">sin</font>(phi[phase]) == 3*<font color="#2ECC40">cos</font>(3*x[phase])*<font color="#2ECC40">cos</font>(phi[phase])
+  -amax &lt;= a[phase] &lt;= amax
+
+<font color="red"><b>ini:</b></font>
+  tlen['ph{1:4}'] = {20 40 60 80}
+  x['ph{1:4}'] = -0.5+v['ph{1:4}']*<font color="#0074D9">Time</font>*tlen['ph{1:4}']
+  phi['ph{1:4}'] = <font color="#2ECC40">arctan</font>(3*<font color="#2ECC40">cos</font>(3*x['ph{1:4}']))
+
+<font color="red"><b>par:</b></font>
+  theta1 = 1
+  theta2 = 0
+  theta3 = 0
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> theta1*<font color="#0074D9">final</font>(J['ph4'])+theta2*amax+theta3*<font color="#0074D9">final</font>(t['ph4']) <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#8B0000">$$ifthen</font> <font color="#8A2BE2">%ITER%</font>==<font color="#8A2BE2">%ITERMAX%</font>
+  <font color="#808080"><i># find a feasible solution with |a|&lt;1</i></font>
+  theta2 = 1;
+  <font color="#3D9970">repeat</font>(
+    theta2 = 10*theta2;
+    <font color="#8A2BE2">@solve</font>
+    <font color="#3D9970">until</font> amax.l &lt; 1);
+  <font color="#808080"><i># find min J with |a|&lt;=1</i></font>
+  amax.fx = 1;
+  theta1 = 1; theta2 = 0;
+  <font color="#8A2BE2">@solve</font>
+  <font color="#808080"><i># find min tf with |a|&lt;=1</i></font>
+  theta1 = 0.01; theta2 = 0; theta3 = 1;
+  <font color="#8A2BE2">@solve</font>
+  <font color="#8B0000">$$endif</font>
+  <font color="#8A2BE2">@tpa</font> y[phase]; y[phase] = <font color="#2ECC40">sin</font>(3*x.l[phase]);
+  <font color="#8A2BE2">@tpa</font> E[phase]; E[phase] = m*<font color="#2ECC40">sqr</font>(v.l[phase])/2 + m*g*y[phase];
+  <font color="#8A2BE2">@csvsave</font> y[phase] E[phase]
+</pre>
+</body>
+</html>

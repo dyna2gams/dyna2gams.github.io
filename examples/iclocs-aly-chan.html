@@ -1,0 +1,59 @@
+<!-- Dyna-to-Html Version 1.3 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Aly-Chan problem</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Aly-Chan problem
+</pre>
+<p>
+  This problem is taken from the examples implemented in ICLOCS2
+  (<a href="http://www.ee.ic.ac.uk/ICLOCS/">www.ee.ic.ac.uk/ICLOCS/</a>).
+<p>
+  References:
+  <ol>
+  <li>G.M. Aly and W.C. Chan,
+  <em>Application of a modified quasilinearization technique to totally singular optimal problems</em>,
+  International Journal of Control, 17(4):809-815, April 1973.
+  <li>P. Falugi, E. Kerrigan, E. van Wyk,
+  <em>Imperial College London Optimal Control Software User Guide (ICLOCS)</em>,
+  <a href="http://www.ee.ic.ac.uk/ICLOCS/user_guide.pdf">http://www.ee.ic.ac.uk/ICLOCS/user_guide.pdf</a>
+  </ol>
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  tf = pi/2
+
+<font color="red"><b>dyn:</b></font>
+  x{1:3}
+  u
+
+<font color="red"><b>lim:</b></font>
+  -1 &lt;= u &lt;= 1
+
+<font color="red"><b>t=t0:</b></font>
+  x{1:3} = {0 1 0}
+
+<font color="red"><b>equ:</b></font>
+  x1&acute; == x2
+  x2&acute; == u
+  x3&acute; == 0.5*(x2*x2-x1*x1)
+  u :: <font color="#7FDBFF">spline3</font>
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(x3) <font color="#8A2BE2">using</font> nlp
+</pre>
+</body>
+</html>

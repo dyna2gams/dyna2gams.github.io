@@ -1,0 +1,98 @@
+<!-- Dyna-to-Html Version 1.3 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Greenhouse Climate Control</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Greenhouse Climate Control
+</pre>
+<p>
+  This problem is taken from the book [1] and is modeled by [2] as an example.
+<p>
+  The problem models the growth of crop in a greenhouse depending on the temperature and
+  light. The problem is modeled with external input for the outside temperature and light
+  coming in, and the control is a heating element inside the greenhouse. The goal is to
+  maximize the profit of the greenhouse which comes from the weight of crops minus the cost
+  of heating.
+<p>
+  The problem formulation is the following:
+<p>
+  \[
+  \max \quad p_{5} x_1(t_f) - \int_{0}^{t_f} p_{4} u \mathrm{d}t\\
+  \dot{x}_1 = p_1 I x_2\\
+  \dot{x}_2 = p_2 (T_0 - x_2)+p_3 u\\
+  I = \max(0, 800 \sin( 4 \pi \frac{t}{t_f} - 0.65 \pi))\\
+  T_0 = 15+10 \sin(4\pi \frac{t}{t_f} - 0.65\pi)\\
+  p_{1:5} = [7.5 \cdot 10^{-8} \quad 1 \quad 0.1 \quad 4.55 \cdot 10^{-4} \quad 136.4]\\
+  t_f = 48\\
+  x_1(0) = 0\\
+  x_2(0) = 10\\
+  0 \leq u \leq 10
+  \]
+<p>
+  References:
+  <ol>
+  <li>G. van Straten, R.J.C. van Ooteghem, L.G. van Willigenburg, E. van Henten,
+  <em>Optimal Control of Greenhouse Cultivation</em>,
+  CRC Press, Taylor & Francis Group, 2010.
+  <li>V. Leek, D. Edblom,
+  <em>Yop - A MATLAB Toolbox for Numerical Optimal Control based on CasADi</em>,
+  https://www.yoptimalcontrol.se/
+  </ol>
+<p>
+  See: <a href="https://www.yoptimalcontrol.se/greenhouse">yoptimalcontrol.se</a>
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  p1 = 7.5e-8
+  p2 = 1
+  p3 = 0.1
+  p4 = 4.55e-4
+  p5 = 136.4
+  tf = 48
+
+<font color="red"><b>tpa:</b></font>
+  <font color="#808080"><i># Intensity of the light entering the greenhouse [W/m²]</i></font>
+  I = <font color="#2ECC40">max</font>(0, 800*<font color="#2ECC40">sin</font>(4*pi*<font color="#0074D9">Time</font>/tf-0.65*pi))
+  <font color="#808080"><i># Temperature outside the greenhouse [&deg;C]</i></font>
+  T0 = 15 + 10*<font color="#2ECC40">sin</font>(4*pi*<font color="#0074D9">Time</font>/tf-0.65*pi)
+
+<font color="red"><b>dyn:</b></font>
+  x1	<font color="#808080"><i># Dry weight of the crop [kg/m²]</i></font>
+  x2	<font color="#808080"><i># Temperature in the greenhouse [&deg;C]</i></font>
+  u	<font color="#808080"><i># Heat input from the heating system [W/m²]</i></font>
+  J	<font color="#808080"><i># Performance index</i></font>
+
+<font color="red"><b>lim:</b></font>
+  0 &lt;= u &lt;= 10
+
+<font color="red"><b>t=t0:</b></font>
+  x1 = 0
+  x2 = 10
+  J = 0
+
+<font color="red"><b>equ:</b></font>
+  x1&acute; == p1*I*x2
+  x2&acute; == p2*(T0-x2) + p3*u
+  J&acute; == p4*u
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">maximize</font> p5*<font color="#0074D9">final</font>(x1)-<font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#8A2BE2">@csvsave</font> I T0
+</pre>
+</body>
+</html>

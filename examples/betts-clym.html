@@ -1,0 +1,148 @@
+<!-- Dyna-to-Html Version 1.3 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Minimum Time to Climb</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Minimum Time to Climb
+</pre>
+<p>
+  The original minimum time to climb problem was presented in [1] and has been
+  the subject of many analyses since then. The basic problem is to choose the
+  optimal control function, the angle of attack, such that an airplane flies
+  from a point on a runway to a specified final altitude as quickly as possible.
+  The problem specification includes tabular data for the aerodynamic and thrust
+  forces. The counter intuitive optimal solution consists of a climb, followed
+  by a dive and then a &ldquo;zoom&rdquo; climb to the terminal state. Since the original
+  study was of interest to the military during the Vietnam war era, the results
+  were very controversial when first reported.
+<p>
+  References:
+  <ol>
+  <li>A.E. Bryson, M.N. Desai and W.C. Hoffman,
+  <em>Energy-State Approximation in Performance Optimization of Supersonic Aircraft</em>,
+  Journal of Aircraft, 6(6):481-488, 1969.
+  <li>J.T. Betts,
+  <em>A Collection of Optimal Control Test Problems</em>,
+  Applied Mathematical Analysis, LLC, November 17, 2015.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">model-option</font> = optfile=1
+  conopt.opt &lt; lkdebg=0
+
+<font color="red"><b>par:</b></font>
+  mu = 0.14076539e+17
+  S = 530
+  Re = 20902900
+  Isp = 1600
+  g0 = 32.174
+
+<font color="red"><b>fun:</b></font>
+  <font color="#808080"><i># Propulsion data</i></font>
+  <font color="#808080"><i># Thrust T(Mach,h) (thousands of lb)</i></font>
+  <font color="#808080"><i># Altitude h (thousands of ft)</i></font>
+  &sect;Thrust = <font color="#7FDBFF">GridXY</font>
+        0     5    10    15    20    25    30    40    50    70
+  0.0  24.2  24.0  20.3  17.3  14.5  12.2  10.2   5.7   3.4    .1
+  0.2  28.0  24.6  21.1  18.1  15.2  12.8  10.7   6.5   3.9    .2
+  0.4  28.3  25.2  21.9  18.7  15.9  13.4  11.2   7.3   4.4    .4
+  0.6  30.8  27.2  23.8  20.5  17.3  14.7  12.3   8.1   4.9    .8
+  0.8  34.5  30.3  26.6  23.2  19.8  16.8  14.1   9.4   5.6   1.1
+  1.0  37.9  34.3  30.4  26.8  23.3  19.8  16.8  11.2   6.8   1.4
+  1.2  36.1  38.0  34.9  31.3  27.3  23.6  20.1  13.4   8.3   1.7
+  1.4  36.1  36.6  38.5  36.1  31.6  28.1  24.2  16.2  10.0   2.2
+  1.6  36.1  35.2  42.1  38.7  35.7  32.0  28.1  19.3  11.9   2.9
+  1.8  36.1  33.8  45.7  41.3  39.8  34.6  31.1  21.7  13.3   3.1
+
+  <font color="#808080"><i># Aerodynamic data</i></font>
+  Mach	&sect;CLa	&sect;CD0	&sect;eta
+  0	3.44	0.013	0.54
+  0.4	3.44	0.013	0.54
+  0.8	3.44	0.013	0.54
+  0.9	3.58	0.014	0.75
+  1.0	4.44	0.031	0.79
+  1.2	3.44	0.041	0.78
+  1.4	3.01	0.039	0.89
+  1.6	2.86	0.036	0.93
+  1.8	2.44	0.035	0.93
+
+<font color="red"><b>var:</b></font>
+  tf		<font color="#808080"><i># [sec]</i></font>
+
+<font color="red"><b>dyn:</b></font>
+  h		<font color="#808080"><i># [ft]</i></font>
+  phi		<font color="#808080"><i># [rad]</i></font>
+  theta		<font color="#808080"><i># [rad]</i></font>
+  v		<font color="#808080"><i># [ft/sec]</i></font>
+  gamma		<font color="#808080"><i># [rad]</i></font>
+  psi		<font color="#808080"><i># [rad]</i></font>
+  w		<font color="#808080"><i># [lb]</i></font>
+  alpha		<font color="#808080"><i># [rad]</i></font>
+
+<font color="red"><b>lim:</b></font>
+  0.1 &lt;= tf &lt;= 500
+  0 &lt;= h &lt;= 69000
+  -<font color="#0074D9">deg2rad</font>(10) &lt;= phi &lt;= <font color="#0074D9">deg2rad</font>(10)
+  -<font color="#0074D9">deg2rad</font>(89) &lt;= theta &lt;= <font color="#0074D9">deg2rad</font>(89)
+  1 &lt;= v &lt;= 2000
+  -<font color="#0074D9">deg2rad</font>(89) &lt;= gamma &lt;= <font color="#0074D9">deg2rad</font>(89)
+  -<font color="#0074D9">deg2rad</font>(90) &lt;= psi &lt;= <font color="#0074D9">deg2rad</font>(90)
+  0 &lt;= w &lt;= 45000
+  -<font color="#0074D9">deg2rad</font>(20) &lt;= alpha &lt;= <font color="#0074D9">deg2rad</font>(20)
+
+<font color="red"><b>t=t0:</b></font>
+  h = 0
+  phi = 0
+  theta = 0
+  v = 380
+  gamma = <font color="#0074D9">deg2rad</font>(1.7)
+  psi = 0
+  w = 41955
+
+<font color="red"><b>t=tf:</b></font>
+  h = 65617
+  v = 986.5
+  gamma = 0
+
+<font color="red"><b>exp:</b></font>
+  D == 0.5*CD*S*rho*<font color="#2ECC40">sqr</font>(v)
+  L == 0.5*CL*S*rho*<font color="#2ECC40">sqr</font>(v)
+  g == mu/<font color="#2ECC40">sqr</font>(r)
+  m == w/g0
+  CD == &sect;CD0(Mach) + &sect;eta(Mach)*&sect;CLa(Mach)*<font color="#2ECC40">sqr</font>(alpha)
+  CL == &sect;CLa(Mach)*alpha
+  r == Re + h
+  Mach == v/sos
+  T == 1000*&sect;Thrust(Mach,(h/1000))
+  <font color="#808080"><i># cf. https://www.digitaldutch.com/atmoscalc/table.htm</i></font>
+  rho == <font color="#0074D9">poly3</font>(h,-1.7811e-18,+6.1865e-13,-6.6416e-08,+2.3655e-03)
+  sos == <font color="#0074D9">poly4</font>(h,-3.8158e-17,+5.5769e-12,-2.0961e-07,-1.6320e-03,+1.1119e+03)
+
+<font color="red"><b>equ:</b></font>
+  h&acute; == v*<font color="#2ECC40">sin</font>(gamma)
+  phi&acute;  == 0
+  theta&acute; == v/r*<font color="#2ECC40">cos</font>(gamma)
+  v&acute; == (T*<font color="#2ECC40">cos</font>(alpha)-D)/m - g*<font color="#2ECC40">sin</font>(gamma)
+  gamma&acute; == (T*<font color="#2ECC40">sin</font>(alpha)+L)/m/v + <font color="#2ECC40">cos</font>(gamma)*(v/r-g/v)
+  psi&acute; == 0
+  w&acute; == -T/Isp
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> tf <font color="#8A2BE2">using</font> nlp <font color="#8A2BE2">with</font> conopt
+</pre>
+</body>
+</html>

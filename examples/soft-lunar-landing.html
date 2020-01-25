@@ -1,0 +1,218 @@
+<!-- Dyna-to-Html Version 1.3 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Soft Lunar Landing</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Soft Lunar Landing
+</pre>
+<p>
+  A trajectory optimization study for a soft landing on the Moon, which analyzes the effects
+  of adding operationally based constraints on the behavior of the minimum fuel trajectory,
+  is completed in [1]. Metrics of trajectory evaluation includes fuel expenditure, terminal
+  attitude, thrust histories, etc.. The vehicle is initialized in a circular parking orbit
+  and the trajectory divided into three distinct phases: de-orbit, descent, and braking.
+<p>
+  The equations of motion of the spaceship read as follows:
+<p>
+  \[
+  \dot{r} = v_r\\
+  \dot{\theta} = \dfrac{v_{\theta}}{r}\\
+  \dot{v}_r = \dfrac{v_{\theta}^2}{r} - \dfrac{\mu}{r^2} + \dfrac{T_E k_E}{m} \cos \psi^r\\
+  \dot{v}_{\theta} = -\dfrac{v_r v_{\theta}}{r} + \dfrac{T_E k_E}{m} \sin \psi^r\\
+  \dot{\psi}^r = \omega - \dot{\theta}\\
+  \dot{\omega} = \alpha\\
+  \dot{m} = -\dfrac{T_E k_E}{V_E}
+  \]
+<p>
+  where the position of the vehicle in polar coordinates (\(r\), \(\theta\)), the vertical
+  velocity (\(v_r\)), the horizontal velocity (\(v_{\theta}\)), the thrust angle from the
+  radial direction (\(\psi^r\)), the angular rate (\(\omega\)), and the mass (\(m\)) are
+  individual components of the state. The control variables are the engine throttle command,
+  \(k_E\), and the inertial angular acceleration command, \(\alpha\).
+<p>
+  The descent orbit perilune radius is specified with the following equation at a prescribed
+  time instant, namely at the end of the de-orbit phase:
+<p>
+  \[
+  \dfrac{r^2 v_{\theta}^2}{\mu \left(1 + \sqrt{\Big(\frac{r v_{\theta}^2}{\mu}-1\Big)^2+
+    \Big(\frac{r v_r v_{\theta}}{\mu}\Big)^2}\right)} = r_p
+  \]
+<p>
+  where the constant \(r_p\) represents the desired perilune radius value.
+<p>
+  Some boundary conditions must be satisfied:
+<p>
+  \[
+  r(0) = R_{eq}+40 \quad \text{km}\\
+  \theta(0) = 0\\
+  v_r(0) = 0\\
+  v_{\theta}(0) = 1660 \quad \text{m/s}\\
+  \psi^r(0) = -90 \quad \text{deg}\\
+  \omega(0) = 0\\
+  m(0) = 1800 \quad \text{kg}\\
+  r(t_f) = R_{eq}\\
+  -2 \leq v_r(t_f) \leq -0.5 \quad \text{m/s}\\
+  v_{\theta}(t_f) = 0\\
+  -0.5 \leq \psi^r(t_f) \leq 0.5 \quad \text{deg}
+  \]
+<p>
+  The objective is to minimize fuel usage while meeting specified operational constraints. The
+  cost function is chosen to be the final mass of the vehicle because this is the most direct
+  measurement of fuel usage:
+<p>
+  \[
+  \max J = m(t_f)
+  \]
+<p>
+  Reference:
+  <ol>
+  <li>A.M. Hawkins,
+  <em>Constrained Trajectory Optimization of a Soft Lunar Landing from a Parking Orbit</em>,
+  Master Thesis, Massachusetts Institute Of Technology, June 2005.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">default-iterations-number</font> = 3
+
+<font color="red"><b>par:</b></font>
+  Req = 1737.4e+3	<font color="#808080"><i># [m]</i></font>
+  mu = 4902.78e+9	<font color="#808080"><i># [km³/s²]</i></font>
+  Tm = 8000		<font color="#808080"><i># [N]</i></font>
+  Vex = 3500		<font color="#808080"><i># [m/s]</i></font>
+  m0 = 1800		<font color="#808080"><i># [kg]</i></font>
+  tf = 1
+
+<font color="red"><b>set:</b></font>
+  phase = ph1:ph3	<font color="#808080"><i># de-orbit, descent coast, braking</i></font>
+  ph13(phase) = ph1,ph3
+
+<font color="red"><b>var:</b></font>
+  tlen(phase)
+
+<font color="red"><b>dyn:</b></font>
+  t[phase]		<font color="#808080"><i># real time</i></font>
+  r[phase]		<font color="#808080"><i># states</i></font>
+  theta[phase]
+  vr[phase]
+  vt[phase]
+  psi[phase]
+  omega[phase]
+  m[phase]
+  k[phase]		<font color="#808080"><i># controls</i></font>
+  alpha[phase]
+  A[phase]		<font color="#808080"><i># regularization term</i></font>
+
+<font color="red"><b>lim:</b></font>
+  1 &lt;= tlen[phase] &lt;= 3000
+  Req &lt;= r[phase] &lt;= 1.1*Req
+  1 &lt;= m[phase] &lt;= m0
+  -<font color="#0074D9">deg2rad</font>(0.5) &lt;= alpha[ph13] &lt;= <font color="#0074D9">deg2rad</font>(0.5)
+  0 &lt;= alpha['ph2'] &lt;= 0
+  0 &lt;= k[ph13] &lt;= 1
+  0 &lt;= k['ph2'] &lt;= 0
+  -<font color="#0074D9">deg2rad</font>(10) &lt;= omega[phase] &lt;= <font color="#0074D9">deg2rad</font>(10)
+
+<font color="red"><b>t=t0:</b></font>
+  t['ph1'] = 0
+  r['ph1'] = Req + 40e+3
+  theta['ph1'] = 0
+  vr['ph1'] = 0
+  vt['ph1'] = 1660
+  psi['ph1'] = <font color="#0074D9">deg2rad</font>(-90)
+  omega['ph1'] = 0
+  m['ph1'] = m0
+  A['ph1'] = 0
+
+<font color="red"><b>t=tf:</b></font>
+  r['ph3'] = Req
+  -2 &lt;= vr['ph3'] &lt;= -0.5
+  vt['ph3'] = 0
+  -<font color="#0074D9">deg2rad</font>(0.5) &lt;= psi['ph3'] &lt;= <font color="#0074D9">deg2rad</font>(0.5)
+
+<font color="red"><b>exp:</b></font>
+  TimeDot == tlen[phase] / tf
+
+<font color="red"><b>equ:</b></font>
+  t&acute;[phase] / TimeDot == 1
+  r&acute;[phase] / TimeDot == vr[phase]
+  theta&acute;[phase] / TimeDot == vt[phase]/r[phase]
+  vr&acute;[phase] / TimeDot == <font color="#2ECC40">sqr</font>(vt[phase])/r[phase] - mu/<font color="#2ECC40">sqr</font>(r[phase]) - Tm*k[phase]*<font color="#2ECC40">cos</font>(psi[phase])/m[phase]
+  vt&acute;[phase] / TimeDot == -vr[phase]*vt[phase]/r[phase] + Tm*k[phase]*<font color="#2ECC40">sin</font>(psi[phase])/m[phase]
+  psi&acute;[phase] / TimeDot == omega[phase] - vt[phase]/r[phase]
+  omega&acute;[phase] / TimeDot == alpha[phase]
+  m&acute;[phase] / TimeDot == -Tm*k[phase]/Vex
+  A&acute;[phase] / TimeDot == <font color="#2ECC40">sqr</font>(alpha[phase])
+  <font color="#8A2BE2">@linkphases</font>
+  Req+15e+3 == <font color="#0074D9">final</font>(<font color="#2ECC40">sqr</font>(r['ph1']*vt['ph1'])/mu/(1+<font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqr</font>(r['ph1']*<font color="#2ECC40">sqr</font>(vt['ph1'])/mu-1)+<font color="#2ECC40">sqr</font>(r['ph1']*vr['ph1']*vt['ph1']/mu))))
+  alpha[phase] :: <font color="#7FDBFF">spline3</font>
+
+<font color="red"><b>sca:</b></font>
+  r[phase] = 1e+6
+  vt[phase] = 1e+3
+
+<font color="red"><b>ini:</b></font>
+  tlen['ph1'] = 500
+  tlen['ph2'] = 2500
+  tlen['ph3'] = 500
+  theta[phase] = <font color="#0074D9">initial</font>(theta['ph1'])
+  vr[phase] = <font color="#0074D9">initial</font>(vr['ph1'])
+  vt[phase] = <font color="#0074D9">initial</font>(vt['ph1'])
+  psi[phase] = <font color="#0074D9">initial</font>(psi['ph1'])
+
+<font color="red"><b>par:</b></font>
+  penaltyA = 1e-4
+  penaltyT = 1.6e-4$(<font color="#8A2BE2">%ITER%</font>=1) + 1.6e-4$(<font color="#8A2BE2">%ITER%</font>=2) + 8.0e-5$(<font color="#8A2BE2">%ITER%</font>=3) + 8.0e-6$(<font color="#8A2BE2">%ITER%</font>&gt;=4)
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">maximize</font> <font color="#0074D9">final</font>(m['ph3']) - penaltyA*<font color="#0074D9">final</font>(A['ph3']) - penaltyT*<font color="#0074D9">final</font>(t['ph3']) <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#8B0000">$$ifthen</font> <font color="#8A2BE2">%ITER%</font>==<font color="#8A2BE2">%ITERMAX%</font>
+  penaltyA = penaltyA*1e+3;
+  <font color="#8A2BE2">@solve</font>
+  <font color="#8B0000">$$endif</font>
+  <font color="#808080"><i># perform sensitivity analysis w.r.t. final time</i></font>
+  <font color="#3D9970">parameter</font> report(*,*) "Sensitivity Analysis";
+  <font color="#3D9970">set</font> iter /iter1*iter8/;
+  <font color="#3D9970">loop</font>(iter,
+    report(iter,'T1') = <font color="#0074D9">final</font>(t.l['ph1']);
+    report(iter,'T2') = <font color="#0074D9">final</font>(t.l['ph2']);
+    report(iter,'T3') = <font color="#0074D9">final</font>(t.l['ph3']);
+    report(iter,'mass') = <font color="#0074D9">final</font>(m.l['ph3']);
+    report(iter,'penaltyT') = penaltyT;
+    report(iter,'penaltyA') = penaltyA;
+    penaltyT = penaltyT*<font color="#2ECC40">sqrt</font>(2);
+    <font color="#3D9970">if</font>(<font color="#3D9970">ord</font>(iter)&lt;<font color="#3D9970">card</font>(iter),
+      <font color="#8A2BE2">@solve</font>
+      <font color="#8A2BE2">@solveloop</font> Method=bndobj
+      );
+    );
+  <font color="#8B0000">$$ifthen</font> <font color="#8A2BE2">%ITER%</font>==<font color="#8A2BE2">%ITERMAX%</font>
+  <font color="#808080"><i># revert to target solution - doesn&rsquo;t provide a good starting point for next iteration</i></font>
+  <font color="#3D9970">loop</font>(iter$(report(iter,'t3') &gt; 3200),
+    penaltyT = report(iter,'penaltyT')
+    );
+  <font color="#8B0000">$$else</font>
+  <font color="#808080"><i># revert to first point - ok for next iteration</i></font>
+  penaltyT = penaltyT/<font color="#2ECC40">sqrt</font>(2)^<font color="#3D9970">card</font>(iter);
+  <font color="#8B0000">$$endif</font>
+  <font color="#8A2BE2">@solve</font>
+  <font color="#8A2BE2">@solveloop</font> Method=bndobj
+  <font color="#3D9970">display</font> report;
+</pre>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!-- Dyna-to-Html Version 1.3 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Optimal fishing plan</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Optimal fishing plan
+</pre>
+<p>
+  A population of \(P\) fish in a certain lake grow at rate
+<p>
+  \[
+  \dot{P}(t) = a P(t) - b P^2(t)
+  \]
+<p>
+  if undisturbed by people. Fish can be withdrawn from the lake and consumed at
+  rate \(c(t)\), yielding utility \(u(c(t))\) to the consuming community and
+  reducing the fish growth rate accordingly.
+<p>
+  \[
+  \dot{P}(t) = a P(t) - b P^2(t) - c(t)
+  \]
+<p>
+  Assume future utilities to the community are discounted at constant rate \(r\).
+  Characterize a fishing (consumption) plan to maximize the present value of the
+  discounted stream of utilities.
+<p>
+  \[
+  \max J = \int_0^\infty w\big(c(t)\big)e^{-rt} \ \mathrm{d}t
+  \]
+<p>
+  Assume that \(P(0)=a/b\), and that \(u'>0\), \(u''<0\).
+<p>
+  Reference:
+  <ol>
+  <li>https://math.stackexchange.com/questions/3398821/
+  </ol>
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  r = 0.05
+  beta = 0.3
+  a = 5
+  b = 0.05
+  tf = 100
+
+<font color="red"><b>dyn:</b></font>
+  P	<font color="#808080"><i># fish population</i></font>
+  c	<font color="#808080"><i># fish consumption</i></font>
+  J	<font color="#808080"><i># criterion</i></font>
+
+<font color="red"><b>lim:</b></font>
+  0 &lt;= P &lt;= +<font color="#3D9970">inf</font>
+  0 &lt;= c &lt;= +<font color="#3D9970">inf</font>
+
+<font color="red"><b>t=t0:</b></font>
+  P = a/b
+  J = 0
+
+<font color="red"><b>equ:</b></font>
+  P&acute; == a*P - b*P*P - c
+  J&acute; == c^beta*<font color="#2ECC40">exp</font>(-r*<font color="#0074D9">Time</font>)
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">maximize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp
+</pre>
+</body>
+</html>

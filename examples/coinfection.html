@@ -1,0 +1,117 @@
+<!-- Dyna-to-Html Version 1.3 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Pneumonia and Meningitis Coinfection</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Pneumonia and Meningitis Coinfection
+</pre>
+<p>
+  In his paper [1], the author proposes a deterministic model of pneumonia-meningitis
+  coinfection. He uses a system of seven ordinary differential equations. The basic
+  model is extended to optimal control by incorporating four control interventions,
+  such as prevention of pneumonia as well as meningitis and also treatment of
+  pneumonia and meningitis diseases.
+<p>
+  Reference:
+  <ol>
+  <li>G.T. Tilahun,
+  <em>Optimal Control Analysis of Pneumonia and Meningitis Coinfection</em>,
+  Computational and Mathematical Methods in Medicine, Volume 2019, Article ID 2658971.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  pi = 10
+  delta1 = 0.1
+  delta2 = 0.99
+  delta3 = 0.01
+  a = 0.6
+  b = 0.9
+  mu = 0.01
+  sigma1 = 0.9
+  sigma2 = 0.8
+  sigma = 0.1
+  alpha1 = 0.5
+  alpha2 = 0.2
+  e = 0.5
+  g = 0.5
+  c{1:3} = {35 45 26}
+  w{1:4} = {4 3 5 6}
+  tf = 3
+
+<font color="red"><b>dyn:</b></font>
+  S	<font color="#808080"><i># healthy individuals but able to be infected</i></font>
+  Ip	<font color="#808080"><i># individuals affected by pneumonia and can transmit the disease to others</i></font>
+  Im	<font color="#808080"><i># meningitis-infected individuals</i></font>
+  Ipm	<font color="#808080"><i># coinfectious individuals</i></font>
+  Rp	<font color="#808080"><i># individuals having recovered from pneumonia</i></font>
+  Rm	<font color="#808080"><i># individuals having recovered from meningitis</i></font>
+  Rpm	<font color="#808080"><i># individuals having recovered from coinfection</i></font>
+  u1	<font color="#808080"><i># pneumonia prevention effort</i></font>
+  u2	<font color="#808080"><i># meningitis prevention effort</i></font>
+  u3	<font color="#808080"><i># pneumonia treating effort</i></font>
+  u4	<font color="#808080"><i># meningitis treating effort</i></font>
+  J
+
+<font color="red"><b>lim:</b></font>
+  0 &lt;= u{1:4} &lt;= 1
+
+<font color="red"><b>t=t0:</b></font>
+  S = 1500
+  Ip = 456
+  Im = 564
+  Ipm = 250
+  Rp = 123
+  Rm = 248
+  Rpm = 346
+  J = 0
+
+<font color="red"><b>par:</b></font>
+  theta = 1
+
+<font color="red"><b>exp:</b></font>
+  P == S + Ip + Im + Ipm + Rp + Rm + Rpm
+  f1 == a$theta + (a*(Ip+Ipm)/P)$(1-theta)
+  f2 == b$theta + (b*(Im*Ipm)/P)$(1-theta)
+
+<font color="red"><b>equ:</b></font>
+  S&acute; == pi + delta1*Rp + delta2*Rm + delta3*Rpm - ((1-u1)*f1 + (1-u2)*f2 + mu)*S
+  Ip&acute; == (1-u1)*f1*S - (1-u2)*f2*Ip - (sigma1+u3)*Ip - (alpha1+mu)*Ip
+  Im&acute; == (1-u2)*f2*S - (1-u1)*f1*Im - (sigma2+u4)*Im - (alpha2+mu)*Im
+  Ipm&acute; == (1-u2)*f2*Ip + (1-u1)*f1*Im - (sigma+u3+u4)*Ipm - (alpha1+alpha2+mu)*Ipm
+  Rp&acute; == (sigma1+u3)*Ip + (sigma*e+u3)*Ipm - (delta1+mu)*Rp
+  Rm&acute; == (sigma2+u4)*Im + (sigma*g*(1-e)+u4)*Ipm - (delta2+mu)*Rm
+  Rpm&acute; == (sigma*(1-g)*(1-e)+u3+u4)*Ipm - (delta3+mu)*Rpm
+  J&acute; == c1*Ip + c2*Im + c3*Ipm + 0.5*<font color="#3D9970">sum</font>{1:4, w{:}*<font color="#2ECC40">sqr</font>(u{:})}
+
+<font color="red"><b>ini:</b></font>
+  S = <font color="#0074D9">initial</font>(S)
+  Ip = <font color="#0074D9">initial</font>(Ip)
+  Im = <font color="#0074D9">initial</font>(Im)
+  Ipm = <font color="#0074D9">initial</font>(Ipm)
+  Rp = <font color="#0074D9">initial</font>(Rp)
+  Rm = <font color="#0074D9">initial</font>(Rm)
+  Rpm = <font color="#0074D9">initial</font>(Rpm)
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  theta = 0
+  <font color="#8A2BE2">@solve</font>
+</pre>
+</body>
+</html>

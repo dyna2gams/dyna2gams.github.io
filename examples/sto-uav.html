@@ -1,0 +1,115 @@
+<!-- Dyna-to-Html Version 1.3 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">UAV stochastic path planning problem</h1>
+<pre>
+<font color="red"><b>rem:</b></font> UAV stochastic path planning problem
+</pre>
+<p>
+  We consider a stochastic path planning for a fixed-wing unmanned aerial vehicle
+  (UAV) model under uncertain initial state such as position, heading angle, angle of
+  attach and aerodynamic forces.
+<p>
+  Reference:
+  <ol>
+  <li>P. Lambrianides, Q. Gong, D. Venturi,
+  <em>A new scalable algorithm for computational optimal control under uncertainty</em>,
+  arXiv:1909.07960v1 [math.NA] 17 Sep 2019.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>set:</b></font>
+  scen = sce1:sce16
+
+<font color="red"><b>par:</b></font>
+  m = 2
+  g = 9.8
+  S = 0.982
+  r[scen] = <font color="#2ECC40">uniform</font>(0,5)
+  theta[scen] = <font color="#2ECC40">uniform</font>(0,pi)
+  phi[scen] = <font color="#2ECC40">uniform</font>(2,2*pi)
+  Cxo[scen] = <font color="#2ECC40">uniform</font>(-0.038,-0.033)
+  Cxa[scen] = <font color="#2ECC40">uniform</font>(0.0027,0.0031)
+  Czo[scen] = <font color="#2ECC40">uniform</font>(-0.0589,-0.0548)
+  Cza[scen] = <font color="#2ECC40">uniform</font>(-5.9685,-5.1875)
+  tf = 50
+
+<font color="red"><b>dyn:</b></font>
+  x[scen]		<font color="#808080"><i># position of the UAV</i></font>
+  y[scen]
+  z[scen]
+  v[scen]		<font color="#808080"><i># velocity</i></font>
+  gamma[scen]		<font color="#808080"><i># elevation angle</i></font>
+  sigma[scen]		<font color="#808080"><i># heading angle</i></font>
+  T			<font color="#808080"><i># thrust</i></font>
+  alpha			<font color="#808080"><i># angle of attack</i></font>
+  mu			<font color="#808080"><i># bank angle</i></font>
+  u_T u_alpha u_mu
+  J
+
+<font color="red"><b>lim:</b></font>
+  13 &lt;= v[scen] &lt;= 42
+  -pi/6 &lt;= gamma[scen] &lt;= pi/6
+  -pi &lt;= sigma[scen] &lt;= pi
+  3 &lt;= T &lt;= 35
+  -pi/8 &lt;= alpha &lt;= pi/8
+  -1 &lt;= u_T &lt;= 1
+  -0.05 &lt;= u_alpha &lt;= 0.05
+  -0.05 &lt;= u_mu &lt;= 0.05
+
+<font color="red"><b>t=t0:</b></font>
+  x[scen] = r[scen]*<font color="#2ECC40">sin</font>(theta[scen])*<font color="#2ECC40">cos</font>(phi[scen])
+  y[scen] = r[scen]*<font color="#2ECC40">sin</font>(theta[scen])*<font color="#2ECC40">sin</font>(phi[scen])
+  z[scen] = r[scen]*<font color="#2ECC40">cos</font>(phi[scen])
+  v[scen] = <font color="#2ECC40">uniform</font>(25.575,29.425)
+  gamma[scen] = <font color="#2ECC40">uniform</font>(-0.05,0.05)
+  sigma[scen] = <font color="#2ECC40">uniform</font>(3.1,pi)
+  T = 16.1
+  alpha = -0.0088
+  mu = 0
+  J = 0
+
+<font color="red"><b>exp:</b></font>
+  rho == 1.21*<font color="#2ECC40">exp</font>(-z[scen]/8000)
+  L == 0.5*rho*<font color="#2ECC40">sqr</font>(v[scen])*S*CL
+  D == 0.5*rho*<font color="#2ECC40">sqr</font>(v[scen])*S*CD
+  CL ==  (Cxo[scen] + Cxa[scen]*alpha)*<font color="#2ECC40">sin</font>(alpha) - (Czo[scen] + Cza[scen]*alpha)*<font color="#2ECC40">cos</font>(alpha)
+  CD == -(Cxo[scen] + Cxa[scen]*alpha)*<font color="#2ECC40">cos</font>(alpha) - (Czo[scen] + Cza[scen]*alpha)*<font color="#2ECC40">sin</font>(alpha)
+
+<font color="red"><b>equ:</b></font>
+  x&acute;[scen] == v[scen]*<font color="#2ECC40">cos</font>(gamma[scen])*<font color="#2ECC40">cos</font>(sigma[scen])
+  y&acute;[scen] == v[scen]*<font color="#2ECC40">cos</font>(gamma[scen])*<font color="#2ECC40">sin</font>(sigma[scen])
+  z&acute;[scen] == v[scen]*<font color="#2ECC40">sin</font>(gamma[scen])
+  v&acute;[scen] == (-D+T*<font color="#2ECC40">cos</font>(alpha))/m - g*<font color="#2ECC40">sin</font>(gamma[scen])
+  gamma&acute;[scen] == (L*<font color="#2ECC40">cos</font>(mu)+T*<font color="#2ECC40">cos</font>(mu)*<font color="#2ECC40">sin</font>(alpha))/m/v[scen] - g*<font color="#2ECC40">cos</font>(gamma[scen])/v[scen]
+  sigma&acute;[scen] == (L*<font color="#2ECC40">sin</font>(mu)+T*<font color="#2ECC40">sin</font>(mu)*<font color="#2ECC40">sin</font>(alpha))/m/v[scen]/<font color="#2ECC40">cos</font>(gamma[scen])
+  T&acute; == u_T
+  alpha&acute; == u_alpha
+  mu&acute; == u_mu
+  J&acute; == <font color="#2ECC40">sqr</font>(u_T) + <font color="#2ECC40">sqr</font>(u_alpha) + <font color="#2ECC40">sqr</font>(u_mu)
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#3D9970">sum</font>(scen,<font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(x[scen])-500)+<font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(y[scen])-500)+<font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(z[scen])-500))/<font color="#3D9970">card</font>(scen)+200*<font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#3D9970">scalars</font> xa, ya, za;
+  xa = <font color="#3D9970">sum</font>(scen, <font color="#0074D9">initial</font>(x.l[scen]))/<font color="#3D9970">card</font>(scen);
+  ya = <font color="#3D9970">sum</font>(scen, <font color="#0074D9">initial</font>(y.l[scen]))/<font color="#3D9970">card</font>(scen);
+  za = <font color="#3D9970">sum</font>(scen, <font color="#0074D9">initial</font>(z.l[scen]))/<font color="#3D9970">card</font>(scen);
+  <font color="#3D9970">display</font> xa, ya, za;
+</pre>
+</body>
+</html>
