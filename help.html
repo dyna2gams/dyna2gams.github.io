@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.3 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -412,7 +412,7 @@ where
   [[&lt;equ&gt;][$&lt;condition&gt;]..] &lt;dyn&gt;&acute; &lt;relational-operator&gt; &lt;expression&gt;
   [[&lt;equ&gt;][$&lt;condition&gt;]..] &lt;expression&gt; &lt;relational-operator&gt; &lt;expression&gt;
   [[&lt;equ&gt;][$&lt;condition&gt;]..] &lt;expression&gt; :: &lt;type&gt;[(&lt;exp&gt;)]
-  [$&lt;condition&gt;..] &lt;expression&gt; &lt;= &lt;expression&gt; &lt;= &lt;expression&gt;
+  [[&lt;equ&gt;][$&lt;condition&gt;]..] &lt;expression&gt; &lt;= &lt;expression&gt; &lt;= &lt;expression&gt;
   <font color="#8A2BE2">@tfm</font> L,{&lt;tfm-statement&gt;}				<font color="#808080"><i>Transfer function model (see <a href="#tfm">tfm section</a>)</i></font>
   <font color="#8A2BE2">@pid</font> L,{&lt;pid-statement&gt;}				<font color="#808080"><i>Filtered PID transfer function model</i></font>
   <font color="#8A2BE2">@linkphases</font> [&lt;phase-<font color="#3D9970">set</font>&gt; [-x L{&lt;dyn&gt;}]]		<font color="#808080"><i>Link dynamic variables across phases. -x means variables to exclude.</i></font>
@@ -522,6 +522,7 @@ when all the dependent variables are known.
   <font color="#8A2BE2">@alltimeput</font> 'min|max' L/{var} L/{equ};		<font color="#808080"><i>Put all dynamic variables and equations to file</i></font>
   <font color="#8A2BE2">@costates</font>[(POLY|ZERO|PREV)];				<font color="#808080"><i>Costates calculation (must be used before any call to costate(.) function</i></font>
   <font color="#8A2BE2">@csvsave</font> L{&lt;dyn&gt;};					<font color="#808080"><i>Save dynamic variables in the CSV files</i></font>
+  <font color="#8A2BE2">@par</font> &lt;par&gt; [= &lt;exp&gt;];					<font color="#808080"><i>Declare and instantiate parameter</i></font>
   <font color="#8A2BE2">@seekcia</font> L,{&lt;seekcia-statement&gt;};			<font color="#808080"><i>Combinatorial Integral Approximation</i></font>
   <font color="#8A2BE2">@seekmax</font> L,{&lt;seekm-statement&gt;};			<font color="#808080"><i>Section search maximum</i></font>
   <font color="#8A2BE2">@seekmin</font> L,{&lt;seekm-statement&gt;};			<font color="#808080"><i>Section search minimum</i></font>
@@ -531,7 +532,7 @@ when all the dependent variables are known.
   <font color="#8A2BE2">@setlimf</font> L,{&lt;setlim-statement&gt;};			<font color="#808080"><i>Define lower and upper bound on t=tf</i></font>
   <font color="#8A2BE2">@solve</font> [<font color="#8A2BE2">using</font> &lt;modeltype&gt;] [<font color="#8A2BE2">with</font> L|{&lt;solver&gt;}];	<font color="#808080"><i>Reoptimize the model with new type or new solver</i></font>
   <font color="#8A2BE2">@solveloop</font> L,{&lt;solveloop-statement&gt;};			<font color="#808080"><i>Iterative solve after filtering of some variables</i></font>
-  <font color="#8A2BE2">@tpa</font>[ram[eter]] &lt;tpa&gt; [= &lt;tex&gt;];			<font color="#808080"><i>Declare and instantiate time-dependent parameter</i></font>
+  <font color="#8A2BE2">@tpa</font> &lt;tpa&gt; [= &lt;tex&gt;];					<font color="#808080"><i>Declare and instantiate time-dependent parameter</i></font>
   <font color="#8A2BE2">@verbatim</font> &lt;gams-statement&gt;;				<font color="#808080"><i>Instruct DYNA to keep statement untouched</i></font>
 
 &lt;seekm-statement&gt; :-
@@ -826,6 +827,7 @@ x{1 2 4} = x{3 5 6}
 <font color="#0074D9">eval</font>(X,tau)
 <font color="#0074D9">final</font>(X)
 <font color="#0074D9">initial</font>(X)
+<font color="#0074D9">integ</font>(X)
 <font color="#0074D9">last</font>(X)
 <font color="#0074D9">pred</font>(X)
 <font color="#0074D9">slope</font>(X)
@@ -857,6 +859,9 @@ x{1 2 4} = x{3 5 6}
 <font color="#0074D9">poly4</font>(x,a4,a3,a2,a1,a0)
 <font color="#0074D9">poly5</font>(x,a5,a4,a3,a2,a1,a0)
 <font color="#0074D9">poly6</font>(x,a6,a5,a4,a3,a2,a1,a0)
+<font color="#0074D9">poly7</font>(x,a7,a6,a5,a4,a3,a2,a1,a0)
+<font color="#0074D9">poly8</font>(x,a8,a7,a6,a5,a4,a3,a2,a1,a0)
+<font color="#0074D9">poly9</font>(x,a9,a8,a7,a6,a5,a4,a3,a2,a1,a0)
 </pre>
 <h4 id="pirf">Parameters identification related functions</h4>
 <pre class="syntax">
