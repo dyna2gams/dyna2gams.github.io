@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.3 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -41,22 +41,22 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   nlin = 0
 
 <font color="red"><b>set:</b></font>
-  scen = scen1:scen4
+  scen = sce1:sce4
 
-<font color="red"><b>tpa:</b></font>  
+<font color="red"><b>tpa:</b></font>
   <font color="#808080"><i># u{1:2}[scen]	# stock flow rate / white water flow rate</i></font>
   <font color="#808080"><i># w{1:2}[scen]	# disturbances (measured, unmeasured)</i></font>
-  
-  <font color="#808080"><i>#u1[scen] = ifthen(Time&gt;tf/20,1,0)$sameas(scen,'scen1')</i></font>
-  <font color="#808080"><i>#u2[scen] = ifthen(Time&gt;tf/20,1,0)$sameas(scen,'scen2') </i></font>
-  <font color="#808080"><i>#w1[scen] = ifthen(Time&gt;tf/20,1,0)$sameas(scen,'scen3') </i></font>
-  <font color="#808080"><i>#w2[scen] = ifthen(Time&gt;tf/20,1,0)$sameas(scen,'scen4')</i></font>
-  
-  u1[scen] = ((<font color="#0074D9">WaveSquare</font>(<font color="#0074D9">Time</font>/30)+1)/2)$<font color="#2ECC40">sameas</font>(scen,'scen1')
-  u2[scen] = ((<font color="#0074D9">WaveSquare</font>(<font color="#0074D9">Time</font>/30)+1)/2)$<font color="#2ECC40">sameas</font>(scen,'scen2') 
-  w1[scen] = ((<font color="#0074D9">WaveSquare</font>(<font color="#0074D9">Time</font>/30)+1)/2)$<font color="#2ECC40">sameas</font>(scen,'scen3') 
-  w2[scen] = ((<font color="#0074D9">WaveSquare</font>(<font color="#0074D9">Time</font>/30)+1)/2)$<font color="#2ECC40">sameas</font>(scen,'scen4')
-  
+
+  <font color="#808080"><i>#u1[scen] = ifthen(Time&gt;tf/20,1,0)$sameas(scen,'sce1')</i></font>
+  <font color="#808080"><i>#u2[scen] = ifthen(Time&gt;tf/20,1,0)$sameas(scen,'sce2')</i></font>
+  <font color="#808080"><i>#w1[scen] = ifthen(Time&gt;tf/20,1,0)$sameas(scen,'sce3')</i></font>
+  <font color="#808080"><i>#w2[scen] = ifthen(Time&gt;tf/20,1,0)$sameas(scen,'sce4')</i></font>
+
+  u1[scen] = ((<font color="#0074D9">WaveSquare</font>(<font color="#0074D9">Time</font>/30)+1)/2)$<font color="#2ECC40">sameas</font>(scen,'sce1')
+  u2[scen] = ((<font color="#0074D9">WaveSquare</font>(<font color="#0074D9">Time</font>/30)+1)/2)$<font color="#2ECC40">sameas</font>(scen,'sce2')
+  w1[scen] = ((<font color="#0074D9">WaveSquare</font>(<font color="#0074D9">Time</font>/30)+1)/2)$<font color="#2ECC40">sameas</font>(scen,'sce3')
+  w2[scen] = ((<font color="#0074D9">WaveSquare</font>(<font color="#0074D9">Time</font>/30)+1)/2)$<font color="#2ECC40">sameas</font>(scen,'sce4')
+
 <font color="red"><b>var:</b></font>
   ky11 ky12 ky13 kw11 ku11 ku12
   ky21 ky22 ky23 kw21 ku21 ku22 kyu1 kyu2
@@ -70,44 +70,44 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   ox1[scen]	<font color="#808080"><i># estimation of x1</i></font>
   ow2[scen]	<font color="#808080"><i># estimation of w2</i></font>
   J		<font color="#808080"><i># criterion</i></font>
-  
+
 <font color="red"><b>lim:</b></font>
-  0 &lt;= kw11 &lt;= 0 
-  0 &lt;= ky21 &lt;= 0 
-  0 &lt;= ky23 &lt;= 0 
-  0 &lt;= cy11 &lt;= 0 
-  0 &lt;= cy12 &lt;= 0 
+  0 &lt;= kw11 &lt;= 0
+  0 &lt;= ky21 &lt;= 0
+  0 &lt;= ky23 &lt;= 0
+  0 &lt;= cy11 &lt;= 0
+  0 &lt;= cy12 &lt;= 0
   0 &lt;= cw11 &lt;= 0
-  0 &lt;= cy21 &lt;= 0 
-  0 &lt;= cy23 &lt;= 0 
+  0 &lt;= cy21 &lt;= 0
+  0 &lt;= cy23 &lt;= 0
 
 <font color="red"><b>t=t0:</b></font>
   x{1:4}[scen] = 0
   oz{1:2}[scen] = 0
   J = 0
-  
+
 <font color="red"><b>ini:</b></font>
-  ky11 = -1.367 
-  ky12 = 0.720 
-  ky13 = 0.129 
-  kw11 = 0 
-  ku11 = 1.274 
+  ky11 = -1.367
+  ky12 = 0.720
+  ky13 = 0.129
+  kw11 = 0
+  ku11 = 1.274
   ku12 = 1.274
-  ky21 = 0 
-  ky22 = 0.211 
-  ky23 = 0 
-  kw21 = -0.0103 
-  ku21 = 0.659  
-  ku22 = 0.315 
-  kyu1 = 0.161 
+  ky21 = 0
+  ky22 = 0.211
+  ky23 = 0
+  kw21 = -0.0103
+  ku21 = 0.659
+  ku22 = 0.315
+  kyu1 = 0.161
   kyu2 = 0.161
-  cy11 = 0 
-  cy12 = 0 
-  cy13 = -1.744 
+  cy11 = 0
+  cy12 = 0
+  cy13 = -1.744
   cw11 = 0
-  cy21 = 0 
-  cy22 = 0.493 
-  cy23 = 0 
+  cy21 = 0
+  cy22 = 0.493
+  cy23 = 0
   cw21 = 0.226
 
 <font color="red"><b>equ:</b></font>
@@ -134,25 +134,25 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 
 <font color="red"><b>gms:</b></font>
   nlin = 1;
-  ky11.fx = ky11.l;  
-  ky12.fx = ky12.l; 
-  ky13.fx = ky13.l; 
-  kw11.fx = kw11.l; 
-  ku11.fx = ku11.l; 
-  ku12.fx = ku12.l; 
-  ky21.fx = ky21.l; 
-  ky22.fx = ky22.l; 
-  ky23.fx = ky23.l; 
+  ky11.fx = ky11.l;
+  ky12.fx = ky12.l;
+  ky13.fx = ky13.l;
+  kw11.fx = kw11.l;
+  ku11.fx = ku11.l;
+  ku12.fx = ku12.l;
+  ky21.fx = ky21.l;
+  ky22.fx = ky22.l;
+  ky23.fx = ky23.l;
   kw21.fx = kw21.l;
-  ku21.fx = ku21.l;  
-  ku22.fx = ku22.l; 
-  cy11.fx = cy11.l; 
-  cy12.fx = cy12.l; 
-  cy13.fx = cy13.l;  
-  cw11.fx = cw11.l; 
-  cy21.fx = cy21.l; 
-  cy22.fx = cy22.l; 
-  cy23.fx = cy23.l; 
+  ku21.fx = ku21.l;
+  ku22.fx = ku22.l;
+  cy11.fx = cy11.l;
+  cy12.fx = cy12.l;
+  cy13.fx = cy13.l;
+  cw11.fx = cw11.l;
+  cy21.fx = cy21.l;
+  cy22.fx = cy22.l;
+  cy23.fx = cy23.l;
   cw21.fx = cw21.l;
   <font color="#8A2BE2">@solve</font>
 

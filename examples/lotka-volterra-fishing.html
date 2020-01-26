@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.3 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -22,22 +22,22 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   The Lotka Volterra fishing problem looks for an optimal fishing strategy to be performed on a fixed
   time horizon to bring the biomasses of both predator as prey fish to a prescribed steady state. The
   problem was set up as a small-scale benchmark problem. The well known Lotka Volterra equations for a
-  predator-prey system have been augmented by an additional linear term, relating to fishing by man.
-  The control can be regarded both in a relaxed, as in a discrete manner, corresponding to a part of
-  the fleet, or the full fishing fleet.
+  predator-prey system have been augmented by an additional linear term, relating to fishing by man. The
+  control can be regarded both in a relaxed, as in a discrete manner, corresponding to a part of the
+  fleet, or the full fishing fleet.
 <p>
   The mixed-integer optimal control problem is given by
 <p>
-  \begin{array}{llclr} 
+  \begin{array}{llclr}
   \displaystyle \min_{x, w} & x_2(t_f) \\
   \mbox{s.t.} & \dot{x}_0 & = & x_0 - x_0 x_1 - \; c_0 x_0 \; w, \\ & \dot{x}_1 & = & - x_1 + x_0 x_1 - \; c_1 x_1 \; w, \\
   & \dot{x}_2 & = & (x_0 - 1)^2 + (x_1 - 1)^2, \\[1.5ex] & x(0) &=& (0.5, 0.7, 0)^T, \\ & w(t) &\in& \{0, 1\}.
   \end{array}
 <p>
   Here the differential states \((x_0, x_1)\) describe the biomasses of prey and predator, respectively.
-  The third differential state is used here to transform the objective, an integrated deviation, into 
-  the Mayer formulation \(\min \; x_2(t_f)\). The decision, whether the fishing fleet is actually fishing at
-  time \(t\) is denoted by \(w(t)\). 
+  The third differential state is used here to transform the objective, an integrated deviation, into
+  the Mayer formulation \(\min \; x_2(t_f)\). The decision, whether the fishing fleet is actually
+  fishing at time \(t\) is denoted by \(w(t)\).
 <p>
   See: <a href="https://mintoc.de/index.php/Lotka_Volterra_fishing_problem">mintoc.de</a>
 <p>
@@ -45,36 +45,38 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <font color="red"><b>par:</b></font>
   p0 = 0.4
   p1 = 0.2
-  ref0 = 1.0
-  ref1 = 1.0
+  ref0 = 1
+  ref1 = 1
   tf = 12
 
-<font color="red"><b>dyn:</b></font> xd0 xd1 dev u:<font color="#3D9970">binary</font>
+<font color="red"><b>dyn:</b></font>
+  x0 x1 x2
+  w:<font color="#3D9970">binary</font>
 
 <font color="red"><b>lim:</b></font>
-  0 &lt;= xd0 &lt;= 20
-  0 &lt;= xd1 &lt;= 20
-  0 &lt;= dev &lt;= 25
-  0 &lt;= u &lt;= 1
+  0 &lt;= x0 &lt;= 20
+  0 &lt;= x1 &lt;= 20
+  0 &lt;= x2 &lt;= 25
+  0 &lt;= w &lt;= 1
 
 <font color="red"><b>t=t0:</b></font>
-  xd0 = 0.5
-  xd1 = 0.7
-  dev = 0.0
+  x0 = 0.5
+  x1 = 0.7
+  x2 = 0
 
 <font color="red"><b>ini:</b></font>
-  xd0 = 0.5
-  xd1 = 0.7
-  dev = 0.0
-  u = 1
+  x0 = 0.5
+  x1 = 0.7
+  x2 = 0
+  w = 1
 
 <font color="red"><b>equ:</b></font>
-  xd0&acute; == xd0 - xd0*xd1 - p0*u*xd0
-  xd1&acute; == -xd1 + xd0*xd1 - p1*u*xd1
-  dev&acute; == <font color="#2ECC40">sqr</font>(xd0-ref0) + <font color="#2ECC40">sqr</font>(xd1-ref1)
+  x0&acute; ==  x0 - x0*x1 - p0*w*x0
+  x1&acute; == -x1 + x0*x1 - p1*w*x1
+  x2&acute; == <font color="#2ECC40">sqr</font>(x0-ref0) + <font color="#2ECC40">sqr</font>(x1-ref1)
 
 <font color="red"><b>obj:</b></font>
-  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(dev) <font color="#8A2BE2">using</font> minlp
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(x2) <font color="#8A2BE2">using</font> minlp
 </pre>
 </body>
 </html>
