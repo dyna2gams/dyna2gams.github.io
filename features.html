@@ -114,7 +114,7 @@
 								(Gauss, Radau, Lobatto...).
 								<li>Mesh refinement: fixed mesh refinement schemes to solve the problems to the required
 								accuracy.
-								<li>Integral vs Differential way: for any trajectory optimization problem, the dynamics constraint can be written
+								<li>Integral vs Differential way: for any trajectory optimization problem, the dynamics constraints can be written
 								either in their derivative or integral forms.
 								<li>Adjoint estimation: costate variables are made available at the end of the optimization at (almost) no extra effort.
 								<li>Multi-phase optimal control: the user can connect phases of arbitrary length with state jumps (such as a sudden mass drop).
@@ -124,36 +124,40 @@
 								<li>Built-in parameter estimation with sampled measurements: dynamic systems can be modeled and problem coefficients and
 								expressions can be obtained.
 								<li>Optimization of static parameters.
+								<li>Advanced features such as model predictive control, differential games and fractional derivative.
 							</ul>
 
 							<h3 id="modf">Problem Modeling</h3>
 							<ul>
-								<li>Compact notation: one-page formulation close to the mathematical description of the problem
-								<li>Rich set of algebraic functions to ease the modeling
-								<li>Tabulated user's functions which will be interpolated
-								<li>Useful functions related to the dynamic variables (delay, slope, initial, final...)
-								<li>Dynamic systems can be described by their transfer functions (Laplace-transform and z-transform)
-								<li>Some pred-defined transfer functions (e.g., PID)
-								<li>Manipulation of transfer function (product, closed-loop...)
-								<li>Embedding GAMS code for pre or post data processing
-								<li>Results available as CSV files
-								<li>Interface to GNUPLOT with functions to generate single or multi-plots in 2D or 3D
-								<li>Extensive problem set now with well over 500 cases
-								<li>Tutorial: it is easy to get started
+								<li>Compact notation: one-page formulation close to the mathematical description of the problem.
+								<li>Rich set of algebraic functions to ease the modeling.
+								<li>Tabulated user's functions which will be interpolated.
+								<li>Useful functions related to the dynamic variables (delay, slope, initial, final...).
+								<li>Dynamic systems can be described by their transfer functions (Laplace-transform and z-transform).
+								<li>Some pre-defined transfer functions (e.g., PID).
+								<li>Manipulation of transfer function (product, closed-loop...).
+								<li>Embedding GAMS code for pre or post data processing.
+								<li>Results available as CSV files.
+								<li>Interface to GNUPLOT with functions to generate single or multi-plots in 2D or 3D.
+								<li>Extensive problem set now with well over 500 cases.
+								<li>Tutorial: it is easy to get started.
 							</ul>
 
 							<h3 id="nlps">NLP Solving</h3>
 							<p>The NLP problem approximating the optimal control problem is modeled and solved in GAMS, which offers some benefits.
 							<ul class="compact">
-								<li>A whole bunch of solvers are available for local and global optimization
-								<li>Treatment of non-smooth problems
-								<li>At the user's request, scaling the problem to avoid convergence issues for space-related problems
+								<li>A whole bunch of solvers are available for local and global optimization.
+								<li>Treatment of non-smooth problems.
+								<li>At the user's request, scaling the problem to avoid convergence issues for space-related problems.
 							</ul><p>
 
-							<h3 id="odes">ODE Solving</h3>
+							<h3 id="odes">DE Solving</h3>
 							<ul>
 								<li>Integrators for ordinary differential equations (explicit Runge-Kutta methods with and without step-size selection,
 								e.g. classic RK, Fehlberg, Dormand-Prince, Verner to name a few).
+								<li>Rosenbrock methods for stiff differential equations.
+								<li>Differential-algebraic system of equations.
+								<li>Basic support for stochastic differential equations.
 							</ul>
 
 							</div>
