@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -48,8 +48,8 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   i = i1:i4
 
 <font color="red"><b>par:</b></font>
-  c0[i] = /i1  0, i2  0,   i3  0, i4 0/
-  c1[i] = /i1 -2, i2 -0.5, i3 -3, i4 0/
+  c0[i] = |i1  0, i2  0,   i3  0, i4 0|
+  c1[i] = |i1 -2, i2 -0.5, i3 -3, i4 0|
   tf = 1
   
 <font color="red"><b>dyn:</b></font>
@@ -74,9 +74,9 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J) + <font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(x0)-0.01) + <font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(x1)-0) <font color="#8A2BE2">using</font> nlp
   
 <font color="red"><b>gms:</b></font>
-  <font color="#8B0000">$$ifthen</font> <font color="#8A2BE2">%ITER%</font>==<font color="#8A2BE2">%ITERMAX%</font>
+  <font color="#FF8000">$$ifthen</font> <font color="#8A2BE2">%ITER%</font>==<font color="#8A2BE2">%ITERMAX%</font>
   <font color="#8A2BE2">@seekcia</font> ControlVar=w[i]
-  <font color="#8B0000">$$endif</font>
+  <font color="#FF8000">$$endif</font>
 
   
 </pre>

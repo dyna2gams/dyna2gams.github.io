@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -33,7 +33,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <p>
 <pre>
 <font color="red"><b>gms:</b></font>
-  <font color="#8B0000">$$batinclude</font> "%gams.ldir%dyna-pderiv-x" 0 1 20
+  <font color="#FF8000">$$libinclude</font> dyna-pderiv-x 0 1 20
 
 <font color="red"><b>par:</b></font>
   D = 1
@@ -44,18 +44,18 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   z[x]
 
 <font color="red"><b>t=t0:</b></font>
-  z[x]$xx(x) = a*<font color="#2ECC40">sin</font>(pi*TickX(x))
+  z[x]$xx[x] = a*<font color="#2ECC40">sin</font>(pi*TickX(x))
 
 <font color="red"><b>equ:</b></font>
-  $xl(x).. z[x] == 0
-  $xx(x).. z&acute;[x] == D * PDer2X((z[x_]))
-  $xr(x).. z[x] == 0
+  $xl[x].. z[x] == 0
+  $xx[x].. z&acute;[x] == D * PDer2X((z[x_]))
+  $xr[x].. z[x] == 0
 
 <font color="red"><b>obj:</b></font>
   <font color="#8A2BE2">minimize</font> <font color="#0074D9">initial</font>(LBoundX((z[x_]))) <font color="#8A2BE2">using</font> lp	<font color="#808080"><i># dummy objective</i></font>
 
 <font color="red"><b>gpl:</b></font>
-  <font color="#8A2BE2">@splotZXT</font> z, TickX, "<font color="#FF4500">@TITLE@</font>", "z[x,t]", "x"
+  <font color="#8A2BE2">@splotZXT</font> z, TickX, "<font color="#8B0000">@TITLE@</font>", "z[x,t]", "x"
 </pre>
 </body>
 </html>

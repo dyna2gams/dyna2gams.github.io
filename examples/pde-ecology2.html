@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -126,10 +126,10 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   cf = -Af*<font color="#2ECC40">sqrt</font>(2)*(1/2-tetf)
 
 <font color="red"><b>set:</b></font>
-  x = x0:x32
-  xl(x) = x0
-  xx(x) = x1:x31
-  xr(x) = x32
+  x = |x0:x32|
+  xl[x] = |x0|
+  xx[x] = |x1:x31|
+  xr[x] = |x32|
 
 <font color="red"><b>par:</b></font>
   DeltaX = 2*L/(<font color="#3D9970">card</font>(x)-1)
@@ -159,9 +159,9 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   a = af
 
 <font color="red"><b>equ:</b></font>
-  $xx(x).. y&acute;[x] == (y[x-1]-2*y[x]+y[x+1])/<font color="#2ECC40">sqr</font>(DeltaX) + a*y[x]*(1-y[x])*(tet-y[x])
-  $(xl(x)<font color="#8A2BE2">$NT0</font>).. y[x] == y[x+1]
-  $(xr(x)<font color="#8A2BE2">$NT0</font>).. y[x] == y[x-1]
+  $xx[x].. y&acute;[x] == (y[x-1]-2*y[x]+y[x+1])/<font color="#2ECC40">sqr</font>(DeltaX) + a*y[x]*(1-y[x])*(tet-y[x])
+  $(xl[x]<font color="#8A2BE2">$NT0</font>).. y[x] == y[x+1]
+  $(xr[x]<font color="#8A2BE2">$NT0</font>).. y[x] == y[x-1]
   J&acute; == Ktet*<font color="#2ECC40">sqr</font>(<font color="#0074D9">slope</font>(tet)) + Ka*<font color="#2ECC40">sqr</font>(<font color="#0074D9">slope</font>(a))
   a :: <font color="#7FDBFF">spline3</font>
   tet :: <font color="#7FDBFF">spline3</font>
@@ -172,7 +172,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   y[x] = <font color="#0074D9">linspace</font>(y0[x],yd[x])
 
 <font color="red"><b>obj:</b></font>
-  <font color="#8A2BE2">minimize</font> DeltaX*<font color="#3D9970">sum</font>(x,(0.5+0.5$xx(x))*<font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(y[x])-yd[x]))+<font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp <font color="#8A2BE2">with</font> conopt
+  <font color="#8A2BE2">minimize</font> DeltaX*<font color="#3D9970">sum</font>(x,(0.5+0.5$xx[x])*<font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(y[x])-yd[x]))+<font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp <font color="#8A2BE2">with</font> conopt
 
 <font color="red"><b>gms:</b></font>
   <font color="#8A2BE2">@solveloop</font> Method=movavg, Paraml=3 0.95, Varl=y[x], Target=infes, Maxiter=3

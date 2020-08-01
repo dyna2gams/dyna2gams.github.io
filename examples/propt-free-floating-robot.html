@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -68,18 +68,18 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <p>
 <pre>
 <font color="red"><b>par:</b></font>
-<font color="#FF4500">@ifndef</font> 6c
+<font color="#8B0000">@ifndef</font> 6c
   tf = 5
-<font color="#FF4500">@endif</font>
+<font color="#8B0000">@endif</font>
   M = 10
   D = 5
   Le = 5
   In = 12
 
 <font color="red"><b>var:</b></font>
-<font color="#FF4500">@ifdef</font> 6c
+<font color="#8B0000">@ifdef</font> 6c
   tf
-<font color="#FF4500">@endif</font>
+<font color="#8B0000">@endif</font>
 
 <font color="red"><b>dyn:</b></font>
   x{1:6}	<font color="#808080"><i># state variables</i></font>
@@ -89,22 +89,22 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <font color="red"><b>lim:</b></font>
   -100 &lt;= x{1:6} &lt;= 100
   -1000 &lt;= u{1:4} &lt;= 1000
-<font color="#FF4500">@ifdef</font> 6c
+<font color="#8B0000">@ifdef</font> 6c
   -5 &lt;= u{1:4} &lt;= 5
   1 &lt;= tf &lt;= 100
-<font color="#FF4500">@endif</font>
+<font color="#8B0000">@endif</font>
 
 <font color="red"><b>t=t0:</b></font>
   x{1:6} = 0
   J = 0
 
 <font color="red"><b>t=tf:</b></font>
-<font color="#FF4500">@ifdef</font> 6b
+<font color="#8B0000">@ifdef</font> 6b
   x{1:6} = {4 0 4 0 0 0}
-<font color="#FF4500">@endif</font>  
-<font color="#FF4500">@ifdef</font> 6c
+<font color="#8B0000">@endif</font>  
+<font color="#8B0000">@ifdef</font> 6c
   x{1:6} = {4 0 4 0 pi/4 0}
-<font color="#FF4500">@endif</font> 
+<font color="#8B0000">@endif</font> 
 
 <font color="red"><b>ini:</b></font>
   x{1:6} = 0
@@ -120,15 +120,15 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   J&acute; == 0.5*(<font color="#2ECC40">sqr</font>(u1)+<font color="#2ECC40">sqr</font>(u2)+<font color="#2ECC40">sqr</font>(u3)+<font color="#2ECC40">sqr</font>(u4))
 
 <font color="red"><b>obj:</b></font>
-<font color="#FF4500">@ifndef</font> 6b 6c
+<font color="#8B0000">@ifndef</font> 6b 6c
   <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J)+<font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(x1)-4)+<font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(x2))+<font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(x3)-4)+<font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(x4))+<font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(x5))+<font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(x6)) <font color="#8A2BE2">using</font> nlp
-<font color="#FF4500">@endif</font>
-<font color="#FF4500">@ifdef</font> 6b
+<font color="#8B0000">@endif</font>
+<font color="#8B0000">@ifdef</font> 6b
   <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp
-<font color="#FF4500">@endif</font>
-<font color="#FF4500">@ifdef</font> 6c
+<font color="#8B0000">@endif</font>
+<font color="#8B0000">@ifdef</font> 6c
   <font color="#8A2BE2">minimize</font> tf <font color="#8A2BE2">using</font> nlp
-<font color="#FF4500">@endif</font>
+<font color="#8B0000">@endif</font>
 </pre>
 </body>
 </html>

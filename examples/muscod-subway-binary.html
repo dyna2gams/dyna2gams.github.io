@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -19,11 +19,11 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <font color="red"><b>rem:</b></font> Subway ride (binary variant)
 </pre>
 <p>
-  The subway ride optimal control problem goes back to work of [1] for the city
-  of New York. In an extension, also velocity limits that lead to path-
-  constrained arcs appear. The aim is to minimize the energy used for a subway
-  ride from one station to another, taking into account boundary conditions and
-  a restriction on the time.
+  The subway ride optimal control problem goes back to work of [1] for the city of
+  New York. In an extension, also velocity limits that lead to path- constrained
+  arcs appear. The aim is to minimize the energy used for a subway ride from one
+  station to another, taking into account boundary conditions and a restriction on
+  the time.
 <p>
   The MIOCP reads as
 <p>
@@ -211,7 +211,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J)+penalty <font color="#8A2BE2">using</font> nlp
 
 <font color="red"><b>gms:</b></font>
-  <font color="#8B0000">$$ifthen</font> <font color="#8A2BE2">%ITER%</font>==<font color="#8A2BE2">%ITERMAX%</font>
+  <font color="#FF8000">$$ifthen</font> <font color="#8A2BE2">%ITER%</font>==<font color="#8A2BE2">%ITERMAX%</font>
   <font color="#808080"><i># replace terminal conditions by a penalty</i></font>
   <font color="#8A2BE2">@setlimf</font> x0 0 x0mx
   <font color="#8A2BE2">@setlimf</font> x1 0 x1mx
@@ -220,7 +220,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   <font color="#3D9970">scalars</font> TrueFinalJ,FinalX0,FinalX1;
   TrueFinalJ = <font color="#0074D9">final</font>(J.l); FinalX0 = <font color="#0074D9">final</font>(x0.l); FinalX1 = <font color="#0074D9">final</font>(x1.l);
   <font color="#3D9970">display</font> TrueFinalJ,FinalX0,FinalX1;
-  <font color="#8B0000">$$endif</font>
+  <font color="#FF8000">$$endif</font>
 </pre>
 </body>
 </html>

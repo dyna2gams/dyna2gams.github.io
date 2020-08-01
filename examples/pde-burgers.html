@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -45,10 +45,10 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <p>
 <pre>
 <font color="red"><b>set:</b></font>
-  x = x0:x32
-  xl(x) = x0
-  xx(x) = x1:x31
-  xr(x) = x32
+  x = |x0:x32|
+  xl[x] = |x0|
+  xx[x] = |x1:x31|
+  xr[x] = |x32|
 
 <font color="red"><b>par:</b></font>
   Re = 4
@@ -60,18 +60,18 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   z[x]
 
 <font color="red"><b>t=t0:</b></font>
-  z[x]$xx(x) = 0.5*(1-<font color="#2ECC40">tanh</font>(Re/4*(TickX[x]-1)))
+  z[x]$xx[x] = 0.5*(1-<font color="#2ECC40">tanh</font>(Re/4*(TickX[x]-1)))
 
 <font color="red"><b>equ:</b></font>
-  $xl(x).. z[x] == 1
-  $xx(x).. z&acute;[x] == -z[x]*(z[x+1]-z[x-1])/2/DeltaX + (z[x-1]-2*z[x]+z[x+1])/<font color="#2ECC40">sqr</font>(DeltaX)/Re
-  $xr(x).. z[x] == 0
+  $xl[x].. z[x] == 1
+  $xx[x].. z&acute;[x] == -z[x]*(z[x+1]-z[x-1])/2/DeltaX + (z[x-1]-2*z[x]+z[x+1])/<font color="#2ECC40">sqr</font>(DeltaX)/Re
+  $xr[x].. z[x] == 0
 
 <font color="red"><b>obj:</b></font>
   <font color="#8A2BE2">minimize</font> <font color="#0074D9">initial</font>(z['x0']) <font color="#8A2BE2">using</font> nlp	<font color="#808080"><i># dummy objective</i></font>
 
 <font color="red"><b>gpl:</b></font>
-  <font color="#8A2BE2">@splotZXT</font> z, TickX, "<font color="#FF4500">@TITLE@</font>", "z[x,t]", "x"
+  <font color="#8A2BE2">@splotZXT</font> z, TickX, "<font color="#8B0000">@TITLE@</font>", "z[x,t]", "x"
 </pre>
 </body>
 </html>

@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -87,11 +87,11 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(x2) <font color="#8A2BE2">using</font> nlp
 
 <font color="red"><b>gms:</b></font>
-  <font color="#8B0000">$$ifthen</font> <font color="#8A2BE2">%ITER%</font>==<font color="#8A2BE2">%ITERMAX%</font>
+  <font color="#FF8000">$$ifthen</font> <font color="#8A2BE2">%ITER%</font>==<font color="#8A2BE2">%ITERMAX%</font>
   <font color="#808080"><i>#seekcia ControlVar=w[i], Method=round</i></font>
   <font color="#8A2BE2">@seekcia</font> ControlVar=w[i], Method=short
   <font color="#808080"><i>#seekcia ControlVar=w[i], Method=plain</i></font>
-  <font color="#8B0000">$$endif</font>
+  <font color="#FF8000">$$endif</font>
 </pre>
 </body>
 </html>

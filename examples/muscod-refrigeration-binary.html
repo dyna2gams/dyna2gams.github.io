@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -148,13 +148,13 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(cost)/tf + theta*deltamax <font color="#8A2BE2">using</font> rminlp
 
 <font color="red"><b>gms:</b></font>
-  <font color="#8B0000">$$iftheni</font> <font color="#8A2BE2">%ITER%</font>==<font color="#8A2BE2">%ITERMAX%</font>
+  <font color="#FF8000">$$iftheni</font> <font color="#8A2BE2">%ITER%</font>==<font color="#8A2BE2">%ITERMAX%</font>
   theta = 1e3; delta.lo = -<font color="#3D9970">inf</font>; delta.up = +<font color="#3D9970">inf</font>;
   <font color="#8A2BE2">@seekcia</font> ControlVar=u[v]
   <font color="#8A2BE2">@seekcia</font> ControlVar=uc, Optcr=0.5
   <font color="#808080"><i>#seeksur ControlVar=uc</i></font>
   <font color="#3D9970">abort</font>$(deltamax.l &gt; 0) 'Unfortunately the model looks infeasible.';
-  <font color="#8B0000">$$endif</font>
+  <font color="#FF8000">$$endif</font>
 </pre>
 </body>
 </html>
