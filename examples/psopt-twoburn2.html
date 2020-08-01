@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -23,7 +23,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   space shuttle park orbit to a geosynchronous final orbit. It is assumed that the engines
   operate over two short periods during the mission, and it is desired to compute the timing
   and duration of the burn periods, as well as the instantaneous direction of the thrust
-  during these two periods, to maximise the final weight of the spacecraft. The problem is
+  during these two periods, to maximize the final weight of the spacecraft. The problem is
   described in detail by Betts [1]. The mission then involves four phases: coast, burn, coast
   and burn.
 <p>
@@ -43,8 +43,8 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   <font color="#39CCCC">substitute-symbol</font> = T &gt; TT
 
 <font color="red"><b>set:</b></font>
-  phase = ph1:ph4
-  ph24(phase) = ph2,ph4
+  phase = |ph1:ph4|
+  ph24[phase] = |ph2,ph4|
 
 <font color="red"><b>par:</b></font>
   T = 1.2		<font color="#808080"><i># [lb]</i></font>
@@ -182,8 +182,8 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 
 <font color="red"><b>equ:</b></font>
   r{X Y Z}[phase] == (1/Re)*r{X Y Z}_def
-  $ph24(phase).. Tvel{1:3}[phase] == Tvel{1:3}_def
-  $ph24(phase).. DeltaT{1:3}[phase] == DeltaT{1:3}_def
+  $ph24[phase].. Tvel{1:3}[phase] == Tvel{1:3}_def
+  $ph24[phase].. DeltaT{1:3}[phase] == DeltaT{1:3}_def
   Delta{1:3}[phase] == Delta{1:3}_def
   t&acute;[phase]  / TimeDot == 1
   <font color="#808080"><i># Equations of motion</i></font>

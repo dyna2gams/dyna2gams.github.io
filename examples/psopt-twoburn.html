@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -23,7 +23,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   space shuttle park orbit to a geosynchronous final orbit. It is assumed that the engines
   operate over two short periods during the mission, and it is desired to compute the timing
   and duration of the burn periods, as well as the instantaneous direction of the thrust
-  during these two periods, to maximise the final weight of the spacecraft. The problem is
+  during these two periods, to maximize the final weight of the spacecraft. The problem is
   described in detail by Betts [1]. The mission then involves four phases: coast, burn, coast
   and burn.
 <p>
@@ -45,11 +45,11 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   conopt.opt &lt; lkdebg=0
 
 <font color="red"><b>set:</b></font>
-  phase = ph1:ph4
-  ph24(phase) = ph2,ph4
+  phase = |ph1:ph4|
+  ph24[phase] = |ph2,ph4|
 
 <font color="red"><b>fun:</b></font>
-  <font color="#8A2BE2">@readxls</font> ifile=<font color="#FF4500"><font color="#FF4500">@home@</font></font>\examples\<font color="#FF4500"><font color="#FF4500">@ifnam@</font></font>.xlsx, range=A1:K143
+  <font color="#8A2BE2">@readxls</font> ifile=<font color="#8B0000"><font color="#8B0000">@home@</font></font>\examples\<font color="#8B0000"><font color="#8B0000">@ifnam@</font></font>.xlsx, range=A1:K143
 
 <font color="red"><b>par:</b></font>
   T = 1.2		<font color="#808080"><i># [lb]</i></font>
@@ -183,12 +183,12 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   Tvel3_def == jh1*Tvec1 + jh2*Tvec2 + jh3*Tvec3
   DeltaT{1:3}_def == ir{1:3}*Tvel1[phase] + it{1:3}*Tvel2[phase] + ih{1:3}*Tvel3[phase]
   <font color="#808080"><i># Total acceleration</i></font>
-  Delta{1:3}_def == DeltaG{1:3} + DeltaT{1:3}[phase]$ph24(phase)
+  Delta{1:3}_def == DeltaG{1:3} + DeltaT{1:3}[phase]$ph24[phase]
 
 <font color="red"><b>equ:</b></font>
   r{X Y Z}[phase] == (1/Re)*r{X Y Z}_def
-  $ph24(phase).. Tvel{1:3}[phase] == Tvel{1:3}_def
-  $ph24(phase).. DeltaT{1:3}[phase] == DeltaT{1:3}_def
+  $ph24[phase].. Tvel{1:3}[phase] == Tvel{1:3}_def
+  $ph24[phase].. DeltaT{1:3}[phase] == DeltaT{1:3}_def
   Delta{1:3}[phase] == Delta{1:3}_def
   t&acute;[phase]  / TimeDot == 1
   <font color="#808080"><i># Equations of motion</i></font>
@@ -203,7 +203,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   k&acute;[phase]  / TimeDot == <font color="#2ECC40">sqrt</font>((Re*p[phase])/mu) * (s2*<font color="#2ECC40">sin</font>(L[phase])/(2*q)) * Delta3[phase]
   L&acute;[phase]  / TimeDot == <font color="#2ECC40">sqrt</font>((Re*p[phase])/mu) * (1/q) * (h[phase]*<font color="#2ECC40">sin</font>(L[phase])-k[phase]*<font color="#2ECC40">cos</font>(L[phase])) * Delta3[phase] \
                         + <font color="#2ECC40">sqrt</font>(mu*(Re*p[phase])) * <font color="#2ECC40">sqr</font>(q/(Re*p[phase]))
-  w&acute;[phase]  / TimeDot == (-T/Isp)$ph24(phase)
+  w&acute;[phase]  / TimeDot == (-T/Isp)$ph24[phase]
   <font color="#8A2BE2">@linkphases</font>
   theta[phase] :: <font color="#7FDBFF">spline3</font>
   phi[phase] :: <font color="#7FDBFF">spline3</font>
@@ -224,8 +224,8 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   theta['ph{1 3}'] = 0
   phi['ph{1 3}'] = 0
   r{X Y Z}[phase] = (1/Re)*r{X Y Z}_def
-  Tvel{1:3}[phase]$ph24(phase) = Tvel{1:3}_def
-  DeltaT{1:3}[phase]$ph24(phase) = DeltaT{1:3}_def
+  Tvel{1:3}[phase]$ph24[phase] = Tvel{1:3}_def
+  DeltaT{1:3}[phase]$ph24[phase] = DeltaT{1:3}_def
   Delta{1:3}[phase] = Delta{1:3}_def
 
 <font color="red"><b>obj:</b></font>

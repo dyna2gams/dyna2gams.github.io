@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -78,14 +78,14 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   T1S = 550
   T2S = 50
   T3S = 550
-<font color="#FF4500">@ifndef</font> 7c
+<font color="#8B0000">@ifndef</font> 7c
   tf = 100
-<font color="#FF4500">@endif</font>
+<font color="#8B0000">@endif</font>
 
 <font color="red"><b>var:</b></font>
-<font color="#FF4500">@ifdef</font> 7c
+<font color="#8B0000">@ifdef</font> 7c
   tf
-<font color="#FF4500">@endif</font>
+<font color="#8B0000">@endif</font>
 
 <font color="red"><b>dyn:</b></font>
   e{1:4} 	<font color="#808080"><i># state variables</i></font>
@@ -94,15 +94,15 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   J
 
 <font color="red"><b>lim:</b></font>
-<font color="#FF4500">@ifdef</font> 7b
+<font color="#8B0000">@ifdef</font> 7b
   -2 &lt;= T{1:3} &lt;= 2	<font color="#808080"><i># added to help optimization</i></font>
-<font color="#FF4500">@endif</font>
-<font color="#FF4500">@ifdef</font> 7c
+<font color="#8B0000">@endif</font>
+<font color="#8B0000">@ifdef</font> 7c
   1 &lt;= tf &lt;= 100	<font color="#808080"><i># added to help optimization</i></font>
   -1 &lt;= T1 &lt;= 1
   -1 &lt;= T2 &lt;= 1
   -1 &lt;= T3 &lt;= 1
-<font color="#FF4500">@endif</font>
+<font color="#8B0000">@endif</font>
 
 <font color="red"><b>t=t0:</b></font>
   e{1:4} = {0 0 0 1}
@@ -110,10 +110,10 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   J = 0
 
 <font color="red"><b>t=tf:</b></font>
-<font color="#FF4500">@ifdef</font> 7b 7c
+<font color="#8B0000">@ifdef</font> 7b 7c
   e{1:3} = {0.70106 0.0923 0.56098}
   w{1:3} = 0
-<font color="#FF4500">@endif</font>
+<font color="#8B0000">@endif</font>
 
 <font color="red"><b>ini:</b></font>
   e{1:4} = 0
@@ -131,15 +131,15 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   J&acute; == 0.5*(<font color="#2ECC40">sqr</font>(T1)+<font color="#2ECC40">sqr</font>(T2)+<font color="#2ECC40">sqr</font>(T3))
 
 <font color="red"><b>obj:</b></font>
-<font color="#FF4500">@ifndef</font> 7b 7c
+<font color="#8B0000">@ifndef</font> 7b 7c
   <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J) + <font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(w1)) + <font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(w2)) + <font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(w3)) + <font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(e1)-0.70106) + <font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(e2)-0.0923) + <font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(e3)-0.56098) + <font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(e4)-0.43047) <font color="#8A2BE2">using</font> nlp
-<font color="#FF4500">@endif</font>
-<font color="#FF4500">@ifdef</font> 7b
+<font color="#8B0000">@endif</font>
+<font color="#8B0000">@ifdef</font> 7b
   <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp
-<font color="#FF4500">@endif</font>
-<font color="#FF4500">@ifdef</font> 7c
+<font color="#8B0000">@endif</font>
+<font color="#8B0000">@ifdef</font> 7c
   <font color="#8A2BE2">minimize</font> tf <font color="#8A2BE2">using</font> nlp
-<font color="#FF4500">@endif</font>
+<font color="#8B0000">@endif</font>
 </pre>
 </body>
 </html>

@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -248,7 +248,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 
 <font color="red"><b>gms:</b></font>
   <font color="#808080"><i># make sure norm of quaternions is one for initial guess</i></font>
-  <font color="#8B0000">$$ondotl</font>
+  <font color="#FF8000">$$ondotl</font>
   @hypersphere(q,.l=,q)
   @hypersphere(qc,.l=,qc)
 
@@ -259,7 +259,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   <font color="#8A2BE2">@solveloop</font> Method=movavg, Paraml=3 0.95, Varl=q1 q2 q3 q4 omega1 omega2 omega3 h1 h2 h3, Target=infes, Maxiter=4
   <font color="#8A2BE2">@solveloop</font> Method=bndobj
   <font color="#8A2BE2">@tpa</font> phi; <font color="#8A2BE2">@tpa</font> theta; <font color="#8A2BE2">@tpa</font> psi;
-  <font color="#8B0000">$$ondotl</font>
+  <font color="#FF8000">$$ondotl</font>
   @quaternion2euler(phi,theta,psi,=,q)
   <font color="#8A2BE2">@csvsave</font> phi theta psi
 
