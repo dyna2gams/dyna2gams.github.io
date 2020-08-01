@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -56,7 +56,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   <ol>
   <li>P. Martinon, P. Picard, and A. Raj,
   <em>On the Design of Optimal Health Insurance Contracts under Ex Post Moral Hazard</em>,
-  Geneva Risk and Insurance Review, 43(2):137{185, July 2018.
+  Geneva Risk and Insurance Review, 43(2):137-185, July 2018.
   </ol>
 <p>
   See:
@@ -113,10 +113,10 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   <font color="#808080"><i># Population</i></font>
   x == <font color="#0074D9">Time</font>
   <font color="#808080"><i># Expenses effect</i></font>
-  vprime == ( alpha/2 * rpower(m,alpha/2-1) / rpower(1+rpower(m,alpha/2),2) )$(vtype=0) \
-    + ( (<font color="#2ECC40">log</font>(m+2)/(m+1) - <font color="#2ECC40">log</font>(m+1)/(m+2)) / rpower(<font color="#2ECC40">log</font>(m+2),2) )$(vtype=1) \
-    + ( alpha * 1 / (2 * <font color="#2ECC40">sqrt</font>(alpha*m) * rpower(1+<font color="#2ECC40">sqrt</font>(alpha*m),2)) )$(vtype=2)
-  v == ( rpower(m,alpha/2) / (1+rpower(m,alpha/2)) )$(vtype=0) \
+  vprime == ( alpha/2 * <font color="#2ECC40">rpower</font>(m,alpha/2-1) / <font color="#2ECC40">rpower</font>(1+<font color="#2ECC40">rpower</font>(m,alpha/2),2) )$(vtype=0) \
+    + ( (<font color="#2ECC40">log</font>(m+2)/(m+1) - <font color="#2ECC40">log</font>(m+1)/(m+2)) / <font color="#2ECC40">rpower</font>(<font color="#2ECC40">log</font>(m+2),2) )$(vtype=1) \
+    + ( alpha * 1 / (2 * <font color="#2ECC40">sqrt</font>(alpha*m) * <font color="#2ECC40">rpower</font>(1+<font color="#2ECC40">sqrt</font>(alpha*m),2)) )$(vtype=2)
+  v == ( <font color="#2ECC40">rpower</font>(m,alpha/2) / (1+<font color="#2ECC40">rpower</font>(m,alpha/2)) )$(vtype=0) \
     + ( <font color="#2ECC40">log</font>(m+1) / <font color="#2ECC40">log</font>(m+2) )$(vtype=1) \
     + ( <font color="#2ECC40">sqrt</font>(alpha*m) / (1+<font color="#2ECC40">sqrt</font>(alpha*m)) )$(vtype=2)
   <font color="#808080"><i># Illness distribution</i></font>

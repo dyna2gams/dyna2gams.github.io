@@ -14,61 +14,52 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
 </head>
 <body>
-<h1 align="center" style="color:#7EAEAC">Fuller problem</h1>
+<h1 align="center" style="color:#7EAEAC">A system with autonomous switches</h1>
 <pre>
-<font color="red"><b>rem:</b></font> Fuller problem
+<font color="red"><b>rem:</b></font> A system with autonomous switches
 </pre>
-<p>
-  Here is a very classical example of a chattering phenomenon:
-<p>
-  \[\min \int_0^{t_f} x^2(t) \ \mathrm{d}t; \quad \ddot x(t) = u(t) \in [-1,1].\]
-<p>
-  The solution is, for large enough \(t_f\), bang-bang (i.e., with values alternately
-  +/-1), the switching times geometrically converging to a value \(\tau > 0\), and
-  then the (trivial) singular arc \(x=0\) and \(u=0\). These switches are not 
-  easy to reproduce numerically.
 <p>
   Reference:
   <ol>
-  <li>A.T. Fuller,
-  <em>Study of an optimum non-linear control system</em>,
-  Journal of Electronics and Control, 15:63-71, 1963.
+  <li>A. Bemporad and M. Morari, 
+  <em>Control of systems integrating logic, dynamics, and constraints</em>,
+  Automatica 35(3):407-427, 1999.
   </ol>
 <p>
-  See: <a href="https://project.inria.fr/bocop/fuller-problem/">BOCOP - The optimal control solver</a>.
-<p>
 <pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">time-model</font> = Discrete
+  <font color="#39CCCC">N</font> = 6
+  
 <font color="red"><b>par:</b></font>
-  tf = 3.5
+  q = 10
+  ts = 1
 
 <font color="red"><b>dyn:</b></font>
-  x1 x2 u j
+  x{1:2}
+  u
+  J
 
 <font color="red"><b>lim:</b></font>
-  -1 &lt;= u &lt;= 1
-  
+  -1 &lt;= u &lt;= +1
+
 <font color="red"><b>t=t0:</b></font>
-  x1 = 0
-  x2 = 1
-  j  = 0
+  x{1:2} = {-1 1}
+  J = 0
 
 <font color="red"><b>t=tf:</b></font>
-  x1 = 0
-  x2 = 0
-  
-<font color="red"><b>ini:</b></font>
-  x1 = 0
-  x2 = <font color="#0074D9">linspace</font>(1,0)
-  u = -1/tf
-  j = 0
-  
+  x{1:2} = 0
+
+<font color="red"><b>exp:</b></font>
+  alpha == <font color="#2ECC40">ifthen</font>(x1&lt;0,-pi/3,pi/3)
+
 <font color="red"><b>equ:</b></font>
-  x1&acute; == x2
-  x2&acute; == u
-  j&acute;  == x1*x1
-  
+  x1&acute; == 0.8*<font color="#2ECC40">cos</font>(alpha)*x1 - 0.8*<font color="#2ECC40">sin</font>(alpha)*x2
+  x2&acute; == 0.8*<font color="#2ECC40">sin</font>(alpha)*x1 + 0.8*<font color="#2ECC40">cos</font>(alpha)*x2 + u
+  J&acute; == J + q*<font color="#2ECC40">sqr</font>(u) + <font color="#2ECC40">sqr</font>(x1) + <font color="#2ECC40">sqr</font>(x2)
+
 <font color="red"><b>obj:</b></font>
-  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(j) <font color="#8A2BE2">using</font> nlp
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> dnlp
 </pre>
 </body>
 </html>

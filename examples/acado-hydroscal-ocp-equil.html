@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -45,19 +45,19 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   <font color="#39CCCC">simulation-method</font> = NA
 
 <font color="red"><b>set:</b></font>
-  rtcFC = reboiler,tray1:tray40,condenser,'F','C'	<font color="#808080"><i># C for condensate, F for feed</i></font>
-  rtc(rtcFC) = reboiler,tray1:tray40,condenser
-  t(rtc) = tray1:tray40
-  t_40(rtc) = tray1:tray39
-  t40(rtc) = tray40
-  strip(rtc) = tray1:tray20
-  rect(rtc) = tray21:tray40
-  rt(rtc) = reboiler,tray1:tray40
-  tc(rtc) = tray1:tray40,condenser
-  feed(rtc) = tray20
-  r(rtc) = reboiler
-  c(rtc) = condenser
-  rc(rtc) = reboiler,condenser
+  rtcFC = |reboiler,tray1:tray40,condenser,'F','C'|	<font color="#808080"><i># C for condensate, F for feed</i></font>
+  rtc[rtcFC] = |reboiler,tray1:tray40,condenser|
+  t[rtc] = |tray1:tray40|
+  t_40[rtc] = |tray1:tray39|
+  t40[rtc] = |tray40|
+  strip[rtc] = |tray1:tray20|
+  rect[rtc] = |tray21:tray40|
+  rt[rtc] = |reboiler,tray1:tray40|
+  tc[rtc] = |tray1:tray40,condenser|
+  feed[rtc] = |tray20|
+  r[rtc] = |reboiler|
+  c[rtc] = |condenser|
+  rc[rtc] = |reboiler,condenser|
   <font color="#8A2BE2">alias</font>(l,rtc)
 
 <font color="red"><b>par:</b></font>
@@ -166,7 +166,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   0 &lt;= F &lt;= +<font color="#3D9970">inf</font>
 
 <font color="red"><b>par:</b></font>
-  X_0[l] = /\
+  X_0[l] = |\
     reboiler  2.193611617799063e-1,\
     tray1     3.336302862386372e-1,\
     tray2     3.731313325062595e-1,\
@@ -209,8 +209,8 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
     tray39    9.974398630174197e-1,\
     tray40    9.981671609731486e-1,\
     condenser 9.987208401428007e-1\
-    /
-  n_0[t] = /\
+    |
+  n_0[t] = |\
     tray1  3.863381195673097,\
     tray2  3.932226049802884,\
     tray3  3.977196562639253,\
@@ -251,7 +251,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
     tray38 4.503716811689627,\
     tray39 4.507271960563973,\
     tray40 4.510049896978241\
-    /				
+    |
 
 <font color="red"><b>t=t0:</b></font>
   J = 0
@@ -283,20 +283,20 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   dhL{1:2}dT(l)	== C0*<font color="#0074D9">Poly2</font>((T[l]-K0),3*h3{1:2},2*h2{1:2},h1{1:2})
 
 <font color="red"><b>equ:</b></font>
-  [l]$t(l)..	<font color="#0074D9">n</font>&acute;[l] == 0
+  [l]$t[l]..	<font color="#0074D9">n</font>&acute;[l] == 0
   [l]..		X&acute;[l] == 0
 
   [l]..		nv[l] == VM(l) * <font color="#0074D9">n</font>[l]
   [c]..		P[c] == Ptop
-  [l]$rt(l)..	P[l] == P[l+1] + dP[l]
+  [l]$rt[l]..	P[l] == P[l+1] + dP[l]
   [l]..		P[l] - PS1(l)*X[l] - PS2(l)*(1-X[l]) == 0
-  [l]$r(l)..	Y[l] == PS1(l)/P[l]*X[l]
-  [l]$t(l)..	Y[l] == alpha[l]*PS1(l)/P[l]*X[l] + (1-alpha[l])*Y[l-1]
+  [l]$r[l]..	Y[l] == PS1(l)/P[l]*X[l]
+  [l]$t[l]..	Y[l] == alpha[l]*PS1(l)/P[l]*X[l] + (1-alpha[l])*Y[l-1]
 
   <font color="#808080"><i># mass balance</i></font>
-  [l]$r(l)..	       - V[l] + L[l+1]        - B         == 0
-  [l]$t(l)..	V[l-1] - V[l] + L[l+1] - L[l] + F$feed(l) == 0
-  [l]$c(l)..	V[l-1]                 - L[l] - D         == 0
+  [l]$r[l]..	       - V[l] + L[l+1]        - B         == 0
+  [l]$t[l]..	V[l-1] - V[l] + L[l+1] - L[l] + F$feed(l) == 0
+  [l]$c[l]..	V[l-1]                 - L[l] - D         == 0
 
   [feed]..	F*VM('F') == Fvol
   		X['F'] == XF
@@ -306,19 +306,19 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   [c].. 	X['C'] == X[c]
   		T['C'] == TC
 
-  [l]$r(l)..	              - V[l]*Y[l] + L[l+1]*X[l+1]             - B*X[l]       == 0
-  [l]$t(l)..	V[l-1]*Y[l-1] - V[l]*Y[l] + L[l+1]*X[l+1] - L[l]*X[l] + F*XF$feed(l) == 0
-  [l]$c(l)..	V[l-1]*Y[l-1]                             - L[l]*X[l] - D*X[l]       == 0
+  [l]$r[l]..	              - V[l]*Y[l] + L[l+1]*X[l+1]             - B*X[l]       == 0
+  [l]$t[l]..	V[l-1]*Y[l-1] - V[l]*Y[l] + L[l+1]*X[l+1] - L[l]*X[l] + F*XF$feed(l) == 0
+  [l]$c[l]..	V[l-1]*Y[l-1]                             - L[l]*X[l] - D*X[l]       == 0
 
   <font color="#808080"><i># enthalpy balance</i></font>
-  [l]$r(l)..	Q - Qloss      - V[l]*hV(l) + L[l+1]*hL(l+1)              - B*hL(l)           == 0
-  [l]$t_40(l)..	V[l-1]*hV(l-1) - V[l]*hV(l) + L[l+1]*hL(l+1) - L[l]*hL(l) + F*hL('F')$feed(l) == 0
-  [l]$t40(l)..	V[l-1]*hV(l-1) - V[l]*hV(l) + L[l+1]*hL('C') - L[l]*hL(l)                     == 0
+  [l]$r[l]..	Q - Qloss      - V[l]*hV(l) + L[l+1]*hL(l+1)              - B*hL(l)           == 0
+  [l]$t_40[l]..	V[l-1]*hV(l-1) - V[l]*hV(l) + L[l+1]*hL(l+1) - L[l]*hL(l) + F*hL('F')$feed(l) == 0
+  [l]$t40[l]..	V[l-1]*hV(l-1) - V[l]*hV(l) + L[l+1]*hL('C') - L[l]*hL(l)                     == 0
   [feed]..	P['F'] == P[feed]
   [c]..		P['C'] == P[c]
 
   <font color="#808080"><i># hydrodynamics</i></font>
-  [l]$t(l)..	L[l]*VM(l) == W*(nv[l]-nref)^1.5
+  [l]$t[l]..	L[l]*VM(l) == W*(nv[l]-nref)^1.5
 
   nv[r] == nv_r
   nv[c] == nv_c

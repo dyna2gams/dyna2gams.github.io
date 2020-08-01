@@ -1,0 +1,321 @@
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">N-Sector Stochastic Brock-Mirman Growth Model Using a Chebyshev Polynomial Approximation</h1>
+<pre>
+<font color="red"><b>rem:</b></font> N-Sector Stochastic Brock-Mirman Growth Model Using a Chebyshev Polynomial Approximation
+</pre>
+<p>
+  In [1], the authors incorporate multiple sectors to the stochastic growth model, with
+  perfectly correlated productivity shocks across sectors that follow a first-order
+  autoregressive process. A social planner chooses the consumption trajectory,
+  \(\{c_t^s\}_{t=0}^{\infty}\), investment trajectory, \(\{I_t^s\}_{t=0}^{\infty}\), and
+  labor supply trajectory, \(\{L_t^s\}_{t=0}^{\infty}\), to solve the following
+  optimization problem:
+<p>
+  \[
+  J = \max_{{\{c_t^s,I_t^s,L_t^s\}}_{t=0}^{\infty}} \mathbb{E}
+  \Big[ \sum_{t=0}^{\infty} \beta^t u(c_t^1,\dots,c_t^n) \Big]\\
+  \]
+<p>
+  such that the following constraint equations are satisfied:
+<p>
+  <ul>
+  <li>Cobb-Douglas utility function with sectoral reference consumption levels,
+  \(\bar{c}^s\), and expenditure share, \(\eta_s\):
+<p>
+  \[
+  u(c_t^1,\dots,c_t^n) = \prod_{s=1}^n \Big( \frac{c_t^s}{\bar{c}^s} \Big)^{\eta_s},
+  \ \sum_s \eta_s = 1
+  \]
+<p>
+  <li>the law of motion for capital accumulation with capital depreciation rate,
+  \(\delta\):
+<p>
+  \[
+  K_{t+1}^s = (1-\delta) K_t^s + I_t^s
+  \]
+<p>
+  <li>market clearing conditions for labor with labor supply fixed to the sum of all
+  sectoral reference labor supply values:
+<p>
+  \[
+  \bar{L} = \sum_s L_t^s
+  \]
+<p>
+  <li>Cobb-Douglas production function with factor share of capital, \(\alpha_s\),
+  productivity shock, \(z_t\), and sectoral reference levels for output (\(\bar{Y}^s\)),
+  capital (\(\bar{K}^s\)), and labor supply (\(\bar{L}^s\)). \(\psi_s\) denotes the
+  magnitude of impact of the productivity shock to each sector:
+<p>
+  \[
+  Y_t^s = \big(1+\psi_s(z_t-1)\big) \bar{Y}^s \Big(\frac{K_t^s}{\bar{K}^s}\Big)^{\alpha_s}
+  \Big(\frac{L_t^s}{\bar{L}^s}\Big)^{1-\alpha_s}
+  \]
+<p>
+  <li>stochastic productivity shock, \(z_t\) which follows an \(AR1\) process such that the
+  projected next period shock, \(\tilde{z}_{t+1}\) is a function of the mean
+  productivity level, \(\bar{z}\), the persistence coefficient, \(\rho\), current period
+  productivity, \(z_t\), and a normally distributed disturbance term, \(\epsilon \sim
+  N(0,\sigma)\), that represents stochastic departures from the model:
+<p>
+  \[
+  \tilde{z}_{t+1} = \bar{z} \Big[ 1 + \rho (\frac{z_t}{\bar{z}}-1) + \epsilon_{t+1} \Big]
+  \]
+<p>
+  <li>and lastly, the equation describing the market for current output, where \(a(s,s')\)
+  is the unit demand for intermediate good \(s\) in sector \(s'\).
+<p>
+  \[
+  Y_t^s = c_t^s + I_t^s + \sum_{s' \in S} a(s,s') Y_t^{s'}
+  \]
+<p>
+  </ul>
+<p>
+  We tackle this problem by solving the Bellman's equation using a Chebyshev collocation
+  method. In doing so, we use the DYNA features to solve ordinary optimization problems, not
+  a usual optimal control problem.
+<p>
+  References:
+  <ol>
+  <li>W. Chang and T. Rutherford,
+  <em>Solving Stochastic Dynamic Programming Problems: A Mixed Complementarity Approach</em>,
+  Department of Agricultural and Applied Economics, University of Wisconsin-Madison, 2016.
+  <li>W. Chang, M.C. Ferris, Y. Kim and T. Rutherford,
+  <em>Solving Stochastic Dynamic Programming Problems: A Mixed Complementarity Approach</em>,
+  Computational Economics, 55:925-955, 2020.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">time-model</font> = None
+  <font color="#39CCCC">include-library</font> = Chebyshev | Tauchen
+  <font color="#39CCCC">gams-option</font> = reslim=7200
+
+<font color="red"><b>mac:</b></font>
+  @norm(z,l,u) ((&z-(&l+&u)/2)/((&u-&l)/2))
+
+<font color="red"><b>set:</b></font>
+  is = |AGRI,MANU,SERV|
+  ik = k1:k5		<font color="#808080"><i># Nodes for capital at which value function is evaluated</i></font>
+  ip = p1:p5		<font color="#808080"><i># Nodes for productivity</i></font>
+  ia = a1:a70		<font color="#808080"><i># Set of parameters of the Chebyshev surface (4 variables, 4th degree)</i></font>
+  <font color="#8A2BE2">alias</font>(js,is)
+  <font color="#8A2BE2">alias</font>(jp,ip)
+  <font color="#8A2BE2">alias</font>(ika,ikm,iks,ik)
+
+<font color="red"><b>par:</b></font>
+  eta[is] =	|AGRI   0.006, MANU    0.154, SERV     0.840|	<font color="#808080"><i># Sectoral expenditure share</i></font>
+  alpha[is] =	|AGRI   0.532, MANU    0.326, SERV     0.300|	<font color="#808080"><i># Sectoral factor share of capital</i></font>
+  psi[is] =	|AGRI   0.249, MANU    0.318, SERV     0.184|	<font color="#808080"><i># Sectoral productivity shock</i></font>
+  zref[is] =	|AGRI   4.007, MANU    5.116, SERV     2.966|	<font color="#808080"><i># Productivity shock</i></font>
+  cref[is] =	|AGRI  83.829, MANU 2061.481, SERV 10827.835|	<font color="#808080"><i># Sectoral reference consumption level</i></font>
+  kref[is] =	|AGRI 109.634, MANU  836.317, SERV  3633.529|	<font color="#808080"><i># Sectoral reference capital level</i></font>
+  lref[is] =	|AGRI  96.445, MANU 1729.073, SERV  8478.235|	<font color="#808080"><i># Sectoral reference labor supply</i></font>
+  yref[is] =	|AGRI 413.749, MANU 6981.547, SERV 19502.889|	<font color="#808080"><i># Sectoral reference output level</i></font>
+  udig[is,js] = || AGRI     MANU     SERV			<font color="#808080"><i># Unit demand for intermediate good [is] in sector [js]</i></font>
+           AGRI  46.776  211.546   33.594
+           MANU  74.885 2651.269 1668.552
+           SERV 100.181 1333.579 5181.908||
+  delta = 0.07			<font color="#808080"><i># Capital annual depreciation</i></font>
+  beta = 0.9888			<font color="#808080"><i># Utility discount factor</i></font>
+  sigma = 0.2			<font color="#808080"><i># Normalized standard deviation of productivity</i></font>
+  p_mean = 1			<font color="#808080"><i># Mean value of productivity</i></font>
+  rho = 0.95
+  klo[is] = 1e-3
+  kup[is] = <font color="#2ECC40">min</font>(5000,kref[is]*10)
+  kbar[is,ik] = (klo[is]+kup[is]+(kup[is]-klo[is])*<font color="#0074D9">ChebyshevQN</font>(ik))/2
+  plo = p_mean*(1-3*sigma)
+  pup = p_mean*(1+3*sigma)
+  pbar[ip] = (plo+pup+(pup-plo)*<font color="#0074D9">ChebyshevQN</font>(ip))/2
+  tmatrix[ip,jp] = <font color="#0074D9">TauchenAR1</font>(ip,jp,pbar,p_mean,rho,p_mean*sigma)
+  PHI[ip] = <font color="#3D9970">sum</font>(jp, tmatrix[ip,jp]*pbar[jp])
+  theta = 0
+
+<font color="red"><b>var:</b></font>
+  C[is,ika,ikm,iks,ip]		<font color="#808080"><i># Consumption</i></font>
+  I[is,ika,ikm,iks,ip]		<font color="#808080"><i># Investment</i></font>
+  K[is,ika,ikm,iks,ip]		<font color="#808080"><i># Subsequent period capital stock</i></font>
+  L[is,ika,ikm,iks,ip]		<font color="#808080"><i># Labor</i></font>
+  Y[is,ika,ikm,iks,ip]		<font color="#808080"><i># Cobb-Douglas production function</i></font>
+  U[ika,ikm,iks,ip]		<font color="#808080"><i># Utility</i></font>
+  J[ika,ikm,iks,ip]		<font color="#808080"><i># Nodal approximation of value function</i></font>
+  a[ia]				<font color="#808080"><i># Terms in the value function approximation</i></font>
+  ksi ksiLS
+
+<font color="red"><b>lim:</b></font>
+  0.001 &lt;= C[is,ika,ikm,iks,ip] &lt;= +<font color="#3D9970">inf</font>
+  0.001 &lt;= I[is,ika,ikm,iks,ip] &lt;= +<font color="#3D9970">inf</font>
+  0.001 &lt;= L[is,ika,ikm,iks,ip] &lt;= +<font color="#3D9970">inf</font>
+  0.001 &lt;= Y[is,ika,ikm,iks,ip] &lt;= +<font color="#3D9970">inf</font>
+  klo[is] &lt;= K[is,ika,ikm,iks,ip] &lt;= kup[is]
+
+<font color="red"><b>equ:</b></font>
+  utility.. ksi == <font color="#3D9970">sum</font>((ika,ikm,iks,ip), J[ika,ikm,iks,ip])
+
+  evol_k[is,ika,ikm,iks,ip]..  K[is,ika,ikm,iks,ip] ==\
+    (1-delta)*kbar[is,ika]$<font color="#2ECC40">sameas</font>(is,"AGRI") +\
+    (1-delta)*kbar[is,ikm]$<font color="#2ECC40">sameas</font>(is,"MANU") +\
+    (1-delta)*kbar[is,iks]$<font color="#2ECC40">sameas</font>(is,"SERV") +\
+    I(is,ika,ikm,iks,ip)
+
+  supply_l[ika,ikm,iks,ip]..  <font color="#3D9970">sum</font>(is, lref[is]) == <font color="#3D9970">sum</font>(is, L[is,ika,ikm,iks,ip])
+
+  Ydef[is,ika,ikm,iks,ip]..  Y[is,ika,ikm,iks,ip] ==\
+    yref[is] *\
+    (1 + psi[is]*(pbar[ip]-1)) *\
+    (( kbar[is,ika]$<font color="#2ECC40">sameas</font>(is,"AGRI") +\
+       kbar[is,ikm]$<font color="#2ECC40">sameas</font>(is,"MANU") +\
+       kbar[is,iks]$<font color="#2ECC40">sameas</font>(is,"SERV")\
+       )/kref[is])^alpha[is] *\
+    (L[is,ika,ikm,iks,ip]/lref[is])^(1-alpha[is])
+
+  market[is,ika,ikm,iks,ip].. Y[is,ika,ikm,iks,ip] ==\
+    C[is,ika,ikm,iks,ip] + I[is,ika,ikm,iks,ip] + <font color="#3D9970">sum</font>(js, udig[is,js]*Y[js,ika,ikm,iks,ip]/yref[js])
+
+  Udef[ika,ikm,iks,ip]..  U[ika,ikm,iks,ip] == <font color="#3D9970">prod</font>(is, (C[is,ika,ikm,iks,ip]/cref[is])^eta[is])
+
+  Jdef[ika,ikm,iks,ip]..  J[ika,ikm,iks,ip] ==\
+    U[ika,ikm,iks,ip] + beta*<font color="#3D9970">sum</font>(jp, tmatrix[ip,jp]*<font color="#0074D9">SChebyshev4</font>(4,\
+      @norm(K["AGRI",ika,ikm,iks,ip],klo["AGRI"],kup["AGRI"]),\
+      @norm(K["MANU",ika,ikm,iks,ip],klo["MANU"],kup["MANU"]),\
+      @norm(K["SERV",ika,ikm,iks,ip],klo["SERV"],kup["SERV"]),\
+      @norm(PHI[jp],plo,pup),\
+      a,ia))
+
+  d1J[ika,ikm,iks,ip].. 2/(kup("AGRI")-klo("AGRI")) * <font color="#0074D9">d1SChebyshev4</font>(4,\
+      @norm(K["AGRI",ika,ikm,iks,ip],klo["AGRI"],kup["AGRI"]),\
+      @norm(K["MANU",ika,ikm,iks,ip],klo["MANU"],kup["MANU"]),\
+      @norm(K["SERV",ika,ikm,iks,ip],klo["SERV"],kup["SERV"]),\
+      @norm(PHI[ip],plo,pup),\
+      a,ia) &gt;= (d1J.l[ika,ikm,iks,ip]$d1J.m[ika,ikm,iks,ip])$theta
+
+  d2J[ika,ikm,iks,ip].. 2/(kup("MANU")-klo("MANU")) * <font color="#0074D9">d2SChebyshev4</font>(4,\
+      @norm(K["AGRI",ika,ikm,iks,ip],klo["AGRI"],kup["AGRI"]),\
+      @norm(K["MANU",ika,ikm,iks,ip],klo["MANU"],kup["MANU"]),\
+      @norm(K["SERV",ika,ikm,iks,ip],klo["SERV"],kup["SERV"]),\
+      @norm(PHI[ip],plo,pup),\
+      a,ia) &gt;= (d2J.l[ika,ikm,iks,ip]$d2J.m[ika,ikm,iks,ip])$theta
+
+  d3J[ika,ikm,iks,ip].. 2/(kup("SERV")-klo("SERV")) * <font color="#0074D9">d3SChebyshev4</font>(4,\
+      @norm(K["AGRI",ika,ikm,iks,ip],klo["AGRI"],kup["AGRI"]),\
+      @norm(K["MANU",ika,ikm,iks,ip],klo["MANU"],kup["MANU"]),\
+      @norm(K["SERV",ika,ikm,iks,ip],klo["SERV"],kup["SERV"]),\
+      @norm(PHI[ip],plo,pup),\
+      a,ia) &gt;= (d3J.l[ika,ikm,iks,ip]$d3J.m[ika,ikm,iks,ip])$theta
+
+  lsq..  ksiLS == <font color="#3D9970">sum</font>((ika,ikm,iks,ip), <font color="#2ECC40">sqr</font>(<font color="#0074D9">SChebyshev4</font>(4,\
+      @norm(kbar["AGRI",ika],klo["AGRI"],kup["AGRI"]),\
+      @norm(kbar["MANU",ikm],klo["MANU"],kup["MANU"]),\
+      @norm(kbar["SERV",iks],klo["SERV"],kup["SERV"]),\
+      @norm(pbar[ip],plo,pup),\
+      a,ia)\
+    - J[ika,ikm,iks,ip]))
+
+  d1JLS[ika,ikm,iks,ip].. 2/(kup("AGRI")-klo("AGRI")) * <font color="#0074D9">d1SChebyshev4</font>(4,\
+      @norm(kbar["AGRI",ika],klo["AGRI"],kup["AGRI"]),\
+      @norm(kbar["MANU",ikm],klo["MANU"],kup["MANU"]),\
+      @norm(kbar["SERV",iks],klo["SERV"],kup["SERV"]),\
+      @norm(pbar[ip],plo,pup),\
+      a,ia) &gt;= 0
+
+  d2JLS[ika,ikm,iks,ip].. 2/(kup("MANU")-klo("MANU")) * <font color="#0074D9">d2SChebyshev4</font>(4,\
+      @norm(kbar["AGRI",ika],klo["AGRI"],kup["AGRI"]),\
+      @norm(kbar["MANU",ikm],klo["MANU"],kup["MANU"]),\
+      @norm(kbar["SERV",iks],klo["SERV"],kup["SERV"]),\
+      @norm(pbar[ip],plo,pup),\
+      a,ia) &gt;= 0
+
+  d3JLS[ika,ikm,iks,ip].. 2/(kup("SERV")-klo("SERV")) * <font color="#0074D9">d3SChebyshev4</font>(4,\
+      @norm(kbar["AGRI",ika],klo["AGRI"],kup["AGRI"]),\
+      @norm(kbar["MANU",ikm],klo["MANU"],kup["MANU"]),\
+      @norm(kbar["SERV",iks],klo["SERV"],kup["SERV"]),\
+      @norm(pbar[ip],plo,pup),\
+      a,ia) &gt;= 0
+
+<font color="red"><b>ini:</b></font>
+  U[ika,ikm,iks,ip] = 1
+  C[is,ika,ikm,iks,ip] = cref[is]
+  L[is,ika,ikm,iks,ip] = lref[is]
+  Y[is,ika,ikm,iks,ip] = yref[is]
+  K[is,ika,ikm,iks,ip] = kref[is]
+  I[is,ika,ikm,iks,ip] = yref[is]-cref[is]-<font color="#3D9970">sum</font>(js,udig[is,js])
+  a[ia] = 1
+  J[ika,ikm,iks,ip] = 1
+
+<font color="red"><b>run:</b></font>
+  conopt.opt &lt; Rtnwma=1e-5 | Rtnwmi=4e-8
+  conopt.op2 &lt; Rtnwma=1e-4 | Rtnwmi=4e-7
+  conopt.op3 &lt; Rtnwma=1e-3 | Rtnwmi=4e-6
+  conopt.op4 &lt; Rtnwma=1e-3 | Rtnwmi=1e-5
+
+<font color="red"><b>gms:</b></font>
+  <font color="#3D9970">abort</font>$(<font color="#0074D9">SChebyshevDim</font>(4,4) ne <font color="#3D9970">card</font>(ia)) 'Wrong size for set ia.';
+  <font color="#3D9970">execute</font> 'echo Value iteration launched...';
+  <font color="#3D9970">model</font> bellman /utility,evol_k,supply_l,Ydef,market,Udef,Jdef,d1J,d2J,d3J/;
+  <font color="#3D9970">model</font> lsqr /lsq,d1JLS,d2JLS,d3JLS/;
+  bellman.solvelink = 2; lsqr.solvelink = 2;
+  <font color="#3D9970">set</font> iter /1*64/;
+  <font color="#3D9970">scalar</font> dev "Current deviation coefficient" /1/;
+  <font color="#3D9970">parameter</font> itlog "Iteration log";
+  <font color="#FF8000">$$if</font> exist <font color="#8A2BE2">%FN%</font>.gdx <font color="#3D9970">execute_load</font> '<font color="#8A2BE2">%FN%</font>.gdx',C,I,K,L,Y,U,J,A,utility,evol_k,supply_l,Ydef,market,Udef,Jdef,d1J,d2J,d3J;
+  <font color="#FF8000">$$if</font> <font color="#3D9970">not</font> exist <font color="#8A2BE2">%FN%</font>.gdx d{1:3}J.l[ika,ikm,iks,ip] = 0; 
+  <font color="#FF8000">$$if</font> <font color="#3D9970">not</font> exist <font color="#8A2BE2">%FN%</font>.gdx d{1:3}J.m[ika,ikm,iks,ip] = 0;
+  <font color="#3D9970">loop</font>(iter$<font color="#2ECC40">round</font>(dev,2),
+    itlog(iter,ia) = a.l[ia];
+    a.lo[ia] = -<font color="#3D9970">inf</font>; a.up[ia] = +<font color="#3D9970">inf</font>;
+    J.fx[ika,ikm,iks,ip] = J.l[ika,ikm,iks,ip];
+    <font color="#3D9970">solve</font> lsqr minimizing ksiLS using nlp;
+    <font color="#3D9970">abort</font>$(lsqr.modelstat&lt;&gt;2 and lsqr.modelstat&lt;&gt;7) "LSQR does not solve.";
+    dev = <font color="#3D9970">sum</font>(ia, <font color="#2ECC40">sqr</font>(a.l[ia] - itlog(iter,ia)));
+    itlog(iter,"dev") = dev;
+    itlog(iter,"ksi") = ksiLS.l;
+    a.fx[ia] = a.l[ia];
+    J.lo[ika,ikm,iks,ip] = 0; J.up[ika,ikm,iks,ip] = +<font color="#3D9970">inf</font>;
+    bellman.optfile = 0;
+    <font color="#3D9970">solve</font> bellman maximizing ksi using nlp;
+    <font color="#3D9970">while</font>(bellman.modelstat&lt;&gt;2 and bellman.modelstat&lt;&gt;7 and bellman.optfile&lt;4,	<font color="#808080"><i># reduce tolerance to cope with infeasibilities</i></font>
+      bellman.optfile = bellman.optfile + 1;
+      <font color="#3D9970">option</font> solprint=on;
+      <font color="#3D9970">solve</font> bellman maximizing ksi using nlp;
+      );
+    <font color="#3D9970">if</font>(bellman.modelstat&lt;&gt;2 and bellman.modelstat&lt;&gt;7,				<font color="#808080"><i># accept infeasibilities</i></font>
+      theta = 1;
+      <font color="#3D9970">solve</font> bellman maximizing ksi using nlp;
+      theta = 0;
+      );
+    <font color="#3D9970">option</font> solprint=off;
+    <font color="#3D9970">abort</font>$(bellman.modelstat&lt;&gt;2 and bellman.modelstat&lt;&gt;7) "Bellman does not solve.";
+    <font color="#3D9970">execute_unload</font> '<font color="#8A2BE2">%FN%</font>.gdx',C,I,K,L,Y,U,J,A,utility,evol_k,supply_l,Ydef,market,Udef,Jdef,d1J,d2J,d3J,lsq,d1JLS,d2JLS,d3JLS;
+    );
+  <font color="#3D9970">display</font> itlog;
+  <font color="#3D9970">execute</font> 'echo Value iteration ended.';
+
+<font color="red"><b>run:</b></font>
+  "%emp.info%" &lt; equilibrium | max ksi C I K L Y U J utility evol_k supply_l Ydef market Udef Jdef d1J d2J d3J | min ksiLS a lsq d1JLS d2JLS d3JLS
+
+<font color="red"><b>gms:</b></font>
+  <font color="#3D9970">execute</font> 'echo EMP solver launched...';
+  <font color="#3D9970">model</font> <font color="#8A2BE2">%MODEL%</font>_emp /bellman,lsqr/;
+  a.lo[ia] = -<font color="#3D9970">inf</font>; a.up[ia] = +<font color="#3D9970">inf</font>;
+  J.lo[ika,ikm,iks,ip] = 0; J.up[ika,ikm,iks,ip] = +<font color="#3D9970">inf</font>;
+  <font color="#3D9970">solve</font> <font color="#8A2BE2">%MODEL%</font>_emp using emp;
+  <font color="#3D9970">abort</font>$(<font color="#8A2BE2">%MODEL%</font>_emp.modelstat&lt;&gt;2) "<font color="#8A2BE2">%MODEL%</font>_emp does not solve.";
+  <font color="#3D9970">execute_unload</font> '<font color="#8A2BE2">%FN%</font>.gdx',C,I,K,L,Y,U,J,A,utility,evol_k,supply_l,Ydef,market,Udef,Jdef,d1J,d2J,d3J,lsq,d1JLS,d2JLS,d3JLS;
+  <font color="#3D9970">execute</font> 'echo EMP solver ended.';
+</pre>
+</body>
+</html>

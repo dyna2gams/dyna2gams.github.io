@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.3 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -22,13 +22,13 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   This example illustrates an application with many features that are typical of a
   mission design for a military aircraft. The problem definition requires multiple
   phases and multiple paths that are optimized simultaneously. The basic path
-  is specified by a collection of &ldquo;way-points&rdquo;, through which the aircraft must
+  is specified by a collection of &ldquo;waypoints&rdquo;, through which the aircraft must
   fly. A second trajectory branch is introduced to model the dynamics of an
   un-powered &ldquo;glide bomb&rdquo; that is launched during the mission, and must hit a
   specified target. The overall goal of the mission is to fly the aircraft as fast as
   possible, and also hit the target with maximum velocity. The mission is modeled
   using eight phases, where the first seven phases define the aircraft trajectory
-  between way-points, and phase eight defines the &ldquo;glide bomb&rdquo; trajectory to the
+  between waypoints, and phase eight defines the &ldquo;glide bomb&rdquo; trajectory to the
   target. Boundary conditions at the phase boundaries ensure state continuity for
   the aircraft. Continuity between the aircraft state at the end of phase three and
   the &ldquo;glide bomb&rdquo; state at the beginning of phase eight, defines the trajectory

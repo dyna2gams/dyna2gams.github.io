@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -110,7 +110,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   tf = 48
 
 <font color="red"><b>fun:</b></font>
-  <font color="#8A2BE2">@readcsv</font> ifile=<font color="#FF4500"><font color="#FF4500">@home@</font></font>\examples\bocop-microgrid.csv
+  <font color="#8A2BE2">@readcsv</font> ifile=<font color="#8B0000"><font color="#8B0000">@home@</font></font>\examples\bocop-microgrid.csv
 
 <font color="red"><b>tpa:</b></font>
   P_solar = &sect;WinterSolar(<font color="#0074D9">Time</font>)	<font color="#808080"><i># or SummerSolar</i></font>
@@ -152,7 +152,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 
 <font color="red"><b>equ:</b></font>
   BATTERY_SOC&acute; == (BATTERY_POWER_IN*rho - BATTERY_POWER_OUT) / capacity_bat
-  DIESEL_COST&acute; == C_start * DIESEL_START + C_diesel * K_D * rpower(DIESEL_POWER + epsilon,0.9) + C_default * SLACK_DEFAULT
+  DIESEL_COST&acute; == C_start * DIESEL_START + C_diesel * K_D * <font color="#2ECC40">rpower</font>(DIESEL_POWER + epsilon,0.9) + C_default * SLACK_DEFAULT
   BATTERY_COST&acute; == cost_bat / Ah_bat * SF * I_out
   REGULARIZATION&acute; == reg_coeff * BATTERY_POWER_OUT * BATTERY_POWER_OUT
   DIESEL_POWER + P_solar + BATTERY_POWER_OUT - P_load - BATTERY_POWER_IN - SLACK_EXCESS + SLACK_DEFAULT == 0

@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -91,14 +91,14 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   [p1]$grid.. JJ[p1] == J[p1] + <font color="#3D9970">sum</font>(p2,PHI[p1,p2]*W[p2]) - theta*<font color="#3D9970">sum</font>(p2,PHI[p1,p2])
 
 <font color="red"><b>obj:</b></font>
-  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(JJJ)*(1-grid)-theta*grid <font color="#8A2BE2">using</font> none
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(JJJ)*(1-grid)-theta*grid <font color="#8A2BE2">using</font> nlp <font color="#8A2BE2">with</font> none
 
 <font color="red"><b>gms:</b></font>
   <font color="#808080"><i># calculate utopia point J and payoff matrix PHI</i></font>
   grid = 0;
   <font color="#3D9970">loop</font>(p,
     pp(p) = <font color="#3D9970">yes</font>;
-    <font color="#8A2BE2">@solve</font> <font color="#8A2BE2">using</font> nlp;
+    <font color="#8A2BE2">@solve</font>
     PHI[p1,p] = <font color="#0074D9">final</font>(JJ.l[p1]);
     pp(p) = <font color="#3D9970">no</font>;
     );
@@ -110,7 +110,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   <font color="#3D9970">parameter</font> efront(k,*) "Efficient frontier";
   <font color="#3D9970">loop</font>(k,
     W['Obj1'] = (<font color="#3D9970">ord</font>(k)-1)/(<font color="#3D9970">card</font>(k)-1); W['Obj2'] = 1 - W['Obj1'];
-    <font color="#8A2BE2">@solve</font> <font color="#8A2BE2">using</font> nlp;   <font color="#808080"><i># max theta</i></font>
+    <font color="#8A2BE2">@solve</font>	<font color="#808080"><i># max theta</i></font>
     efront(k,'W1') = W['Obj1']; efront(k,'W2') = W['Obj2'];
     efront(k,p) = JJ.l[p]
     );

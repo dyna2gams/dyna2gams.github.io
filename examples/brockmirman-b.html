@@ -1,0 +1,188 @@
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Stochastic Brock-Mirman Growth Model Using a Chebyshev Polynomial Approximation</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Stochastic Brock-Mirman Growth Model Using a Chebyshev Polynomial Approximation
+</pre>
+<p>
+  We solve the Brock-Mirman Stochastic Growth Model. In this model, a social planner picks
+  a consumption trajectory \(\{c_t\}_{t=0}^{\infty}\) to solve:
+<p>
+  \[
+  J = \max_{{\{c_t,k_{t+1}\}}_{t=0}^{\infty}} \mathbb{E} 
+  \Big[ \sum_{t=0}^{\infty} \beta^t u(c_t) \Big]
+  \]
+<p>
+  given utility function and resource constraint:
+<p>
+  \[
+  u(c_t) = \frac{c_t^{1-\eta}}{1-\eta}\\
+  k_{t+1} = z_t k_t^{\alpha}-c_t
+  \]
+<p>
+  where \(\beta\) is the discount factor, \(\alpha\), the capital value share and \(\eta\),
+  the elasticity of the marginal utility of consumption.
+<p>
+  Stochastic productivity shock \(z_t\) evolves according to an autoregressive process of
+  order one:
+<p>
+  \[
+  z_{t+1} = (1-\rho) \mu + \rho z_t + \epsilon_t
+  \]
+<p>
+  We tackle this problem by solving the Bellman's equation using a Chebyshev collocation
+  method. In doing so, we use the DYNA features to solve ordinary optimization problems, not
+  a usual optimal control problem.
+<p>
+  References:
+  <ol>
+  <li>W. Chang and T. Rutherford,
+  <em>Solving Stochastic Dynamic Programming Problems: A Mixed Complementarity Approach</em>,
+  Department of Agricultural and Applied Economics, University of Wisconsin-Madison, 2016.
+  <li>W. Chang, M.C. Ferris, Y. Kim and T. Rutherford,
+  <em>Solving Stochastic Dynamic Programming Problems: A Mixed Complementarity Approach</em>,
+  Computational Economics, 55:925-955, 2020.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">time-model</font> = None
+  <font color="#39CCCC">include-library</font> = Chebyshev | Tauchen
+
+<font color="red"><b>mac:</b></font>
+  @norm(z,l,u) ((&z-(&l+&u)/2)/((&u-&l)/2))
+
+<font color="red"><b>set:</b></font>
+  ik = k1:k5		<font color="#808080"><i># Nodes for capital at which value function is evaluated</i></font>
+  ip = p1:p5		<font color="#808080"><i># Nodes for productivity</i></font>
+  ia = a1:a15
+  <font color="#8A2BE2">alias</font>(jp,ip)
+
+<font color="red"><b>par:</b></font>
+  eta = 0.95		<font color="#808080"><i># Elasticity of the marginal utility of consumption</i></font>
+  beta = 0.9888		<font color="#808080"><i># Utility discount factor</i></font>
+  alpha = 0.333		<font color="#808080"><i># Capital value share</i></font>
+  p_mean = 5		<font color="#808080"><i># Mean value of productivity</i></font>
+  sigma = 0.1		<font color="#808080"><i># Normalized standard deviation of productivity</i></font>
+  rho = 0.95
+  klo = 0
+  kup = 5
+  kbar[ik] = (klo+kup+(kup-klo)*<font color="#0074D9">ChebyshevQN</font>(ik))/2
+  plo = p_mean*(1-3*sigma)
+  pup = p_mean*(1+3*sigma)
+  pbar[ip] = (plo+pup+(pup-plo)*<font color="#0074D9">ChebyshevQN</font>(ip))/2
+  tmatrix[ip,jp] = <font color="#0074D9">TauchenAR1</font>(ip,jp,pbar,p_mean,rho,p_mean*sigma)
+  PHI[ip] = <font color="#3D9970">sum</font>(jp, tmatrix[ip,jp]*pbar[jp])
+
+<font color="red"><b>var:</b></font>
+  C[ik,ip]		<font color="#808080"><i># Consumption</i></font>
+  K[ik,ip]		<font color="#808080"><i># Subsequent period capital stock</i></font>
+  U[ik,ip]		<font color="#808080"><i># Utility</i></font>
+  J[ik,ip]		<font color="#808080"><i># Value function</i></font>
+  a[ia]			<font color="#808080"><i># Parameters of the Chebyshev surface of degree 4</i></font>
+  ksi ksiLS
+
+<font color="red"><b>lim:</b></font>
+  0.001 &lt;= C[ik,ip] &lt;= +<font color="#3D9970">inf</font>
+  klo &lt;= K[ik,ip] &lt;= kup
+
+<font color="red"><b>equ:</b></font>
+  utility..		ksi == <font color="#3D9970">sum</font>((ik,ip), J[ik,ip])
+  market[ik,ip]..	C[ik,ip] + K[ik,ip] == pbar[ip]*kbar[ik]^alpha
+  Udef[ik,ip]..		U[ik,ip] == C[ik,ip]^(1-eta)/(1-eta)
+  Jdef[ik,ip]..		J[ik,ip] == U[ik,ip] + beta*<font color="#3D9970">sum</font>(jp, tmatrix[ip,jp]*<font color="#0074D9">SChebyshev2</font>(4,@norm(K[ik,ip],klo,kup),@norm(PHI[jp],plo,pup),a,ia))
+  lsq..			ksiLS == <font color="#3D9970">sum</font>((ik,ip), <font color="#2ECC40">sqr</font>(<font color="#0074D9">SChebyshev2</font>(4,@norm(kbar[ik],klo,kup),@norm(pbar[ip],plo,pup),a,ia) - J[ik,ip]))
+
+<font color="red"><b>ini:</b></font>
+  a[ia] = 1
+  J[ik,ip] = 1
+
+<font color="red"><b>gms:</b></font>
+  <font color="#3D9970">abort</font>$(<font color="#0074D9">SChebyshevDim</font>(2,4) ne <font color="#3D9970">card</font>(ia)) 'Wrong size for set ia.';
+  <font color="#3D9970">execute</font> 'echo Value iteration launched...';
+  <font color="#3D9970">model</font> bellman /utility,market,Udef,Jdef/;
+  <font color="#3D9970">model</font> lsqr /lsq/;
+  bellman.solvelink = 2; lsqr.solvelink = 2;
+  <font color="#3D9970">set</font> iter /1*256/;
+  <font color="#3D9970">scalar</font> dev "Current deviation coefficient" /1/;
+  <font color="#3D9970">parameter</font> itlog "Iteration log";
+  <font color="#FF8000">$$if</font> exist <font color="#8A2BE2">%FN%</font>.gdx <font color="#3D9970">execute_load</font> '<font color="#8A2BE2">%FN%</font>.gdx',C,K,U,J,a,utility,market,Udef,Jdef;
+  <font color="#3D9970">loop</font>(iter$<font color="#2ECC40">round</font>(dev,2),
+    itlog(iter,ia) = a.l[ia];
+    a.lo[ia] = -<font color="#3D9970">inf</font>; a.up[ia] = +<font color="#3D9970">inf</font>;
+    J.fx[ik,ip] = J.l[ik,ip];
+    <font color="#3D9970">solve</font> lsqr minimizing ksiLS using nlp;
+    <font color="#3D9970">abort</font>$(lsqr.solvestat&lt;&gt;1 or lsqr.modelstat&gt;2) "LSQR does not solve.";
+    dev = <font color="#3D9970">sum</font>(ia, <font color="#2ECC40">sqr</font>(a.l[ia]-itlog(iter,ia)));
+    itlog(iter,"dev") = dev;
+    itlog(iter,"ksi") = ksi.l;
+    a.fx[ia] = a.l[ia];
+    J.lo[ik,ip] = -<font color="#3D9970">inf</font>; J.up[ik,ip] = +<font color="#3D9970">inf</font>;
+    <font color="#3D9970">solve</font> bellman maximizing ksi using nlp;
+    <font color="#3D9970">abort</font>$(bellman.solvestat&lt;&gt;1 or bellman.modelstat&gt;2) "Bellman does not solve.";
+    <font color="#3D9970">execute_unload</font> '<font color="#8A2BE2">%FN%</font>.gdx',C,K,U,J,a,utility,market,Udef,Jdef;
+    );
+  <font color="#3D9970">display</font> itlog;
+  <font color="#3D9970">execute</font> 'echo Value iteration ended.';
+
+<font color="red"><b>run:</b></font>
+  "%emp.info%" &lt; equilibrium | max ksi C K U J utility market Udef Jdef | min ksiLS a lsq
+
+<font color="red"><b>gms:</b></font>
+  <font color="#3D9970">execute</font> 'echo EMP solver launched...';
+  <font color="#3D9970">model</font> <font color="#8A2BE2">%MODEL%</font>_emp /bellman,lsqr/;
+  a.lo[ia] = -<font color="#3D9970">inf</font>; a.up[ia] = +<font color="#3D9970">inf</font>;
+  J.lo[ik,ip] = -<font color="#3D9970">inf</font>; J.up[ik,ip] = +<font color="#3D9970">inf</font>;
+  <font color="#3D9970">solve</font> <font color="#8A2BE2">%MODEL%</font>_emp using emp;
+  <font color="#3D9970">abort</font>$(<font color="#8A2BE2">%MODEL%</font>_emp.modelstat&lt;&gt;2) "<font color="#8A2BE2">%MODEL%</font>_emp does not solve.";
+  <font color="#3D9970">execute_unload</font> '<font color="#8A2BE2">%FN%</font>.gdx',C,K,U,J,a,utility,market,Udef,Jdef;
+  <font color="#3D9970">execute</font> 'echo EMP solver ended.';
+
+<font color="red"><b>put:</b></font>
+  "<font color="#8A2BE2">%FN%</font>.<font color="#8A2BE2">%N%</font>.m&lt;"
+  <font color="#808080"><i># plot optimal policy</i></font>
+  figure(1);
+  K = ["kbar[ik]:8:4"];
+  PHI = ["pbar[ip]:8:4"];
+  C = ["C.l[ik,ip]:8:4"];
+  surf(K,PHI,C');
+  title('Optimal Consumption Policy');
+  xlabel('Capital');
+  ylabel('Productivity');
+  <font color="#808080"><i># plot value function</i></font>
+  figure(2);
+  J = ["J.l[ik,ip]:9:3"];
+  surf(K,PHI,J');
+  title('Value Function');
+  xlabel('Capital');
+  ylabel('Productivity');
+  <font color="#808080"><i># plot market price function</i></font>
+  figure(3);
+  m = ["market.m[ik,ip]:8:4"];
+  surf(K,PHI,m');
+  title('Market Price Function');
+  xlabel('Capital');
+  ylabel('Productivity');
+  figure(4);
+  "`parameter ssd; ssd[iter] = itlog[iter,'dev'];`"
+  ssd = ["ssd[iter]:9:3"];
+  plot(ssd);
+  title('Sum of Square Deviations');
+  xlabel('Number of iterations');
+</pre>
+</body>
+</html>

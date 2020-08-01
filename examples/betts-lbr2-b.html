@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.3 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -106,12 +106,12 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   <font color="#8A2BE2">minimize</font> tf <font color="#8A2BE2">using</font> nlp
 
 <font color="red"><b>gms:</b></font>
-  <font color="#8B0000">$$ifthen</font> <font color="#8A2BE2">%ITER%</font>==<font color="#8A2BE2">%ITERMAX%</font>
+  <font color="#FF8000">$$ifthen</font> <font color="#8A2BE2">%ITER%</font>==<font color="#8A2BE2">%ITERMAX%</font>
   <font color="#3D9970">set</font> family /F0*F16/;
   <font color="#3D9970">set</font> states /T,X,Y,VX,VY/;
   <font color="#8A2BE2">@tpa</font> orbits[family,states];
   <font color="#3D9970">parameter</font> lfic[family,*] Lyapunov Family <font color="#0074D9">Initial</font> Conditions;
-  <font color="#8B0000">$$ondotl</font>
+  <font color="#FF8000">$$ondotl</font>
   <font color="#3D9970">loop</font>(<font color="#2ECC40">sameas</font>(family,'F0'),
     orbits[family,'T'] = <font color="#0074D9">Time</font>;
     orbits[family,'{X Y VX VY}'] = {x y vx vy};
@@ -134,7 +134,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
     );
   <font color="#3D9970">display</font> lfic;
   <font color="#8A2BE2">@csvsave</font> orbits[family,states]
-  <font color="#8B0000">$$endif</font>
+  <font color="#FF8000">$$endif</font>
 </pre>
 </body>
 </html>

@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -26,7 +26,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   <font color="#39CCCC">model-option</font> = optfile=1
   conopt.opt &lt; lkdebg=0
 
-<font color="red"><b>fun:</b></font>
+<font color="red"><b>fun:</b></font>   <font color="#808080"><i># Robust starting point.  Obj = 115.76</i></font>
      t        &sect;r        &sect;phi   &sect;theta        &sect;dr      &sect;dphi    &sect;dtheta        &sect;wn       &sect;Psi       &sect;CL         &sect;E      &sect;ddr0      &sect;dPsi       &sect;dCL
    0.0 1.226e+03 -5.750e-02 1.147e+00  4.507e+00 -5.547e-02 -3.431e-02  0.000e+00  5.576e-02 1.500e+00  0.000e+00 -1.432e+00 -4.374e-04  3.195e-16
    1.0 1.230e+03 -1.170e-01 1.141e+00  3.537e+00 -5.829e-02  2.025e-02 -1.414e-01  5.484e-02 1.500e+00  9.307e+00  7.485e-01  7.051e-04  2.443e-15
@@ -48,6 +48,28 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   17.0 1.230e+03 -2.775e-02 1.186e+00 -1.510e+01 -9.130e-03 -2.482e-02  1.057e-01  3.352e-02 1.631e-01  1.164e+02  2.500e+01  2.266e-02  2.674e+00
   18.0 1.226e+03 -5.750e-02 1.147e+00  4.507e+00 -5.547e-02 -3.431e-02  2.584e-05  5.576e-02 1.500e+00  1.150e+02  1.420e+01  2.183e-02 -1.974e-15
 
+<font color="#808080"><i>###:</i></font><font color="#808080"><i>   # Obtained from scratch by Knitro. It works with Conopt with --N=24 --IN=5 --CF=IL --CM=L3A4.  Obj = 119.46</i></font>
+<font color="#808080"><i>     t        &sect;r       &sect;phi    &sect;theta        &sect;dr      &sect;dphi    &sect;dtheta       &sect;wn        &sect;Psi       &sect;CL         &sect;E      &sect;ddr0      &sect;dPsi       &sect;dCL</i></font>
+<font color="#808080"><i>   0.0 1.178e+03  1.274e-01 1.294e+00  3.655e+00 -6.100e-02  2.027e-02  2.916e-01 -4.955e-02 1.500e+00  0.000e+00 -2.834e-01  1.838e-02 -2.997e-03</i></font>
+<font color="#808080"><i>   1.0 1.182e+03  6.480e-02 1.300e+00  3.442e+00 -6.213e-02 -6.401e-03  3.590e-01 -3.053e-02 1.500e+00  8.243e+00 -1.346e-01  1.820e-02  1.253e-03</i></font>
+<font color="#808080"><i>   2.0 1.185e+03  4.518e-03 1.286e+00  3.370e+00 -5.867e-02 -1.749e-02  3.887e-01 -1.543e-02 1.500e+00  1.621e+01 -2.306e-02  1.122e-02  4.902e-04</i></font>
+<font color="#808080"><i>   3.0 1.188e+03 -5.336e-02 1.268e+00  3.365e+00 -5.743e-02 -1.925e-02  3.941e-01 -8.806e-03 1.500e+00  2.414e+01 -6.713e-04  2.123e-03 -2.234e-03</i></font>
+<font color="#808080"><i>   4.0 1.192e+03 -1.106e-01 1.249e+00  3.349e+00 -5.689e-02 -1.899e-02  3.939e-01 -1.006e-02 1.500e+00  3.204e+01 -3.406e-02 -3.619e-03  3.330e-04</i></font>
+<font color="#808080"><i>   5.0 1.195e+03 -1.668e-01 1.229e+00  3.220e+00 -5.557e-02 -2.115e-02  4.005e-01 -1.326e-02 1.500e+00  3.973e+01  1.082e+00 -1.008e-03  2.647e-04</i></font>
+<font color="#808080"><i>   6.0 1.200e+03 -2.149e-01 1.210e+00 -3.815e-01 -4.514e-02 -1.726e-02  4.007e-01 -8.466e-03 1.186e+00  4.837e+01 -2.500e+01  1.057e-02 -2.610e+00</i></font>
+<font color="#808080"><i>   7.0 1.187e+03 -2.410e-01 1.203e+00 -2.538e+01 -4.692e-03  3.146e-03  2.479e-01  2.405e-03 1.228e-01  4.805e+01 -2.500e+01  9.829e-03 -4.551e-01</i></font>
+<font color="#808080"><i>   8.0 1.157e+03 -2.413e-01 1.207e+00 -2.333e+01  7.743e-03  4.901e-03 -6.758e-02  9.476e-03 1.155e-01  4.745e+01  2.500e+01  6.451e-03  4.712e-01</i></font>
+<font color="#808080"><i>   9.0 1.146e+03 -2.089e-01 1.227e+00  1.675e+00  6.581e-02  3.700e-02 -7.587e-02  1.733e-02 1.500e+00  4.433e+01  2.500e+01  1.102e-02  7.735e-04</i></font>
+<font color="#808080"><i>  10.0 1.150e+03 -1.455e-01 1.255e+00  3.598e+00  6.409e-02  1.964e-02 -1.101e-01  3.156e-02 1.500e+00  5.404e+01 -3.713e-02  1.462e-02 -3.234e-04</i></font>
+<font color="#808080"><i>  11.0 1.153e+03 -8.015e-02 1.262e+00  3.456e+00  6.480e-02 -6.160e-03 -1.725e-01  4.130e-02 1.500e+00  6.239e+01 -2.039e-01  2.461e-03 -1.264e-04</i></font>
+<font color="#808080"><i>  12.0 1.157e+03 -2.021e-02 1.243e+00  3.277e+00  5.346e-02 -3.175e-02 -2.427e-01  3.350e-02 1.500e+00  7.031e+01 -1.323e-01 -1.825e-02  5.764e-04</i></font>
+<font color="#808080"><i>  13.0 1.160e+03  2.734e-02 1.205e+00  3.208e+00  4.403e-02 -4.117e-02 -2.770e-01  7.169e-03 1.500e+00  7.786e+01 -4.914e-03 -3.219e-02 -8.593e-05</i></font>
+<font color="#808080"><i>  14.0 1.163e+03  7.482e-02 1.167e+00  3.285e+00  5.416e-02 -2.922e-02 -2.361e-01 -2.595e-02 1.500e+00  8.530e+01  1.798e-01 -3.176e-02 -8.593e-05</i></font>
+<font color="#808080"><i>  15.0 1.167e+03  1.360e-01 1.157e+00  3.584e+00  6.348e-02  1.290e-02 -1.255e-01 -5.282e-02 1.500e+00  9.308e+01  3.915e-01 -2.076e-02  5.763e-04</i></font>
+<font color="#808080"><i>  16.0 1.170e+03  1.845e-01 1.195e+00  3.936e+00  2.464e-02  5.854e-02  2.921e-02 -6.614e-02 1.500e+00  1.017e+02  2.242e-01 -5.637e-03 -1.264e-04</i></font>
+<font color="#808080"><i>  17.0 1.174e+03  1.782e-01 1.256e+00  3.933e+00 -3.436e-02  5.476e-02  1.818e-01 -6.412e-02 1.500e+00  1.108e+02 -2.048e-01  9.278e-03 -3.232e-04</i></font>
+<font color="#808080"><i>  18.0 1.178e+03  1.274e-01 1.294e+00  3.655e+00 -6.100e-02  2.027e-02  2.916e-01 -4.955e-02 1.500e+00  1.196e+02 -2.835e-01  1.838e-02  7.730e-04</i></font>
+<font color="#808080"><i></i></font>
 <font color="red"><b>par:</b></font>
   tf = 18
 
@@ -96,6 +118,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 
   power		<font color="#808080"><i># the power at the generator</i></font>
   dwn		<font color="#808080"><i># the derivative of the winding number</i></font>
+  eta
 
 <font color="red"><b>lim:</b></font>
   -0.34  &lt;= phi   &lt;= 0.34
@@ -130,7 +153,6 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   <font color="#808080"><i># Calculation of the kite&rsquo;s transversal axis</i></font>
   nwep == <font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqr</font>(we2) + <font color="#2ECC40">sqr</font>(we3))
   nwe == <font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqr</font>(we1) + <font color="#2ECC40">sqr</font>(we2) + <font color="#2ECC40">sqr</font>(we3))	<font color="#808080"><i># norm of the effective wind vector</i></font>
-  eta == <font color="#2ECC40">arcsin</font>( we1*<font color="#2ECC40">tan</font>(Psi)/nwep )
   <font color="#808080"><i># ewep1 == 0.0				# projection of ewe</i></font>
   ewep2 == we2 / nwep
   ewep3 == we3 / nwep
@@ -245,6 +267,8 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   0 == <font color="#0074D9">final</font>(wn) - <font color="#0074D9">initial</font>(wn)
   0 == <font color="#0074D9">final</font>(Psi) - <font color="#0074D9">initial</font>(Psi)
   0 == <font color="#0074D9">final</font>(CL) - <font color="#0074D9">initial</font>(CL)
+  <font color="#2ECC40">sin</font>(eta) == we1*<font color="#2ECC40">tan</font>(Psi)/nwep
+  -1 &lt;= we1*<font color="#2ECC40">tan</font>(Psi)/nwep &lt;= 1
 
 <font color="red"><b>obj:</b></font>
   <font color="#8A2BE2">maximize</font> <font color="#0074D9">final</font>(E) <font color="#8A2BE2">using</font> nlp <font color="#8A2BE2">with</font> conopt

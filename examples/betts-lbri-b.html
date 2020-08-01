@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.3 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -24,7 +24,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   Restricted Three Body Problem (PCR3BP) with Earth as one primary and the Moon as
   the second. The equations of motion are constructed in a rotating reference frame,
   in which the x-axis extends from the barycenter of the Earth-Moon system to the
-  Moon, and the y-axis completes the right hand coordinate frame. A set of 
+  Moon, and the y-axis completes the right hand coordinate frame. A set of
   non-dimensional units is chosen such that the unit of distance is the distance
   between the two primaries, the unit of mass is the sum of the primaries&rsquo; masses,
   and the unit of time is such that the angular velocity of the primaries around
@@ -39,15 +39,15 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <p>
   References:
   <ol>
-  <li>R. Epenoy, 
+  <li>R. Epenoy,
   <em>Optimal Long-Duration Low-Thrust Transfers Between Libration Point Orbits</em>,
   In 63rd International Astronautical Congress, no. 4 in IAC-12-C1.5.9, Naples,
   Italy, 2012.
   <li>J.T. Betts,
   <em>Using Direct Transcription to Compute Optimal Low Thrust Transfers Between
   Libration Point Orbits</em>,
-  In G. Fasano, J. Pint&eacute;r (eds), Space Engineering. Springer Optimization and Its
-  Applications, vol 114, Springer, Cham, 2016.
+  In G. Fasano, J. Pint&eacute;r (eds), Modeling and Optimization in Space Engineering,
+  Springer Optimization and Its Applications, Volume 144, Springer, 2019.
   <li>J.T. Betts,
   <em>A Collection of Optimal Control Test Problems</em>,
   Applied Mathematical Analysis, LLC, November 17, 2015.
@@ -70,8 +70,8 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   Tf = 44 * 2*pi/PM	<font color="#808080"><i># transfer duration fixed to 44 days</i></font>
 
 <font color="red"><b>fun:</b></font>
-  <font color="#8A2BE2">@readcsv</font> ifile=<font color="#FF4500"><font color="#FF4500">@home@</font></font>\examples\betts-lbr1.csv
-  <font color="#8A2BE2">@readcsv</font> ifile=<font color="#FF4500"><font color="#FF4500">@home@</font></font>\examples\betts-lbr2.csv
+  <font color="#8A2BE2">@readcsv</font> ifile=<font color="#8B0000"><font color="#8B0000">@home@</font></font>\examples\betts-lbr1.csv
+  <font color="#8A2BE2">@readcsv</font> ifile=<font color="#8B0000"><font color="#8B0000">@home@</font></font>\examples\betts-lbr2.csv
 
 <font color="red"><b>var:</b></font>
   tlen[phase]
