@@ -213,6 +213,7 @@
 							<h3 id="dynopt">Example problems from the <a href="https://bitbucket.org/dynopt/dynopt_code" target="_blank">DYNOPT</a><sup><a href="#r_dynopt">[6]</a></sup> library</h3><!--dynopt-->
 							<ul>
 							<li>Batch Reactor Problem&emsp;(<a href="#main" onclick="openFrame('examples/dynopt-batch-reactor.html');">dynopt-batch-reactor</a>)</li>
+							<li>Diafiltration optimal design&emsp;(<a href="#main" onclick="openFrame('examples/dynopt-diafiltration.html');">dynopt-diafiltration</a>)</li>
 							<li>High Dimensional Control&emsp;(<a href="#main" onclick="openFrame('examples/dynopt-high-dim-control.html');">dynopt-high-dim-control</a>)</li>
 							<li>Parallel Reactions in Tubular Reactor&emsp;(<a href="#main" onclick="openFrame('examples/dynopt-parallel-reactions.html');">dynopt-parallel-reactions</a>)</li>
 							<li>Parameter Estimation Problem&emsp;(<a href="#main" onclick="openFrame('examples/dynopt-parameter-estimation.html');">dynopt-parameter-estimation</a>)</li>
@@ -419,6 +420,7 @@
 							<ul class="compact">
 							<li>An underwater vehicle problem&emsp;(<a href="#main" onclick="openFrame('examples/aquanautics.html');">aquanautics</a>)</li>
 							<li>Atmospheric entry problem&emsp;(<a href="#main" onclick="openFrame('examples/atmo-entry-nre.html');">atmo-entry-nre</a> | <a href="#main" onclick="openFrame('examples/atmo-entry-re.html');">atmo-entry-re</a>)</li>
+							<li>A system with autonomous switches&emsp;(<a href="#main" onclick="openFrame('examples/autonomous-switch-a.html');">autonomous-switch-a</a> | <a href="#main" onclick="openFrame('examples/autonomous-switch-b.html');">autonomous-switch-b</a>)</li>
 							<li>Bagley-Torvik equation&emsp;(<a href="#main" onclick="openFrame('examples/bagley-torvik-a1.html');">bagley-torvik-a1</a> | <a href="#main" onclick="openFrame('examples/bagley-torvik-a2.html');">bagley-torvik-a2</a> | <a href="#main" onclick="openFrame('examples/bagley-torvik-b1.html');">bagley-torvik-b1</a> | <a href="#main" onclick="openFrame('examples/bagley-torvik-b2.html');">bagley-torvik-b2</a>)</li>
 							<li>Batch reactor&emsp;(<a href="#main" onclick="openFrame('examples/batch-reactor.html');">batch-reactor</a>)</li>
 							<li>2D Hypersonic Planetary Entry&emsp;(<a href="#main" onclick="openFrame('examples/beluga-hypersonic-2D.html');">beluga-hypersonic-2D</a>)</li>
@@ -437,12 +439,23 @@
 							<li>Optimal Aeroassisted Plane - Minimax Heat Rate&emsp;(<a href="#main" onclick="openFrame('examples/betts-aotv-b.html');">betts-aotv-b</a>)</li>
 							<li>Optimal Low-Thrust Transfer Between Libration Points&emsp;(<a href="#main" onclick="openFrame('examples/betts-lbri-b.html');">betts-lbri-b</a> | <a href="#main" onclick="openFrame('examples/betts-lbr1-a.html');">betts-lbr1-a</a> | <a href="#main" onclick="openFrame('examples/betts-lbr2-a.html');">betts-lbr2-a</a> | <a href="#main" onclick="openFrame('examples/betts-lbr1-b.html');">betts-lbr1-b</a> | <a href="#main" onclick="openFrame('examples/betts-lbr2-b.html');">betts-lbr2-b</a> | <a href="#main" onclick="openFrame('examples/betts-lbri-a.html');">betts-lbri-a</a>)</li>
 							<li>Optimal Spacecraft Docking Maneuver&emsp;(<a href="#main" onclick="openFrame('examples/betts-dock.html');">betts-dock</a>)</li>
+							<li>Deterministic Brock-Mirman Growth Model Using a Chebyshev Polynomial Approximation&emsp;(<a href="#main" onclick="openFrame('examples/brockmirman-a.html');">brockmirman-a</a>)</li>
+							<li>N-Sector Stochastic Brock-Mirman Growth Model Using a Chebyshev Polynomial Approximation&emsp;(<a href="#main" onclick="openFrame('examples/brockmirman-c.html');">brockmirman-c</a> | <a href="#main" onclick="openFrame('examples/brockmirman-d.html');">brockmirman-d</a>)</li>
+							<li>N-Sector Stochastic Brock-Mirman Growth Model Using a Smolyak Approximation&emsp;(<a href="#main" onclick="openFrame('examples/brockmirman-e.html');">brockmirman-e</a> | <a href="#main" onclick="openFrame('examples/brockmirman-e2.html');">brockmirman-e2</a>)</li>
+							<li>Stochastic Brock-Mirman Growth Model Using a Chebyshev Polynomial Approximation&emsp;(<a href="#main" onclick="openFrame('examples/brockmirman-b.html');">brockmirman-b</a>)</li>
 							<li>Racecar on an eight-shape circuit&emsp;(<a href="#main" onclick="openFrame('examples/car-racing.html');">car-racing</a>)</li>
+							<li>A Differential Complementarity Linear System&emsp;(<a href="#main" onclick="openFrame('examples/cc-dcls.html');">cc-dcls</a>)</li>
 							<li>Buffer Tank Case Study&emsp;(<a href="#main" onclick="openFrame('examples/cc-buffer-tank.html');">cc-buffer-tank</a>)</li>
+							<li>Circuit with an ideal diode and two voltage sources&emsp;(<a href="#main" onclick="openFrame('examples/cc-diode.html');">cc-diode</a>)</li>
 							<li>Optimization Problem Tank Cascade&emsp;(<a href="#main" onclick="openFrame('examples/cc-tank-cascade1.html');">cc-tank-cascade1</a> | <a href="#main" onclick="openFrame('examples/cc-tank-cascade2.html');">cc-tank-cascade2</a>)</li>
-							<li>Chebyshev Differential Equation&emsp;(<a href="#main" onclick="openFrame('examples/chebychev.html');">chebychev</a>)</li>
+							<li>Keep-out zone chance constraint&emsp;(<a href="#main" onclick="openFrame('examples/chc-keep-out-zone-a.html');">chc-keep-out-zone-a</a> | <a href="#main" onclick="openFrame('examples/chc-keep-out-zone-b.html');">chc-keep-out-zone-b</a>)</li>
+							<li>Minimum-energy trajectory with chance constraints&emsp;(<a href="#main" onclick="openFrame('examples/chc-min-energy.html');">chc-min-energy</a>)</li>
+							<li>Chebyshev Differential Equation&emsp;(<a href="#main" onclick="openFrame('examples/chebychev.html');">chebychev</a> | <a href="#main" onclick="openFrame('examples/chebychev2.html');">chebychev2</a>)</li>
 							<li>Control of the Circadian Rhythms&emsp;(<a href="#main" onclick="openFrame('examples/circadian-rhythms-a.html');">circadian-rhythms-a</a> | <a href="#main" onclick="openFrame('examples/circadian-rhythms-b.html');">circadian-rhythms-b</a>)</li>
 							<li>Pneumonia and Meningitis Coinfection&emsp;(<a href="#main" onclick="openFrame('examples/coinfection.html');">coinfection</a>)</li>
+							<li>Optimal Growth Model&emsp;(<a href="#main" onclick="openFrame('examples/compecon-demdp07-a.html');">compecon-demdp07-a</a> | <a href="#main" onclick="openFrame('examples/compecon-demdp07-b.html');">compecon-demdp07-b</a> | <a href="#main" onclick="openFrame('examples/compecon-demdp07-c.html');">compecon-demdp07-c</a>)</li>
+							<li>Renewable Resource Model&emsp;(<a href="#main" onclick="openFrame('examples/compecon-demdp08-a.html');">compecon-demdp08-a</a>)</li>
+							<li>Convert to AMPL&emsp;(<a href="#main" onclick="openFrame('examples/convert-to-ampl.html');">convert-to-ampl</a>)</li>
 							<li>Bang-Bang Control Problem&emsp;(<a href="#main" onclick="openFrame('examples/costate-example-c.html');">costate-example-c</a>)</li>
 							<li>Infinite Horizon Optimal Control Problem&emsp;(<a href="#main" onclick="openFrame('examples/costate-example-f1.html');">costate-example-f1</a> | <a href="#main" onclick="openFrame('examples/costate-example-f2.html');">costate-example-f2</a>)</li>
 							<li>Infinite-Horizon One-Dimensional Nonlinear Problem&emsp;(<a href="#main" onclick="openFrame('examples/costate-example-e1.html');">costate-example-e1</a> | <a href="#main" onclick="openFrame('examples/costate-example-e2.html');">costate-example-e2</a>)</li>
@@ -460,19 +473,22 @@
 							<li>De Pillis chemotherapy model&emsp;(<a href="#main" onclick="openFrame('examples/depillis-binary.html');">depillis-binary</a> | <a href="#main" onclick="openFrame('examples/depillis.html');">depillis</a>)</li>
 							<li>Robust PID Design&emsp;(<a href="#main" onclick="openFrame('examples/design-pid-a-dist.html');">design-pid-a-dist</a> | <a href="#main" onclick="openFrame('examples/design-pid-a-step.html');">design-pid-a-step</a> | <a href="#main" onclick="openFrame('examples/design-pid-b-dist.html');">design-pid-b-dist</a> | <a href="#main" onclick="openFrame('examples/design-pid-b-step.html');">design-pid-b-step</a> | <a href="#main" onclick="openFrame('examples/design-pid-c-dist.html');">design-pid-c-dist</a> | <a href="#main" onclick="openFrame('examples/design-pid-c-step.html');">design-pid-c-step</a> | <a href="#main" onclick="openFrame('examples/design-pid-d-dist.html');">design-pid-d-dist</a> | <a href="#main" onclick="openFrame('examples/design-pid-d-step.html');">design-pid-d-step</a>)</li>
 							<li>A Pursuit-Evasion Game Involving Two Spacecraft&emsp;(<a href="#main" onclick="openFrame('examples/dg-two-spacecraft.html');">dg-two-spacecraft</a>)</li>
-							<li>Differential Game - A Game of Two Cars&emsp;(<a href="#main" onclick="openFrame('examples/dg-two-cars.html');">dg-two-cars</a>)</li>
+							<li>Differential Game - A Game of Two Cars&emsp;(<a href="#main" onclick="openFrame('examples/dg-two-cars.html');">dg-two-cars</a> | <a href="#main" onclick="openFrame('examples/dg-two-cars2.html');">dg-two-cars2</a>)</li>
 							<li>Differential Game - Homicidal Chauffeur&emsp;(<a href="#main" onclick="openFrame('examples/dg-homicidal-chauffeur.html');">dg-homicidal-chauffeur</a>)</li>
 							<li>A singular control problem&emsp;(<a href="#main" onclick="openFrame('examples/diedam-sager.html');">diedam-sager</a>)</li>
 							<li>Optimization of a digital regulator&emsp;(<a href="#main" onclick="openFrame('examples/digital-regulator-a.html');">digital-regulator-a</a> | <a href="#main" onclick="openFrame('examples/digital-regulator-b.html');">digital-regulator-b</a>)</li>
+							<li>The consumption-saving problem&emsp;(<a href="#main" onclick="openFrame('examples/dolo-consumption-saving-a.html');">dolo-consumption-saving-a</a> | <a href="#main" onclick="openFrame('examples/dolo-consumption-saving-b.html');">dolo-consumption-saving-b</a> | <a href="#main" onclick="openFrame('examples/dolo-consumption-saving-c.html');">dolo-consumption-saving-c</a> | <a href="#main" onclick="openFrame('examples/dolo-consumption-saving-d.html');">dolo-consumption-saving-d</a>)</li>
 							<li>Double Tank&emsp;(<a href="#main" onclick="openFrame('examples/double-tank-binary.html');">double-tank-binary</a> | <a href="#main" onclick="openFrame('examples/double-tank.html');">double-tank</a>)</li>
 							<li>Inverted double pendulum on a cart&emsp;(<a href="#main" onclick="openFrame('examples/double-pendulum-inverted.html');">double-pendulum-inverted</a> | <a href="#main" onclick="openFrame('examples/double-pendulum-inverted2.html');">double-pendulum-inverted2</a>)</li>
 							<li>Drug displacement&emsp;(<a href="#main" onclick="openFrame('examples/drug-displacement.html');">drug-displacement</a>)</li>
 							<li>Optimal steering for the Dubins car&emsp;(<a href="#main" onclick="openFrame('examples/dubins.html');">dubins</a>)</li>
 							<li>Controllability of the 2D heat equation&emsp;(<a href="#main" onclick="openFrame('examples/dycon-heat-equation-2D.html');">dycon-heat-equation-2D</a>)</li>
+							<li>Fractional heat equation&emsp;(<a href="#main" onclick="openFrame('examples/dycon-fractional-heat-a.html');">dycon-fractional-heat-a</a> | <a href="#main" onclick="openFrame('examples/dycon-fractional-heat-b.html');">dycon-fractional-heat-b</a> | <a href="#main" onclick="openFrame('examples/dycon-fractional-heat-c.html');">dycon-fractional-heat-c</a>)</li>
 							<li>Robot&emsp;(<a href="#main" onclick="openFrame('examples/dycon-robot.html');">dycon-robot</a>)</li>
 							<li>Rotors imbalance suppression by optimal control&emsp;(<a href="#main" onclick="openFrame('examples/dycon-rotor-balance.html');">dycon-rotor-balance</a>)</li>
-							<li>The Optimal control on the Kuramoto adaptive coupling model&emsp;(<a href="#main" onclick="openFrame('examples/dycon-kuramoto.html');">dycon-kuramoto</a>)</li>
+							<li>Simultaneous control&emsp;(<a href="#main" onclick="openFrame('examples/dycon-simultaneous-control.html');">dycon-simultaneous-control</a>)</li>
 							<li>The driver and the evader particles&emsp;(<a href="#main" onclick="openFrame('examples/dycon-driver-evader.html');">dycon-driver-evader</a>)</li>
+							<li>The optimal control of the Kuramoto adaptive coupling model&emsp;(<a href="#main" onclick="openFrame('examples/dycon-kuramoto.html');">dycon-kuramoto</a>)</li>
 							<li>Two-dimensional low-thrust Earth-to-Mars trajectory optimization&emsp;(<a href="#main" onclick="openFrame('examples/earth-to-mars-a.html');">earth-to-mars-a</a>)</li>
 							<li>Two-dimensional solar sail Earth-to-Mars trajectory optimization&emsp;(<a href="#main" onclick="openFrame('examples/earth-to-mars-b.html');">earth-to-mars-b</a>)</li>
 							<li>Electric Car&emsp;(<a href="#main" onclick="openFrame('examples/electric-car.html');">electric-car</a>)</li>
@@ -490,8 +506,10 @@
 							<li>Gravity Turn Maneuver&emsp;(<a href="#main" onclick="openFrame('examples/gravity.html');">gravity</a>)</li>
 							<li>Helicopter model&emsp;(<a href="#main" onclick="openFrame('examples/helicopter.html');">helicopter</a>)</li>
 							<li>An example from Herber&rsquo;s PhD thesis&emsp;(<a href="#main" onclick="openFrame('examples/herber.html');">herber</a>)</li>
+							<li>High-altitude long-endurance solar aircraft trajectories under station-keeping constraints&emsp;(<a href="#main" onclick="openFrame('examples/high-altitude-solar-aircraft-a.html');">high-altitude-solar-aircraft-a</a> | <a href="#main" onclick="openFrame('examples/high-altitude-solar-aircraft-b.html');">high-altitude-solar-aircraft-b</a> | <a href="#main" onclick="openFrame('examples/high-altitude-solar-aircraft-c.html');">high-altitude-solar-aircraft-c</a>)</li>
 							<li>Human Immunodeficiency Virus&emsp;(<a href="#main" onclick="openFrame('examples/hiv.html');">hiv</a>)</li>
 							<li>Huygens&rsquo;s pendulums&emsp;(<a href="#main" onclick="openFrame('examples/huygens.html');">huygens</a>)</li>
+							<li>A Hydropower Planning Model&emsp;(<a href="#main" onclick="openFrame('examples/hydro-planning-a.html');">hydro-planning-a</a> | <a href="#main" onclick="openFrame('examples/hydro-planning-b-sim-a.html');">hydro-planning-b-sim-a</a> | <a href="#main" onclick="openFrame('examples/hydro-planning-b-sim-b.html');">hydro-planning-b-sim-b</a> | <a href="#main" onclick="openFrame('examples/hydro-planning-b.html');">hydro-planning-b</a> | <a href="#main" onclick="openFrame('examples/hydro-planning-b2.html');">hydro-planning-b2</a>)</li>
 							<li>Innate Immune Response&emsp;(<a href="#main" onclick="openFrame('examples/immune-response.html');">immune-response</a>)</li>
 							<li>SEIR Model for the Control of Infectious Diseases&emsp;(<a href="#main" onclick="openFrame('examples/infectious-diseases.html');">infectious-diseases</a>)</li>
 							<li>A simple Lambert problem&emsp;(<a href="#main" onclick="openFrame('examples/lambert.html');">lambert</a>)</li>
@@ -508,12 +526,14 @@
 							<li>Optimal control of acute myeloid leukaemia&emsp;(<a href="#main" onclick="openFrame('examples/myeloid-leukaemia.html');">myeloid-leukaemia</a>)</li>
 							<li>Novak-Tyson model&emsp;(<a href="#main" onclick="openFrame('examples/novak-tyson.html');">novak-tyson</a>)</li>
 							<li>Optimal observer of a paper machine headbox&emsp;(<a href="#main" onclick="openFrame('examples/optimal-observer-paper.html');">optimal-observer-paper</a>)</li>
+							<li>A Portfolio Optimization Problem&emsp;(<a href="#main" onclick="openFrame('examples/pde-portfolio.html');">pde-portfolio</a>)</li>
 							<li>An optimal control problem arised in ecology&emsp;(<a href="#main" onclick="openFrame('examples/pde-ecology.html');">pde-ecology</a> | <a href="#main" onclick="openFrame('examples/pde-ecology2.html');">pde-ecology2</a>)</li>
 							<li>Burgers&rsquo; equation&emsp;(<a href="#main" onclick="openFrame('examples/pde-burgers.html');">pde-burgers</a>)</li>
 							<li>Heat Diffusion Process with Inequality&emsp;(<a href="#main" onclick="openFrame('examples/pde-heat-b.html');">pde-heat-b</a>)</li>
 							<li>Heat equation&emsp;(<a href="#main" onclick="openFrame('examples/pde-heat-a.html');">pde-heat-a</a> | <a href="#main" onclick="openFrame('examples/pde-heat-a2.html');">pde-heat-a2</a>)</li>
 							<li>Fed-batch Fermenter For Penicillin Production&emsp;(<a href="#main" onclick="openFrame('examples/penicillin.html');">penicillin</a>)</li>
 							<li>Production of Secreted Protein in a Fed-batch Reactor&emsp;(<a href="#main" onclick="openFrame('examples/protein-a.html');">protein-a</a> | <a href="#main" onclick="openFrame('examples/protein-b.html');">protein-b</a> | <a href="#main" onclick="openFrame('examples/protein-c.html');">protein-c</a>)</li>
+							<li>Trajectory Optimisation for a Quadrotor Helicopter&emsp;(<a href="#main" onclick="openFrame('examples/quadrotor-helicopter-a.html');">quadrotor-helicopter-a</a> | <a href="#main" onclick="openFrame('examples/quadrotor-helicopter-b.html');">quadrotor-helicopter-b</a>)</li>
 							<li>Reachable set&emsp;(<a href="#main" onclick="openFrame('examples/reachable-set-a.html');">reachable-set-a</a> | <a href="#main" onclick="openFrame('examples/reachable-set-b.html');">reachable-set-b</a> | <a href="#main" onclick="openFrame('examples/reachable-set-c.html');">reachable-set-c</a>)</li>
 							<li>A Continuous Tank Reactor&emsp;(<a href="#main" onclick="openFrame('examples/reactor-simul.html');">reactor-simul</a>)</li>
 							<li>A two reach river pollution control&emsp;(<a href="#main" onclick="openFrame('examples/river.html');">river</a>)</li>
@@ -521,6 +541,11 @@
 							<li>Rubella Disease&emsp;(<a href="#main" onclick="openFrame('examples/rubella.html');">rubella</a>)</li>
 							<li>Designing optimal spacecraft formations&emsp;(<a href="#main" onclick="openFrame('examples/satellite-swarms-a.html');">satellite-swarms-a</a> | <a href="#main" onclick="openFrame('examples/satellite-swarms-b.html');">satellite-swarms-b</a>)</li>
 							<li>Time optimal low-thrust planar transfer to a geosynchronous orbit&emsp;(<a href="#main" onclick="openFrame('examples/satellite.html');">satellite</a>)</li>
+							<li>A Portfolio Optimization Problem&emsp;(<a href="#main" onclick="openFrame('examples/sde-portfolio-scen.html');">sde-portfolio-scen</a> | <a href="#main" onclick="openFrame('examples/sde-portfolio.html');">sde-portfolio</a>)</li>
+							<li>A Stochastic Renewable Resource Valuation Problem&emsp;(<a href="#main" onclick="openFrame('examples/sde-forestry-lsmc.html');">sde-forestry-lsmc</a> | <a href="#main" onclick="openFrame('examples/sde-forestry.html');">sde-forestry</a>)</li>
+							<li>A simplified Merton&rsquo;s portfolio model&emsp;(<a href="#main" onclick="openFrame('examples/sde-merton.html');">sde-merton</a>)</li>
+							<li>Nonlinear-quadratic stochastic regulator&emsp;(<a href="#main" onclick="openFrame('examples/sde-nlqsr-a.html');">sde-nlqsr-a</a> | <a href="#main" onclick="openFrame('examples/sde-nlqsr-b.html');">sde-nlqsr-b</a> | <a href="#main" onclick="openFrame('examples/sde-nlqsr-b2.html');">sde-nlqsr-b2</a> | <a href="#main" onclick="openFrame('examples/sde-nlqsr-c.html');">sde-nlqsr-c</a> | <a href="#main" onclick="openFrame('examples/sde-nlqsr-d.html');">sde-nlqsr-d</a> | <a href="#main" onclick="openFrame('examples/sde-nlqsr-e.html');">sde-nlqsr-e</a>)</li>
+							<li>Standard linear-quadratic stochastic regulator&emsp;(<a href="#main" onclick="openFrame('examples/sde-lqsr.html');">sde-lqsr</a> | <a href="#main" onclick="openFrame('examples/sde-lqsr2.html');">sde-lqsr2</a>)</li>
 							<li>Integration with a singularity&emsp;(<a href="#main" onclick="openFrame('examples/singularity.html');">singularity</a>)</li>
 							<li>A nonlinear optimal control problem&emsp;(<a href="#main" onclick="openFrame('examples/skandari-a.html');">skandari-a</a> | <a href="#main" onclick="openFrame('examples/skandari-b.html');">skandari-b</a> | <a href="#main" onclick="openFrame('examples/skandari-c.html');">skandari-c</a>)</li>
 							<li>Closed loop control for a sliding mass system&emsp;(<a href="#main" onclick="openFrame('examples/sliding-mass.html');">sliding-mass</a>)</li>
@@ -530,7 +555,7 @@
 							<li>Minimum travel time between two sets&emsp;(<a href="#main" onclick="openFrame('examples/stackexchange-f2.html');">stackexchange-f2</a> | <a href="#main" onclick="openFrame('examples/stackexchange-f1.html');">stackexchange-f1</a>)</li>
 							<li>Optimal fishing plan&emsp;(<a href="#main" onclick="openFrame('examples/stackexchange-d.html');">stackexchange-d</a>)</li>
 							<li>System of ODEs with integral constraints&emsp;(<a href="#main" onclick="openFrame('examples/stackexchange-a.html');">stackexchange-a</a>)</li>
-							<li>UAV stochastic path planning problem&emsp;(<a href="#main" onclick="openFrame('examples/sto-uav.html');">sto-uav</a>)</li>
+							<li>UAV stochastic path planning problem&emsp;(<a href="#main" onclick="openFrame('examples/sto-uav-a.html');">sto-uav-a</a> | <a href="#main" onclick="openFrame('examples/sto-uav-b.html');">sto-uav-b</a> | <a href="#main" onclick="openFrame('examples/sto-uav-c.html');">sto-uav-c</a>)</li>
 							<li>UGV stochastic path planning problem&emsp;(<a href="#main" onclick="openFrame('examples/sto-ugv1.html');">sto-ugv1</a> | <a href="#main" onclick="openFrame('examples/sto-ugv2.html');">sto-ugv2</a>)</li>
 							<li>Timing a stoplight just right&emsp;(<a href="#main" onclick="openFrame('examples/stoplight.html');">stoplight</a> | <a href="#main" onclick="openFrame('examples/stoplight2.html');">stoplight2</a>)</li>
 							<li>Regulation of a synchronous machine&emsp;(<a href="#main" onclick="openFrame('examples/synchro-machine-a.html');">synchro-machine-a</a> | <a href="#main" onclick="openFrame('examples/synchro-machine-b.html');">synchro-machine-b</a> | <a href="#main" onclick="openFrame('examples/synchro-machine-c.html');">synchro-machine-c</a>)</li>
@@ -551,6 +576,7 @@
 							<h3 id="sim">DYNA example problems for the simulation of continuous time models</h3><!--sim-->
 							<ul>
 							<li>Simulation of a Jojo&emsp;(<a href="#main" onclick="openFrame('examples/sim-acado-jojo.html');">sim-acado-jojo</a>)</li>
+							<li>The Aizawa attractor&emsp;(<a href="#main" onclick="openFrame('examples/sim-aizawa.html');">sim-aizawa</a>)</li>
 							<li>The bouncing ball problem&emsp;(<a href="#main" onclick="openFrame('examples/sim-bball.html');">sim-bball</a>)</li>
 							<li>The non-linear Coupled Pendulum&emsp;(<a href="#main" onclick="openFrame('examples/sim-coupled-pendulum.html');">sim-coupled-pendulum</a>)</li>
 							<li>Implementation of a digital regulator&emsp;(<a href="#main" onclick="openFrame('examples/sim-digital-regulator-a.html');">sim-digital-regulator-a</a> | <a href="#main" onclick="openFrame('examples/sim-digital-regulator-a2.html');">sim-digital-regulator-a2</a> | <a href="#main" onclick="openFrame('examples/sim-digital-regulator-a3.html');">sim-digital-regulator-a3</a> | <a href="#main" onclick="openFrame('examples/sim-digital-regulator-b.html');">sim-digital-regulator-b</a> | <a href="#main" onclick="openFrame('examples/sim-digital-regulator-b2.html');">sim-digital-regulator-b2</a> | <a href="#main" onclick="openFrame('examples/sim-digital-regulator-c.html');">sim-digital-regulator-c</a> | <a href="#main" onclick="openFrame('examples/sim-digital-regulator-d.html');">sim-digital-regulator-d</a>)</li>
@@ -571,8 +597,11 @@
 							<li>Optimal Continuous Control of Primary Coolant Temperature in a Nuclear Plant&emsp;(<a href="#main" onclick="openFrame('examples/sim-pwr-d.html');">sim-pwr-d</a>)</li>
 							<li>Optimal Discrete Control of Primary Coolant Temperature in a Nuclear Plant&emsp;(<a href="#main" onclick="openFrame('examples/sim-pwr-e.html');">sim-pwr-e</a>)</li>
 							<li>Regulation of the Steam Generator of a Nuclear Power Plant&emsp;(<a href="#main" onclick="openFrame('examples/sim-pwr-a.html');">sim-pwr-a</a> | <a href="#main" onclick="openFrame('examples/sim-pwr-b.html');">sim-pwr-b</a> | <a href="#main" onclick="openFrame('examples/sim-pwr-c.html');">sim-pwr-c</a>)</li>
+							<li>The Rabinovich-Fabrikant equations&emsp;(<a href="#main" onclick="openFrame('examples/sim-rabinovich-fabrikant.html');">sim-rabinovich-fabrikant</a>)</li>
 							<li>Rigid Body problem&emsp;(<a href="#main" onclick="openFrame('examples/sim-rigid-body.html');">sim-rigid-body</a>)</li>
 							<li>The Rossler equations&emsp;(<a href="#main" onclick="openFrame('examples/sim-rossler.html');">sim-rossler</a>)</li>
+							<li>A Mean-Reverting Square-Root Process&emsp;(<a href="#main" onclick="openFrame('examples/sim-sde-mrsrp.html');">sim-sde-mrsrp</a>)</li>
+							<li>Consensus-based global optimization&emsp;(<a href="#main" onclick="openFrame('examples/sim-sde-gloptim-a.html');">sim-sde-gloptim-a</a> | <a href="#main" onclick="openFrame('examples/sim-sde-gloptim-b.html');">sim-sde-gloptim-b</a> | <a href="#main" onclick="openFrame('examples/sim-sde-gloptim-c.html');">sim-sde-gloptim-c</a>)</li>
 							<li>Simple stochastic differential equation&emsp;(<a href="#main" onclick="openFrame('examples/sim-sde-wiener.html');">sim-sde-wiener</a>)</li>
 							<li>The London Brent crude oil spot price&emsp;(<a href="#main" onclick="openFrame('examples/sim-sde-london-brent.html');">sim-sde-london-brent</a>)</li>
 							<li>The NBP natural gas spot price&emsp;(<a href="#main" onclick="openFrame('examples/sim-sde-nbp.html');">sim-sde-nbp</a>)</li>
@@ -591,6 +620,7 @@
 							<li>Digital regulator for a system&emsp;(<a href="#main" onclick="openFrame('examples/disc-digital-regulator-a.html');">disc-digital-regulator-a</a> | <a href="#main" onclick="openFrame('examples/disc-digital-regulator-a2.html');">disc-digital-regulator-a2</a> | <a href="#main" onclick="openFrame('examples/disc-digital-regulator-b.html');">disc-digital-regulator-b</a> | <a href="#main" onclick="openFrame('examples/disc-digital-regulator-b2.html');">disc-digital-regulator-b2</a>)</li>
 							<li>Simple discrete stochastic equation&emsp;(<a href="#main" onclick="openFrame('examples/disc-dse-wiener.html');">disc-dse-wiener</a>)</li>
 							<li>A two reach river pollution control&emsp;(<a href="#main" onclick="openFrame('examples/disc-river.html');">disc-river</a>)</li>
+							<li>Tinkerbell map&emsp;(<a href="#main" onclick="openFrame('examples/disc-tinkerbell.html');">disc-tinkerbell</a>)</li>
 							</ul>
 
 							<h3 id="tutor">DYNA tutorial library</h3><!--tutor-->
@@ -626,7 +656,7 @@
 							Computers and Chemical Engineering, 70:133-148, 2014.
 							<li id="r_bocop">F. Bonnans, P. Martinon, V. Gr&eacute;lard,
 							<em>Bocop - A collection of examples</em>,
-							[Research Report] RR-8053, INRIA. 2012. (<a href="https://hal.inria.fr/hal-00726992" target="_blank">hal-00726992</a>)
+							[Research Report] RR-8053, INRIA, 2012. (<a href="https://hal.inria.fr/hal-00726992" target="_blank">hal-00726992</a>)
 							<li id="r_cops">E.D. Dolan, J.J. Mor&eacute; and T.S. Munson,
 							<em>Benchmarking Optimization Software with COPS 3.0</em>,
 							Argonne National Laboratory, Technical Report ANL/MCS-TM-273, February 2004.

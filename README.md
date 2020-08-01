@@ -9,7 +9,7 @@ Optimal control problems arise in many exciting applications in science, economy
 engineering. Examples are trajectory optimization in robotics, aerospace engineering
 (ascent/descent/emergency trajectories, orbit transfers...), vehicle simulation (avoidance
 trajectories, virtual test-driving, chassis control...), controller design (Linear quadratic
-regulator, model- predictive control...), process engineering (chemical processes...),
+regulator, model-predictive control...), process engineering (chemical processes...),
 fishing strategies, biology, etc.
 
 The General Algebraic Modeling System ([GAMS](http://www.gams.com)) is a high-level modeling

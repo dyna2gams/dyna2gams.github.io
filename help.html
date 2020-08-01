@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.3 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -24,6 +24,8 @@ pre.syntax {border: 1px solid #C4CFE5; background-color: #FBFCFD; padding: 4px 6
 <li>L{..}	a repetition, one or more times, delimited by a space
 <li>Lc{..}	a repetition, one or more times, delimited by the character "c"
 <li>[..]	optional
+<li><[><]>	the left and right square bracket characters
+<li><|>		the vertical bar character
 </ul>
 
 <!--chm bhhc -->
@@ -56,7 +58,8 @@ pre.syntax {border: 1px solid #C4CFE5; background-color: #FBFCFD; padding: 4px 6
 <li><a href="#mac">Macros</a></li>
 <li><a href="#gms">GAMS code</a></li>
 <li><a href="#gpl">Gnuplot code</a></li>
-<li><a href="#gdx">Save/load to/from GDX files</a></li>
+<li><a href="#put">Put to text files</a></li>
+<li><a href="#gdx">Save/load to/from a GDX file</a></li>
 <li><a href="#ovs">Optimization vs. Simulation</a></li>
 </ul>
 <p>
@@ -83,7 +86,7 @@ pre.syntax {border: 1px solid #C4CFE5; background-color: #FBFCFD; padding: 4px 6
 <ul>
 <li><a href="#fini">DYNA-CONFIG.INI</a></li>
 <li><a href="#fcmd">Windows .CMD Files</a></li>
-<li><a href="#fbat">GAMS $BATINCLUDE Files</a></li>
+<li><a href="#fbat">GAMS $LIBINCLUDE Files</a></li>
 </ul>
 </ol>
 
@@ -141,6 +144,9 @@ declares an object must appear before the sections that use the said object.
   <font color="#39CCCC">FINAL-TIME-SYMBOL</font>		= &lt;ident&gt;				<font color="#808080"><i>tf</i></font>
   <font color="#39CCCC">GAMS-OPTION</font>			= L|{&lt;option&gt;=&lt;option-value&gt;}
   <font color="#39CCCC">GAMS-OPTIONS</font>			= L|{&lt;option&gt;=&lt;option-value&gt;}
+  <font color="#39CCCC">INCLUDE-LIBRARIES</font>		= Chebyshev | Chebyshev-Smolyak | Legendre | Hermite | Tauchen
+  <font color="#39CCCC">INCLUDE-LIBRARY</font>		= Chebyshev | Chebyshev-Smolyak | Legendre | Hermite | Tauchen
+  <font color="#39CCCC">INITIAL-TIME-SYMBOL</font>		= &lt;ident&gt;				<font color="#808080"><i>""</i></font>
   <font color="#39CCCC">ITERATIONS-NUMBER</font> | <font color="#39CCCC">IN</font>	= &lt;number&gt;				<font color="#808080"><i>default-iterations-number</i></font>
   <font color="#39CCCC">MODEL-NAME</font>			= &lt;ident&gt;				<font color="#808080"><i>input file name</i></font>
   <font color="#39CCCC">MODEL-OPTION</font>			= L|{&lt;option&gt;=&lt;option-value&gt;}
@@ -161,7 +167,7 @@ declares an object must appear before the sections that use the said object.
   <font color="#39CCCC">SUBSTITUTE-SYMBOL</font>		= L|{isymbol&gt;osymbol}
   <font color="#39CCCC">SUBSTITUTE-SYMBOLS</font>		= L|{isymbol&gt;osymbol}
   <font color="#39CCCC">TABULATION-KNOTS-NUMBER</font>	= &lt;number&gt;				<font color="#808080"><i>256</i></font>
-  <font color="#39CCCC">TIME-MODEL</font>			= Continuous | Discrete			<font color="#808080"><i>Continuous</i></font>
+  <font color="#39CCCC">TIME-MODEL</font>			= Continuous | Discrete | None		<font color="#808080"><i>Continuous</i></font>
   <font color="#39CCCC">TIME-STEPS-NUMBER</font> | <font color="#39CCCC">N</font>		= &lt;number&gt;				<font color="#808080"><i>default-time_steps-number</i></font>
   <font color="#39CCCC">TRANSFER-FUNCTION-SYNTAX</font>	= EQU | SIM				<font color="#808080"><i>EQU</i></font>
   <font color="#39CCCC">VARIABLE</font>			= L|{&lt;var&gt;=&lt;string&gt;}
@@ -211,17 +217,30 @@ The degree of the polynomial is deduced from the number of coefficients.
 <h2 id="set" style="color:#7EAEAC">Sets</h2>
 <pre class="syntax">
 <font color="red"><b>set:</b></font>
-  &lt;<font color="#3D9970">set</font>&gt;[(L,{&lt;<font color="#3D9970">set</font>&gt;})] = [(|/] &lt;ident&gt;:&lt;ident&gt; | &lt;ident&gt;*&lt;ident&gt; | L,{&lt;ident&gt;} [)|/]
+  &lt;<font color="#3D9970">set</font>&gt;[(L,{&lt;<font color="#3D9970">set</font>&gt;})] = [&lt;l-delim&gt;] &lt;ident&gt;:&lt;ident&gt; | &lt;ident&gt;*&lt;ident&gt; [&lt;r-delim&gt;]
+  &lt;<font color="#3D9970">set</font>&gt;[(L,{&lt;<font color="#3D9970">set</font>&gt;})] = &lt;l-delim&gt; L,{&lt;ident&gt;|&lt;ident&gt;:&lt;ident&gt;|&lt;ident&gt;*&lt;ident&gt;} &lt;r-delim&gt;
+  &lt;<font color="#3D9970">set</font>&gt;[(L,{&lt;<font color="#3D9970">set</font>&gt;})][$&lt;cond&gt;] = &lt;exp&gt;
   <font color="#8A2BE2">alias</font>(L,{&lt;<font color="#3D9970">set</font>&gt;},&lt;<font color="#3D9970">set</font>&gt;)	<font color="#808080"><i>Note: the rightmost &lt;set&gt; must have been declared already</i></font>
+
+&lt;l-delim&gt; :- ( | &lt;[&gt; | / | &lt;|&gt;
+&lt;r-delim&gt; :- ) | &lt;]&gt; | / | &lt;|&gt;
 </pre>
 
 <!------------------------------------------------------------->
 <h2 id="par" style="color:#7EAEAC">Time-independent parameters</h2>
 <pre class="syntax">
 <font color="red"><b>par:</b></font>
-  &lt;par&gt; [= &lt;exp&gt; | / L,{L.{&lt;ident&gt;} &lt;val&gt;} / ]
+  &lt;par&gt; [= &lt;exp&gt; ]
+  &lt;par&gt; {+|-|*|/}= &lt;exp&gt;						<font color="#808080"><i>Compound assignment</i></font>
+  &lt;par&gt; = &lt;l-delim&gt; L,{L.{&lt;ident&gt;} &lt;val&gt;} &lt;r-delim&gt;			<font color="#808080"><i>Gams parameter format</i></font>
+  &lt;par&gt; = &lt;ll-delim&gt; [&lt;EOL&gt;] &lt;Gams-<font color="#3D9970">table</font>-data&gt; [&lt;EOL&gt;] &lt;rr-delim&gt;	<font color="#808080"><i>Gams tabular format</i></font>
+  &lt;par&gt; = &lt;[&gt; L,{L{&lt;exp&gt;}} &lt;]&gt;						<font color="#808080"><i>Malab-like syntax (with comma instead of semicolon)</i></font>
 
 &lt;exp&gt; :- &lt;val&gt; | &lt;par&gt; | &lt;expression-thereof&gt;
+&lt;l-delim&gt; :- / | &lt;|&gt;
+&lt;r-delim&gt; :- / | &lt;|&gt;
+&lt;ll-delim&gt; :- // | &lt;|&gt;&lt;|&gt;
+&lt;rr-delim&gt; :- // | &lt;|&gt;&lt;|&gt;
 </pre>
 
 <!------------------------------------------------------------->
@@ -229,6 +248,7 @@ The degree of the polynomial is deduced from the number of coefficients.
 <pre class="syntax">
 <font color="red"><b>tpa:</b></font>
   &lt;tpa&gt; [= &lt;tex&gt; ]
+  &lt;tpa&gt; {+|-|*|/}= &lt;tex&gt;						<font color="#808080"><i>Compound assignment</i></font>
 
 &lt;tex&gt; :- &lt;val&gt; | &lt;exp&gt; | &lt;tpa&gt; | &lt;expression-thereof&gt;
 </pre>
@@ -411,14 +431,18 @@ where
 <font color="red"><b>equ:</b></font>
   [[&lt;equ&gt;][$&lt;condition&gt;]..] &lt;dyn&gt;&acute; &lt;relational-operator&gt; &lt;expression&gt;
   [[&lt;equ&gt;][$&lt;condition&gt;]..] &lt;expression&gt; &lt;relational-operator&gt; &lt;expression&gt;
-  [[&lt;equ&gt;][$&lt;condition&gt;]..] &lt;expression&gt; :: &lt;type&gt;[(&lt;exp&gt;)]
   [[&lt;equ&gt;][$&lt;condition&gt;]..] &lt;expression&gt; &lt;= &lt;expression&gt; &lt;= &lt;expression&gt;
+  [[&lt;equ&gt;][$&lt;condition&gt;]..] &lt;expression&gt; :: &lt;type&gt;[(&lt;exp&gt;)]
+  &lt;tpa&gt;[$&lt;condition&gt;] ~~ &lt;stoch-cast&gt;
   <font color="#8A2BE2">@tfm</font> L,{&lt;tfm-statement&gt;}				<font color="#808080"><i>Transfer function model (see <a href="#tfm">tfm section</a>)</i></font>
   <font color="#8A2BE2">@pid</font> L,{&lt;pid-statement&gt;}				<font color="#808080"><i>Filtered PID transfer function model</i></font>
   <font color="#8A2BE2">@linkphases</font> [&lt;phase-<font color="#3D9970">set</font>&gt; [-x L{&lt;dyn&gt;}]]		<font color="#808080"><i>Link dynamic variables across phases. -x means variables to exclude.</i></font>
 
 &lt;relational-operator&gt; :- &lt;= | == | &gt;=
+
 &lt;type&gt; :- <font color="#7FDBFF">spline3</font>[(arg)] | <font color="#7FDBFF">constant</font>[(arg)]		<font color="#808080"><i>Default value for arg is -3 i.e. a sampling rate of 1 out of 3 knots</i></font>
+
+&lt;stoch-cast&gt; :- <font color="#7FDBFF">Wiener</font> | <font color="#7FDBFF">PJump</font>(arg) | <font color="#7FDBFF">NPJump</font>(arg1,arg2) | <font color="#7FDBFF">EPJump</font>(arg1,arg2)
 
 &lt;pid-statement&gt; :-					<font color="#808080"><i>PID regulator K * (1 + 1/(s*Ti) + s*Td/(s*Td*Theta+1))</i></font>
   K = &lt;val&gt; | &lt;par&gt; | &lt;var&gt;
@@ -463,7 +487,7 @@ a way that all the variables listed on the right of the assignment operator (:=)
 <font color="red"><b>sim:</b></font>
   [[$&lt;condition&gt;]..] &lt;dyn&gt;&acute; := &lt;expression&gt;
   [[$&lt;condition&gt;]..] &lt;dyn&gt; := &lt;expression&gt; [:+ L{&lt;dyn&gt;] [:- L{&lt;dyn&gt;}]
-  [[$&lt;condition&gt;]..] &lt;dyn&gt; :: &lt;stoch-cast&gt;
+  &lt;tpa&gt;[$&lt;condition&gt;] ~~ &lt;stoch-cast&gt;
   <font color="#8A2BE2">@tfm</font> L,{&lt;tfm-statement&gt;}				<font color="#808080"><i>Transfer function model</i></font>
   <font color="#8A2BE2">@pid</font> L,{&lt;pid-statement&gt;}				<font color="#808080"><i>PID function model</i></font>
   <font color="#8A2BE2">@dcm</font> L,{&lt;dcm-statement&gt;}				<font color="#808080"><i>Digital control model (for continuous model only)</i></font>
@@ -492,12 +516,12 @@ when all the dependent variables are known.
 <p>Objective of optimization (when 'equ:' is present)
 <pre class="syntax">
 <font color="red"><b>obj:</b></font>
-  <font color="#8A2BE2">minimize</font>|<font color="#8A2BE2">maximize</font> &lt;expression&gt; <font color="#8A2BE2">using</font> &lt;modeltype&gt; [<font color="#8A2BE2">with</font> L|{&lt;solver&gt;}]
+  <font color="#8A2BE2">minimize</font>|<font color="#8A2BE2">maximize</font> &lt;expression&gt; <font color="#8A2BE2">using</font> &lt;modeltype&gt; [<font color="#8A2BE2">with</font> {NONE | L|{&lt;solver&gt;}}]
 
-&lt;modeltype&gt; :- NONE|DNLP|LP|MINLP|MIP|MIQCP|NLP|QCP|RMINLP|RMIP|RMIQCP
-&lt;solver&gt; :- CPLEX|GUROBI|CONOPT|...			<font color="#808080"><i>See GAMS documentation for a complete list</i></font>
+&lt;modeltype&gt; :- DNLP|EMP|LP|MINLP|MIP|MIQCP|NLP|QCP|RMINLP|RMIP|RMIQCP
+&lt;solver&gt; :- CONOPT|IPOPT|KNITRO|...			<font color="#808080"><i>See GAMS documentation for an exhaustive list</i></font>
 </pre>
-<p>NONE suppress the solve statement.  The user has to solve the model in the gms section.
+<p>NONE suppresses the solve statement.  The user has to optimize the model in the gms section.
 
 <!------------------------------------------------------------->
 <h2 id="mac" style="color:#7EAEAC">Macros</h2>
@@ -532,7 +556,7 @@ when all the dependent variables are known.
   <font color="#8A2BE2">@setlimf</font> L,{&lt;setlim-statement&gt;};			<font color="#808080"><i>Define lower and upper bound on t=tf</i></font>
   <font color="#8A2BE2">@solve</font> [<font color="#8A2BE2">using</font> &lt;modeltype&gt;] [<font color="#8A2BE2">with</font> L|{&lt;solver&gt;}];	<font color="#808080"><i>Reoptimize the model with new type or new solver</i></font>
   <font color="#8A2BE2">@solveloop</font> L,{&lt;solveloop-statement&gt;};			<font color="#808080"><i>Iterative solve after filtering of some variables</i></font>
-  <font color="#8A2BE2">@tpa</font> &lt;tpa&gt; [= &lt;tex&gt;];					<font color="#808080"><i>Declare and instantiate time-dependent parameter</i></font>
+  <font color="#8A2BE2">@tpa</font> &lt;tpa&gt; [= &lt;tex&gt;];					<font color="#808080"><i>Declare and instantiate a time-dependent parameter</i></font>
   <font color="#8A2BE2">@verbatim</font> &lt;gams-statement&gt;;				<font color="#808080"><i>Instruct DYNA to keep statement untouched</i></font>
 
 &lt;seekm-statement&gt; :-
@@ -584,7 +608,24 @@ when all the dependent variables are known.
 <p>DYNA will create an output file with the given or generated statements but will not dynamically invoke Gnuplot.
 
 <!------------------------------------------------------------->
-<h2 id="gdx" style="color:#7EAEAC">Save/load to/from GDX files</h2>
+<h2 id="put" style="color:#7EAEAC">Put to text files</h2>
+<p>The PUT section writes its content to text files.  Quoted strings are interpreted as follows:
+<pre class="syntax">
+<font color="red"><b>put:</b></font>
+  "&lt;file&gt;&lt;[&lt;]"					<font color="#808080"><i>Write or append following lines to &lt;file&gt;</i></font>
+  "&lt;[&lt;]"					<font color="#808080"><i>Close current file</i></font>
+  "&lt;var&gt;[&lt;index&gt;][']:m:n[&lt;c&gt;]"			<font color="#808080"><i>Write the value of &lt;var&gt; with GAMS format :m:n.</i></font>
+							<font color="#808080"><i>&lt;c&gt; is a one-character row delimiter (space by default)</i></font>
+  "{&lt;file&gt;|*}&lt;[&lt;][+]&lt;var&gt;[&lt;index&gt;]"		<font color="#808080"><i>Write or append &lt;var&gt; values to &lt;file&gt; in csv format</i></font>
+							<font color="#808080"><i>* means previous csv &lt;file&gt;</i></font>
+							<font color="#808080"><i>+ requires adding labels for &lt;var&gt; name and indices</i></font>
+  "`&lt;gams-code&gt;`"				<font color="#808080"><i>Genuine GAMS code</i></font>
+  ""						<font color="#808080"><i>Quotation mark character</i></font>
+  <font color="#8A2BE2">@verbatim</font>					<font color="#808080"><i>No prior DYNA translation of remaining string on this line</i></font>
+</pre>
+
+<!------------------------------------------------------------->
+<h2 id="gdx" style="color:#7EAEAC">Save/load to/from a GDX file</h2>
 <p>DYNA uses GAMS GDX files to save data or to load data from a previous run.
 By default, all the static and dynamic variables are involved in this process.
 The user can list here additional objects such time-dependent parameters, equations or variables created in a GAMS code section.
@@ -606,30 +647,32 @@ The table here below sets forth which section is valid in which mode.
 <p>
 <table id="tablesyntax">
 <tr><th>Sections</th>	<th>Optimization</th>	<th>Simulation</th></tr>
-<tr><td>rem:</td>		<td>Yes</td>			<td>Yes</td></tr>
-<tr><td>###:</td>		<td>Yes</td>			<td>Yes</td></tr>
-<tr><td>run:</td>		<td>Yes</td>			<td>Yes</td></tr>
-<tr><td>fun:</td>		<td>Yes</td>			<td>Yes</td></tr>
-<tr><td>set:</td>		<td>Yes</td>			<td>Yes</td></tr>
-<tr><td>par:</td>		<td>Yes</td>			<td>Yes</td></tr>
-<tr><td>tpa:</td>		<td>Yes</td>			<td>Yes</td></tr>
-<tr><td>var:</td>		<td>Yes</td>			<td>-</td></tr>
-<tr><td>dyn:</td>		<td>Yes</td>			<td>Yes</td></tr>
-<tr><td>obs:</td>		<td>Yes</td>			<td>-</td></tr>
-<tr><td>lim:</td>		<td>Yes</td>			<td>-</td></tr>
-<tr><td>t=t{0,f}:</td>	<td>Yes</td>			<td>-</td></tr>
-<tr><td>ini:</td>		<td>Yes</td>			<td>Yes(*)</td></tr>
-<tr><td>sca:</td>		<td>Yes</td>			<td>-</td></tr>
-<tr><td>exp:</td>		<td>Yes</td>			<td>Yes</td></tr>
-<tr><td>tfm:</td>		<td>Yes</td>			<td>Yes</td></tr>
-<tr><td>mpc:</td>		<td>-</td>			<td>Yes</td></tr>
-<tr><td>equ:</td>		<td>Yes</td>			<td>-</td></tr>
-<tr><td>sim:</td>		<td>-</td>				<td>Yes</td></tr>
-<tr><td>obj:</td>		<td>Yes</td>			<td>-</td></tr>
-<tr><td>mac:</td>		<td>Yes</td>			<td>Yes</td></tr>
-<tr><td>gms:</td>		<td>Yes</td>			<td>Yes</td></tr>
-<tr><td>gpl:</td>		<td>Yes</td>			<td>Yes</td></tr>
-<tr><td>gdx:</td>		<td>Yes</td>			<td>-</td></tr>
+<tr><td>rem:</td>	<td>Yes</td>		<td>Yes</td></tr>
+<tr><td>###:</td>	<td>Yes</td>		<td>Yes</td></tr>
+<tr><td>run:</td>	<td>Yes</td>		<td>Yes</td></tr>
+<tr><td>fun:</td>	<td>Yes</td>		<td>Yes</td></tr>
+<tr><td>set:</td>	<td>Yes</td>		<td>Yes</td></tr>
+<tr><td>par:</td>	<td>Yes</td>		<td>Yes</td></tr>
+<tr><td>tpa:</td>	<td>Yes</td>		<td>Yes</td></tr>
+<tr><td>var:</td>	<td>Yes</td>		<td>-</td></tr>
+<tr><td>dyn:</td>	<td>Yes</td>		<td>Yes</td></tr>
+<tr><td>obs:</td>	<td>Yes</td>		<td>-</td></tr>
+<tr><td>lim:</td>	<td>Yes</td>		<td>-</td></tr>
+<tr><td>t=t{0,f}:</td>	<td>Yes</td>		<td>-</td></tr>
+<tr><td>k=k{0,f}:</td>	<td>Yes</td>		<td>-</td></tr>
+<tr><td>ini:</td>	<td>Yes</td>		<td>Yes(*)</td></tr>
+<tr><td>sca:</td>	<td>Yes</td>		<td>-</td></tr>
+<tr><td>exp:</td>	<td>Yes</td>		<td>Yes</td></tr>
+<tr><td>tfm:</td>	<td>Yes</td>		<td>Yes</td></tr>
+<tr><td>mpc:</td>	<td>-</td>		<td>Yes</td></tr>
+<tr><td>equ:</td>	<td>Yes</td>		<td>-</td></tr>
+<tr><td>sim:</td>	<td>-</td>		<td>Yes</td></tr>
+<tr><td>obj:</td>	<td>Yes</td>		<td>-</td></tr>
+<tr><td>mac:</td>	<td>Yes</td>		<td>Yes</td></tr>
+<tr><td>gms:</td>	<td>Yes</td>		<td>Yes</td></tr>
+<tr><td>gpl:</td>	<td>Yes</td>		<td>Yes</td></tr>
+<tr><td>put:</td>	<td>Yes</td>		<td>Yes</td></tr>
+<tr><td>gdx:</td>	<td>Yes</td>		<td>-</td></tr>
 </table>
 <p>(*) e.g., to define the control or the disturbance variables.
 
@@ -647,20 +690,20 @@ $&lt;gams-$-directive&gt;
 <!------------------------------------------------------------->
 <h2 id="dcd" style="color:#7EAEAC">DYNA compiler directives</h2>
 <pre class="syntax">
-<font color="#FF4500">@case</font> &lt;var&gt;
-<font color="#FF4500">@cmd</font> &lt;line&gt;
-<font color="#FF4500">@define</font> &lt;var&gt;
-<font color="#FF4500">@dset</font> &lt;var&gt;[=]&lt;token&gt;
-<font color="#FF4500">@echo</font> &lt;line&gt;
-<font color="#FF4500">@else</font>
-<font color="#FF4500">@endcase</font>
-<font color="#FF4500">@endif</font>
-<font color="#FF4500">@ifdef</font> L{&lt;var&gt;}
-<font color="#FF4500">@ifndef</font> L{&lt;var&gt;}
-<font color="#FF4500">@macro</font> &lt;name&gt;[(L,{&lt;argument&gt;})] &lt;expression&gt;
-<font color="#FF4500">@otherwise</font>
-<font color="#FF4500">@set</font> &lt;var&gt;[=]&lt;token&gt;
-<font color="#FF4500">@when</font> L{[,]&lt;token&gt;}
+<font color="#8B0000">@case</font> &lt;var&gt;
+<font color="#8B0000">@cmd</font> &lt;line&gt;
+<font color="#8B0000">@define</font> &lt;var&gt;
+<font color="#8B0000">@dset</font> &lt;var&gt;[=]&lt;token&gt;
+<font color="#8B0000">@echo</font> &lt;line&gt;
+<font color="#8B0000">@else</font>
+<font color="#8B0000">@endcase</font>
+<font color="#8B0000">@endif</font>
+<font color="#8B0000">@ifdef</font> L{&lt;var&gt;}
+<font color="#8B0000">@ifndef</font> L{&lt;var&gt;}
+<font color="#8B0000">@macro</font> &lt;name&gt;[(L,{&lt;argument&gt;})] &lt;expression&gt;
+<font color="#8B0000">@otherwise</font>
+<font color="#8B0000">@set</font> &lt;var&gt;[=]&lt;token&gt;
+<font color="#8B0000">@when</font> L{[,]&lt;token&gt;}
 </pre>
 <p>The @ sign must be in column one.
 
@@ -698,9 +741,9 @@ $&lt;gams-$-directive&gt;
 Their name is not case sensitive.
 Here follow the variables that are predefined.
 <pre class="syntax">
-<font color="#FF4500">@HOME@</font>
-<font color="#FF4500">@TITLE@</font>
-<font color="#FF4500">@IFNAM@</font>
+<font color="#8B0000">@HOME@</font>
+<font color="#8B0000">@TITLE@</font>
+<font color="#8B0000">@IFNAM@</font>
 </pre>
 
 <!------------------------------------------------------------->
@@ -779,7 +822,7 @@ x{1 2 4} = x{3 5 6}
 &sect;	<font color="#808080"><i>indicates a tabulated function</i></font>
 &acute;	<font color="#808080"><i>indicates derivative</i></font>
 ^	<font color="#808080"><i>is translated as **</i></font>
-¨|	<font color="#808080"><i>is translated as ^|</i></font>
+¨	<font color="#808080"><i>is translated as ^</i></font>
 </pre>
 
 <!------------------------------------------------------------->
@@ -792,6 +835,7 @@ x{1 2 4} = x{3 5 6}
 <font color="#0074D9">dyna_irk</font>
 <font color="#0074D9">dyna_krd</font>
 <font color="#0074D9">dyna_kri</font>
+<font color="#0074D9">dyna_pi</font>		<font color="#808080"><i>Pi</i></font>
 </pre>
 <p>Note that Pi (\(\pi\)) is predefined in GAMS.
 
@@ -807,14 +851,40 @@ x{1 2 4} = x{3 5 6}
 <h2 id="pvar" style="color:#7EAEAC">Predefined variables</h2>
 <p>Predefined variables are implemented as GAMS macros or variables.
 <pre class="syntax">
-<font color="#0074D9">dTime</font>
-<font color="#0074D9">Time</font>
+<font color="#0074D9">Time</font>		<font color="#808080"><i>The independent integration variable</i></font>
+<font color="#0074D9">dTime</font>		<font color="#808080"><i>Increment of the independent variable in <a href="#equ">equ section</a></i></font>
+<font color="#0074D9">SimDT_</font>		<font color="#808080"><i>Increment of the independent variable in <a href="#sim">sim section</a></i></font>
 <font color="#0074D9">dyna_ksi</font>	<font color="#808080"><i>Same as <font color="#8A2BE2">%OBJECTIVE%</font>, which reads better</i></font>
 </pre>
 
 <!------------------------------------------------------------->
 <h2 id="pfun" style="color:#7EAEAC">Predefined functions</h2>
 <p>Predefined functions are implemented as GAMS macros.
+Here follows the list of function classes.
+<ul>
+<li><a href="#tirf">Time related functions</a></li>
+<li><a href="#frac">Fractional derivative</a></li>
+<li><a href="#povd">Polynomials of various degrees</a></li>
+<li><a href="#pirf">Parameters identification related functions</a></li>
+<li><a href="#corf">Coordinates related functions</a></li>
+<li><a href="#trrf">Trigonometric related functions</a></li>
+<li><a href="#wafu">Waveform functions</a></li>
+<li><a href="#mifu">Miscellaneous functions</a></li>
+<li><a href="#1dls">1-dimension interpolation - linear smooth</a></li>
+<li><a href="#1dln">1-dimension interpolation - linear non-smooth</a></li>
+<li><a href="#1dcs">1-dimension interpolation - cubic spline smooth</a></li>
+<li><a href="#1dcn">1-dimension interpolation - cubic spline non-smooth</a></li>
+<li><a href="#1dqs">1-dimension interpolation - quintic spline smooth</a></li>
+<li><a href="#1dqn">1-dimension interpolation - quintic spline non-smooth</a></li>
+<li><a href="#2dls">2-dimension interpolation - linear smooth</a></li>
+<li><a href="#2dln">2-dimension interpolation - linear non-smooth</a></li>
+<li><a href="#tiin">Time interpolation</a></li>
+<li><a href="#chel">Chebyshev library</a></li>
+<li><a href="#chsl">Chebyshev-Smolyak library</a></li>
+<li><a href="#legl">Legendre library</a></li>
+<li><a href="#herl">Hermite library</a></li>
+<li><a href="#taul">Tauchen library</a></li>
+</ul>
 <h4 id="tirf">Time related functions</h4>
 <pre class="syntax">
 <font color="#0074D9">AllTimeMax</font>(X)
@@ -977,6 +1047,124 @@ x{1 2 4} = x{3 5 6}
 <font color="#0074D9">TInterpDot1</font>(x,i,tabf,tabx)
 <font color="#0074D9">TInterpDot2</font>(x,i,tab,ff,xx)
 </pre>
+<h4 id="chel">Chebyshev library</h4>
+<pre class="syntax">
+<font color="#0074D9">ChebyshevQN</font>(s)
+<font color="#0074D9">ChebyshevQW</font>(s)
+<font color="#0074D9">ChebyshevT1</font>(x)
+<font color="#0074D9">ChebyshevT2</font>(x)
+<font color="#0074D9">ChebyshevT3</font>(x)
+<font color="#0074D9">ChebyshevT4</font>(x)
+<font color="#0074D9">ChebyshevT5</font>(x)
+<font color="#0074D9">ChebyshevT6</font>(x)
+<font color="#0074D9">ChebyshevT7</font>(x)
+<font color="#0074D9">ChebyshevT8</font>(x)
+<font color="#0074D9">ChebyshevT9</font>(x)
+<font color="#0074D9">dChebyshevT1</font>(x)
+<font color="#0074D9">dChebyshevT2</font>(x)
+<font color="#0074D9">dChebyshevT3</font>(x)
+<font color="#0074D9">dChebyshevT4</font>(x)
+<font color="#0074D9">dChebyshevT5</font>(x)
+<font color="#0074D9">dChebyshevT6</font>(x)
+<font color="#0074D9">dChebyshevT7</font>(x)
+<font color="#0074D9">dChebyshevT8</font>(x)
+<font color="#0074D9">dChebyshevT9</font>(x)
+<font color="#0074D9">Chebyshev1</font>(x,a1,a0)
+<font color="#0074D9">Chebyshev2</font>(x,a2,a1,a0)
+<font color="#0074D9">Chebyshev3</font>(x,a3,a2,a1,a0)
+<font color="#0074D9">Chebyshev4</font>(x,a4,a3,a2,a1,a0)
+<font color="#0074D9">Chebyshev5</font>(x,a5,a4,a3,a2,a1,a0)
+<font color="#0074D9">Chebyshev6</font>(x,a6,a5,a4,a3,a2,a1,a0)
+<font color="#0074D9">Chebyshev7</font>(x,a7,a6,a5,a4,a3,a2,a1,a0)
+<font color="#0074D9">Chebyshev8</font>(x,a8,a7,a6,a5,a4,a3,a2,a1,a0)
+<font color="#0074D9">Chebyshev9</font>(x,a9,a8,a7,a6,a5,a4,a3,a2,a1,a0)
+<font color="#0074D9">dChebyshev1</font>(x,a1,a0)
+<font color="#0074D9">dChebyshev2</font>(x,a2,a1,a0)
+<font color="#0074D9">dChebyshev3</font>(x,a3,a2,a1,a0)
+<font color="#0074D9">dChebyshev4</font>(x,a4,a3,a2,a1,a0)
+<font color="#0074D9">dChebyshev5</font>(x,a5,a4,a3,a2,a1,a0)
+<font color="#0074D9">dChebyshev6</font>(x,a6,a5,a4,a3,a2,a1,a0)
+<font color="#0074D9">dChebyshev7</font>(x,a7,a6,a5,a4,a3,a2,a1,a0)
+<font color="#0074D9">dChebyshev8</font>(x,a8,a7,a6,a5,a4,a3,a2,a1,a0)
+<font color="#0074D9">dChebyshev9</font>(x,a9,a8,a7,a6,a5,a4,a3,a2,a1,a0)
+<font color="#0074D9">SChebyshevDim</font>(var,deg)
+<font color="#0074D9">SChebyshev2</font>(deg,x1,x2,coe,ico)
+<font color="#0074D9">SChebyshev3</font>(deg,x1,x2,x3,coe,ico)
+<font color="#0074D9">SChebyshev4</font>(deg,x1,x2,x3,x4,coe,ico)
+<font color="#0074D9">d1SChebyshev2</font>(deg,x1,x2,coe,ico)
+<font color="#0074D9">d2SChebyshev2</font>(deg,x1,x2,coe,ico)
+<font color="#0074D9">d1SChebyshev3</font>(deg,x1,x2,x3,coe,ico)
+<font color="#0074D9">d2SChebyshev3</font>(deg,x1,x2,x3,coe,ico)
+<font color="#0074D9">d3SChebyshev3</font>(deg,x1,x2,x3,coe,ico)
+<font color="#0074D9">d1SChebyshev4</font>(deg,x1,x2,x3,x4,coe,ico)
+<font color="#0074D9">d2SChebyshev4</font>(deg,x1,x2,x3,x4,coe,ico)
+<font color="#0074D9">d3SChebyshev4</font>(deg,x1,x2,x3,x4,coe,ico)
+<font color="#0074D9">d4SChebyshev4</font>(deg,x1,x2,x3,x4,coe,ico)
+</pre>
+<h4 id="chsl">Chebyshev-Smolyak library</h4>
+<pre class="syntax">
+<font color="#0074D9">SmolyakDim</font>(mu)
+<font color="#0074D9">SmolyakQN</font>(s)
+<font color="#0074D9">SSmolyakDim</font>(var,mu)
+<font color="#0074D9">SSmolyak2</font>(mu,x1,x2,coe,ico)
+<font color="#0074D9">SSmolyak3</font>(mu,x1,x2,x3,coe,ico)
+<font color="#0074D9">SSmolyak4</font>(mu,x1,x2,x3,x4,coe,ico)
+<font color="#0074D9">SSmolyak5</font>(mu,x1,x2,x3,x4,x5,coe,ico)
+<font color="#0074D9">SSmolyak6</font>(mu,x1,x2,x3,x4,x5,x6,coe,ico)
+<font color="#0074D9">SSmolyak7</font>(mu,x1,x2,x3,x4,x5,x6,x7,coe,ico)
+<font color="#0074D9">SSmolyak8</font>(mu,x1,x2,x3,x4,x5,x6,x7,x8,coe,ico)
+<font color="#0074D9">SSmolyak9</font>(mu,x1,x2,x3,x4,x5,x6,x7,x8,x9,coe,ico)
+</pre>
+<h4 id="legl">Legendre library</h4>
+<pre class="syntax">
+<font color="#0074D9">LegendreQN</font>(s)
+<font color="#0074D9">LegendreQW</font>(s)
+<font color="#0074D9">LegendreP1</font>(x)
+<font color="#0074D9">LegendreP2</font>(x)
+<font color="#0074D9">LegendreP3</font>(x)
+<font color="#0074D9">LegendreP4</font>(x)
+<font color="#0074D9">LegendreP5</font>(x)
+<font color="#0074D9">LegendreP6</font>(x)
+<font color="#0074D9">LegendreP7</font>(x)
+<font color="#0074D9">LegendreP8</font>(x)
+<font color="#0074D9">LegendreP9</font>(x)
+<font color="#0074D9">dLegendreP1</font>(x)
+<font color="#0074D9">dLegendreP2</font>(x)
+<font color="#0074D9">dLegendreP3</font>(x)
+<font color="#0074D9">dLegendreP4</font>(x)
+<font color="#0074D9">dLegendreP5</font>(x)
+<font color="#0074D9">dLegendreP6</font>(x)
+<font color="#0074D9">dLegendreP7</font>(x)
+<font color="#0074D9">dLegendreP8</font>(x)
+<font color="#0074D9">dLegendreP9</font>(x)
+<font color="#0074D9">Legendre1</font>(x,a1,a0)
+<font color="#0074D9">Legendre2</font>(x,a2,a1,a0)
+<font color="#0074D9">Legendre3</font>(x,a3,a2,a1,a0)
+<font color="#0074D9">Legendre4</font>(x,a4,a3,a2,a1,a0)
+<font color="#0074D9">Legendre5</font>(x,a5,a4,a3,a2,a1,a0)
+<font color="#0074D9">Legendre6</font>(x,a6,a5,a4,a3,a2,a1,a0)
+<font color="#0074D9">Legendre7</font>(x,a7,a6,a5,a4,a3,a2,a1,a0)
+<font color="#0074D9">Legendre8</font>(x,a8,a7,a6,a5,a4,a3,a2,a1,a0)
+<font color="#0074D9">Legendre9</font>(x,a9,a8,a7,a6,a5,a4,a3,a2,a1,a0)
+<font color="#0074D9">dLegendre1</font>(x,a1,a0)
+<font color="#0074D9">dLegendre2</font>(x,a2,a1,a0)
+<font color="#0074D9">dLegendre3</font>(x,a3,a2,a1,a0)
+<font color="#0074D9">dLegendre4</font>(x,a4,a3,a2,a1,a0)
+<font color="#0074D9">dLegendre5</font>(x,a5,a4,a3,a2,a1,a0)
+<font color="#0074D9">dLegendre6</font>(x,a6,a5,a4,a3,a2,a1,a0)
+<font color="#0074D9">dLegendre7</font>(x,a7,a6,a5,a4,a3,a2,a1,a0)
+<font color="#0074D9">dLegendre8</font>(x,a8,a7,a6,a5,a4,a3,a2,a1,a0)
+<font color="#0074D9">dLegendre9</font>(x,a9,a8,a7,a6,a5,a4,a3,a2,a1,a0)
+</pre>
+<h4 id="herl">Hermite library</h4>
+<pre class="syntax">
+<font color="#0074D9">HermiteQN</font>(s)
+<font color="#0074D9">HermiteQW</font>(s)
+</pre>
+<h4 id="taul">Tauchen library</h4>
+<pre class="syntax">
+<font color="#0074D9">TauchenAR1</font>(i,j,grid,mu,rho,sigma)
+</pre>
 
 <!------------------------------------------------------------->
 <h2 id="pmac" style="color:#7EAEAC">Predefined macros</h2>
@@ -987,7 +1175,7 @@ x{1 2 4} = x{3 5 6}
 
 <!------------------------------------------------------------->
 <h2 id="owo" style="color:#7EAEAC">Other words</h2>
-<p>It is advisable not to use identifier ended with '_' (underscore) as they may conflict with internal objects of DYNA.
+<p>It is advisable not to use identifiers ended with '_' (underscore) as they may conflict with internal objects of DYNA.
 A similar restriction applies to identifiers starting with 'dyna_'.
 Otherwise some 'regular' identifiers are used by DYNA.
 <pre class="syntax">
@@ -1074,11 +1262,17 @@ dyna-shell.cmd		<font color="#808080"><i>Starts a new shell for DYNA2GAMS</i></f
 <p>Type in &lt;cmd-file&gt; --help to get a description of their usage.
 
 <!------------------------------------------------------------->
-<h2 id="fbat" style="color:#7EAEAC">GAMS $BATINCLUDE Files</h2>
+<h2 id="fbat" style="color:#7EAEAC">GAMS $LIBINCLUDE Files</h2>
+<p>GAMS-code files can be included in a 'gms:' section.  They provide DYNA with features at an early development
+stage. Once judged useful and mature, they should be called upon through the @ syntax.
 <pre class="syntax">
-<font color="#8B0000">$BATINCLUDE</font> dyna-fractder {JG|GL} L{&lt;par&gt;}
-<font color="#8B0000">$BATINCLUDE</font> dyna-fractint JG L{&lt;par&gt;}
-<font color="#8B0000">$BATINCLUDE</font> dyna-pderiv-x &lt;left-boundary-value&gt; &lt;right-boundary-value&gt; &lt;knots-number&gt;
+<font color="#FF8000">$LIBINCLUDE</font> dyna-empmodel &lt;emp-file&gt;
+<font color="#FF8000">$LIBINCLUDE</font> dyna-file2put &lt;input-file&gt; [&lt;output-file&gt;]
+<font color="#FF8000">$LIBINCLUDE</font> dyna-fractder {JG|GL} L{&lt;par&gt;}
+<font color="#FF8000">$LIBINCLUDE</font> dyna-fractint JG L{&lt;par&gt;}
+<font color="#FF8000">$LIBINCLUDE</font> dyna-fractional-laplacian &lt;xx&gt; &lt;DeltaX&gt; &lt;TickX&gt; &lt;s&gt; &lt;matrix-A&gt; &lt;matrix-B&gt; [&lt;xa&gt; [&lt;xb&gt;]]
+<font color="#FF8000">$LIBINCLUDE</font> dyna-hammersley &lt;table-name&gt; &lt;nb-of-scen&gt; &lt;nb-of-var&gt; &lt;row-id-prefix&gt; &lt;col-id-prefix&gt; [&lt;row-first-index&gt; [&lt;col-first-index&gt;]]
+<font color="#FF8000">$LIBINCLUDE</font> dyna-pderiv-x &lt;left-boundary-value&gt; &lt;right-boundary-value&gt; &lt;knots-number&gt;
 </pre>
 </body>
 </html>

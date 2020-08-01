@@ -203,11 +203,12 @@ set octave="c:\octave-5.1.0.0\mingw64\bin\octave-cli.exe"
 
 :: --- Mandatory components
 
-set gamsp=C:\GAMS\win64\25.1
+set gamsp=C:\GAMS\win64\30.2
 set dyna2gams_work=D:\DYNA2GAMS
 set dyna2gams_home=D:\DYNA2GAMS
 set dyna-to-gams="%dyna2gams_home%\bin\dyna-to-gams.exe"
 set dyna-to-html="%dyna2gams_home%\bin\dyna-to-html.exe"
+set dyna-csv-echelon="%dyna2gams_home%\bin\dyna-csv-echelon.exe"
 set dyna-csv-reshape="%dyna2gams_home%\bin\dyna-csv-reshape.exe"
 set dyna-csv-plot="%dyna2gams_home%\bin\dyna-csv-plot.exe"
 set dyna-csv-splot="%dyna2gams_home%\bin\dyna-csv-splot.exe"
@@ -890,7 +891,7 @@ Press any key to continue...
   <font color="#3D9970">parameter</font> report(*,*);
   <font color="#3D9970">set</font> o(<font color="#0074D9">Observation</font>);
   <font color="#0074D9">ObservedSet</font>(x{1:3},o);
-  <font color="#8B0000">$$ondotL</font>
+  <font color="#FF8000">$$ondotL</font>
   report(o,'x{1:3}') = <font color="#0074D9">ObservedGap</font>(x{1:3},o);
   <font color="#3D9970">display</font> report;
 </pre>
@@ -1066,7 +1067,7 @@ File '$$tutor-g.384.rsh.csv' created.
   i = i1:i3
 
 <font color="red"><b>par:</b></font>
-  c[i] = /i1 -1, i2 0.75, i3 -2/
+  c[i] = |i1 -1, i2 0.75, i3 -2|
   tf = 20
 
 <font color="red"><b>dyn:</b></font>
@@ -1094,9 +1095,9 @@ File '$$tutor-g.384.rsh.csv' created.
   <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp
 
 <font color="red"><b>gms:</b></font>	<font color="#808080"><i># Combinatorial Integral Approximation</i></font>
-  <font color="#8B0000">$$ifthen</font> <font color="#8A2BE2">%ITER%</font>==<font color="#8A2BE2">%ITERMAX%</font>
+  <font color="#FF8000">$$ifthen</font> <font color="#8A2BE2">%ITER%</font>==<font color="#8A2BE2">%ITERMAX%</font>
   <font color="#8A2BE2">@seekcia</font> ControlVar=w[i], Optcr=0.5, Method=plain
-  <font color="#8B0000">$$endif</font>
+  <font color="#FF8000">$$endif</font>
 </pre>
 
 <!-- Tutorial I ---------------------------------------><p>
@@ -1112,10 +1113,10 @@ File '$$tutor-g.384.rsh.csv' created.
 							\]
 <pre class="syntax">
 <font color="red"><b>set:</b></font>
-  x = x0:x20
-  xl(x) = x0
-  xx(x) = x1:x19
-  xr(x) = x20
+  x = |x0:x20|
+  xl[x] = |x0|
+  xx[x] = |x1:x19|
+  xr[x] = |x20|
 
 <font color="red"><b>par:</b></font>
   DeltaX = 1/(<font color="#3D9970">card</font>(x)-1)
@@ -1131,15 +1132,15 @@ File '$$tutor-g.384.rsh.csv' created.
   z[x]$xx(x) = a*<font color="#2ECC40">sin</font>(pi*TickX[x])
 
 <font color="red"><b>equ:</b></font>
-  $xl(x).. z[x] == 0
-  $xx(x).. z&acute;[x] == D * (z[x-1]-2*z[x]+z[x+1])/<font color="#2ECC40">sqr</font>(DeltaX)
-  $xr(x).. z[x] == 0
+  $xl[x].. z[x] == 0
+  $xx[x].. z&acute;[x] == D * (z[x-1]-2*z[x]+z[x+1])/<font color="#2ECC40">sqr</font>(DeltaX)
+  $xr[x].. z[x] == 0
 
 <font color="red"><b>obj:</b></font>
   <font color="#8A2BE2">minimize</font> <font color="#0074D9">initial</font>(z['x0']) <font color="#8A2BE2">using</font> lp	<font color="#808080"><i># dummy objective</i></font>
 
 <font color="red"><b>gpl:</b></font>
-  <font color="#8A2BE2">@splotZXT</font> z, TickX, "<font color="#FF4500">@TITLE@</font>", "z[x,t]", "x"
+  <font color="#8A2BE2">@splotZXT</font> z, TickX, "<font color="#8B0000">@TITLE@</font>", "z[x,t]", "x"
 </pre>
 							<p><p>Visualizing the results
 <pre class="console">

@@ -29,6 +29,12 @@
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
 		<!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
+		<style>
+		ul.compact, ol.compact {
+			margin-top: -2em;
+			margin-bottom: 0em;
+			}
+		</style>
 	</head>
 	<body class="is-preload">
 
@@ -93,6 +99,27 @@
 							<div align="left">
 
 							<p>&ldquo;Everything simple is false. Everything complex is unusable.&rdquo; &ndash; Paul Val&eacute;ry
+
+							<h3>DYNA2GAMS 1.4</h3>
+							<h4><i class="icon fa-calendar">&emsp;</i>01/08/2020</h4>
+							<p>The coronavirus lockdown gave us plenty of time to work on release 1.4 of DYNA2GAMS which encompasses the
+							following new features and many examples to illustrate their use:
+							<ul class="compact">
+							<li>differential complementary systems
+							<li>stochastic differential equations
+							<li>stochastic optimal control (incl. Wiener process)
+							<li>chance constrained optimal control
+							<li>matlab-like or gams-like syntax to key in table data
+							<li>a <i>put</i> section to dynamically generate output files (Matlab/Octave, csv...)
+							<li>an entry <i>time-model=none</i> in the <i>run</i> section to allow for a customized optimization not related to optimal control
+							<li>a keyword <i>include-libray</i> in the <i>run</i> section to offer access to a bunch of functions to approximate surfaces up
+							to 4 variables with Chebyshev, Hermite or Legendre polynomials, up to 9 variables with Chebyshev-Smolyak procedure,
+							and Tauchen to discretize AR1 processes
+							<li>$libinclude files to ease the implementation of a fractional laplacian or a hammersley pseudo-random sequence
+							<li>stochastic dynamic programming problems
+							</ul>
+							The package is available in <a href="download.html">Download</a> page.
+							<p>
 
 							<h3>DYNA2GAMS 1.3</h3>
 							<h4><i class="icon fa-calendar">&emsp;</i>25/01/2020</h4>
