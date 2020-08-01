@@ -1,0 +1,115 @@
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">A simplified Merton&rsquo;s portfolio model</h1>
+<pre>
+<font color="red"><b>rem:</b></font> A simplified Merton&rsquo;s portfolio model
+</pre>
+<p>
+  In [2], a simplified version of Merton&rsquo;s [1] optimal portfolio selection model is
+  studied and analytically solved. In the model, the aim of the portfolio selection
+  is to maximize the expected discounted utility
+<p>
+  \[
+  J = \mathbb{E} \Bigg[ \int_0^{t_f} e^{-\rho t} \big(u_2(t) x(t)\big)^{\gamma} \ \mathrm{d}t \Bigg]
+  \]
+<p>
+  with given discount rate \(\rho > 0\), where \([u_2(t) x(t)]^{\gamma}\) is the
+  agent&rsquo;s utility function. The constraint equation is a controlled stochastic
+  differential equation describing evolution of the wealth \(x(t)\):
+<p>
+  \[
+  \mathrm{d}x = (1-u_1)r x \mathrm{d}t + u_1 x (\alpha \mathrm{d}t + \sigma \mathrm{d}W) - u_2 x \mathrm{d}t
+  \]
+<p>
+  where \(r\), \(\alpha\), \(\sigma\) are constants with \(r < \alpha\), \(\sigma >
+  0\), and \(W(t)\) is a one-dimensional standard Wiener process. \(u_1\) is the
+  fraction of the wealth invested in the risky asset, and \(u_2(t) x(t)\) denotes the
+  consumption rate.
+  The optimal two-dimensional control, which satisfies the condition
+<p>
+  \[
+  0 \leq u_1 \leq 1\\
+  u_2 \geq 0
+  \]
+<p>
+  are to be found that maximize the expected discounted utility.
+<p>
+  References:
+  <ol>
+  <li>R.C. Merton, 
+  <em>Optimum consumption and portfolio rules in a continuous-time model</em>,
+  Journal of Economic Theory, 3:373-413, 1971.
+  <li>J.B. Krawczyk, 
+  <em>A Markovian approximated solution to a portfolio management problem</em>, 
+  http://www.item.woiz.polsl.pl/issue/journal1.htm, 
+  Information Technology for Economics & Management, 1(1), 2001.
+  </ol>  
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">collocation-family</font> = NA
+  <font color="#39CCCC">quadrature-method</font> = rectangle
+
+<font color="red"><b>set:</b></font>
+  scen = sce1:sce32
+
+<font color="red"><b>par:</b></font>
+  alpha = 0.11
+  sigma = 0.4
+  r = 0.05
+  rho = 0.11
+  gamma = 0.5
+  tf = 10
+
+<font color="red"><b>tpa:</b></font>
+  W[scen]
+
+<font color="red"><b>var:</b></font>
+  u1
+
+<font color="red"><b>dyn:</b></font>
+  u2
+  x[scen]
+  J
+
+<font color="red"><b>lim:</b></font>
+  0 &lt;= u1 &lt;= 1
+  0.01 &lt;= u2 &lt;= +<font color="#3D9970">inf</font>
+  0.01 &lt;= x[scen] &lt;= 10
+
+<font color="red"><b>t=t0:</b></font>
+  x[scen] = 1
+  J = 0
+
+<font color="red"><b>equ:</b></font>
+  W[scen] ~~ <font color="#7FDBFF">Wiener</font>
+  x&acute;[scen] == x[scen] * ((1-u1)*r + u1*alpha - u2 + u1*sigma*W[scen])
+  J&acute; == <font color="#3D9970">sum</font>(scen,<font color="#2ECC40">exp</font>(-rho*<font color="#0074D9">Time</font>)*<font color="#2ECC40">rpower</font>(u2*x[scen],gamma))/<font color="#3D9970">card</font>(scen)
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">maximize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#808080"><i># Analytical solution</i></font>
+  <font color="#3D9970">scalar</font> nu; nu = <font color="#2ECC40">sqr</font>(alpha-r)/2/<font color="#2ECC40">sqr</font>(sigma)/(1-gamma)+r;
+  <font color="#8A2BE2">@tpa</font> u2o; u2o = 1/((1-gamma)/(rho-nu*gamma)*(1-<font color="#2ECC40">exp</font>(-(rho-nu*gamma)/(1-gamma)*(tf-<font color="#0074D9">Time</font>))));
+  <font color="#8A2BE2">@csvsave</font> u2o
+  <font color="#3D9970">scalar</font> u1o; u1o = (alpha-r)/<font color="#2ECC40">sqr</font>(sigma)/(1-gamma);
+  <font color="#3D9970">display</font> u1o;
+</pre>
+</body>
+</html>

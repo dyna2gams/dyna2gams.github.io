@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.3 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -97,8 +97,8 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   tf = 1
 
 <font color="red"><b>set:</b></font>
-  phase = ph1:ph3	<font color="#808080"><i># de-orbit, descent coast, braking</i></font>
-  ph13(phase) = ph1,ph3
+  phase = |ph1:ph3|	<font color="#808080"><i># de-orbit, descent coast, braking</i></font>
+  ph13[phase] = |ph1,ph3|
 
 <font color="red"><b>var:</b></font>
   tlen(phase)
@@ -181,10 +181,10 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   <font color="#8A2BE2">maximize</font> <font color="#0074D9">final</font>(m['ph3']) - penaltyA*<font color="#0074D9">final</font>(A['ph3']) - penaltyT*<font color="#0074D9">final</font>(t['ph3']) <font color="#8A2BE2">using</font> nlp
 
 <font color="red"><b>gms:</b></font>
-  <font color="#8B0000">$$ifthen</font> <font color="#8A2BE2">%ITER%</font>==<font color="#8A2BE2">%ITERMAX%</font>
+  <font color="#FF8000">$$ifthen</font> <font color="#8A2BE2">%ITER%</font>==<font color="#8A2BE2">%ITERMAX%</font>
   penaltyA = penaltyA*1e+3;
   <font color="#8A2BE2">@solve</font>
-  <font color="#8B0000">$$endif</font>
+  <font color="#FF8000">$$endif</font>
   <font color="#808080"><i># perform sensitivity analysis w.r.t. final time</i></font>
   <font color="#3D9970">parameter</font> report(*,*) "Sensitivity Analysis";
   <font color="#3D9970">set</font> iter /iter1*iter8/;
@@ -201,15 +201,15 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
       <font color="#8A2BE2">@solveloop</font> Method=bndobj
       );
     );
-  <font color="#8B0000">$$ifthen</font> <font color="#8A2BE2">%ITER%</font>==<font color="#8A2BE2">%ITERMAX%</font>
+  <font color="#FF8000">$$ifthen</font> <font color="#8A2BE2">%ITER%</font>==<font color="#8A2BE2">%ITERMAX%</font>
   <font color="#808080"><i># revert to target solution - doesn&rsquo;t provide a good starting point for next iteration</i></font>
   <font color="#3D9970">loop</font>(iter$(report(iter,'t3') &gt; 3200),
     penaltyT = report(iter,'penaltyT')
     );
-  <font color="#8B0000">$$else</font>
+  <font color="#FF8000">$$else</font>
   <font color="#808080"><i># revert to first point - ok for next iteration</i></font>
   penaltyT = penaltyT/<font color="#2ECC40">sqrt</font>(2)^<font color="#3D9970">card</font>(iter);
-  <font color="#8B0000">$$endif</font>
+  <font color="#FF8000">$$endif</font>
   <font color="#8A2BE2">@solve</font>
   <font color="#8A2BE2">@solveloop</font> Method=bndobj
   <font color="#3D9970">display</font> report;

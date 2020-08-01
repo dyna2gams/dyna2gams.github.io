@@ -1,0 +1,139 @@
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">A Stochastic Renewable Resource Valuation Problem</h1>
+<pre>
+<font color="red"><b>rem:</b></font> A Stochastic Renewable Resource Valuation Problem
+</pre>
+<p>
+  The problem exposed in [1] to illustrate the contingent claims approach is that of
+  continuous-time optimal forest management. The problem consists of finding the value
+  of a 10 year forest leasehold. The value of the lease is the value of a limited
+  duration &ldquo;American&rdquo; option on the timber in the forest.
+<p>
+  Reference:
+  <ol>
+  <li>R. Morck, E. Schwartz and D. Stangeland,
+  <em>The Valuation of Forestry Resources under Stochastic Prices and Inventories</em>,
+  Journal of Financial and Quantitative Analysis, 24(4):473-487, 1989.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">collocation-family</font> = NA
+  <font color="#39CCCC">quadrature-method</font> = rectangle
+
+<font color="red"><b>set:</b></font>
+  scen = sce1:sce128
+
+<font color="red"><b>par:</b></font>
+  r = <font color="#2ECC40">log</font>(1+0.05)/4		<font color="#808080"><i># risk free rate</i></font>
+  gamma = <font color="#2ECC40">log</font>(1+0.017)/4	<font color="#808080"><i># inventory drift</i></font>
+  sigmap = <font color="#2ECC40">log</font>(1+0.104)/4	<font color="#808080"><i># price proportional SD</i></font>
+  sigmak = <font color="#2ECC40">log</font>(1+0.093)/4	<font color="#808080"><i># inventory proportional SD</i></font>
+  kappa = <font color="#2ECC40">log</font>(1+0.046)/4	<font color="#808080"><i># proportional convenience yield</i></font>
+  lambda = <font color="#2ECC40">log</font>(1+0.02)/4	<font color="#808080"><i># property tax rate</i></font>
+  TC = 0.33			<font color="#808080"><i># corporate tax rate</i></font>
+  TR = 0.05			<font color="#808080"><i># royalty rate</i></font>
+  a0 = 25			<font color="#808080"><i># cost function parameter [000$]</i></font>
+  a1 = 28			<font color="#808080"><i># cost function parameter [000$/000m³]</i></font>
+  a2 = 2			<font color="#808080"><i># cost function parameter [000$/(000m³)²]</i></font>
+  rho = 0.15
+  tf = 40			<font color="#808080"><i># quarters</i></font>
+
+<font color="red"><b>tpa:</b></font>
+  Z{1:2}[scen]
+
+<font color="red"><b>var:</b></font>
+  c{0:14}
+
+<font color="red"><b>dyn:</b></font>
+  p[scen]			<font color="#808080"><i># price [000$/000m³]</i></font>
+  k[scen]			<font color="#808080"><i># inventory [000m³]</i></font>
+  u[scen]			<font color="#808080"><i># cutting rate [000m³]</i></font>
+  W				<font color="#808080"><i># value of the logging company [000$]</i></font>
+
+<font color="red"><b>t=t0:</b></font>
+  p[scen] = 50
+  k[scen] = 150
+  W = 0
+
+<font color="red"><b>par:</b></font>
+  pm = 50.68			<font color="#808080"><i># proxy mean of p</i></font>
+  ps = 5.13			<font color="#808080"><i># proxy std dev of p</i></font>
+  km = 55.07			<font color="#808080"><i># proxy mean of k</i></font>
+  ks = 49.73			<font color="#808080"><i># proxy std dev of k</i></font>
+
+<font color="red"><b>mac:</b></font>
+  @bipoly(p,k) c0+c1*&p+c2*&k+c3*<font color="#2ECC40">sqr</font>(&p)+c4*&p*&k+c5*<font color="#2ECC40">sqr</font>(&k)+\
+    c6*<font color="#2ECC40">power</font>(&p,3)+c7*<font color="#2ECC40">sqr</font>(&p)*&k+c8*&p*<font color="#2ECC40">sqr</font>(&k)+c9*<font color="#2ECC40">power</font>(&k,3)+\
+    c10*<font color="#2ECC40">power</font>(&p,4)+c11*<font color="#2ECC40">power</font>(&p,3)*&k+c12*<font color="#2ECC40">sqr</font>(&p)*<font color="#2ECC40">sqr</font>(&k)+c13*&p*<font color="#2ECC40">power</font>(&k,3)+c14*<font color="#2ECC40">power</font>(&k,4)
+  @u(p,k) <font color="#2ECC40">max</font>(0,<font color="#2ECC40">min</font>(&k,@bipoly((&p-pm)/ps,(&k-km)/ks)))
+
+<font color="red"><b>exp:</b></font>
+  Wp == Z1[scen]
+  Wk == rho*Z1[scen] + <font color="#2ECC40">sqrt</font>(1-<font color="#2ECC40">sqr</font>(rho))*Z2[scen]
+  A == <font color="#0074D9">Poly2</font>((u[scen]),a2/2,a1,a0*(1-<font color="#2ECC40">exp</font>(-10*u[scen])))
+
+<font color="red"><b>equ:</b></font>
+  Z{1:2}[scen] ~~ <font color="#7FDBFF">Wiener</font>
+  p&acute;[scen] == (r-kappa)*p[scen] + sigmap*p[scen]*Wp
+  k&acute;[scen] == (gamma*k[scen]-u[scen]) + sigmak*k[scen]*Wk
+  W&acute; == <font color="#3D9970">sum</font>(scen, <font color="#2ECC40">exp</font>(-(r+lambda)*<font color="#0074D9">Time</font>)*(1-TC)*((1-TR)*p[scen]*u[scen]-A)) / <font color="#3D9970">card</font>(scen)
+  u[scen] == @u(p[scen],k[scen])
+
+<font color="red"><b>ini:</b></font>
+  p[scen] = <font color="#0074D9">initial</font>(p[scen])
+  k[scen] = <font color="#0074D9">initial</font>(k[scen])
+  c{0:14} = <font color="#2ECC40">uniform</font>(0,1)
+  <font color="#808080"><i># Solution provided by the least square Monte Carlo N=384</i></font>
+  <font color="#808080"><i># c{0:14} = {5.497 0.945 -1.057 -0.183 0.092 -0.789  0.024 -0.124 -0.613  3.000 -0.002 0.011  0.028 0.228 -1.338}</i></font>
+  <font color="#808080"><i># Solution provided by this procedure N=1536</i></font>
+  <font color="#808080"><i># c{0:14} = {5.424 0.274  0.553  0.004 0.180 -0.072 -0.002 -0.080  0.042 -0.192  0.002 0.012 -0.139 0.011  0.072}</i></font>
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">maximize</font> <font color="#0074D9">final</font>(W) <font color="#8A2BE2">using</font> dnlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#8A2BE2">@solveloop</font> Method=bndobj
+
+<font color="red"><b>put:</b></font>
+  <font color="#808080"><i># Create a file for Octave/Matlab</i></font>
+  "<font color="#8A2BE2">%FN%</font>.<font color="#8A2BE2">%N%</font>.m&lt;"
+  % Created on %system.date1% at %system.time%
+  function z = sqr(x); z=x*x; end;
+  function z = power(x,n); z=x^n; end;
+  pm = "pm:8:3";
+  ps = "ps:8:3";
+  km = "km:8:3";
+  ks = "ks:8:3";
+  c{0:14} = "c{0:14}.l:8:3";
+  pp = [40:25/50:65];
+  kk = [0:150/50:150];
+  uu = zeros(size(pp,2),size(kk,2));
+  for i=1:size(pp,2)
+    for j=1:size(kk,2)
+      uu(i,j) = @u(pp(i),kk(j));
+      end
+    end
+  figure('Name','<font color="#8B0000">@ifnam@</font> <font color="#8A2BE2">%N%</font>','NumberTitle','off')
+  surf(kk,pp,uu)
+  xlabel('Inventory [000m¨3]')
+  ylabel('price [$/m¨3]')
+  "&lt;"
+</pre>
+</body>
+</html>

@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -77,13 +77,13 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   <font color="#8A2BE2">minimize</font> <font color="#2ECC40">sqrt</font>(<font color="#0074D9">final</font>(J)) <font color="#8A2BE2">using</font> nlp
 
 <font color="red"><b>gms:</b></font>
-  <font color="#8B0000">$$set</font> GS 64
+  <font color="#FF8000">$$set</font> GS 64
   <font color="#3D9970">set</font> i1 /x0*x%GS%/; <font color="#3D9970">alias</font>(i1,j1);
   <font color="#3D9970">set</font> i2 /y0*y%GS%/; <font color="#3D9970">alias</font>(i2,j2);
-  <font color="#8B0000">$$if</font> %GS%==16  <font color="#3D9970">set</font> iter /k1*k1/; 
-  <font color="#8B0000">$$if</font> %GS%==32  <font color="#3D9970">set</font> iter /k1*k2/; 
-  <font color="#8B0000">$$if</font> %GS%==64  <font color="#3D9970">set</font> iter /k1*k3/; 
-  <font color="#8B0000">$$if</font> %GS%==128 <font color="#3D9970">set</font> iter /k1*k4/;
+  <font color="#FF8000">$$if</font> %GS%==16  <font color="#3D9970">set</font> iter /k1*k1/; 
+  <font color="#FF8000">$$if</font> %GS%==32  <font color="#3D9970">set</font> iter /k1*k2/; 
+  <font color="#FF8000">$$if</font> %GS%==64  <font color="#3D9970">set</font> iter /k1*k3/; 
+  <font color="#FF8000">$$if</font> %GS%==128 <font color="#3D9970">set</font> iter /k1*k4/;
   <font color="#3D9970">parameter</font> modul(iter);
   modul(iter)$(<font color="#3D9970">ord</font>(iter)=1) = 2**(<font color="#3D9970">card</font>(iter)-1);
   <font color="#3D9970">loop</font>(iter$(<font color="#3D9970">ord</font>(iter)&gt;1), modul(iter) = <font color="#2ECC40">round</font>(modul(iter-1)/2));
@@ -95,7 +95,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   <font color="#3D9970">parameter</font> i2encl(encl) /p1 +1, p2 +1, p3 +1, p4  0, p5  0, p6 -1, p7 -1, p8 -1/;  
   <font color="#3D9970">scalars</font> a, t, t1, t2, obj, solv /0/, ok /1/, nok /2/, epsilon /1e-2/;
   <font color="#8A2BE2">@tpa</font> hist(i1,i2,*);
-  <font color="#3D9970">file</font> res /$$<font color="#FF4500"><font color="#FF4500">@ifnam@</font></font>.gs.csv/;
+  <font color="#3D9970">file</font> res /$$<font color="#8B0000"><font color="#8B0000">@ifnam@</font></font>.gs.csv/;
   res.pc = 5; res.nw = 13; res.nd = 6; res.nr = 2;
   <font color="#3D9970">put</font> res;
   <font color="#808080"><i># progressive grid refinement</i></font>

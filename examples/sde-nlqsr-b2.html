@@ -1,0 +1,104 @@
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Nonlinear-quadratic stochastic regulator</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Nonlinear-quadratic stochastic regulator
+</pre>
+<p>
+  We consider the one-dimensional stochastic regulator problem
+<p>
+  \[
+  \min \ \mathbb{E} \Bigg[ \frac{1}{2} \int_0^1 \big(X_t^2 + u_t^2\big) \ \mathrm{d}t 
+  + \frac{1}{2} X_1^2 \Bigg]
+  \]
+<p>
+  subject to
+<p>
+  \[
+  \mathrm{d}X_t = X_t u_t \mathrm{d}t + \sigma X_t \mathrm{d}B_t \\
+  X_0 = x_0
+  \]
+<p>
+  where the coefficient \(\sigma\) determining the diffusion term is merely a scalar.
+<p>
+  We model the control law as a time-invariant function of the state variables. Many
+  different analytical formulae are possible but usually lead to close values at
+  least on the relevant interval.
+<p>
+  Reference:
+  <ol>
+  <li>T. Huschto and S. Sager,
+  <em>Solving Stochastic Optimal Control Problems by a Wiener Chaos Approach</em>,
+  Vietnam Journal of Mathematics, 42(1):83-113, 2014.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">collocation-family</font> = NA
+  <font color="#39CCCC">quadrature-method</font> = rectangle
+  <font color="#39CCCC">include-library</font> = Legendre
+
+<font color="red"><b>mac:</b></font>
+  @norm(z,l,u) ((&z-(&l+&u)/2)/((&u-&l)/2))
+
+<font color="red"><b>set:</b></font>
+  scen = sce1:sce128
+
+<font color="red"><b>par:</b></font>
+  sigma = 0.25
+  tf = 1
+
+<font color="red"><b>tpa:</b></font>
+  W[scen]
+
+<font color="red"><b>var:</b></font>
+  a{0:5}
+
+<font color="red"><b>dyn:</b></font>
+  x[scen]
+  J
+
+<font color="red"><b>lim:</b></font>
+
+<font color="red"><b>t=t0:</b></font>
+  x[scen] = 1
+  J = 0
+
+<font color="red"><b>exp:</b></font>
+  u == <font color="#0074D9">Legendre5</font>(@norm(x[scen],0,1.5),a5,a4,a3,a2,a1,a0)
+
+<font color="red"><b>equ:</b></font>
+  W[scen] ~~ <font color="#7FDBFF">Wiener</font>
+  x&acute;[scen] == x[scen]*u + sigma*x[scen]*W[scen]
+  J&acute; == 0.5*<font color="#3D9970">sum</font>(scen,<font color="#2ECC40">sqr</font>(x[scen])+<font color="#2ECC40">sqr</font>(u))/<font color="#3D9970">card</font>(scen)
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J)+0.5*<font color="#3D9970">sum</font>(scen,<font color="#0074D9">final</font>(<font color="#2ECC40">sqr</font>(x[scen])))/<font color="#3D9970">card</font>(scen) <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#8A2BE2">@tpa</font> mean; mean = <font color="#3D9970">sum</font>(scen, W[scen])/<font color="#3D9970">card</font>(scen);
+  <font color="#8A2BE2">@tpa</font> sigm; sigm = <font color="#2ECC40">sqrt</font>(<font color="#3D9970">sum</font>(scen, <font color="#2ECC40">sqr</font>(W[scen]-mean))/<font color="#3D9970">card</font>(scen));
+  W[scen] = (W[scen]-mean)/sigm/<font color="#2ECC40">sqrt</font>(<font color="#0074D9">dTime</font>);
+  <font color="#8A2BE2">@solve</font>
+  <font color="#808080"><i># Generate data to plot u = u(x)</i></font>
+  <font color="#8A2BE2">@tpa</font> xp; xp = <font color="#0074D9">AllTimeMin</font>(<font color="#3D9970">smin</font>(scen,x.l[scen])) +
+    (<font color="#0074D9">AllTimeMax</font>(<font color="#3D9970">smax</font>(scen,x.l[scen]))-<font color="#0074D9">AllTimeMin</font>(<font color="#3D9970">smin</font>(scen,x.l[scen])))*<font color="#0074D9">Time</font>/tf;
+  <font color="#8A2BE2">@tpa</font> up; up = <font color="#0074D9">Legendre5</font>(@norm(xp,0,1.5),a5.l,a4.l,a3.l,a2.l,a1.l,a0.l);
+  <font color="#8A2BE2">@csvsave</font> xp up
+</pre>
+</body>
+</html>

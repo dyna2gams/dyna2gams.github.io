@@ -1,0 +1,106 @@
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Consensus-based global optimization</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Consensus-based global optimization
+</pre>
+<p>
+  In [1], the authors provide an analytical framework for investigating the
+  efficiency of a consensus-based model for tackling global optimization problems.
+  Variants of the method including nonlinear diffusion are introduced.
+<p>
+  Reference:
+  <ol>
+  <li>J.A. Carrillo, Y.-P. Choi, C. Totzeck and O. Tse,
+  <em>An analytical framework for a consensus-based global optimization method</em>,
+  Mathematical Models and Methods in Applied Sciences, 28(6):1037-1066, 2018.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">simulation-method</font> = SDE/SI
+  <font color="#39CCCC">simulation-loops-number</font> = 25
+  <font color="#39CCCC">default-iterations-number</font> = 2
+
+<font color="red"><b>set:</b></font>
+  dim = 1:4	<font color="#808080"><i># number of variables</i></font>
+  age = 1:64	<font color="#808080"><i># number of agents</i></font>
+
+<font color="red"><b>mac:</b></font>
+  @clip(z) &z = <font color="#2ECC40">max</font>(xlo,<font color="#2ECC40">min</font>(xup,&z));
+  @alpine(z,i) <font color="#3D9970">sum</font>(&i,<font color="#2ECC40">abs</font>(&z*<font color="#2ECC40">sin</font>(&z)+0.1*&z))
+  @ackley(z,i) (-20*<font color="#2ECC40">exp</font>(-0.2*<font color="#2ECC40">sqrt</font>(<font color="#3D9970">sum</font>(&i,<font color="#2ECC40">sqr</font>(&z))/<font color="#3D9970">card</font>(&i)))-<font color="#2ECC40">exp</font>(<font color="#3D9970">sum</font>(&i,<font color="#2ECC40">cos</font>(2*pi*&z))/<font color="#3D9970">card</font>(&i))+20+<font color="#2ECC40">exp</font>(1))
+  @rastrigin(z,i) (10*<font color="#3D9970">card</font>(&i)+<font color="#3D9970">sum</font>(&i,<font color="#2ECC40">sqr</font>(&z)-10*<font color="#2ECC40">cos</font>(2*pi*&z)))
+  @xinsheyang2(z,i) (<font color="#3D9970">sum</font>(&i,<font color="#2ECC40">abs</font>(&z))*<font color="#2ECC40">exp</font>(-<font color="#3D9970">sum</font>(&i,<font color="#2ECC40">sin</font>(<font color="#2ECC40">sqr</font>(&z)))))
+  @f(z,i) @xinsheyang2(&z,&i)
+
+<font color="red"><b>par:</b></font>
+  <font color="#808080"><i># alpine:      1 16.6 250 250 10 2 -5 +5 15</i></font>
+  <font color="#808080"><i># ackley:      1 13.4 250 250 10 2 -5 +5 15</i></font>
+  <font color="#808080"><i># rastrigin:   1  139 250 250 10 2 -5 +5 15</i></font>
+  <font color="#808080"><i># xinsheyang2: 1  270 125 250 20 4 -5 +5 15</i></font>
+  lambda = 1
+  fmax = 270
+  alf0 = 125
+  alff = 250
+  sig0 = 20
+  sigf = 4
+  xlo = -5
+  xup = +5
+  tf = 15
+
+<font color="red"><b>tpa:</b></font>
+  W[dim,age]
+
+<font color="red"><b>dyn:</b></font>
+  m[dim]
+  fm
+  f[age]
+  alf
+  sig
+  x[dim,age]
+
+<font color="red"><b>t=t0:</b></font>
+  alf = alf0
+  sig = sig0
+  x[dim,age] = <font color="#2ECC40">uniform</font>(xlo,xup)
+
+<font color="red"><b>sim:</b></font>
+  @clip(x.l[dim,age])
+  alf&acute; := (alff-alf0)/tf
+  sig&acute; := (sigf-sig0)/tf
+  W[dim,age] ~~ <font color="#7FDBFF">Wiener</font>
+  f[age] := @f(x[dim,age],dim)
+  m[dim] := <font color="#3D9970">sum</font>(age, x[dim,age]*<font color="#2ECC40">exp</font>(-alf/fmax*f[age])) / <font color="#3D9970">sum</font>(age, <font color="#2ECC40">exp</font>(-alf/fmax*f[age]))
+  fm := @f(m[dim],dim)
+  x&acute;[dim,age] := -lambda*(x[dim,age]-m[dim])*<font color="#0074D9">Heaviside</font>((f[age]-fm)) + <font color="#2ECC40">sqrt</font>(2)*sig*<font color="#2ECC40">abs</font>(x[dim,age]-m[dim])*W[dim,age]
+
+<font color="red"><b>gms:</b></font>
+  <font color="#3D9970">equation</font> obj;
+  <font color="#3D9970">variable</font> ksi,z(dim);
+  obj.. ksi =e= @f(z(dim),dim);
+  z.lo(dim) = xlo;
+  z.up(dim) = xup;
+  z.l(dim) = <font color="#0074D9">final</font>(m.l[dim]);
+  <font color="#3D9970">model</font> mo /obj/;
+  <font color="#3D9970">option</font> limrow=0,limcol=0,solvelink=5,solprint=off,dnlp=conopt;
+  <font color="#3D9970">display</font> z.l;
+  <font color="#3D9970">solve</font> mo minimizing ksi using dnlp;
+  <font color="#3D9970">display</font> ksi.l,z.l;
+</pre>
+</body>
+</html>

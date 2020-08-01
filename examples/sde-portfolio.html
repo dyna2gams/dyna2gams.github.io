@@ -1,0 +1,159 @@
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">A Portfolio Optimization Problem</h1>
+<pre>
+<font color="red"><b>rem:</b></font> A Portfolio Optimization Problem
+</pre>
+<p>
+  Along the lines of [1], we consider a portfolio optimization problem where an investor
+  has the choice of investing in the stock market or to put his money in a bank account.
+  We model the stock market as geometric Brownian motion with time-varying and
+  stochastic mean returns and time-varying and stochastic diffusion term (volatility).
+<p>
+  Some of our data slightly differ from those in [1].
+<p>
+  Qualitatively the results make sense but the policy \(u\) is very sensitive to the
+  number of scenarios and the number of time steps, which is not a sound thing.
+<p>
+  Reference:
+  <ol>
+  <li>H. Peyrl, F. Herzog, H.P. Geering,
+  <em>Numerical Solution of the Hamilton-Jacobi-Bellman Equation for Stochastic
+  Optimal Control Problems</em>,
+  2005 WSEAS Int. Conf. on Dynamical Systems and Control, Venice, Italy, November 2005.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">substitute-symbols</font> = A1&gt;AA1 | A2&gt;AA2 | F&gt;FF
+  <font color="#39CCCC">collocation-family</font> = NA
+  <font color="#39CCCC">quadrature-method</font> = rectangle
+  <font color="#39CCCC">gams-option</font> = reslim=7200
+
+<font color="red"><b>set:</b></font>
+  scen = sce1:sce128
+
+<font color="red"><b>par:</b></font>
+  a1 = -0.13
+  A1 = 4.73
+  a2 = 1
+  A2 = 0.85
+  nu = 0.013
+  sigma = 0.287
+  rho12 = 0.20
+  rho13 = -0.62
+  rho23 = -0.16
+  F = 8.96
+  f = 0.32
+  r = 0.044
+  gamma = 0.2
+  tf = 3
+  r22 = <font color="#2ECC40">sqrt</font>(1-<font color="#2ECC40">sqr</font>(rho12))
+  r23 = (rho23-rho12*rho13)/r22
+  r33 = <font color="#2ECC40">sqrt</font>(1-<font color="#2ECC40">sqr</font>(rho13)-<font color="#2ECC40">sqr</font>(r23))
+
+<font color="red"><b>tpa:</b></font>
+  Y{1:3}[scen]
+
+<font color="red"><b>var:</b></font>
+  k{0:14}
+
+<font color="red"><b>dyn:</b></font>
+  W[scen]	<font color="#808080"><i># value of the portfolio</i></font>
+  x[scen]	<font color="#808080"><i># factor that directly affects the mean return</i></font>
+  v[scen]	<font color="#808080"><i># square of the volatility</i></font>
+  u[scen]	<font color="#808080"><i># fraction of wealth invested in the stock market</i></font>
+
+<font color="red"><b>lim:</b></font>
+  -1 &lt;= u[scen] &lt;= 1
+  <font color="#808080"><i># add constraints on k to impose e.g. a bicubic function for u</i></font>
+
+<font color="red"><b>t=t0:</b></font>
+  W[scen] = 100
+  x[scen] = a1/A1
+  v[scen] = a2/A2
+
+<font color="red"><b>par:</b></font>
+  xm = -2.755e-2	<font color="#808080"><i># proxy mean of x</i></font>
+  xs = 4.164e-3		<font color="#808080"><i># proxy std dev of x</i></font>
+  vm = 1.168		<font color="#808080"><i># proxy mean of v</i></font>
+  vs = 2.125e-1		<font color="#808080"><i># proxy std dev of v</i></font>
+
+<font color="red"><b>mac:</b></font>
+  @bipoly(x,v) k0+k1*&x+k2*&v+k3*<font color="#2ECC40">sqr</font>(&x)+k4*&x*&v+k5*<font color="#2ECC40">sqr</font>(&v)+\
+    k6*<font color="#2ECC40">power</font>(&x,3)+k7*<font color="#2ECC40">sqr</font>(&x)*&v+k8*&x*<font color="#2ECC40">sqr</font>(&v)+k9*<font color="#2ECC40">power</font>(&v,3)+\
+    k10*<font color="#2ECC40">power</font>(&x,4)+k11*<font color="#2ECC40">power</font>(&x,3)*&v+k12*<font color="#2ECC40">sqr</font>(&x)*<font color="#2ECC40">sqr</font>(&v)+k13*&x*<font color="#2ECC40">power</font>(&v,3)+k14*<font color="#2ECC40">power</font>(&v,4)
+  @u(x,v) <font color="#2ECC40">max</font>(-1,<font color="#2ECC40">min</font>(1,@bipoly((&x-xm)/xs,(&v-vm)/vs)))
+
+<font color="red"><b>exp:</b></font>
+  Z1 == Y1[scen]
+  Z2 == rho12*Y1[scen] + r22*Y2[scen]
+  Z3 == rho13*Y1[scen] + r23*Y2[scen] + r33*Y3[scen]
+
+<font color="red"><b>equ:</b></font>
+  Y{1:3}[scen] ~~ <font color="#7FDBFF">Wiener</font>
+  W&acute;[scen] == W[scen] * (r + u[scen]*(F*x[scen]+f-r) + u[scen]*<font color="#2ECC40">sqrt</font>(v[scen])*Z1)
+  x&acute;[scen] == a1 - A1*x[scen] + nu*Z2
+  v&acute;[scen] == a2 - A2*v[scen] + sigma*<font color="#2ECC40">sqrt</font>(v[scen])*Z3
+  u[scen] == @u(x[scen],v[scen])
+
+<font color="red"><b>ini:</b></font>
+  k{0:14} = <font color="#2ECC40">uniform</font>(-1,1)
+  W[scen] = <font color="#0074D9">initial</font>(W[scen])
+  x[scen] = <font color="#0074D9">initial</font>(x[scen])
+  v[scen] = <font color="#0074D9">initial</font>(v[scen])
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">maximize</font> <font color="#3D9970">sum</font>(scen, <font color="#0074D9">final</font>(<font color="#2ECC40">sign</font>(W[scen])*<font color="#2ECC40">abs</font>(W[scen])^gamma/gamma))/<font color="#3D9970">card</font>(scen) <font color="#8A2BE2">using</font> dnlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#8A2BE2">@solveloop</font> Method=bndobj
+  <font color="#FF8000">$$ondotl</font>
+  <font color="#3D9970">scalar</font> Wmean; Wmean = <font color="#3D9970">sum</font>(scen, <font color="#0074D9">final</font>(W[scen]))/<font color="#3D9970">card</font>(scen);
+  <font color="#3D9970">scalar</font> Wsigm; Wsigm = <font color="#2ECC40">sqrt</font>(<font color="#3D9970">sum</font>(scen, <font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(W[scen])-Wmean))/<font color="#3D9970">card</font>(scen));
+  <font color="#3D9970">scalar</font> Wretm; Wretm = <font color="#3D9970">sum</font>(scen, <font color="#2ECC40">rpower</font>(<font color="#0074D9">final</font>(W[scen])/<font color="#0074D9">initial</font>(W[scen]),1/tf)-1)/<font color="#3D9970">card</font>(scen);
+  <font color="#3D9970">scalar</font> Wrets; Wrets = <font color="#2ECC40">sqrt</font>(<font color="#3D9970">sum</font>(scen, <font color="#2ECC40">sqr</font>(<font color="#2ECC40">rpower</font>(<font color="#0074D9">final</font>(W[scen])/<font color="#0074D9">initial</font>(W[scen]),1/tf)-1-Wretm))/<font color="#3D9970">card</font>(scen));
+  <font color="#3D9970">scalar</font> Wreth; Wreth = Wretm / Wrets;
+  <font color="#3D9970">display</font> Wmean, Wsigm, Wretm, Wrets, Wreth;
+
+<font color="red"><b>put:</b></font>
+  <font color="#808080"><i># Create a file for Octave/Matlab</i></font>
+  "<font color="#8A2BE2">%FN%</font>.<font color="#8A2BE2">%N%</font>.m&lt;"
+  % Created on %system.date1% at %system.time%
+  function z = sqr(x_); z=x_*x_; end;
+  function z = power(x_,n); z=x_¨n; end;
+  xm = "xm:8:3";
+  xs = "xs:8:3";
+  vm = "vm:8:3";
+  vs = "vs:8:3";
+  k{0:14} = "k{0:14}.l:8:3";
+  xx = [-0.0345:0.0137/50:-0.0208];
+  vv = [0.823:0.713/50:1.536];
+  uu = zeros(size(xx,2),size(vv,2));
+  for i=1:size(xx,2)
+    for j=1:size(vv,2)
+      uu(i,j) = @u(xx(i),vv(j));
+      end
+    end
+  figure('Name','<font color="#8B0000">@ifnam@</font> <font color="#8A2BE2">%N%</font>','NumberTitle','off')
+  surf(vv,xx,uu)
+  xlabel('Volatility¨2')
+  ylabel('Return')
+  "&lt;"
+</pre>
+</body>
+</html>

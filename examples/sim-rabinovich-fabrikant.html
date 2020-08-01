@@ -1,0 +1,52 @@
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">The Rabinovich-Fabrikant equations</h1>
+<pre>
+<font color="red"><b>rem:</b></font> The Rabinovich-Fabrikant equations
+</pre>
+<p>
+  The Rabinovich-Fabrikant equations are a set of three coupled ordinary differential
+  equations exhibiting chaotic behaviour for certain values of the parameters. They are
+  named after Mikhail Rabinovich and Anatoly Fabrikant, who described them in 1979.
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">iterations-number</font> = 8
+
+<font color="red"><b>par:</b></font>
+  <font color="#808080"><i># a = 0.87; b = 1.1</i></font>
+  <font color="#808080"><i># a = 0.1; b = 0.2876</i></font>
+  a = 0.1; b = 0.2715
+  tf = 250
+
+<font color="red"><b>dyn:</b></font>
+  x y z
+  
+<font color="red"><b>t=t0:</b></font>
+  <font color="#808080"><i>#{x y z} = {-1 0 0.5}</i></font>
+  {x y z} = 0.1
+  
+<font color="red"><b>sim:</b></font>
+  x&acute; := y*(z - 1 + x*x) + a*x
+  y&acute; := x*(3*z + 1 - x*x) + a*y
+  z&acute; := -2*z*(b + x*y)
+
+<font color="red"><b>gpl:</b></font>
+  <font color="#8A2BE2">@plotZXY</font> z, y, x, "<font color="#8B0000">@TITLE@</font>"
+</pre>
+</body>
+</html>

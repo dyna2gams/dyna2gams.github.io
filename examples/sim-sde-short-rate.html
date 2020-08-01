@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.3 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -33,10 +33,12 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   sigma = 0.01	<font color="#808080"><i># volatility</i></font>
   tf = 10
 
+<font color="red"><b>tpa:</b></font>
+  W[scen]
+
 <font color="red"><b>dyn:</b></font>
   y		<font color="#808080"><i># yield curve</i></font>
   x[scen]	<font color="#808080"><i># short rate</i></font>
-  W[scen]
 
 <font color="red"><b>t=t0:</b></font>
   y = 0.025
@@ -44,7 +46,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 
 <font color="red"><b>sim:</b></font>
   y&acute; := a*(b-y)
-  W[scen] :: <font color="#7FDBFF">Wiener</font>
+  W[scen] ~~ <font color="#7FDBFF">Wiener</font>
   x&acute;[scen] := a*(b-x[scen]) + sigma*W[scen]
 </pre>
 </body>

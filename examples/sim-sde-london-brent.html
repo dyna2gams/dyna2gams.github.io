@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -58,19 +58,21 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   gamma2 = 0.0462
   tf = 1095		<font color="#808080"><i># days</i></font>
 
+<font color="red"><b>tpa:</b></font>
+  W{1:2}
+  J{1:2}
+
 <font color="red"><b>dyn:</b></font>
   x{1:2}
   s			<font color="#808080"><i># US$ / Barrel</i></font>
-  W{1:2}
-  J{1:2}
 
 <font color="red"><b>t=t0:</b></font>
   x1 = <font color="#2ECC40">log</font>(17)-a
   x2 = 1
 
 <font color="red"><b>sim:</b></font>
-  W{1:2} :: <font color="#7FDBFF">Wiener</font>
-  J{1:2} :: <font color="#7FDBFF">NPJump</font>(gamma{1:2},lambda{1:2})
+  W{1:2} ~~ <font color="#7FDBFF">Wiener</font>
+  J{1:2} ~~ <font color="#7FDBFF">NPJump</font>(gamma{1:2},lambda{1:2})
   x1&acute; := -kappa1*x1 + kappa1*x2 +     sigma1*W1 + J1
   x2&acute; :=            - kappa2*x2 + rho*sigma2*W1 + <font color="#2ECC40">sqrt</font>(1-<font color="#2ECC40">sqr</font>(rho))*sigma2*W2 + J2
   s := <font color="#2ECC40">exp</font>(a + x1)
