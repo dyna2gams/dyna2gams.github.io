@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.3 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -32,11 +32,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   <li>A. Caspari, L. L&uuml;ken, P. Sch&auml;fer, Y. Vaupel, A. Mhamdi, L.T. Biegler and A. Mitsos,
   <em>Dynamic Optimization with Complementarity Constraints: Regularization for Direct
   Shooting</em>,
-  Unpublished, under review. October 2019. Process Systems Engineering (AVT.SVT),
-  RWTH Aachen University, 52074 Aachen, Germany. JARA-CSD, 52056 Aachen, Germany.
-  Energy Systems Engineering (IEK-10), Forschungszentrum J&uuml;lich, 52425 J&uuml;lich,
-  Germany. Carnegie Mellon University, Department of Chemical Engineering,
-  Pittsburgh, PA 15213, USA.
+  Unpublished, under review. October 2019.
   http://www.optimization-online.org/DB_HTML/2019/10/7398.html
   <li>B. Baumrucker and L. Biegler,
   <em>MPEC strategies for optimization of a class of hybrid dynamic systems</em>,
@@ -44,11 +40,14 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   </ol>
 <p>
 <pre>
+<font color="red"><b>mac:</b></font>
+  @phi(a,b) (&a + (&b) - <font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqr</font>(&a-(&b))+4*<font color="#2ECC40">sqr</font>(mu)))/2
+
 <font color="red"><b>par:</b></font>
   A{1:3} = 1	<font color="#808080"><i># tank areas [m²]</i></font>
   k{1:3} = 0.5	<font color="#808080"><i># [m^{0.5}/s]</i></font>
   H{2:3} = 1	<font color="#808080"><i># tank inlet level [m]</i></font>
-  epsilon = 1e-8
+  mu = 1e-4
   tf = 25	<font color="#808080"><i># [s]</i></font>
 
 <font color="red"><b>dyn:</b></font>
@@ -76,8 +75,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <font color="red"><b>equ:</b></font>
   L{1:3}&acute; == (F{0:2} - F{1:3})/A{1:3}
   L{2:3} == H{2:3} + LP{2:3} - LN{2:3}
-  <font color="#808080"><i># 0 &lt;= LP{2:3} _|_ LN{2:3} &gt;= 0</i></font>
-  LP{2:3} + LN{2:3} - <font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqr</font>(LP{2:3})+<font color="#2ECC40">sqr</font>(LN{2:3})+epsilon) &lt;= 0
+  @phi(LP{2:3},LN{2:3}) &lt;= 0
   DL{1:2} ==  L{1:2} - LP{2:3}
   DL3 == L3
   F{1:3} == w{1:3} * k{1:3} * <font color="#2ECC40">sqrt</font>(DL{1:3})
@@ -85,6 +83,9 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 
 <font color="red"><b>obj:</b></font>
   <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#8A2BE2">@solveloop</font> Method=bndobj
 </pre>
 </body>
 </html>

@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.3 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -60,20 +60,19 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   <li>A. Caspari, L. L&uuml;ken, P. Sch&auml;fer, Y. Vaupel, A. Mhamdi, L.T. Biegler and A. Mitsos,
   <em>Dynamic Optimization with Complementarity Constraints: Regularization for Direct
   Shooting</em>,
-  Unpublished, under review. October 2019. Process Systems Engineering (AVT.SVT),
-  RWTH Aachen University, 52074 Aachen, Germany. JARA-CSD, 52056 Aachen, Germany.
-  Energy Systems Engineering (IEK-10), Forschungszentrum J&uuml;lich, 52425 J&uuml;lich,
-  Germany. Carnegie Mellon University, Department of Chemical Engineering,
-  Pittsburgh, PA 15213, USA.
+  Unpublished, under review. October 2019.
   http://www.optimization-online.org/DB_HTML/2019/10/7398.html
   </ol>
 <p>
 <pre>
+<font color="red"><b>mac:</b></font>
+  @phi(a,b) (&a + (&b) - <font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqr</font>(&a-(&b))+4*<font color="#2ECC40">sqr</font>(mu)))/2
+
 <font color="red"><b>par:</b></font>
   k = 0.1	<font color="#808080"><i># [1/s]</i></font>
   m_set = 120	<font color="#808080"><i># [mol]</i></font>
   m_min = 60	<font color="#808080"><i># [mol]</i></font>
-  epsilon = 1e-8
+  mu = 1e-4
   tf = 20	<font color="#808080"><i># [s]</i></font>
 
 <font color="red"><b>dyn:</b></font>
@@ -96,8 +95,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   m&acute; == Fin - Fout
   m - m_min == m_pos - m_neg
   Fout == k*m_pos
-  <font color="#808080"><i># 0 &lt;= m_pos _|_ m_neg &gt;= 0</i></font>
-  m_pos + m_neg - <font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqr</font>(m_pos)+<font color="#2ECC40">sqr</font>(m_neg)+epsilon) &lt;= 0
+  @phi(m_pos,m_neg) &lt;= 0
   J&acute; == <font color="#2ECC40">sqr</font>(m - m_set)
   Fin :: <font color="#7FDBFF">constant</font>
 

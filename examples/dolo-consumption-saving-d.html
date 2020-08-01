@@ -1,0 +1,166 @@
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">The consumption-saving problem</h1>
+<pre>
+<font color="red"><b>rem:</b></font> The consumption-saving problem
+</pre>
+<p>
+  We consider a version of the consumption-saving problem with temporary income
+  shocks:
+<p>
+  \[
+  J = \max_{{\{c_t,w_{t+1}\}}_{t=0}^{\infty}} \mathbb{E} \Big[ \sum_{t=0}^{\infty} \beta^t u(c_t) \Big]\\
+  w_{t+1} = r (w_t-c_t) + e^{y_t}\\
+  0 < c_t \leq w_t
+  \]
+<p>
+  where \(c_t\) and \(w_t\) are consumption and the beginning-of-period cash-on-hand,
+  respectively; \(y_t\) is a temporary income shock; \(u\) is a utility function,
+  which is assumed to be strictly increasing and concave; \(\beta\) is a subjective
+  discount factor and \(r \in (0,\frac{1}{\beta})\) is a (gross) constant interest
+  rate.
+<p>
+  We parameterize the model by \(u(c) = \frac{c^{1-\gamma}}{1-\gamma}\) where \(\gamma\)
+  is a risk-aversion coefficient and solve the Bellman's equation using a Chebyshev
+  collocation method. In doing so, we use the DYNA features to solve ordinary
+  optimization problems, not a usual optimal control problem.
+<p>
+  References:
+  <ol>
+  <li>L. Maliar, S. Maliar and P. Winant,
+  <em>Will Artificial Intelligence Replace Computational Economists Any Time Soon?</em>,
+  Discussion Paper DP14024, Centre for Economic Policy Research, November 2019.
+  <li>P. Winant,
+  <em>dolo Documentation - Release 0.4.9.2</em>,
+  https://dolo.readthedocs.io/en/latest
+  </ol>
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">time-model</font> = None
+  <font color="#39CCCC">include-library</font> = Chebyshev
+
+<font color="red"><b>mac:</b></font>
+  @norm(z,l,u) ((&z-(&l+&u)/2)/((&u-&l)/2))
+
+<font color="red"><b>set:</b></font>
+  iw = w1:w5		<font color="#808080"><i># Nodes for wealth at which value function is evaluated</i></font>
+  iy = y1:y5		<font color="#808080"><i># Nodes for income shocks</i></font>
+  ia = a1:a15
+  <font color="#8A2BE2">alias</font>(jy,iy)
+
+<font color="red"><b>par:</b></font>
+  beta = 0.9
+  gamma = 2
+  r = 1.04
+  sigma = 0.1
+  wlo = 0.1
+  wup = 4
+  wbar[iw] = (wlo+wup+(wup-wlo)*<font color="#0074D9">ChebyshevQN</font>(iw))/2
+  ylo = <font color="#2ECC40">exp</font>(-3*sigma)
+  yup = <font color="#2ECC40">exp</font>(+3*sigma)
+  ybar[iy] = (ylo+yup+(yup-ylo)*<font color="#0074D9">ChebyshevQN</font>(iy))/2
+		<font color="#808080"><i># Tauchen AR(1) discretization (rho=0.9, mu=0, sigma=0.1)</i></font>
+  tmatrix[iy,jy] = [\
+    0.8491 0.1509 0   	 0      0,\
+    0.0195 0.8962 0.0843 0   	0,\
+    0      0.0427 0.9146 0.0427	0,\
+    0      0      0.0843 0.8962 0.0195,\
+    0      0      0      0.1509 0.8491]
+  y[iy] = <font color="#2ECC40">exp</font>(<font color="#3D9970">sum</font>(jy, tmatrix[iy,jy]*<font color="#2ECC40">log</font>(ybar[jy])))
+
+<font color="red"><b>var:</b></font>
+  J[iw,iy]
+  ksi
+  w[iw,iy]
+  c[iw]
+  a[ia]
+
+<font color="red"><b>lim:</b></font>
+  wlo &lt;= w[iw,iy] &lt;= wup
+  1e-6 &lt;= c[iw] &lt;= +<font color="#3D9970">inf</font>
+
+<font color="red"><b>equ:</b></font>
+  utility..	  ksi == <font color="#3D9970">sum</font>((iw,iy), J[iw,iy])
+  market[iw,iy].. w[iw,iy] == y[iy] + (wbar[iw]-c[iw])*r
+  Jdef[iw,iy]..	  J[iw,iy] == c[iw]^(1-gamma)/(1-gamma) + beta*<font color="#3D9970">sum</font>(jy, tmatrix[iy,jy]*<font color="#0074D9">SChebyshev2</font>(4,@norm(w[iw,iy],wlo,wup),@norm(y[jy],ylo,yup),a,ia))
+  bound[iw]..	  c[iw] &lt;= wbar[iw]
+  lsq..		  ksi == <font color="#3D9970">sum</font>((iw,iy), <font color="#2ECC40">sqr</font>(<font color="#0074D9">SChebyshev2</font>(4,@norm(wbar[iw],wlo,wup),@norm(ybar[iy],ylo,yup),a,ia) - J[iw,iy]))
+
+<font color="red"><b>ini:</b></font>
+  a[ia] = 1
+  J[iw,iy] = 1
+
+<font color="red"><b>gms:</b></font>
+  <font color="#3D9970">abort</font>$(<font color="#0074D9">SChebyshevDim</font>(2,4) ne <font color="#3D9970">card</font>(ia)) 'Wrong size for set ia.';
+  <font color="#3D9970">execute</font> 'echo Value iteration launched...';
+  <font color="#3D9970">model</font> bellman /utility,market,Jdef,bound/;
+  <font color="#3D9970">model</font> lsqr /lsq/;
+  bellman.solvelink = 2; lsqr.solvelink = 2;
+  <font color="#3D9970">set</font> iter /1*128/;
+  <font color="#3D9970">scalar</font> dev "Current deviation coefficient" /1/;
+  <font color="#3D9970">parameter</font> itlog "Iteration log";
+  <font color="#3D9970">loop</font>(iter$<font color="#2ECC40">round</font>(dev,6),
+    itlog(iter,ia) = a.l[ia];
+    a.lo[ia] = -<font color="#3D9970">inf</font>; a.up[ia] = +<font color="#3D9970">inf</font>;
+    J.fx[iw,iy] = J.l[iw,iy];
+    <font color="#3D9970">solve</font> lsqr minimizing ksi using nlp;
+    <font color="#3D9970">abort</font>$(lsqr.solvestat&lt;&gt;1 or lsqr.modelstat&gt;2) "LSQR does not solve.";
+    dev = <font color="#3D9970">sum</font>(ia, <font color="#2ECC40">sqr</font>(a.l[ia]-itlog(iter,ia)));
+    itlog(iter,"dev") = dev;
+    itlog(iter,"ksi") = ksi.l;
+    a.fx[ia] = a.l[ia];
+    J.lo[iw,iy] = -<font color="#3D9970">inf</font>; J.up[iw,iy] = +<font color="#3D9970">inf</font>;
+    <font color="#3D9970">solve</font> bellman maximizing ksi using nlp;
+    <font color="#3D9970">abort</font>$(bellman.solvestat&lt;&gt;1 or bellman.modelstat&gt;2) "Bellman does not solve.";
+    );
+  <font color="#3D9970">display</font> itlog;
+  <font color="#3D9970">execute</font> 'echo Value iteration ended.';
+
+<font color="red"><b>put:</b></font>
+  "<font color="#8A2BE2">%FN%</font>.<font color="#8A2BE2">%N%</font>.m&lt;"
+  <font color="#808080"><i># plot optimal policy</i></font>
+  figure(1);
+  w = ["wbar[iw]:8:4"];
+  y = ["ybar[iy]:8:4"];
+  c = ["c.l[iw]:8:4"];
+  plot(w,c);
+  title('Optimal Consumption Policy');
+  xlabel('Wealth');
+  <font color="#808080"><i># plot value function</i></font>
+  figure(2);
+  J = ["J.l[iw,iy]:9:3"];
+  surf(w,y,J');
+  title('Value Function');
+  xlabel('Wealth');
+  ylabel('Income shock');
+  <font color="#808080"><i># plot market price function</i></font>
+  figure(3);
+  m = ["market.m[iw,iy]:8:4"];
+  surf(w,y,m');
+  title('Market Price Function');
+  xlabel('Wealth');
+  ylabel('Income shock');
+  figure(4);
+  "`parameter ssd; ssd[iter] = itlog[iter,'dev'];`"
+  ssd = ["ssd[iter]:9:3"];
+  plot(ssd);
+  title('Sum of Square Deviations');
+  xlabel('Number of iterations');
+</pre>
+</body>
+</html>

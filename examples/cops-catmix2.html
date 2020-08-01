@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -31,14 +31,14 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 
 <font color="red"><b>par:</b></font>
   tf = 1 
-  bc(ne) = [e1 1, e2 0]   <font color="#808080"><i># Boundary conditions for x</i></font>
+  bc[ne] = |e1 1, e2 0|   <font color="#808080"><i># Boundary conditions for x</i></font>
 
 <font color="red"><b>dyn:</b></font> v[ne] u
 
 <font color="red"><b>lim:</b></font> 0 &lt;= u &lt;= 1
 
 <font color="red"><b>t=t0:</b></font>
-  v[ne] = bc(ne)
+  v[ne] = bc[ne]
 
 <font color="red"><b>equ:</b></font>
   v&acute;['e1'] == u*(10*v['e2']-v['e1'])

@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -85,7 +85,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <p>
 <pre>
 <font color="red"><b>set:</b></font>
-  f = F0*F1000
+  f = F0:F1000
 
 <font color="red"><b>par:</b></font>
   tf = 10
@@ -114,7 +114,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   Ti = 5
   Td = 0
 
-<font color="#8B0000">$macro</font> g(w,c) sqrt(sqr(-sin(w)*K/(Ti*w^3*sqr(1-Th^2*w^2/2)+Ti*w*sqr(1-Th^2*w^2/2)+Th^2*Ti*w^5+Th^\
+<font color="#FF8000">$macro</font> g(w,c) sqrt(sqr(-sin(w)*K/(Ti*w^3*sqr(1-Th^2*w^2/2)+Ti*w*sqr(1-Th^2*w^2/2)+Th^2*Ti*w^5+Th^\
   2*Ti*w^3)+Th^2*w*<font color="#2ECC40">sin</font>(w)*K/(2*Ti*w^2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+2*Ti*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+2*Th^2*Ti*w^4+2*\
   Th^2*Ti*w^2)+Th*w*<font color="#2ECC40">sin</font>(w)*K/(Ti*w^2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+Ti*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+Th^2*Ti*w^4+Th^2*Ti*\
   w^2)-Td*Th^2*w^3*<font color="#2ECC40">sin</font>(w)*K/(2*w^2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+2*Th^2*w^4+2*Th^2*w^2)\
@@ -136,7 +136,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   w)/(Ti*w^2+Ti)-Td*Th^2*w^3*<font color="#2ECC40">cos</font>(w)/(2*w^2+2)+Th^2*w^3*<font color="#2ECC40">cos</font>(w)/(2*w^2+2)-Td*Th*w^3*<font color="#2ECC40">cos</font>(w)/(w^2+1)\
   -Th*w*<font color="#2ECC40">cos</font>(w)/(w^2+1)+Td*w*<font color="#2ECC40">cos</font>(w)/(w^2+1)-w*<font color="#2ECC40">cos</font>(w)/(w^2+1))*K^2/<font color="#2ECC40">sqr</font>(<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+Th^2*w^\
   2))
-<font color="#8B0000">$macro</font> circle(w,radius,center) (radius - g(w,center))
+<font color="#FF8000">$macro</font> circle(w,radius,center) (radius - g(w,center))
 
 <font color="red"><b>exp:</b></font>
   i == u + d$(<font color="#0074D9">Time</font>&gt;0)
@@ -145,13 +145,13 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   <font color="#8A2BE2">@tfm</font> Num=1, Den=(1 1), Delay=1, In=i, Out=y					<font color="#808080"><i># P(s)</i></font>
   <font color="#8A2BE2">@tfm</font> Num=-2/Th^2*K*(Td 1 1/Ti), Den=(1 0)*(1 2/Th 2/Th^2), In=y, Out=u	<font color="#808080"><i># -F(s)*C(s)</i></font>
   J&acute; == <font color="#2ECC40">sqrt</font>(1e-6+<font color="#2ECC40">sqr</font>(y))
-  robust_s(f).. circle(w(f),1/Ms,-1) &lt;= 0
-  robust_t(f).. circle(w(f),Mt/(Mt*Mt-1),-Mt*Mt/(Mt*Mt-1)) &lt;= 0
+  robust_s[f].. circle(w(f),1/Ms,-1) &lt;= 0
+  robust_t[f].. circle(w(f),Mt/(Mt*Mt-1),-Mt*Mt/(Mt*Mt-1)) &lt;= 0
 
 <font color="red"><b>obj:</b></font>
   <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp <font color="#8A2BE2">with</font> conopt|snopt
 
-<font color="#8B0000">$macro</font> sc2(w) (K^2*(sqr(Td*w-1/(Ti*w))+1)/((sqr(-sin(w)*K/(Ti*w^3*sqr(1-Th^2*w^2/2)+Ti*w*sqr(1-Th^\
+<font color="#FF8000">$macro</font> sc2(w) (K^2*(sqr(Td*w-1/(Ti*w))+1)/((sqr(-sin(w)*K/(Ti*w^3*sqr(1-Th^2*w^2/2)+Ti*w*sqr(1-Th^\
   2*w^2/2)+Th^2*Ti*w^5+Th^2*Ti*w^3)+Th^2*w*<font color="#2ECC40">sin</font>(w)*K/(2*Ti*w^2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+2*Ti*<font color="#2ECC40">sqr</font>(1-Th^2*\
   w^2/2)+2*Th^2*Ti*w^4+2*Th^2*Ti*w^2)+Th*w*<font color="#2ECC40">sin</font>(w)*K/(Ti*w^2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+Ti*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/\
   2)+Th^2*Ti*w^4+Th^2*Ti*w^2)-Td*Th^2*w^3*<font color="#2ECC40">sin</font>(w)*K/(2*w^2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)+2*<font color="#2ECC40">sqr</font>(1-Th^2*w^2/2)\
@@ -176,7 +176,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 
 <font color="red"><b>gms:</b></font>
   <font color="#3D9970">scalar</font> sc 'Noise sensitivity proxy';
-  <font color="#8B0000">$$ondotL</font>
+  <font color="#FF8000">$$ondotL</font>
   sc = <font color="#3D9970">sum</font>(f$(<font color="#3D9970">ord</font>(f)=1), sc2(w(f))*(w(f+1)-w(f))/2)
      + <font color="#3D9970">sum</font>(f$(<font color="#3D9970">ord</font>(f)&gt;1 and <font color="#3D9970">ord</font>(f)&lt;<font color="#3D9970">card</font>(f)), sc2(w(f))*(w(f+1)-w(f-1))/2)
      + <font color="#3D9970">sum</font>(f$(<font color="#3D9970">ord</font>(f)=<font color="#3D9970">card</font>(f)), sc2(w(f))*(w(f)-w(f-1))/2);

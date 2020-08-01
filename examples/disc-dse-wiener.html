@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.3 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -31,15 +31,17 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   ts = 1
   alpha = 0.9
 
+<font color="red"><b>tpa:</b></font>
+  W[scen]
+
 <font color="red"><b>dyn:</b></font>
   x[scen]
-  W[scen]
 
 <font color="red"><b>k=k0:</b></font>
   x[scen] = 0
 
 <font color="red"><b>sim:</b></font>
-  W[scen] :: <font color="#7FDBFF">Wiener</font>
+  W[scen] ~~ <font color="#7FDBFF">Wiener</font>
   x&acute;[scen] := <font color="#2ECC40">exp</font>(-alpha*ts)*x[scen] + W[scen]
   
 </pre>

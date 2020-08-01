@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -21,6 +21,13 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <p>
   Here follows an example of a pursuit-evasion game.
 <p>
+  Reference:
+  <ol>
+  <li>S.M. LaValle,
+  <em>Planning Algorithms</em>,
+  Cambridge University Press, 2006.
+  </ol>
+<p>
 <pre>
 <font color="red"><b>par:</b></font>
   L1 = 1
@@ -29,18 +36,18 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   s2 = 1
   phi = 1
   tf = 5
-  
+
 <font color="red"><b>var:</b></font>
   Jf
-  
+
 <font color="red"><b>dyn:</b></font>
   x1 y1 theta1 u
   x2 y2 theta2 v
-  
+
 <font color="red"><b>lim:</b></font>
   -phi &lt;= u &lt;= phi
   -phi &lt;= v &lt;= phi
-  
+
 <font color="red"><b>t=t0:</b></font>
   x1 = 2
   y1 = 2
@@ -48,7 +55,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   x2 = 1
   y2 = 1
   theta2 = 0
-  
+
 <font color="red"><b>exp:</b></font>
   J == <font color="#2ECC40">sqr</font>(x1-x2) + <font color="#2ECC40">sqr</font>(y1-y2)
 
@@ -69,7 +76,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   <font color="#8A2BE2">@alltimeput</font> x2 / y2 / theta2 / v /;
   <font color="#8A2BE2">@abltimeput</font> eqx2 / eqy2 / eqt2 /;
   <font color="#3D9970">put</font> 'eqjf' /;
-  <font color="#3D9970">putclose</font>;  
+  <font color="#3D9970">putclose</font>;
 
 <font color="red"><b>obj:</b></font>
   <font color="#8A2BE2">minimize</font> Jf <font color="#8A2BE2">using</font> emp

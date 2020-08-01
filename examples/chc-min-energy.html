@@ -1,0 +1,109 @@
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Minimum-energy trajectory with chance constraints</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Minimum-energy trajectory with chance constraints
+</pre>
+<p>
+  This example, out of [1], is adapted from a minimum-energy problem with
+  second-order state constraints studied by Bryson and Ho [2].
+<p>
+  References:
+  <ol>
+  <li>Z. Zhao and M. Kumar,
+  <em>Split-Bernstein Approach to Chance-Constrained Optimal Control</em>,
+  Journal of Guidance, Control, and Dynamics, 40(11):2782-2795, 2017.
+  <li>A.E. Bryson and Y.-C. Ho,
+  <em>Applied Optimal Control: Optimization, Estimation, and Control</em>,
+  Hemisphere Publishing, New York, 1975.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>set:</b></font>
+  scen = sc1:sc2048
+
+<font color="red"><b>par:</b></font>
+  l = 0.16
+  epsilon = 0.1
+  ksi[scen]
+  depsilon = 0
+  chance = 0
+  tf = 1
+
+<font color="red"><b>gms:</b></font>
+  <font color="#808080"><i># draw samples from the given bimodal distribution by inverting the CPDF</i></font>
+  <font color="#3D9970">scalar</font> xiu; <font color="#3D9970">variable</font> xi; <font color="#3D9970">equation</font> eq;
+  eq.. xiu =e= 1.2/2.5*<font color="#2ECC40">errorf</font>(xi/0.01) + 1.3/2.5*<font color="#2ECC40">errorf</font>((xi+0.02)/0.02);
+  <font color="#3D9970">model</font> m /eq/;
+  m.solprint = 2;
+  m.solvelink = %solveLink.loadLibrary%;
+  <font color="#3D9970">loop</font>(scen,
+    xiu = <font color="#3D9970">ord</font>(scen)/(<font color="#3D9970">card</font>(scen)+1);
+    <font color="#3D9970">solve</font> m using cns;
+    ksi[scen] = xi.l
+    );
+
+<font color="red"><b>dyn:</b></font>
+  y{1:4}
+  u{1:2}
+  J
+
+<font color="red"><b>t=t0:</b></font>
+  y1 = 0
+  y2 = 1
+  y3 = 0.3
+  y4 = -1
+  J = 0
+
+<font color="red"><b>t=tf:</b></font>
+  y1 = 0
+  y2 = 0
+  y3 = 0.3
+  y4 = 0
+
+<font color="red"><b>equ:</b></font>
+  y1&acute; == y2
+  y2&acute; == u1
+  y3&acute; == y4
+  y4&acute; == u2
+  $(1-chance).. y3 - y1 &gt;= l + <font color="#3D9970">smax</font>(scen, ksi[scen])
+  $chance.. <font color="#3D9970">sum</font>(scen, <font color="#0074D9">Heaviside</font>(-(y3-y1-l-ksi[scen]))) / <font color="#3D9970">card</font>(scen) &lt;= epsilon + depsilon
+  J&acute; == <font color="#2ECC40">sqr</font>(u1) + <font color="#2ECC40">sqr</font>(u2)
+
+<font color="red"><b>ini:</b></font>
+  y{1:4} = <font color="#0074D9">linspace</font>(<font color="#0074D9">initial</font>(y{1:4}),<font color="#0074D9">final</font>(y{1:4}))
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#FF8000">$$ifthen</font> <font color="#8A2BE2">%ITERMAX%</font>==<font color="#8A2BE2">%ITER%</font>
+  <font color="#8A2BE2">%MODEL%</font>.solprint = 2;		<font color="#808080"><i># keep silent the computing details</i></font>
+  chance = 1;
+  <font color="#808080"><i># play with the probability level to get around the loss of feasibility while tightening tolerances with CONOPT</i></font>
+  depsilon = -epsilon;
+  <font color="#8A2BE2">@solve</font>
+  depsilon = -1/<font color="#3D9970">card</font>(scen);
+  <font color="#8A2BE2">@solve</font>
+  depsilon = 0;
+  <font color="#8A2BE2">%OBJECTIVE%</font>.lo = <font color="#8A2BE2">%OBJECTIVE%</font>.l;
+  <font color="#8A2BE2">%MODEL%</font>.solprint = 0;		<font color="#808080"><i># unveil the final results only</i></font>
+  <font color="#8A2BE2">@solve</font>
+  <font color="#FF8000">$$endif</font>
+</pre>
+</body>
+</html>

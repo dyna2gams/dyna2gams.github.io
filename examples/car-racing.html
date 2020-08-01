@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -54,14 +54,14 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   refX[phase]		<font color="#808080"><i># reference trajectory (middle of the lane)</i></font>
   refY[phase]
 
-<font color="#8B0000">$macro</font> ini\
+<font color="#FF8000">$macro</font> ini\
   a.l=1000*(y1.l-y2.l)/(x1.l*y2.l-y1.l*x2.l);\
   b.l=1000*(x2.l-x1.l)/(x1.l*y2.l-y1.l*x2.l);\
   p1.l=1000*(yc1-y2.l)/(xc1*y2.l-yc1*x1.l);\
   q1.l=1000*(x1.l-xc1)/(xc1*y2.l-yc1*x1.l);\
   p2.l=1000*(yc2-y2.l)/(xc2*y2.l-yc2*x2.l);\
   q2.l=1000*(x2.l-xc2)/(xc2*y2.l-yc2*x2.l);
-<font color="#8B0000">$macro</font> dat(i)\
+<font color="#FF8000">$macro</font> dat(i)\
   data('x1','i') = x1.l; data('y1','i') = y1.l;\
   data('x2','i') = x2.l; data('y2','i') = y2.l;\
   data('a','i') = a.l; data('b','i') = b.l;\

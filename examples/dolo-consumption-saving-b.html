@@ -1,0 +1,132 @@
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">The consumption-saving problem</h1>
+<pre>
+<font color="red"><b>rem:</b></font> The consumption-saving problem
+</pre>
+<p>
+  We consider a version of the consumption-saving problem with temporary income
+  shocks:
+<p>
+  \[
+  J = \max_{{\{c_t,w_{t+1}\}}_{t=0}^{\infty}} \mathbb{E} \Big[ \sum_{t=0}^{\infty} \beta^t u(c_t) \Big]\\
+  w_{t+1} = r (w_t-c_t) + e^{y_t}\\
+  0 < c_t \leq w_t
+  \]
+<p>
+  where \(c_t\) and \(w_t\) are consumption and the beginning-of-period cash-on-hand,
+  respectively; \(y_t\) is a temporary income shock; \(u\) is a utility function,
+  which is assumed to be strictly increasing and concave; \(\beta\) is a subjective
+  discount factor and \(r \in (0,\frac{1}{\beta})\) is a (gross) constant interest
+  rate.
+<p>
+  We parameterize the model by \(u(c) = \frac{c^{1-\gamma}}{1-\gamma}\) where
+  \(\gamma\) is a risk-aversion coefficient and characterize the solution by the
+  Karush-Kuhn-Tucker conditions.
+<p>
+  References:
+  <ol>
+  <li>L. Maliar, S. Maliar and P. Winant,
+  <em>Will Artificial Intelligence Replace Computational Economists Any Time Soon?</em>,
+  Discussion Paper DP14024, Centre for Economic Policy Research, November 2019.
+  <li>P. Winant,
+  <em>dolo Documentation - Release 0.4.9.2</em>,
+  https://dolo.readthedocs.io/en/latest
+  </ol>
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">time-model</font> = Discrete
+  <font color="#39CCCC">N</font> = 50
+
+<font color="red"><b>mac:</b></font>
+  @phi(a,b) (&a + (&b) - <font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqr</font>(&a-(&b))+4*<font color="#2ECC40">sqr</font>(mu)))/2
+
+<font color="red"><b>set:</b></font>
+  scen = sce1:sce64
+  s(scen)$(<font color="#3D9970">ord</font>(scen)&lt;=16) = <font color="#3D9970">yes</font>
+
+<font color="red"><b>par:</b></font>
+  beta = 0.9
+  gamma = 2
+  sigma = 0.1
+  rho = 0.9
+  r = 1.04
+  ts = 1
+  mu = 1e-2
+
+<font color="red"><b>var:</b></font>
+  a{0:3}
+
+<font color="red"><b>tpa:</b></font>
+  yr[scen] = <font color="#2ECC40">normal</font>(0,sigma)
+
+<font color="red"><b>dyn:</b></font>
+  w[scen]	<font color="#808080"><i># states</i></font>
+  c[scen]	<font color="#808080"><i># controls</i></font>
+  y[scen]	<font color="#808080"><i># exogenous</i></font>
+  zn[scen]:<font color="#3D9970">positive</font>
+  zp[scen]:<font color="#3D9970">positive</font>
+  zm[scen]
+  cc[scen]	<font color="#808080"><i># dc/dw</i></font>
+
+<font color="red"><b>lim:</b></font>
+  0.1 &lt;= w[scen] &lt;= 4
+
+<font color="red"><b>t=t0:</b></font>
+  w[scen] = 1
+  y[scen] = 0
+
+<font color="red"><b>equ:</b></font>
+  y&acute;[s] == rho*y[s] + yr[s]
+  w&acute;[s] == <font color="#2ECC40">exp</font>(y[s]) + (w[s]-c[s])*r
+  1e-3 &lt;= c[s] &lt;= w[s]  
+  (beta*r/<font color="#0074D9">succ</font>(c[s])^gamma)<font color="#8A2BE2">$NTF</font> - 1/c[s]^gamma + (beta*r*<font color="#0074D9">succ</font>(zm[s])*(1-<font color="#0074D9">succ</font>(cc[s])))<font color="#8A2BE2">$NTF</font> - zm[s] == zp[s] - zn[s]
+  @phi(zp[s],c[s]-1e-3) &lt;= 0
+  @phi(zn[s],w[s]-c[s]) &lt;= 0
+  c[s] == <font color="#0074D9">Poly3</font>((w[s]),a3,a2,a1,a0)
+  cc[s] == <font color="#0074D9">Poly2</font>((w[s]),3*a3,2*a2,a1)
+
+<font color="red"><b>ini:</b></font>
+  w[scen] = <font color="#0074D9">initial</font>(w[scen])
+  y[scen] = yr[scen]
+  c[scen] = 0.9*w[scen]
+  a{0:3} = <font color="#2ECC40">uniform</font>(0,0.5)
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">maximize</font> 0 <font color="#8A2BE2">using</font> nlp	<font color="#808080"><i># dummy objective</i></font>
+
+<font color="red"><b>gms:</b></font>
+  <font color="#3D9970">scalar</font> count;
+  <font color="#3D9970">for</font>(count = 32 to 64 by 16,
+    s(scen) = <font color="#3D9970">no</font>;
+    s(scen)$(count-16&lt;<font color="#3D9970">ord</font>(scen) and <font color="#3D9970">ord</font>(scen)&lt;=count) = <font color="#3D9970">yes</font>;
+    <font color="#8A2BE2">@solve</font>
+    );  
+  s(scen) = <font color="#3D9970">yes</font>;
+  <font color="#8A2BE2">@solve</font>
+  <font color="#3D9970">repeat</font>(
+    mu = mu / 10;
+    <font color="#8A2BE2">@solve</font>
+    <font color="#3D9970">until</font> mu &lt; 1e-6);
+  <font color="#808080"><i># Generate data to plot c = c(w) on the relevant interval</i></font>
+  <font color="#8A2BE2">@tpa</font> wp; wp = <font color="#0074D9">AllTimeMin</font>(<font color="#3D9970">smin</font>(scen,w.l[scen])) + (<font color="#0074D9">AllTimeMax</font>(<font color="#3D9970">smax</font>(scen,w.l[scen]))-<font color="#0074D9">AllTimeMin</font>(<font color="#3D9970">smin</font>(scen,w.l[scen])))*<font color="#0074D9">Time</font>/<font color="#8A2BE2">%N%</font>/ts;
+  <font color="#8A2BE2">@tpa</font> cp; cp = <font color="#0074D9">Poly3</font>(wp,a3.l,a2.l,a1.l,a0.l);
+  <font color="#8A2BE2">@csvsave</font> wp cp 
+</pre>
+</body>
+</html>

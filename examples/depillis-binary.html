@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -150,7 +150,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   vLmax = 5e5
   vMmax = 5
   vImax = 5e5
-  tlen_[phase] = /ph1 1, ph2 1, ph3 38/
+  tlen_[phase] = |ph1 1, ph2 1, ph3 38|
 
   <font color="#808080"><i># scaling</i></font>
   c = c_	*alpha*e/(a*a*a)
@@ -260,7 +260,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   <font color="#8A2BE2">minimize</font> <font color="#3D9970">sum</font>(phase$(<font color="#3D9970">ord</font>(phase)=<font color="#3D9970">card</font>(phase)),p_Tf*<font color="#0074D9">final</font>(T[phase])+<font color="#0074D9">final</font>(J[phase])) <font color="#8A2BE2">using</font> nlp <font color="#8A2BE2">with</font> conopt|snopt
 
 <font color="red"><b>gms:</b></font>
-  <font color="#8B0000">$$iftheni</font> <font color="#8A2BE2">%ITER%</font>==<font color="#8A2BE2">%ITERMAX%</font>
+  <font color="#FF8000">$$iftheni</font> <font color="#8A2BE2">%ITER%</font>==<font color="#8A2BE2">%ITERMAX%</font>
   <font color="#8A2BE2">@seeksur</font> wL[phase]
   <font color="#8A2BE2">@seeksur</font> wM[phase]
   <font color="#8A2BE2">@seeksur</font> wI[phase]
@@ -270,7 +270,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   L.l[phase] = L.l[phase] /b;
   C.l[phase] = C.l[phase] *alpha/a;
   I.l[phase] = I.l[phase] /b;
-  <font color="#8B0000">$$endif</font>
+  <font color="#FF8000">$$endif</font>
 </pre>
 </body>
 </html>
