@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.3 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -34,11 +34,11 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <p>
 <pre>
 <font color="red"><b>set:</b></font>
-  scen = sce1:sce64,det
-  sto(scen) = sce1:sce64
-  det(scen) = det
-  sd = sto,det
-  scsd(scen,sd) = /(sce1:sce64).sto,det.det/
+  scen = |sce1:sce64,det|
+  sto[scen] = |sce1:sce64|
+  det[scen] = |det|
+  sd = |sto,det|
+  scsd[scen,sd] = |(sce1:sce64).sto,det.det|
 
 <font color="red"><b>par:</b></font>
   R[scen]

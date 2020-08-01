@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -24,7 +24,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   <li>M. Diehl, H.G. Bock, E. Kostina,
   <em>An approximation technique for robust nonlinear optimization</em>,
   Mathematical Programming, 107:213-230, 2006.
-  </ol<
+  </ol>
 <p>
   See: <a href="https://mintoc.de/index.php/Batch_distillation_problem_(TACO)">mintoc.de</a>
 <p>
@@ -36,11 +36,11 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   mC = 0.1
 
 <font color="red"><b>set:</b></font>
-  dis       = pde0:pde6
-  disF(dis) = pde0
-  disM(dis) = pde1:pde5
-  disK(dis) = pde5
-  disL(dis) = pde6
+  dis       = |pde0:pde6|
+  disF[dis] = |pde0|
+  disM[dis] = |pde1:pde5|
+  disK[dis] = |pde5|
+  disL[dis] = |pde6|
   <font color="#8A2BE2">alias</font>(i,dis)
 
 <font color="red"><b>dyn:</b></font> R M0 x[dis] MD xD alpha
@@ -78,9 +78,9 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 
 <font color="red"><b>equ:</b></font>
   M0&acute; == -V+L
-  [i]$disF(i).. x&acute;[i] == (L*x[i+1] - V*y[i] + (V-L)*x[i]) / M0
-  [i]$disM(i).. x&acute;[i] == (L*x[i+1] - V*y[i] + V*y[i-1] - L*x[i]) / m
-  [i]$disL(i).. x&acute;[i] == V/mC * (-x[i] + y[i-1])
+  [i]$disF[i].. x&acute;[i] == (L*x[i+1] - V*y[i] + (V-L)*x[i]) / M0
+  [i]$disM[i].. x&acute;[i] == (L*x[i+1] - V*y[i] + V*y[i-1] - L*x[i]) / m
+  [i]$disL[i].. x&acute;[i] == V/mC * (-x[i] + y[i-1])
   MD&acute; == V-L
   xD&acute; == (V-L) * (<font color="#3D9970">sum</font>(disK(i),x[i]) - xD) / MD
   alpha&acute; == 0.0

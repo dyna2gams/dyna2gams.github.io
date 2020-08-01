@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -53,7 +53,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   <font color="#39CCCC">default-iterations-number</font> = 4
   
 <font color="red"><b>fun:</b></font>
-  <font color="#8A2BE2">@readcsv</font> ifile=<font color="#FF4500"><font color="#FF4500">@home@</font></font>\examples\tutor-k.csv
+  <font color="#8A2BE2">@readcsv</font> ifile=<font color="#8B0000"><font color="#8B0000">@home@</font></font>\examples\tutor-k.csv
 
 <font color="red"><b>set:</b></font>
   phase = ph1:ph3
@@ -61,7 +61,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <font color="red"><b>par:</b></font>
   mu = 0.012277471
   muc = 1 - mu
-  tlen[phase] = / ph1 0.005, ph2 0.990, ph3 0.005 /
+  tlen[phase] = |ph1 0.005, ph2 0.990, ph3 0.005|
   tf = 1
 
 <font color="red"><b>var:</b></font>

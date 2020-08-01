@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -30,13 +30,13 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <p>
 <pre>
 <font color="red"><b>set:</b></font>
-  TTime = T0:T2
-  TTimeP(TTime) = T0
-  TTimeV(TTime) = T1,T2
+  TTime = |T0:T2|
+  TTimeP[TTime] = |T0|
+  TTimeV[TTime] = |T1,T2|
 
 <font color="red"><b>par:</b></font>
-  STime(TTime) = [T0 0, T1 1, T2 2]   <font color="#808080"><i># Simulation Time</i></font>
-  RTimeP(TTimeP) = [T0 0]   <font color="#808080"><i># Real Time (milestones given)</i></font>
+  STime[TTime] = |T0 0, T1 1, T2 2|   <font color="#808080"><i># Simulation Time</i></font>
+  RTimeP[TTimeP] = |T0 0|   <font color="#808080"><i># Real Time (milestones given)</i></font>
   tf = STime('T2')
 
 <font color="red"><b>var:</b></font>
@@ -46,8 +46,8 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   RTimeP(TTimeP) &lt;= RTime(TTimeP) &lt;= RTimeP(TTimeP)
   5 &lt;= RTime(TTimeV) &lt;= 50
 
-<font color="#8B0000">$macro</font> TimeS2R(tau) TInterp1(tau,TTime,RTime,STime)  <font color="#808080"><i># calculation of RTime(tau) by interpolation</i></font>
-<font color="#8B0000">$macro</font> TimeS2RDot(tau) TInterpDot1(tau,TTime,RTime,STime)  <font color="#808080"><i># derivative of the interpolation function</i></font>
+<font color="#FF8000">$macro</font> TimeS2R(tau) TInterp1(tau,TTime,RTime,STime)  <font color="#808080"><i># calculation of RTime(tau) by interpolation</i></font>
+<font color="#FF8000">$macro</font> TimeS2RDot(tau) TInterpDot1(tau,TTime,RTime,STime)  <font color="#808080"><i># derivative of the interpolation function</i></font>
 
 <font color="red"><b>dyn:</b></font> x v u
 
