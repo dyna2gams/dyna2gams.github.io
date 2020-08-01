@@ -1,0 +1,117 @@
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Diafiltration optimal design</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Diafiltration optimal design
+</pre>
+<p>
+  Consider the following problem which describes diafiltration optimal design problem:
+<p>
+  \[
+  \min_{\alpha(t)} J = x_2(t_f)
+  \]
+<p>
+  subject to differential equations:
+<p>
+  \[
+  \dot{x}_1 = \frac{x_1}{x_3} q(x_1,x_2) \big(R_1(x_1,x_2) - \alpha\big)\\
+  \dot{x}_2 = \frac{x_2}{x_3} q(x_1,x_2) \big(R_2(x_1,x_2) - \alpha\big)\\
+  \dot{x}_3 = q(x_1,x_2) (\alpha-1)
+  \]
+<p>
+  state path constraints:
+<p>
+  \[
+  x_3(t) \geq 0.01\\
+  x_3(t) \leq 0.035
+  \]
+<p>
+  initial time constraints:
+<p>
+  \[
+  x_1(0) = 150\\
+  x_2(0) = 300\\
+  x_3(0) = 0.03
+  \]
+<p>
+  final time constraint:
+<p>
+  \[
+  x_3(t_f) = 0.01
+  \]
+<p>
+  and simple bound constraints on optimized variable:
+<p>
+  \[
+  \alpha \in [0,1]
+  \]
+<p>
+  where \(R_1, R_2, q\) are function of states determined experimentally.
+<p>
+  Source: DYNOPT - MATLAB Dynamic Optimisation Code, User&rsquo;s Guide version 4.3.0, March 28, 2017
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">substitute-symbols</font> = S1&gt;SS1 | S2&gt;SS2 | W1&gt;WW1 | W2&gt;WW2
+
+<font color="red"><b>par:</b></font>
+  s{1:6} = {68.1250e-9 -56.4512e-6 32.5553e-3 -4.3529e-9 3.3216e-6 -2.7141e-3}
+  w{1:6} = {7.8407e-6 -4.0507e-3 1.0585 1.2318e-9 -9.7660e-6 -1.1677e-3}
+  z{1:4} = {-0.0769e-6 -0.0035e-3 0.0349e-3 0.9961}
+  tf = 6	<font color="#808080"><i># [hour]</i></font>
+
+<font color="red"><b>dyn:</b></font>
+  x1		<font color="#808080"><i># [mol/m³]</i></font>
+  x2		<font color="#808080"><i># [mol/m³]</i></font>
+  x3		<font color="#808080"><i># [m³]</i></font>
+  alf
+
+<font color="red"><b>lim:</b></font>
+  0.01 &lt;= x3 &lt;= 0.035
+  0 &lt;= alf &lt;= 1
+
+<font color="red"><b>t=t0:</b></font>
+  x1 = 150
+  x2 = 300
+  x3 = 0.03
+
+<font color="red"><b>t=tf:</b></font>
+  x3 = 0.01
+
+<font color="red"><b>exp:</b></font>
+  q == S1*<font color="#2ECC40">exp</font>(S2*x1)
+  R1 == z1*x1*x2 + z2*x1 + z3*x2 + z4
+  R2 == W1*<font color="#2ECC40">exp</font>(W2*x1)
+  S1 == <font color="#0074D9">Poly2</font>(x2,s1,s2,s3)
+  S2 == <font color="#0074D9">Poly2</font>(x2,s4,s5,s6)
+  W1 == <font color="#0074D9">Poly2</font>(x2,w1,w2,w3)
+  W2 == <font color="#0074D9">Poly2</font>(x2,w4,w5,w6)
+
+<font color="red"><b>equ:</b></font>
+  x1&acute; == x1/x3*q*(R1-alf)
+  x2&acute; == x2/x3*q*(R2-alf)
+  x3&acute; == q*(alf-1)
+
+<font color="red"><b>ini:</b></font>
+  x1 = <font color="#0074D9">initial</font>(x1)
+  x2 = <font color="#0074D9">initial</font>(x2)
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(x2) <font color="#8A2BE2">using</font> nlp
+</pre>
+</body>
+</html>

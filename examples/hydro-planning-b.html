@@ -1,0 +1,217 @@
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">A Hydropower Planning Model</h1>
+<pre>
+<font color="red"><b>rem:</b></font> A Hydropower Planning Model
+</pre>
+<p>
+  The hydropower planning problem is an annual model of a single aggregated
+  reservoir with a monthly release schedule for hydropower generation.
+<p>
+  Two state variables characterize water management at time \(t\), namely \(L_t\),
+  the stock of water in the reservoir and \(D_t\), the inflow of water to the
+  reservoir as a function of precipitation levels. Inflow \(D_t\) consists of
+  stochastic deviations from average monthly inflow levels characterizing the state
+  variable as following a first order autoregressive process. \(z_t\) and \(r_t\)
+  denote the water retained and released every month to generate electricity; if the
+  capacity of the reservoir is exceeded, the excess water runs down the spillway and
+  bypasses the power plant. In other words, spills (denoted \(s_t\)) balance the
+  system when the reservoir overflows, but have no economic value in the model.
+<p>
+  References:
+  <ol>
+  <li>W. Chang and T. Rutherford,
+  <em>Solving Stochastic Dynamic Programming Problems: A Mixed Complementarity Approach</em>,
+  Department of Agricultural and Applied Economics, University of Wisconsin-Madison, 2016.
+  <li>W. Chang, M.C. Ferris, Y. Kim and T. Rutherford,
+  <em>Solving Stochastic Dynamic Programming Problems: A Mixed Complementarity Approach</em>,
+  Computational Economics, 55:925-955, 2020.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">time-model</font> = None
+  <font color="#39CCCC">include-library</font> = Hermite | Chebyshev
+
+<font color="red"><b>set:</b></font>
+  m = |jan,feb,mar,apr,may,jun,jul,aug,sep,oct,nov,dec|
+  il = l1:l5	<font color="#808080"><i># Reservoir level nodes</i></font>
+  ip = p1:p5	<font color="#808080"><i># Precipitation level nodes</i></font>
+  is = i1:i5	<font color="#808080"><i># Gauss-Hermite grid nodes</i></font>
+  ia = a1:a15
+
+<font color="red"><b>par:</b></font>
+  dfac = 0.995					<font color="#808080"><i># Monthly discount factor</i></font>
+  inflow[m] = |jan   1.2, feb   1.0, mar  1.1,\	<font color="#808080"><i># Mean inflow [million m³]</i></font>
+               apr   1.2, may  40.2, jun 99.5,\
+               jul 146.3, aug 138.2, sep 70.7,\
+               oct  11.7, nov   2.3, dec  1.5|
+  lmax = 250					<font color="#808080"><i># Maximum water level the dam can store [million m³]</i></font>
+  lmin = 0					<font color="#808080"><i># Minimum water level that must be maintained [million m³]</i></font>
+  rmax = 140					<font color="#808080"><i># Maximum amount that can be released per month [million m³]</i></font>
+  g[m] = 140					<font color="#808080"><i># Monthly demand (fixed)</i></font>
+  cref = 1					<font color="#808080"><i># Reference cost</i></font>
+  eta = 2					<font color="#808080"><i># Elasticity of non-hydro supply</i></font>
+  xref = 100					<font color="#808080"><i># Reference non-hydro supply</i></font>
+  L[il,m] =\					<font color="#808080"><i># Value of water level on the grid</i></font>
+    (lmin+lmax+(lmax-lmin)*<font color="#0074D9">ChebyshevQN</font>(il))/2
+  rhod = 0.9					<font color="#808080"><i># Rainfall persistence (highly persistent)</i></font>
+  sigma = 0.1					<font color="#808080"><i># Normalized standard deviation of inflow</i></font>
+  d_mean[m] = inflow[m]				<font color="#808080"><i># Mean value of D</i></font>
+  d_std[m] = sigma*d_mean[m]/<font color="#2ECC40">sqrt</font>(1-rhod^2)	<font color="#808080"><i># Standard deviation of D</i></font>
+  d_low[m] = d_mean[m] - 3*d_std[m]		<font color="#808080"><i># Low value of D on the grid</i></font>
+  d_high[m] = d_mean(m) + 3*d_std(m)		<font color="#808080"><i># High value of D on the grid</i></font>
+  D[ip,m] =\					<font color="#808080"><i># Value of D on the grid</i></font>
+    (d_low[m]+d_high[m]+(d_high[m]-d_low[m])*<font color="#0074D9">ChebyshevQN</font>(ip))/2
+  omega[is] = <font color="#0074D9">HermiteQW</font>(is)/<font color="#2ECC40">sqrt</font>(pi)		<font color="#808080"><i># Parameters of Gauss-Hermite quadrature</i></font>
+  zeta[is] = sigma*<font color="#2ECC40">sqrt</font>(2)*<font color="#0074D9">HermiteQN</font>(is)
+  DT[ip,m,is] =\				<font color="#808080"><i># Projected rainfall</i></font>
+    <font color="#2ECC40">min</font>(d_high[m], <font color="#2ECC40">max</font>(d_low[m], d_mean[m]*(1+rhod*(D[ip,m--1]/d_mean[m--1]-1)+zeta[is])))
+
+<font color="#FF8000">$macro</font> SChebyshev2m(deg,x1,x2,coe,ico) sum((i1_,i2_)$(ord(i1_)+ord(i2_)&lt;=deg+2),\
+  <font color="#3D9970">sum</font>(ico$(<font color="#3D9970">ord</font>(ico)-1=cheby2_(<font color="#3D9970">ord</font>(i1_)-1,<font color="#3D9970">ord</font>(i2_)-1,deg)),coe[ico,m])*\
+  ChebyshevT_(i1_,x1)*ChebyshevT_(i2_,x2))
+
+<font color="red"><b>mac:</b></font>
+  @norm(z,l,u) ((&z-(&l+&u)/2)/((&u-&l)/2))
+
+<font color="red"><b>var:</b></font>
+  P[il,ip,m]			<font color="#808080"><i># Current estimate of the shadow price of water</i></font>
+  X[il,ip,m]			<font color="#808080"><i># Non-hydro generation</i></font>
+  Z[il,ip,m]:<font color="#3D9970">positive</font>		<font color="#808080"><i># Water retained</i></font>
+  R[il,ip,m]			<font color="#808080"><i># Water released to generate electricity</i></font>
+  S[il,ip,m]:<font color="#3D9970">positive</font>		<font color="#808080"><i># Water spilled without generating electricity</i></font>
+  PT[il,ip,m,is]		<font color="#808080"><i># Projected shadow price</i></font>
+  LT[il,ip,m,is]		<font color="#808080"><i># Projected level (actually projected water retained)</i></font>
+  ST[il,ip,m,is]:<font color="#3D9970">positive</font>	<font color="#808080"><i># Projected water spilled</i></font>
+  a[ia,m]			<font color="#808080"><i># Polynomial approximation terms for L & D</i></font>
+  ksi ksiLS			<font color="#808080"><i># NLP objectives</i></font>
+
+<font color="red"><b>lim:</b></font>
+  0.001 &lt;= X[il,ip,m] &lt;= +<font color="#3D9970">inf</font>
+  0 &lt;= R[il,ip,m] &lt;= rmax
+  lmin &lt;= LT[il,ip,m,is] &lt;= lmax
+
+<font color="red"><b>equ:</b></font>
+  ksidef..		ksi == <font color="#3D9970">sum</font>((il,ip,m),\
+			  dfac * <font color="#3D9970">sum</font>(is, omega[is] * PT[il,ip,m++1,is] * LT[il,ip,m++1,is]) -\
+			  cref * xref * (X[il,ip,m]/xref)^eta )
+  supply[il,ip,m]..	Z[il,ip,m] + R[il,ip,m] == L[il,m] - S[il,ip,m]
+  demand[il,ip,m]..	g[m] == R[il,ip,m] + X[il,ip,m]
+  supplyt[il,ip,m,is]..	LT[il,ip,m,is] == Z[il,ip,m--1] + DT[ip,m,is] - ST[il,ip,m,is]
+  ptdef[il,ip,m,is]..	PT[il,ip,m,is] == SChebyshev2m(4,@norm(LT[il,ip,m,is],lmin,lmax),@norm(DT[ip,m,is],d_low[m],d_high[m]),a,ia)
+  lsq..			ksiLS == <font color="#3D9970">sum</font>((il,ip,m), <font color="#2ECC40">sqr</font>(SChebyshev2m(4,@norm(L[il,m],lmin,lmax),@norm(D[ip,m],d_low[m],d_high[m]),a,ia) - P[il,ip,m]))
+
+<font color="red"><b>ini:</b></font>
+  P[il,ip,m] = cref*eta
+  X[il,ip,m] = xref
+  Z[il,ip,m] = 0.4*(lmax-lmin)
+  R[il,ip,m] = rmax
+  S[il,ip,m] = 0
+  PT[il,ip,m,is] = cref*eta
+  LT[il,ip,m,is] = 0.5*(lmax-lmin)
+  ST[il,ip,m,is] = 0
+  a[ia,m] = 0
+
+<font color="red"><b>gms:</b></font>
+  <font color="#3D9970">abort</font>$(<font color="#0074D9">SChebyshevDim</font>(2,4) ne <font color="#3D9970">card</font>(ia)) 'Wrong size for set ia.';
+  <font color="#3D9970">execute</font> 'echo Value iteration launched...';
+  <font color="#3D9970">model</font> hydro /ksidef,supply,demand,supplyt,ptdef/;
+  <font color="#3D9970">model</font> lsqr /lsq/;
+  hydro.solvelink = 2; lsqr.solvelink = 2;
+  <font color="#3D9970">set</font> iter /1*256/;
+  <font color="#3D9970">scalar</font> dev "Current deviation coefficient" /1/;
+  <font color="#3D9970">parameter</font> itlog "Iteration log";
+  <font color="#FF8000">$$if</font> exist <font color="#8A2BE2">%FN%</font>.gdx <font color="#3D9970">execute_load</font> '<font color="#8A2BE2">%FN%</font>.gdx',P,X,Z,R,S,PT,LT,ST,a,ksidef,supply,demand,supplyt,ptdef;
+  <font color="#FF8000">$$if</font> <font color="#3D9970">not</font> exist <font color="#8A2BE2">%FN%</font>.gdx supply.m[il,ip,m] = P.l[il,ip,m];
+  <font color="#3D9970">loop</font>(iter$<font color="#2ECC40">round</font>(dev,6),
+    itlog(iter,ia,m) = a.l[ia,m];
+    a.lo[ia,m] = -<font color="#3D9970">inf</font>; a.up[ia,m] = +<font color="#3D9970">inf</font>;
+    P.fx[il,ip,m] = supply.m[il,ip,m];
+    <font color="#3D9970">solve</font> lsqr minimizing ksiLS using nlp;
+    <font color="#3D9970">abort</font>$(lsqr.modelstat&lt;&gt;2 and lsqr.modelstat&lt;&gt;7) "LSQR does not solve.";
+    dev = <font color="#3D9970">sum</font>((ia,m), <font color="#2ECC40">sqr</font>(a.l[ia,m] - itlog(iter,ia,m)));
+    itlog(iter,"dev","") = dev;
+    itlog(iter,"ksi","") = ksiLS.l;
+    a.fx[ia,m] = a.l[ia,m];
+    P.lo[il,ip,m] = -<font color="#3D9970">inf</font>; P.up[il,ip,m] = +<font color="#3D9970">inf</font>;
+    <font color="#3D9970">solve</font> hydro maximizing ksi using nlp;
+    <font color="#3D9970">abort</font>$(hydro.modelstat&lt;&gt;2 and hydro.modelstat&lt;&gt;7) "Hydro does not solve.";
+    <font color="#3D9970">execute_unload</font> '<font color="#8A2BE2">%FN%</font>.gdx',P,X,Z,R,S,PT,LT,ST,a,ksidef,supply,demand,supplyt,ptdef;
+    );
+  <font color="#3D9970">display</font> itlog;
+  <font color="#3D9970">execute</font> 'echo Value iteration ended.';
+
+<font color="red"><b>run:</b></font>
+  "%emp.info%" &lt; equilibrium | max ksi P X Z R S PT LT ST ksidef supply demand supplyt ptdef | min ksiLS a lsq | dualvar P supply
+
+<font color="red"><b>gms:</b></font>
+  <font color="#3D9970">execute</font> 'echo EMP solver launched...';
+  <font color="#3D9970">model</font> <font color="#8A2BE2">%MODEL%</font>_emp /hydro,lsqr/;
+  a.lo[ia,m] = -<font color="#3D9970">inf</font>; a.up[ia,m] = +<font color="#3D9970">inf</font>;
+  P.lo[il,ip,m] = -<font color="#3D9970">inf</font>; P.up[il,ip,m] = +<font color="#3D9970">inf</font>;
+  <font color="#3D9970">solve</font> <font color="#8A2BE2">%MODEL%</font>_emp using emp;
+  <font color="#3D9970">abort</font>$(<font color="#8A2BE2">%MODEL%</font>_emp.modelstat&lt;&gt;2) "<font color="#8A2BE2">%MODEL%</font>_emp does not solve.";
+  <font color="#3D9970">execute_unload</font> '<font color="#8A2BE2">%FN%</font>.gdx',P,X,Z,R,S,PT,LT,ST,a,ksidef,supply,demand,supplyt,ptdef;
+  <font color="#3D9970">execute</font> 'echo EMP solver ended.';
+
+<font color="red"><b>put:</b></font>
+  "<font color="#8A2BE2">%FN%</font>.<font color="#8A2BE2">%N%</font>.m&lt;"
+  "`parameter P1[il,m]; P1[il,m] = sum(ip$(ord(ip)=1),P.l[il,ip,m]);`"
+  "`parameter P2[il,m]; P2[il,m] = sum(ip$(ord(ip)=card(ip)),P.l[il,ip,m]);`"
+  P1 = ["P1[il,m]:8:4"];
+  P2 = ["P2[il,m]:8:4"];
+  "`parameter R1[il,m]; R1[il,m] = sum(ip$(ord(ip)=1),R.l[il,ip,m]);`"
+  "`parameter R2[il,m]; R2[il,m] = sum(ip$(ord(ip)=card(ip)),R.l[il,ip,m]);`"
+  R1 = ["R1[il,m]:9:3"];
+  R2 = ["R2[il,m]:9:3"];
+  figure(1)
+  plot(P1')
+  title('Low Precipitation Scenario');
+  ylabel('Shadow Price of Water')
+  xlim([1 12])
+  xticks([ 1:12 ])
+  xticklabels({'jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'})
+  figure(2)
+  plot(P2')
+  title('High Precipitation Scenario');
+  ylabel('Shadow Price of Water')
+  xlim([1 12])
+  xticks([ 1:12 ])
+  xticklabels({'jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'})
+  figure(3)
+  plot(R1')
+  title('Low Precipitation Scenario');
+  ylabel('Water Release Schedule (mcm)')
+  xlim([1 12])
+  xticks([ 1:12 ])
+  xticklabels({'jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'})
+  figure(4)
+  plot(R2')
+  title('High Precipitation Scenario');
+  ylabel('Water Release Schedule (mcm)')
+  xlim([1 12])
+  xticks([ 1:12 ])
+  xticklabels({'jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'})
+  L = ["L[il,m]:9:3"];
+  D = ["D[ip,m]:9:3"];
+  "`parameter R{jan feb mar apr may jun jul aug sep oct nov dec}[il,ip]; R{jan feb mar apr may jun jul aug sep oct nov dec}[il,ip] = sum(m$sameas(m,'{jan feb mar apr may jun jul aug sep oct nov dec}'),R.l[il,ip,m]);`"
+  R{jan feb mar apr may jun jul aug sep oct nov dec} = ["R{jan feb mar apr may jun jul aug sep oct nov dec}[il,ip]:9:3"];
+  R.{jan feb mar apr may jun jul aug sep oct nov dec} = [[0;L(:,{1 2 3 4 5 6 7 8 9 10 11 12})],[D(:,{1 2 3 4 5 6 7 8 9 10 11 12})';R{jan feb mar apr may jun jul aug sep oct nov dec}]];
+</pre>
+</body>
+</html>

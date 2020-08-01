@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.3 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -142,14 +142,14 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   <font color="#808080"><i># celestial longitude of the Earth at departure (radians)</i></font>
   t = (jd_depart - 2451545) / 36525;
   theta_earth = <font color="#0074D9">deg2rad</font>(<font color="#2ECC40">mod</font>(100.466449 + 35999.3728519 * t - 0.00000568 * <font color="#2ECC40">sqr</font>(t), 360));
-  <font color="#8B0000">$$ondotl</font>
+  <font color="#FF8000">$$ondotl</font>
   <font color="#8A2BE2">@tpa</font> xau = r*<font color="#2ECC40">cos</font>(theta+theta_earth);
   <font color="#8A2BE2">@tpa</font> yau = r*<font color="#2ECC40">sin</font>(theta+theta_earth);
   <font color="#8A2BE2">@tpa</font> xearth = <font color="#0074D9">initial</font>(r)*<font color="#2ECC40">cos</font>(<font color="#0074D9">Time</font>/tf*2*Pi);
   <font color="#8A2BE2">@tpa</font> yearth = <font color="#0074D9">initial</font>(r)*<font color="#2ECC40">sin</font>(<font color="#0074D9">Time</font>/tf*2*Pi);
   <font color="#8A2BE2">@tpa</font> xmars = <font color="#0074D9">final</font>(r)*<font color="#2ECC40">cos</font>(<font color="#0074D9">Time</font>/tf*2*Pi);
   <font color="#8A2BE2">@tpa</font> ymars = <font color="#0074D9">final</font>(r)*<font color="#2ECC40">sin</font>(<font color="#0074D9">Time</font>/tf*2*Pi);
-  <font color="#8B0000">$$offdotl</font>
+  <font color="#FF8000">$$offdotl</font>
   <font color="#8A2BE2">@csvsave</font> xau yau xearth yearth xmars ymars
   
 <font color="red"><b>gpl:</b></font>

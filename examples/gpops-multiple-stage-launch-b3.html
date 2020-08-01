@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -54,13 +54,13 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <p>
 <pre>
 <font color="red"><b>set:</b></font>
-  TTime = T0:T4
-  TTimeP(TTime) = T0:T3
-  TTimeV(TTime) = T4
+  TTime = |T0:T4|
+  TTimeP[TTime] = |T0:T3|
+  TTimeV[TTime] = |T4|
 
 <font color="red"><b>par:</b></font>
-  STime(TTime) = [T0 0, T1 1, T2 2, T3 3, T4 4]		<font color="#808080"><i># Simulation Time</i></font>
-  RTimeP(TTimeP) = [T0 0, T1 75.2, T2 150.4, T3 261]	<font color="#808080"><i># Real Time (milestones given)</i></font>
+  STime[TTime] = |T0 0, T1 1, T2 2, T3 3, T4 4|		<font color="#808080"><i># Simulation Time</i></font>
+  RTimeP[TTimeP] = |T0 0, T1 75.2, T2 150.4, T3 261|	<font color="#808080"><i># Real Time (milestones given)</i></font>
   tf = STime('T4')
   t{1:3} = RTimeP('T{1:3}')
 
@@ -71,8 +71,8 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   RTimeP(TTimeP) &lt;= RTime(TTimeP) &lt;= RTimeP(TTimeP)
   961 &lt;= RTime(TTimeV) &lt;= 1200
 
-<font color="#8B0000">$macro</font> TimeS2R(tau) TInterp1(tau,TTime,RTime,STime)		<font color="#808080"><i># calculation of RTime(tau) by interpolation</i></font>
-<font color="#8B0000">$macro</font> TimeS2RDot(tau) TInterpDot1(tau,TTime,RTime,STime)	<font color="#808080"><i># derivative of the interpolation function</i></font>
+<font color="#FF8000">$macro</font> TimeS2R(tau) TInterp1(tau,TTime,RTime,STime)		<font color="#808080"><i># calculation of RTime(tau) by interpolation</i></font>
+<font color="#FF8000">$macro</font> TimeS2RDot(tau) TInterpDot1(tau,TTime,RTime,STime)	<font color="#808080"><i># derivative of the interpolation function</i></font>
 
 <font color="red"><b>set:</b></font>
   <font color="#8A2BE2">alias</font>(cc,cc_,<font color="#0074D9">CartesianCoordinates</font>)

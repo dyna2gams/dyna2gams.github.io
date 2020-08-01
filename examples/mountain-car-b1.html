@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.3 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -110,7 +110,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   <font color="#8A2BE2">minimize</font> theta1*<font color="#0074D9">final</font>(J)+theta2*amax+theta3*tf <font color="#8A2BE2">using</font> nlp
 
 <font color="red"><b>gms:</b></font>
-  <font color="#8B0000">$$ifthen</font> <font color="#8A2BE2">%ITER%</font>==<font color="#8A2BE2">%ITERMAX%</font>
+  <font color="#FF8000">$$ifthen</font> <font color="#8A2BE2">%ITER%</font>==<font color="#8A2BE2">%ITERMAX%</font>
   <font color="#808080"><i># find a feasible solution with |a|&lt;1</i></font>
   theta2 = 1;
   <font color="#3D9970">repeat</font>(
@@ -124,7 +124,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   <font color="#808080"><i># find min tf with |a|&lt;=1</i></font>
   theta1 = 0.01; theta2 = 0; theta3 = 1;
   <font color="#8A2BE2">@solve</font>
-  <font color="#8B0000">$$endif</font>
+  <font color="#FF8000">$$endif</font>
   <font color="#8A2BE2">@tpa</font> y; y = <font color="#2ECC40">sin</font>(3*x.l);
   <font color="#8A2BE2">@tpa</font> E; E = m*<font color="#2ECC40">sqr</font>(v.l)/2 + m*g*y;
   <font color="#8A2BE2">@csvsave</font> y E

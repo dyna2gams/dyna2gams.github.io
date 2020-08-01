@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -52,9 +52,6 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   </ul>
 <p>
 <pre>
-<font color="red"><b>run:</b></font>
-  <font color="#39CCCC">default-time-steps-number</font> = 12
-  
 <font color="red"><b>set:</b></font>
   phase = ph1:ph4
   <font color="#8A2BE2">alias</font>(ph,phase)
@@ -72,7 +69,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
    t3-t2 &lt;= tlen['ph3'] &lt;= t3-t2
   961-t3 &lt;= tlen['ph4'] &lt;= 1200-t3
 
-<font color="#8B0000">$macro</font> linspacebyphase(a,b) (a+(b-(a))*linspace(sum(ph$(ord(ph)&lt;ord(phase)),tlen[ph]),sum(ph$(ord(ph)&lt;=ord(phase)),tlen[ph]))/sum(ph,tlen[ph]))
+<font color="#FF8000">$macro</font> linspacebyphase(a,b) (a+(b-(a))*linspace(sum(ph$(ord(ph)&lt;ord(phase)),tlen[ph]),sum(ph$(ord(ph)&lt;=ord(phase)),tlen[ph]))/sum(ph,tlen[ph]))
 <font color="#808080"><i>*macro linspacebyphase(a,b) (a+(b-(a))*linspace(ord(phase)-1,ord(phase))/card(phase))</i></font>
 
 <font color="red"><b>par:</b></font>

@@ -1,0 +1,226 @@
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">A Hydropower Planning Model</h1>
+<pre>
+<font color="red"><b>rem:</b></font> A Hydropower Planning Model
+</pre>
+<p>
+  Simulation of the optimal policy calculated in the companion file.
+<p>
+  References:
+  <ol>
+  <li>W. Chang and T. Rutherford,
+  <em>Solving Stochastic Dynamic Programming Problems: A Mixed Complementarity Approach</em>,
+  Department of Agricultural and Applied Economics, University of Wisconsin-Madison, 2016.
+  <li>W. Chang, M.C. Ferris, Y. Kim and T. Rutherford,
+  <em>Solving Stochastic Dynamic Programming Problems: A Mixed Complementarity Approach</em>,
+  Computational Economics, 55:925-955, 2020.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">time-model</font> = Discrete
+  <font color="#39CCCC">N</font> = 60
+  conopt.opt &lt; lkdebg=0
+  <font color="#39CCCC">model-option</font> = optfile=1
+
+<font color="red"><b>set:</b></font>
+  m = |jan,feb,mar,apr,may,jun,jul,aug,sep,oct,nov,dec|
+  scen = sc1:sc16
+  sc[scen]
+  nm[<font color="#0074D9">N</font>,m]$(<font color="#2ECC40">mod</font>(<font color="#3D9970">ord</font>(<font color="#0074D9">N</font>)-1,12)=<font color="#3D9970">ord</font>(m)-1) = <font color="#3D9970">yes</font>
+  now[<font color="#0074D9">N</font>]
+
+<font color="red"><b>fun:</b></font>
+  &sect;Rjan = <font color="#7FDBFF">GridXY</font>
+               0.415     0.715     1.200     1.685     1.985
+     6.118     4.271     4.450     4.762     5.056     5.231
+    51.527    28.672    28.859    29.145    29.381    29.517
+   125.000    66.266    66.745    67.427    67.974    68.272
+   198.473   103.709   104.607   105.880   106.906   107.453
+   243.882   127.493   128.592   130.141   131.382   132.035
+
+  &sect;Rfeb = <font color="#7FDBFF">GridXY</font>
+               0.345     0.595     1.000     1.405     1.655
+     6.118     4.593     4.729     4.872     5.090     5.270
+    51.527    30.062    30.497    30.971    31.307    31.453
+   125.000    69.113    70.230    71.649    72.646    73.047
+   198.473   110.281   111.824   113.975   115.641   116.388
+   243.882   137.112   138.620   139.981   139.999   139.999
+
+  &sect;Rmar = <font color="#7FDBFF">GridXY</font>
+               0.380     0.655     1.100     1.545     1.820
+     6.118     5.543     5.629     5.231     5.068     5.033
+    51.527    32.403    33.773    35.094    36.072    36.487
+   125.000    78.970    81.335    84.194    86.323    87.194
+   198.473   125.368   128.189   131.898   134.737   135.855
+   243.882   139.999   139.999   139.999   139.999   139.999
+
+  &sect;Rapr = <font color="#7FDBFF">GridXY</font>
+               0.415     0.715     1.200     1.685     1.985
+     6.118     6.118     6.118     6.118     6.118     6.118
+    51.527    44.366    50.958    51.527    51.527    51.527
+   125.000    95.539   102.628   113.553   123.798   125.000
+   198.473   139.999   139.999   139.999   139.999   139.999
+   243.882   139.999   139.999   139.999   139.999   139.999
+
+  &sect;Rmay = <font color="#7FDBFF">GridXY</font>
+              13.887    23.937    40.200    56.463    66.513
+     6.118     6.118     6.118     6.118     6.118     6.118
+    51.527    51.527    51.527    51.527    51.527    51.527
+   125.000   113.670   125.000   125.000   125.000   125.000
+   198.473   139.999   139.999   139.999   139.999   139.999
+   243.882   139.999   139.999   139.999   139.999   139.999
+
+  &sect;Rjun = <font color="#7FDBFF">GridXY</font>
+              34.371    59.248    99.500   139.752   164.629
+     6.118     6.118     6.118     6.118     6.118     6.118
+    51.527    51.527    51.527    51.527    51.527    51.527
+   125.000   122.022   125.000   125.000   125.000   125.000
+   198.473   139.999   139.999   139.999   139.999   139.999
+   243.882   139.999   139.999   139.999   139.999   139.999
+
+  &sect;Rjul = <font color="#7FDBFF">GridXY</font>
+              50.538    87.116   146.300   205.484   242.062
+     6.118     6.118     6.118     6.118     6.118     6.118
+    51.527    51.527    51.527    51.527    51.527    51.527
+   125.000   105.134   123.800   125.000   125.000   125.000
+   198.473   134.281   139.814   139.999   139.999   139.999
+   243.882   139.999   139.999   139.999   139.999   139.999
+
+  &sect;Raug = <font color="#7FDBFF">GridXY</font>
+              47.740    82.292   138.200   194.108   228.660
+     6.118     6.118     6.118     6.118     6.118     6.118
+    51.527    43.319    51.527    51.527    51.527    51.527
+   125.000    79.092    87.398   101.373   115.106   123.055
+   198.473   115.536   123.725   136.448   139.999   139.999
+   243.882   137.548   139.909   139.999   139.999   139.999
+
+  &sect;Rsep = <font color="#7FDBFF">GridXY</font>
+              24.422    42.099    70.700    99.301   116.978
+     6.118     6.118     6.118     6.118     6.118     6.118
+    51.527    29.396    30.806    33.226    35.643    37.034
+   125.000    66.113    67.510    69.913    72.347    73.773
+   198.473   102.788   104.176   106.555   108.976   110.410
+   243.882   125.441   126.831   129.200   131.607   133.039
+
+  &sect;Roct = <font color="#7FDBFF">GridXY</font>
+               4.042     6.967    11.700    16.433    19.358
+     6.118     4.549     4.909     5.526     6.118     6.118
+    51.527    27.420    27.772    28.376    28.977    29.326
+   125.000    64.281    64.635    65.240    65.838    66.184
+   198.473   100.998   101.367   101.996   102.615   102.970
+   243.882   123.635   124.019   124.674   125.315   125.681
+
+  &sect;Rnov = <font color="#7FDBFF">GridXY</font>
+               0.795     1.370     2.300     3.230     3.805
+     6.118     4.326     4.581     5.020     5.454     5.708
+    51.527    27.449    27.693    28.110    28.518    28.753
+   125.000    64.501    64.763    65.204    65.627    65.867
+   198.473   101.241   101.559   102.086   102.583   102.860
+   243.882   123.860   124.227   124.830   125.394   125.706
+
+  &sect;Rdec = <font color="#7FDBFF">GridXY</font>
+               0.518     0.893     1.500     2.107     2.482
+     6.118     4.249     4.459     4.822     5.178     5.387
+    51.527    27.834    28.032    28.363    28.673    28.850
+   125.000    65.123    65.404    65.847    66.242    66.459
+   198.473   101.900   102.351   103.049   103.660   103.990
+   243.882   124.632   125.207   126.091   126.863   127.278
+
+<font color="red"><b>par:</b></font>
+  dfac = 0.995					<font color="#808080"><i># Monthly discount factor</i></font>
+  inflow[m] = |jan   1.2, feb   1.0, mar  1.1,\	<font color="#808080"><i># Mean inflow [million m³]</i></font>
+               apr   1.2, may  40.2, jun 99.5,\
+               jul 146.3, aug 138.2, sep 70.7,\
+               oct  11.7, nov   2.3, dec  1.5|
+  lmax = 250					<font color="#808080"><i># Maximum water level the dam can store [million m³]</i></font>
+  lmin = 0					<font color="#808080"><i># Minimum water level that must be maintained [million m³]</i></font>
+  rmax = 140					<font color="#808080"><i># Maximum amount that can be released per month [million m³]</i></font>
+  g[m] = 140					<font color="#808080"><i># Monthly demand (fixed)</i></font>
+  cref = 1					<font color="#808080"><i># Reference cost</i></font>
+  eta = 2					<font color="#808080"><i># Elasticity of non-hydro supply</i></font>
+  xref = 100					<font color="#808080"><i># Reference non-hydro supply</i></font>
+  rhod = 0.9					<font color="#808080"><i># Rainfall persistence (highly persistent)</i></font>
+  sigma = 0.1					<font color="#808080"><i># Normalized standard deviation of inflow</i></font>
+  d_mean[m] = inflow[m]				<font color="#808080"><i># Mean value of rainfall</i></font>
+  ts = 1
+
+<font color="red"><b>tpa:</b></font>
+  D[scen] = <font color="#3D9970">NA</font>			<font color="#808080"><i># Actual rainfall</i></font>
+
+<font color="red"><b>var:</b></font>
+  ksi				<font color="#808080"><i># NLP objective</i></font>
+
+<font color="red"><b>dyn:</b></font>
+  X[scen]			<font color="#808080"><i># Non-hydro generation</i></font>
+  Z[scen]:<font color="#3D9970">positive</font>		<font color="#808080"><i># Water retained</i></font>
+  R[scen]			<font color="#808080"><i># Water released to generate electricity</i></font>
+  L[scen]			<font color="#808080"><i># Water level</i></font>
+  S[scen]:<font color="#3D9970">positive</font>		<font color="#808080"><i># Water spilled without generating electricity</i></font>
+  delta[scen]			<font color="#808080"><i># Deviation w.r.t. the optimal water release policy</i></font>
+
+<font color="red"><b>lim:</b></font>
+  0 &lt;= X[scen] &lt;= +<font color="#3D9970">inf</font>
+  0 &lt;= R[scen] &lt;= rmax
+  lmin &lt;= L[scen] &lt;= lmax
+
+<font color="red"><b>t=t0:</b></font>
+  L[scen] = 125
+
+<font color="red"><b>equ:</b></font>
+  ksi == <font color="#3D9970">sum</font>((now[<font color="#0074D9">N</font>],sc), cref * xref * (X[sc]/xref)^eta ) + 1e+4*<font color="#3D9970">sum</font>((now[<font color="#0074D9">N</font>],sc), <font color="#2ECC40">sqr</font>(delta[sc]) )
+  $now[N].. Z[sc] + R[sc] == L[sc] - S[sc]
+  $now[N].. R[sc] + X[sc] == <font color="#3D9970">sum</font>(nm[N,m],g[m])
+  $now[N].. R[sc] == \
+    &sect;Rjan((L[sc]),(D[sc]))$nm[N,"jan"] + &sect;Rfeb((L[sc]),(D[sc]))$nm[N,"feb"] + &sect;Rmar((L[sc]),(D[sc]))$nm[N,"mar"] +\
+    &sect;Rapr((L[sc]),(D[sc]))$nm[N,"apr"] + &sect;Rmay((L[sc]),(D[sc]))$nm[N,"may"] + &sect;Rjun((L[sc]),(D[sc]))$nm[N,"jun"] +\
+    &sect;Rjul((L[sc]),(D[sc]))$nm[N,"jul"] + &sect;Raug((L[sc]),(D[sc]))$nm[N,"aug"] + &sect;Rsep((L[sc]),(D[sc]))$nm[N,"sep"] +\
+    &sect;Roct((L[sc]),(D[sc]))$nm[N,"oct"] + &sect;Rnov((L[sc]),(D[sc]))$nm[N,"nov"] + &sect;Rdec((L[sc]),(D[sc]))$nm[N,"dec"] - delta[sc]
+
+<font color="red"><b>ini:</b></font>
+  X[scen] = xref
+  Z[scen] = 0.4*(lmax-lmin)
+  L[scen] = Z[scen]
+  S[scen] = 0
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> ksi <font color="#8A2BE2">using</font> nlp <font color="#8A2BE2">with</font> none
+
+<font color="red"><b>gms:</b></font>
+  <font color="#3D9970">execute</font> 'echo Simulation launched...';
+  <font color="#3D9970">loop</font>(nm[<font color="#0074D9">N</font>,m],
+    D[scen]$(<font color="#3D9970">ord</font>(<font color="#0074D9">N</font>)=1) = d_mean[m]*(1+sigma*<font color="#2ECC40">normal</font>(0,1));
+    D[scen]$(<font color="#3D9970">ord</font>(<font color="#0074D9">N</font>)&gt;1) = d_mean[m]*(1+rhod*(<font color="#0074D9">pred</font>(D[scen])/d_mean[m--1]-1)+sigma*<font color="#2ECC40">normal</font>(0,1));
+    );
+  <font color="#3D9970">alias</font>(K,<font color="#0074D9">N</font>);
+  <font color="#3D9970">loop</font>(scen,
+    sc(scen) = <font color="#3D9970">yes</font>;
+    <font color="#3D9970">loop</font>(K,
+      now(K) = <font color="#3D9970">yes</font>;
+      <font color="#3D9970">if</font>(<font color="#3D9970">ord</font>(K)&gt;1, L.fx[scen]$now[N] = <font color="#0074D9">pred</font>(Z.l[scen]) + <font color="#0074D9">pred</font>(D[scen]));
+      <font color="#8A2BE2">@solve</font>
+      now(now) = <font color="#3D9970">no</font>
+      );
+    sc(sc) = <font color="#3D9970">no</font>
+    );
+  <font color="#3D9970">parameter</font> cost(scen); cost(scen) = <font color="#0074D9">AllTimeSum</font>(dfac^<font color="#0074D9">Time</font> * cref * xref * (X.l[scen]/xref)^eta); <font color="#3D9970">display</font> cost;
+  <font color="#8A2BE2">@csvsave</font> D[scen]
+  <font color="#3D9970">execute</font> 'echo Simulation ended.';
+</pre>
+</body>
+</html>

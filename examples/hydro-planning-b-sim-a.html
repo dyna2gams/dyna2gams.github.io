@@ -1,0 +1,166 @@
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">A Hydropower Planning Model</h1>
+<pre>
+<font color="red"><b>rem:</b></font> A Hydropower Planning Model
+</pre>
+<p>
+  Simulation of the optimal policy calculated in the companion file.
+<p>
+  References:
+  <ol>
+  <li>W. Chang and T. Rutherford,
+  <em>Solving Stochastic Dynamic Programming Problems: A Mixed Complementarity Approach</em>,
+  Department of Agricultural and Applied Economics, University of Wisconsin-Madison, 2016.
+  <li>W. Chang, M.C. Ferris, Y. Kim and T. Rutherford,
+  <em>Solving Stochastic Dynamic Programming Problems: A Mixed Complementarity Approach</em>,
+  Computational Economics, 55:925-955, 2020.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">time-model</font> = Discrete
+  <font color="#39CCCC">N</font> = 60
+  <font color="#39CCCC">include-library</font> = Hermite | Chebyshev
+
+<font color="red"><b>set:</b></font>
+  m = |jan,feb,mar,apr,may,jun,jul,aug,sep,oct,nov,dec|
+  is = i1:i5	<font color="#808080"><i># Gauss-Hermite grid nodes</i></font>
+  ia = a1:a15
+  scen = sc1:sc16
+  sc[scen]
+  nm[<font color="#0074D9">N</font>,m]$(<font color="#2ECC40">mod</font>(<font color="#3D9970">ord</font>(<font color="#0074D9">N</font>)-1,12)=<font color="#3D9970">ord</font>(m)-1) = <font color="#3D9970">yes</font>
+  now[<font color="#0074D9">N</font>]
+
+<font color="red"><b>par:</b></font>
+  dfac = 0.995					<font color="#808080"><i># Monthly discount factor</i></font>
+  inflow[m] = |jan   1.2, feb   1.0, mar  1.1,\	<font color="#808080"><i># Mean inflow [million m³]</i></font>
+               apr   1.2, may  40.2, jun 99.5,\
+               jul 146.3, aug 138.2, sep 70.7,\
+               oct  11.7, nov   2.3, dec  1.5|
+  lmax = 250					<font color="#808080"><i># Maximum water level the dam can store [million m³]</i></font>
+  lmin = 0					<font color="#808080"><i># Minimum water level that must be maintained [million m³]</i></font>
+  rmax = 140					<font color="#808080"><i># Maximum amount that can be released per month [million m³]</i></font>
+  g[m] = 140					<font color="#808080"><i># Monthly demand (fixed)</i></font>
+  cref = 1					<font color="#808080"><i># Reference cost</i></font>
+  eta = 2					<font color="#808080"><i># Elasticity of non-hydro supply</i></font>
+  xref = 100					<font color="#808080"><i># Reference non-hydro supply</i></font>
+  rhod = 0.9					<font color="#808080"><i># Rainfall persistence (highly persistent)</i></font>
+  sigma = 0.1					<font color="#808080"><i># Normalized standard deviation of inflow</i></font>
+  d_mean[m] = inflow[m]				<font color="#808080"><i># Mean value of D</i></font>
+  d_std[m] = sigma*d_mean[m]/<font color="#2ECC40">sqrt</font>(1-rhod^2)	<font color="#808080"><i># Standard deviation of D</i></font>
+  d_low[m] = d_mean[m] - 3*d_std[m]		<font color="#808080"><i># Low value of D on the grid</i></font>
+  d_high[m] = d_mean(m) + 3*d_std(m)		<font color="#808080"><i># High value of D on the grid</i></font>
+  omega[is] = <font color="#0074D9">HermiteQW</font>(is)/<font color="#2ECC40">sqrt</font>(pi)		<font color="#808080"><i># Parameters of Gauss-Hermite quadrature</i></font>
+  zeta[is] = sigma*<font color="#2ECC40">sqrt</font>(2)*<font color="#0074D9">HermiteQN</font>(is)
+  a[ia,m] = ||					<font color="#808080"><i># Polynomial approximation terms for L & D</i></font>
+                jan         feb         mar         apr         may         jun         jul         aug         sep         oct         nov         dec
+    a1        1.453       1.361       1.220       1.007       0.958       0.952       0.971       1.089       1.420       1.497       1.499       1.488
+    a2       -0.025      -0.031      -0.046      -0.076      -0.017      -0.005      -0.040      -0.162      -0.065      -0.020      -0.016      -0.017
+    a3        0.002       0.006       0.007       0.017       0.015       0.004       0.032       0.032 -2.10813e-4 5.681449e-4 2.451916e-4 6.956200e-4
+    a4  -4.41010e-5 -7.40125e-4 -7.56322e-4      -0.001      -0.011      -0.003      -0.022      -0.007 5.916366e-4 5.385201e-4 1.621517e-4 1.177952e-4
+    a5  -9.56449e-5 -2.38079e-4 7.477712e-4       0.005       0.006       0.001       0.011       0.002 3.559753e-5 1.527984e-4 -1.60686e-5 -3.97619e-5
+    a6       -1.313      -1.410      -1.478      -1.442      -1.435      -1.435      -1.429      -1.397      -1.282      -1.253      -1.259      -1.273
+    a7       -0.021      -0.020      -0.019       0.013                              -0.010      -0.054      -0.030      -0.002      -0.003      -0.009
+    a8        0.002       0.007       0.002      -0.011                               0.009       0.015 -3.02462e-4 -8.35557e-4 2.546880e-4 7.625198e-4
+    a9  -1.15425e-4 -8.39025e-4       0.001       0.007 -7.2550e-16                  -0.006       0.007 1.828860e-4 -6.01965e-4 2.781912e-5 2.389315e-5
+    a10 3.196336e-4      -0.004       0.139       0.421       0.510       0.523       0.491       0.315       0.029       0.002       0.003       0.004
+    a11      -0.004       0.015       0.055       0.137       0.034       0.009       0.068       0.220       0.026 4.123887e-4      -0.001      -0.003
+    a12 2.120206e-4       0.001      -0.008      -0.022      -0.029      -0.008      -0.055      -0.014 2.626066e-5 7.883299e-4 2.989343e-5 8.480614e-5
+    a13      -0.006      -0.001       0.100       0.055       0.044       0.044       0.035      -0.009      -0.021 -5.12399e-4 -5.36756e-4      -0.002
+    a14       0.003       0.014       0.025      -0.022 -8.3857e-16                   0.017       0.072      -0.019 -6.83366e-4 1.113539e-4 5.652644e-4
+    a15 9.631266e-4       0.008       0.046      -0.028      -0.104      -0.117      -0.096       0.002       0.011 1.993901e-4 7.138059e-6 9.575033e-5||
+  ts = 1
+
+<font color="red"><b>tpa:</b></font>
+  D[scen] = <font color="#3D9970">NA</font>					<font color="#808080"><i># Actual rainfall</i></font>
+  DT[scen,is]					<font color="#808080"><i># Projected rainfall</i></font>
+
+<font color="#FF8000">$macro</font> SChebyshev2m(deg,x1,x2,coe,ico) sum((i1_,i2_)$(ord(i1_)+ord(i2_)&lt;=deg+2),\
+  <font color="#3D9970">sum</font>(ico$(<font color="#3D9970">ord</font>(ico)-1=cheby2_(<font color="#3D9970">ord</font>(i1_)-1,<font color="#3D9970">ord</font>(i2_)-1,deg)),coe[ico,m])*\
+  ChebyshevT_(i1_,x1)*ChebyshevT_(i2_,x2))
+
+<font color="red"><b>mac:</b></font>
+  @norm(z,l,u) ((&z-(&l+&u)/2)/((&u-&l)/2))
+
+<font color="red"><b>var:</b></font>
+  ksi				<font color="#808080"><i># NLP objective</i></font>
+
+<font color="red"><b>dyn:</b></font>
+  X[scen]			<font color="#808080"><i># Non-hydro generation</i></font>
+  Z[scen]:<font color="#3D9970">positive</font>		<font color="#808080"><i># Water retained</i></font>
+  R[scen]			<font color="#808080"><i># Water released to generate electricity</i></font>
+  L[scen]			<font color="#808080"><i># Water level</i></font>
+  S[scen]:<font color="#3D9970">positive</font>		<font color="#808080"><i># Water spilled without generating electricity</i></font>
+  PT[scen,is]			<font color="#808080"><i># Projected shadow price</i></font>
+  LT[scen,is]			<font color="#808080"><i># Projected level (actually projected retained water)</i></font>
+  ST[scen,is]:<font color="#3D9970">positive</font>		<font color="#808080"><i># Projected water spilled</i></font>
+
+<font color="red"><b>lim:</b></font>
+  0.001 &lt;= X[scen] &lt;= +<font color="#3D9970">inf</font>
+  0 &lt;= R[scen] &lt;= rmax
+  lmin &lt;= L[scen] &lt;= lmax
+  lmin &lt;= LT[scen,is] &lt;= lmax
+
+<font color="red"><b>t=t0:</b></font>
+  L[scen] = 125
+
+<font color="red"><b>equ:</b></font>
+  ksi == <font color="#3D9970">sum</font>((now[<font color="#0074D9">N</font>],sc), dfac * <font color="#3D9970">sum</font>(is, omega[is] * PT[sc,is] * LT[sc,is]) - cref * xref * (X[sc]/xref)^eta )
+  $now[N].. Z[sc] + R[sc] == L[sc] - S[sc]
+  $now[N].. R[sc] + X[sc] == <font color="#3D9970">sum</font>(nm[N,m],g[m])
+  $now[N].. LT[sc,is] == Z[sc] + DT[sc,is] - ST[sc,is]
+  $now[N].. PT[sc,is] == <font color="#3D9970">sum</font>(nm[N,m], SChebyshev2m(4,@norm(LT[sc,is],lmin,lmax),@norm(DT[sc,is],d_low[m],d_high[m]),a,ia))
+
+<font color="red"><b>ini:</b></font>
+  X[scen] = xref
+  Z[scen] = 0.4*(lmax-lmin)
+  R[scen] = rmax
+  L[scen] = Z[scen]
+  S[scen] = 0
+  PT[scen,is] = cref*eta
+  LT[scen,is] = 0.5*(lmax-lmin)
+  ST[scen,is] = 0
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">maximize</font> ksi <font color="#8A2BE2">using</font> nlp <font color="#8A2BE2">with</font> none
+
+<font color="red"><b>gms:</b></font>
+  <font color="#3D9970">abort</font>$(<font color="#0074D9">SChebyshevDim</font>(2,4) ne <font color="#3D9970">card</font>(ia)) 'Wrong size for set ia.';
+  <font color="#3D9970">execute</font> 'echo Simulation launched...';
+  <font color="#3D9970">loop</font>(nm[<font color="#0074D9">N</font>,m],
+    D[scen]$(<font color="#3D9970">ord</font>(<font color="#0074D9">N</font>)=1) = d_mean[m]*(1+sigma*<font color="#2ECC40">normal</font>(0,1));
+    D[scen]$(<font color="#3D9970">ord</font>(<font color="#0074D9">N</font>)&gt;1) = d_mean[m]*(1+rhod*(<font color="#0074D9">pred</font>(D[scen])/d_mean[m--1]-1)+sigma*<font color="#2ECC40">normal</font>(0,1));
+    DT[scen,is]$(<font color="#3D9970">ord</font>(<font color="#0074D9">N</font>)&lt;<font color="#3D9970">card</font>(<font color="#0074D9">N</font>)) = <font color="#2ECC40">max</font>(0, d_mean[m+1]*(1+rhod*(D[scen]/d_mean[m]-1)+zeta[is]))
+    );
+  <font color="#3D9970">alias</font>(K,<font color="#0074D9">N</font>);
+  <font color="#3D9970">loop</font>(scen,
+    sc(scen) = <font color="#3D9970">yes</font>;
+    <font color="#3D9970">loop</font>(K,
+      now(K) = <font color="#3D9970">yes</font>;
+      <font color="#3D9970">if</font>(<font color="#3D9970">ord</font>(K)&gt;1, L.fx[scen]$now[N] = <font color="#0074D9">pred</font>(Z.l[scen]) + <font color="#0074D9">pred</font>(D[scen]));
+      <font color="#8A2BE2">@solve</font>
+      now(now) = <font color="#3D9970">no</font>
+      );
+    sc(sc) = <font color="#3D9970">no</font>
+    );
+  <font color="#3D9970">parameter</font> cost(scen); cost(scen) = <font color="#0074D9">AllTimeSum</font>(dfac^<font color="#0074D9">Time</font> * cref * xref * (X.l[scen]/xref)^eta); <font color="#3D9970">display</font> cost;
+  <font color="#8A2BE2">@csvsave</font> D[scen]
+  <font color="#3D9970">execute</font> 'echo Simulation ended.';
+</pre>
+</body>
+</html>

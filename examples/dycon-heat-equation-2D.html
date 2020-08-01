@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.3 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -27,52 +27,54 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <p>
 <pre>
 <font color="red"><b>run:</b></font>
-  <font color="#39CCCC">model-option</font> = workspace=500	<font color="#808080"><i># needless in a future release of CONOPT ?</i></font>
+  <font color="#39CCCC">model-option</font> = workfactor=10
 
 <font color="red"><b>set:</b></font>
-  i = 0:8
-  il(i) = 0
-  ii(i) = 1:7
-  ir(i) = 8
-  <font color="#8A2BE2">alias</font>(j,i)
-  scen = ref,sol
-  s(scen)
+  x = |x0:x8|
+  xl[x] = |x0|
+  xx[x] = |x1:x7|
+  xr[x] = |x8|
+  y = |y0:y8|
+  yl[y] = |y0|
+  yy[y] = |y1:y7|
+  yr[y] = |y8|
+  scen = |ref,sol|
+  s(scen)$<font color="#2ECC40">sameas</font>(scen,'ref') = <font color="#3D9970">yes</font>
 
 <font color="red"><b>par:</b></font>
-  Delta = 1/(<font color="#3D9970">card</font>(i)-1)
-  Tick[i] = (<font color="#3D9970">ord</font>(i)-1)*Delta
+  DeltaX = 1/(<font color="#3D9970">card</font>(x)-1)
+  TickX[x] = (<font color="#3D9970">ord</font>(x)-1)*DeltaX
+  DeltaY = 1/(<font color="#3D9970">card</font>(y)-1)
+  TickY[y] = (<font color="#3D9970">ord</font>(y)-1)*DeltaY
   tf = 0.1
 
 <font color="red"><b>dyn:</b></font>
-  z[i,j,scen]
-  u[j,scen]
+  z[x,y,scen]
+  u[y,scen]
   L
 
 <font color="red"><b>lim:</b></font>
-  0 &lt;= u[j,'ref'] &lt;= 0
-  -1000 &lt;= u[j,'sol'] &lt;= 1000
+  0 &lt;= u[y,'ref'] &lt;= 0
+  -1000 &lt;= u[y,'sol'] &lt;= 1000
 
 <font color="red"><b>t=t0:</b></font>
-  z[i,j,scen] = <font color="#2ECC40">sin</font>(pi*Tick[i])*<font color="#2ECC40">sin</font>(pi*Tick[j])
+  z[x,y,scen] = <font color="#2ECC40">sin</font>(pi*TickX[x])*<font color="#2ECC40">sin</font>(pi*TickY[y])
   L = 0
 
 <font color="red"><b>equ:</b></font>
-  $(ii(i)$ii(j)).. z&acute;[i,j,s] == (z[i+1,j,s]+z[i-1,j,s]+z[i,j+1,s]+z[i,j-1,s]-4*z[i,j,s])/<font color="#2ECC40">sqr</font>(Delta) + u[j,s]$<font color="#2ECC40">sameas</font>(i,'1')
-  $il(i).. z[i,j,s] == 0
-  $ir(i).. z[i,j,s] == 0
-  $il(j).. z[i,j,s] == 0
-  $ir(j).. z[i,j,s] == 0
-  L&acute; == <font color="#3D9970">sum</font>((j,s), <font color="#2ECC40">sqr</font>(u[j,s]))
-
-<font color="red"><b>gms:</b></font>
-  s('ref') = <font color="#3D9970">yes</font>;
+  $(xx[x]$yy[y]).. z&acute;[x,y,s] == (z[x+1,y,s]-2*z[x,y,s]+z[x-1,y,s])/<font color="#2ECC40">sqr</font>(DeltaX) + (z[x,y+1,s]-2*z[x,y,s]+z[x,y-1,s])/<font color="#2ECC40">sqr</font>(DeltaY) + u[y,s]$<font color="#2ECC40">sameas</font>(x,'x1')
+  $xl[x].. z[x,y,s] == 0
+  $xr[x].. z[x,y,s] == 0
+  $yl[y].. z[x,y,s] == 0
+  $yr[y].. z[x,y,s] == 0
+  L&acute; == <font color="#3D9970">sum</font>((y,s), <font color="#2ECC40">sqr</font>(u[y,s]))
 
 <font color="red"><b>obj:</b></font>
   <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(L) <font color="#8A2BE2">using</font> nlp
 
 <font color="red"><b>gms:</b></font>
-  <font color="#8A2BE2">@par</font> zf[i,j] = 1.5*<font color="#0074D9">final</font>(z.l[i,j,'ref']);
-  <font color="#8A2BE2">@setlimf</font> Var=z[i,j,'sol'], Vlo=zf[i,j], Vup=zf[i,j]
+  <font color="#8A2BE2">@par</font> zf[x,y] = 1.5*<font color="#0074D9">final</font>(z.l[x,y,'ref']);
+  <font color="#8A2BE2">@setlimf</font> Var=z[x,y,'sol'], Vlo=zf[x,y], Vup=zf[x,y]
   s(s) = <font color="#3D9970">no</font>; s('sol') = <font color="#3D9970">yes</font>;
   <font color="#8A2BE2">@solve</font>
 </pre>

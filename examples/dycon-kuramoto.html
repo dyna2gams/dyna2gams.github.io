@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.3 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -14,9 +14,9 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
 </head>
 <body>
-<h1 align="center" style="color:#7EAEAC">The Optimal control on the Kuramoto adaptive coupling model</h1>
+<h1 align="center" style="color:#7EAEAC">The optimal control of the Kuramoto adaptive coupling model</h1>
 <pre>
-<font color="red"><b>rem:</b></font> The Optimal control on the Kuramoto adaptive coupling model
+<font color="red"><b>rem:</b></font> The optimal control of the Kuramoto adaptive coupling model
 </pre>
 <p>
   The Kuramoto model describes the phases \(\theta_i\) of active oscillators, which is
@@ -56,10 +56,10 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 
 <font color="red"><b>par:</b></font>
   omega[i] = <font color="#2ECC40">normal</font>(0,0.1)	<font color="#808080"><i># natural frequencies of oscillators</i></font>
-  omega[i] = omega[i] - <font color="#3D9970">sum</font>(j,omega[j])/<font color="#3D9970">card</font>(j)
+  omega[i] -= <font color="#3D9970">sum</font>(j,omega[j])/<font color="#3D9970">card</font>(j)
   K[i,j] = 1			<font color="#808080"><i># the coupling network matrix</i></font>
   tf = 5
-  
+
 <font color="red"><b>dyn:</b></font>
   theta[i]			<font color="#808080"><i># phases of oscillators</i></font>
   u

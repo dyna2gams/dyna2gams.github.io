@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.2 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -38,11 +38,11 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <font color="red"><b>par:</b></font>
   tf = 200
   g = 981						<font color="#808080"><i># gravitational constant (cm/s^2)  </i></font>
-  Area[tank] = [T1 28, T2 32, T3 28, T4 32]		<font color="#808080"><i># tank cross-sectional area (cm^2)</i></font>
+  Area[tank] = |T1 28, T2 32, T3 28, T4 32|		<font color="#808080"><i># tank cross-sectional area (cm^2)</i></font>
   kc = 0.50						<font color="#808080"><i># relation of level to voltage measurement (V/cm)</i></font>
   km = 10.0						<font color="#808080"><i># relation of input voltage to pump flow rate (cm^3/sec / V)   &gt;=3.0, &lt;=20.0  slope</i></font>
   kb = 0.0						<font color="#808080"><i># relation of input voltage to pump flow rate (cm^3/sec / V) &gt;=-20.0, &lt;=20.0  intercept</i></font>
-  c[tank] = [T1 0.416, T2 0.342, T3 0.408, T4 0.349]	<font color="#808080"><i># correction factors to fit model to real data</i></font>
+  c[tank] = |T1 0.416, T2 0.342, T3 0.408, T4 0.349|	<font color="#808080"><i># correction factors to fit model to real data</i></font>
   gamma1 = 0.43						<font color="#808080"><i># fractional split to tank 1 vs. tank 4  &gt;=0, &lt;=1</i></font>
   gamma2 = 0.34						<font color="#808080"><i># fractional split to tank 2 vs. tank 3  &gt;=0, &lt;=1  </i></font>
 
