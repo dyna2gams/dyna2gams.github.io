@@ -8,7 +8,7 @@ governed by differential equations such that a certain optimality criterion is a
 Optimal control problems arise in many exciting applications in science, economy, and
 engineering. Examples are trajectory optimization in robotics, aerospace engineering
 (ascent/descent/emergency trajectories, orbit transfers...), vehicle simulation (avoidance
-trajectories, virtual test-driving, chassis control...), controller design (Linear quadratic
+trajectories, virtual test-driving, chassis control...), controller design (linear quadratic
 regulator, model-predictive control...), process engineering (chemical processes...),
 fishing strategies, biology, etc.
 
