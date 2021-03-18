@@ -1,7 +1,7 @@
 # DYNA2GAMS - optimal control with GAMS
 
-The __DYNA2GAMS__ project aims at solving optimal control problems with the help of the [GAMS](http://www.gams.com)
-modeling language.
+The __DYNA2GAMS__ project aims at solving optimal control problems with the help of the
+[GAMS](http://www.gams.com) modeling language.
 
 Optimal control deals with the problem of finding a control law for a given dynamical system
 governed by differential equations such that a certain optimality criterion is achieved.
@@ -23,7 +23,7 @@ In a nutshell, optimal control problems (OCP) are usually described by:
 - Initial and/or final conditions (sometimes also conditions at other points).
 - A cost functional, i.e. a scalar value that depends on the state trajectories and the
   control function which has to be minimized or maximized.
-- Some times, additional equations and variables that, for example, relate the initial and
+- Sometimes, additional equations and variables that, for example, relate the initial and
   final conditions to each other or constraint the control or state path.
 The goal of __DYNA2GAMS__ suite is to make it possible to input such problem descriptions as
 simply as possible, without having to worry about the mathematics of the actual solver. Once
@@ -40,11 +40,12 @@ DYNA dialect allows to formulate optimal control problems in a way that is very 
 their mathematical description. Take a look at the Tutorial to grasp the basic structure and
 characteristics of a DYNA model and how it relates to the mathematical formulation.
 
-__DYNA2GAMS__ has been developed in the course of the year 2018 and afterwards. It is available
-for download on this web site. On top, it comes with a very large set of examples borrowed
-from the literature and various academic or commercial OCP solvers.
+__DYNA2GAMS__ has been developed in the course of the year 2018 and is regularly updated since
+then. It is available for download on this web site. On top, it comes with a very large set of
+examples borrowed from the literature and various academic or commercial OCP solvers.
 
-__DYNA2GAMS__ is free of charge for non-commercial use throughout the year 2020. It is licensed under the
+__DYNA2GAMS__ is free of charge for non-commercial use throughout the year 2021 at least. It is
+licensed under the
 [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International terms](https://creativecommons.org/licenses/by-nc-sa/4.0/).
 It is based on [Regina Rexx Interpreter](https://regina-rexx.sourceforge.io/).
 Regina is distributed under the terms of the GNU Library General Public License Version 2.

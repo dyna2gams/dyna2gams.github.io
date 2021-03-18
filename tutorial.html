@@ -435,7 +435,8 @@ $tutor-a.gms        $tutor-a.log        $tutor-a.lst
 							D(v,h) = D_c v^2 e^{-h_c \big(\frac{h-h_0}{h_0}\big)} \\
 							g(h) = g_0 \big(\frac{h_0}{h}\big)^2 \\
 							h(0) = h_0, \ \ v(0) = v_0, \ \ m(0) = m_0 \\
-							m(t_f) = m_f
+							m(t_f) = m_f \\
+							0 \leq T \leq T_{\text{max}}
 							\]
 <pre class="syntax">
 <font color="red"><b>par:</b></font>	<font color="#808080"><i># define the parameters of the model</i></font>
@@ -830,7 +831,7 @@ Press any key to continue...
 							\dot{x}_3 = \frac{\theta_1 x_1(x_2+\theta_5 x_1)}{(\theta_2+\theta_5)x_1+x_2} + \theta_4 x_1 \\
 							\]
 							with coefficients \(\theta_i \geq 0\). Initial conditions are known.
-							<p>Source: <a href="http://www.mcs.anl.gov/~more/cops/">COPS - Large-Scale Optimization Problems</a>
+							<p>See: <a href="http://www.mcs.anl.gov/~more/cops/">COPS: Large-Scale Optimization Problems</a>
 							<p>Reference:
 							<ol class="compact">
 							<li id="cops">E.D. Dolan, J.J. Mor&eacute; and T.S. Munson,
@@ -885,7 +886,7 @@ Press any key to continue...
   x3&acute; == (theta1*x1*(x2+theta5*x1))/((theta2+theta5)*x1+x2)+theta4*x1
 
 <font color="red"><b>obj:</b></font>	<font color="#808080"><i># a dedicated function for the lack-of-fit</i></font>
-  <font color="#8A2BE2">minimize</font> <font color="#3D9970">sum</font>{1:3, <font color="#0074D9">ObservedErr</font>(x{:})} <font color="#8A2BE2">using</font> nlp
+  <font color="#8A2BE2">minimize</font> <font color="#3D9970">sum</font>{1:3, <font color="#0074D9">ObservedSSE</font>(x{:})} <font color="#8A2BE2">using</font> nlp
 
 <font color="red"><b>gms:</b></font>	<font color="#808080"><i># dedicated keywords to build a customized report</i></font>
   <font color="#3D9970">parameter</font> report(*,*);
@@ -942,10 +943,10 @@ Press any key to continue...
 							while starting and stopping the jojo under the following conditions:
 							\[
 							x(0) = y(0) = 0 \ \textrm{m}\\
-							v(0) = w(0) = 0\ \textrm{m}\backslash\textrm{s} \\
+							v(0) = w(0) = 0\ \textrm{m/s} \\
 							x(t_j) - y(t_j) = L \\
 							x(t_f) = y(t_f) = -0.1\ \textrm{m} \\
-							v(t_f) = w(t_f) = 0\ \textrm{m}\backslash\textrm{s}
+							v(t_f) = w(t_f) = 0\ \textrm{m/s}
 							\]
 							i.e. we start both the hand and the jojo at rest at the position 0. Moreover at the
 							time \(t_j\) we require that the length of the rope is equal to \(L = 1\) m. Finally,
@@ -1019,7 +1020,7 @@ Press any key to continue...
   v&acute;[phase] / TimeDot == u[phase]
   y&acute;[phase] / TimeDot == w[phase]
   w&acute;[phase] / TimeDot == -mu*g + k*u[phase] + a*(v[phase]-w[phase])
-  phi&acute;[phase] == <font color="#2ECC40">sqr</font>(u[phase])
+  phi&acute;[phase] / TimeDot == <font color="#2ECC40">sqr</font>(u[phase])
   <font color="#8A2BE2">@linkphases</font> -x w	<font color="#808080"><i># link final and initial conditions across phases for state variables, except for variable w, which is given here after</i></font>
   [phase]$((<font color="#3D9970">ord</font>(phase)&lt;<font color="#3D9970">card</font>(phase))<font color="#8A2BE2">$once</font>).. <font color="#0074D9">initial</font>(w[phase+1]) == <font color="#0074D9">final</font>(k*v[phase] + @ssqrt(<font color="#2ECC40">sqr</font>(k*v[phase]) + k*(<font color="#2ECC40">sqr</font>(w[phase])-2*w[phase]*v[phase])))
   <font color="#8A2BE2">$once</font>.. <font color="#0074D9">final</font>(x['ph1'])-<font color="#0074D9">final</font>(y['ph1']) == L

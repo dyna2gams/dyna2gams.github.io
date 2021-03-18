@@ -168,7 +168,7 @@ declares an object must appear before the sections that use the said object.
   <font color="#39CCCC">SUBSTITUTE-SYMBOLS</font>		= L|{isymbol&gt;osymbol}
   <font color="#39CCCC">TABULATION-KNOTS-NUMBER</font>	= &lt;number&gt;				<font color="#808080"><i>256</i></font>
   <font color="#39CCCC">TIME-MODEL</font>			= Continuous | Discrete | None		<font color="#808080"><i>Continuous</i></font>
-  <font color="#39CCCC">TIME-STEPS-NUMBER</font> | <font color="#39CCCC">N</font>		= &lt;number&gt;				<font color="#808080"><i>default-time_steps-number</i></font>
+  <font color="#39CCCC">TIME-STEPS-NUMBER</font> | <font color="#39CCCC">N</font>		= &lt;number&gt;				<font color="#808080"><i>default-time-steps-number</i></font>
   <font color="#39CCCC">TRANSFER-FUNCTION-SYNTAX</font>	= EQU | SIM				<font color="#808080"><i>EQU</i></font>
   <font color="#39CCCC">VARIABLE</font>			= L|{&lt;var&gt;=&lt;string&gt;}
   <font color="#39CCCC">VARIABLES</font>			= L|{&lt;var&gt;=&lt;string&gt;}
@@ -219,7 +219,7 @@ The degree of the polynomial is deduced from the number of coefficients.
 <font color="red"><b>set:</b></font>
   &lt;<font color="#3D9970">set</font>&gt;[(L,{&lt;<font color="#3D9970">set</font>&gt;})] = [&lt;l-delim&gt;] &lt;ident&gt;:&lt;ident&gt; | &lt;ident&gt;*&lt;ident&gt; [&lt;r-delim&gt;]
   &lt;<font color="#3D9970">set</font>&gt;[(L,{&lt;<font color="#3D9970">set</font>&gt;})] = &lt;l-delim&gt; L,{&lt;ident&gt;|&lt;ident&gt;:&lt;ident&gt;|&lt;ident&gt;*&lt;ident&gt;} &lt;r-delim&gt;
-  &lt;<font color="#3D9970">set</font>&gt;[(L,{&lt;<font color="#3D9970">set</font>&gt;})][$&lt;cond&gt;] = &lt;exp&gt;
+  &lt;<font color="#3D9970">set</font>&gt;[(L,{&lt;<font color="#3D9970">set</font>&gt;})][[$&lt;condition&gt;] = &lt;exp&gt;]
   <font color="#8A2BE2">alias</font>(L,{&lt;<font color="#3D9970">set</font>&gt;},&lt;<font color="#3D9970">set</font>&gt;)	<font color="#808080"><i>Note: the rightmost &lt;set&gt; must have been declared already</i></font>
 
 &lt;l-delim&gt; :- ( | &lt;[&gt; | / | &lt;|&gt;
@@ -230,11 +230,12 @@ The degree of the polynomial is deduced from the number of coefficients.
 <h2 id="par" style="color:#7EAEAC">Time-independent parameters</h2>
 <pre class="syntax">
 <font color="red"><b>par:</b></font>
-  &lt;par&gt; [= &lt;exp&gt; ]
+  &lt;par&gt;[[$&lt;condition&gt;] = &lt;exp&gt;]
   &lt;par&gt; {+|-|*|/}= &lt;exp&gt;						<font color="#808080"><i>Compound assignment</i></font>
   &lt;par&gt; = &lt;l-delim&gt; L,{L.{&lt;ident&gt;} &lt;val&gt;} &lt;r-delim&gt;			<font color="#808080"><i>Gams parameter format</i></font>
   &lt;par&gt; = &lt;ll-delim&gt; [&lt;EOL&gt;] &lt;Gams-<font color="#3D9970">table</font>-data&gt; [&lt;EOL&gt;] &lt;rr-delim&gt;	<font color="#808080"><i>Gams tabular format</i></font>
   &lt;par&gt; = &lt;[&gt; L,{L{&lt;exp&gt;}} &lt;]&gt;						<font color="#808080"><i>Malab-like syntax (with comma instead of semicolon)</i></font>
+  L{&lt;par&gt;}
 
 &lt;exp&gt; :- &lt;val&gt; | &lt;par&gt; | &lt;expression-thereof&gt;
 &lt;l-delim&gt; :- / | &lt;|&gt;
@@ -247,8 +248,10 @@ The degree of the polynomial is deduced from the number of coefficients.
 <h2 id="tpa" style="color:#7EAEAC">Time-dependent parameters</h2>
 <pre class="syntax">
 <font color="red"><b>tpa:</b></font>
-  &lt;tpa&gt; [= &lt;tex&gt; ]
+  &lt;tpa&gt; [= &lt;tex&gt;]
   &lt;tpa&gt; {+|-|*|/}= &lt;tex&gt;						<font color="#808080"><i>Compound assignment</i></font>
+  &lt;tpa&gt; = <font color="#8A2BE2">@readcsv</font> ifile=&lt;ifile&gt; [,colval=&lt;<font color="#3D9970">integer</font>&gt;] [,colset=L{&lt;<font color="#3D9970">integer</font>&gt;}] [,skipheader=<font color="#3D9970">yes</font>|<font color="#3D9970">NO</font>]
+  L{&lt;tpa&gt;}
 
 &lt;tex&gt; :- &lt;val&gt; | &lt;exp&gt; | &lt;tpa&gt; | &lt;expression-thereof&gt;
 </pre>
@@ -491,6 +494,7 @@ a way that all the variables listed on the right of the assignment operator (:=)
   <font color="#8A2BE2">@tfm</font> L,{&lt;tfm-statement&gt;}				<font color="#808080"><i>Transfer function model</i></font>
   <font color="#8A2BE2">@pid</font> L,{&lt;pid-statement&gt;}				<font color="#808080"><i>PID function model</i></font>
   <font color="#8A2BE2">@dcm</font> L,{&lt;dcm-statement&gt;}				<font color="#808080"><i>Digital control model (for continuous model only)</i></font>
+  <font color="#8A2BE2">@newtonraphsonloop</font> L,{&lt;<font color="#0074D9">n</font>-r-statement&gt;}		<font color="#808080"><i>Newton-Raphson iteration to break a circularity</i></font>
 
 &lt;stoch-cast&gt; :- <font color="#7FDBFF">Wiener</font> | <font color="#7FDBFF">PJump</font>(arg) | <font color="#7FDBFF">NPJump</font>(arg1,arg2) | <font color="#7FDBFF">EPJump</font>(arg1,arg2)
 
@@ -506,6 +510,12 @@ a way that all the variables listed on the right of the assignment operator (:=)
   [X0 = &lt;val&gt;]
 
 &lt;polynomial&gt; :- [(]L{&lt;val&gt;}[)] | &lt;indexed-parameter&gt;	<font color="#808080"><i>Note: colon is allowed for a numeric range</i></font>
+
+&lt;n-r-statement&gt; :-
+  Var = &lt;dyn&gt;
+  Ini = &lt;val&gt;
+  [Tol = &lt;val&gt;]
+  [MaxIter = &lt;number&gt;]
 </pre>
 <p>\(:-\) (\(:+\)) is a dummy operator that can be used to remove (add) an explicit (implicit) dependency of the assigned
 variable to other variables.  This guarantees the execution of the assignment and all the following instructions
@@ -544,9 +554,14 @@ when all the dependent variables are known.
   &lt;gams-statement&gt;;
   <font color="#8A2BE2">@abltimeput</font> 'min|max' L/{var} L/{equ};		<font color="#808080"><i>Put all but last dynamic variables and equations to file</i></font>
   <font color="#8A2BE2">@alltimeput</font> 'min|max' L/{var} L/{equ};		<font color="#808080"><i>Put all dynamic variables and equations to file</i></font>
-  <font color="#8A2BE2">@costates</font>[(POLY|ZERO|PREV)];				<font color="#808080"><i>Costates calculation (must be used before any call to costate(.) function</i></font>
+  <font color="#8A2BE2">@costates</font> [(POLY|ZERO|PREV)];				<font color="#808080"><i>Costates calculation (must be used before any call to costate(.) function</i></font>
+  <font color="#8A2BE2">@csvmute</font> L{&lt;dyn&gt;|&lt;equ&gt;};				<font color="#808080"><i>Remove dynamic variables or equations from the CSV files</i></font>
   <font color="#8A2BE2">@csvsave</font> L{&lt;dyn&gt;};					<font color="#808080"><i>Save dynamic variables in the CSV files</i></font>
+  <font color="#8A2BE2">@error</font> [L{&lt;dyn&gt;}];					<font color="#808080"><i>Estimate error of dynamic variables</i></font>
+  <font color="#8A2BE2">@gdxsave</font> [&lt;gdx-statement&gt;];				<font color="#808080"><i>Save objects to a GDX file for a later warm restart</i></font>
+  <font color="#8A2BE2">@observedrip</font> L{&lt;var&gt;};				<font color="#808080"><i>Insert report on identified parameters</i></font>
   <font color="#8A2BE2">@par</font> &lt;par&gt; [= &lt;exp&gt;];					<font color="#808080"><i>Declare and instantiate parameter</i></font>
+  <font color="#8A2BE2">@rank</font> L,{&lt;rank-statement&gt;};				<font color="#808080"><i>Compute given percentiles of a single-index variable</i></font>
   <font color="#8A2BE2">@seekcia</font> L,{&lt;seekcia-statement&gt;};			<font color="#808080"><i>Combinatorial Integral Approximation</i></font>
   <font color="#8A2BE2">@seekmax</font> L,{&lt;seekm-statement&gt;};			<font color="#808080"><i>Section search maximum</i></font>
   <font color="#8A2BE2">@seekmin</font> L,{&lt;seekm-statement&gt;};			<font color="#808080"><i>Section search minimum</i></font>
@@ -554,17 +569,24 @@ when all the dependent variables are known.
   <font color="#8A2BE2">@setlim</font> L,{&lt;setlim-statement&gt;};			<font color="#808080"><i>Define lower and upper bound over the entire horizon</i></font>
   <font color="#8A2BE2">@setlim0</font> L,{&lt;setlim-statement&gt;};			<font color="#808080"><i>Define lower and upper bound on t=t0</i></font>
   <font color="#8A2BE2">@setlimf</font> L,{&lt;setlim-statement&gt;};			<font color="#808080"><i>Define lower and upper bound on t=tf</i></font>
+  <font color="#8A2BE2">@smooth</font> L,{&lt;smooth-statement&gt;};			<font color="#808080"><i>Smooth a variable or a parameter</i></font>
   <font color="#8A2BE2">@solve</font> [<font color="#8A2BE2">using</font> &lt;modeltype&gt;] [<font color="#8A2BE2">with</font> L|{&lt;solver&gt;}];	<font color="#808080"><i>Reoptimize the model with new type or new solver</i></font>
-  <font color="#8A2BE2">@solveloop</font> L,{&lt;solveloop-statement&gt;};			<font color="#808080"><i>Iterative solve after filtering of some variables</i></font>
+  <font color="#8A2BE2">@solveloop</font> L,{&lt;solveloop-statement&gt;};			<font color="#808080"><i>Iterative solve after smoothing of some variables</i></font>
   <font color="#8A2BE2">@tpa</font> &lt;tpa&gt; [= &lt;tex&gt;];					<font color="#808080"><i>Declare and instantiate a time-dependent parameter</i></font>
   <font color="#8A2BE2">@verbatim</font> &lt;gams-statement&gt;;				<font color="#808080"><i>Instruct DYNA to keep statement untouched</i></font>
+
+&lt;rank-statement&gt; :-
+  iVar = &lt;dyn&gt;						<font color="#808080"><i>Input variable (or parameter)</i></font>
+  oPar = &lt;tpa&gt;						<font color="#808080"><i>Output parameter</i></font>
+  Pctl = L{&lt;number&gt;}					<font color="#808080"><i>Percentiles of interest</i></font>
+  [Method = GDXRANK|HEAPSORT]
 
 &lt;seekm-statement&gt; :-
   Var = &lt;par&gt;|&lt;var&gt;
   Vlo = &lt;val&gt;						<font color="#808080"><i>Lower bound</i></font>
   Vup = &lt;val&gt;						<font color="#808080"><i>Upper bound</i></font>
-  [tol = &lt;val&gt;]						<font color="#808080"><i>Tolerance</i></font>
-  [method = BRENT|GOLDEN]				<font color="#808080"><i>Method</i></font>
+  [Tol = &lt;val&gt;]						<font color="#808080"><i>Tolerance</i></font>
+  [Method = BRENT|GOLDEN]				<font color="#808080"><i>Method</i></font>
 
 &lt;seekcia-statement&gt; :-
   ControlVar = &lt;var&gt;					<font color="#808080"><i>Control variable</i></font>
@@ -574,7 +596,7 @@ when all the dependent variables are known.
   [optca = &lt;par&gt;|&lt;val&gt;]					<font color="#808080"><i>optca</i></font>
   [optcr = &lt;par&gt;|&lt;val&gt;]					<font color="#808080"><i>optcr</i></font>
   [cutoff = &lt;par&gt;|&lt;val&gt;|+<font color="#3D9970">INF</font>]				<font color="#808080"><i>cutoff</i></font>
-  [method = PLAIN|SHORT|ROUND]				<font color="#808080"><i>method</i></font>
+  [Method = PLAIN|SHORT|ROUND]				<font color="#808080"><i>method</i></font>
 
 &lt;seeksur-statement&gt; :-
   ControlVar = &lt;var&gt;					<font color="#808080"><i>Control variable</i></font>
@@ -584,6 +606,11 @@ when all the dependent variables are known.
   Var = &lt;dyn&gt;|&lt;var&gt;
   [Vlo = &lt;tex&gt;|-<font color="#3D9970">INF</font>]					<font color="#808080"><i>Lower bound</i></font>
   [Vup = &lt;tex&gt;|+<font color="#3D9970">INF</font>]					<font color="#808080"><i>Upper bound</i></font>
+
+&lt;smooth-statement&gt; :-
+  [Method = MOVAVG|MOVAVG-MP|BUTTERWORTH]
+  Paraml = L{&lt;number&gt;}
+  Parl|Varl = L{&lt;tpa&gt;}|L{&lt;dyn&gt;}
 
 &lt;solveloop-statement&gt;} :-
   Method = MOVAVG|BNDOBJ
@@ -879,6 +906,7 @@ Here follows the list of function classes.
 <li><a href="#2dls">2-dimension interpolation - linear smooth</a></li>
 <li><a href="#2dln">2-dimension interpolation - linear non-smooth</a></li>
 <li><a href="#tiin">Time interpolation</a></li>
+<li><a href="#sofu">Series of functions</a></li>
 <li><a href="#chel">Chebyshev library</a></li>
 <li><a href="#chsl">Chebyshev-Smolyak library</a></li>
 <li><a href="#legl">Legendre library</a></li>
@@ -887,10 +915,17 @@ Here follows the list of function classes.
 </ul>
 <h4 id="tirf">Time related functions</h4>
 <pre class="syntax">
+<font color="#0074D9">AllTimeAvg</font>(X)
 <font color="#0074D9">AllTimeMax</font>(X)
 <font color="#0074D9">AllTimeMin</font>(X)
 <font color="#0074D9">AllTimeSum</font>(X)
+<font color="#0074D9">AllTimeAvgIF</font>(X,Y)
+<font color="#0074D9">AllTimeMaxIF</font>(X,Y)
+<font color="#0074D9">AllTimeMinIF</font>(X,Y)
+<font color="#0074D9">AllTimeSumIF</font>(X,Y)
+
 <font color="#0074D9">costate</font>(X)
+
 <font color="#0074D9">curr</font>(X)
 <font color="#0074D9">delay</font>(X,tau)
 <font color="#0074D9">derivative</font>(X)
@@ -935,7 +970,14 @@ Here follows the list of function classes.
 </pre>
 <h4 id="pirf">Parameters identification related functions</h4>
 <pre class="syntax">
-<font color="#0074D9">ObservedErr</font>(x)
+<font color="#0074D9">ObservedSSE</font>(x)
+<font color="#0074D9">ObservedSSEC</font>(x,mx)
+<font color="#0074D9">ObservedSXE</font>(x,y)
+<font color="#0074D9">ObservedSXEC</font>(x,y,mx,my)
+<font color="#0074D9">ObservedMSE</font>(x)
+<font color="#0074D9">ObservedMSEC</font>(x,mx)
+<font color="#0074D9">ObservedMAE</font>(x)
+<font color="#0074D9">ObservedMAEC</font>(x,mx)
 <font color="#0074D9">ObservedVal</font>(x)
 <font color="#0074D9">ObservedMax</font>(x)
 <font color="#0074D9">ObservedMin</font>(x)
@@ -1047,46 +1089,26 @@ Here follows the list of function classes.
 <font color="#0074D9">TInterpDot1</font>(x,i,tabf,tabx)
 <font color="#0074D9">TInterpDot2</font>(x,i,tab,ff,xx)
 </pre>
+<h4 id="sofu">Series of functions</h4>
+<pre class="syntax">
+<font color="#0074D9">SeriesOf</font>(f,x,a,i)
+<font color="#0074D9">SeriesOf0</font>(f,x,a0)
+<font color="#0074D9">SeriesOf1</font>(f,x,a1,a0)
+<font color="#0074D9">SeriesOf2</font>(f,x,a2,a1,a0)
+<font color="#0074D9">SeriesOf3</font>(f,x,a3,a2,a1,a0)
+<font color="#0074D9">SeriesOf4</font>(f,x,a4,a3,a2,a1,a0)
+<font color="#0074D9">SeriesOf5</font>(f,a5,a4,a3,a2,a1,a0)
+<font color="#0074D9">SeriesOf6</font>(f,a6,a5,a4,a3,a2,a1,a0)
+<font color="#0074D9">SeriesOf7</font>(f,a7,a6,a5,a4,a3,a2,a1,a0)
+<font color="#0074D9">SeriesOf8</font>(f,a8,a7,a6,a5,a4,a3,a2,a1,a0)
+<font color="#0074D9">SeriesOf9</font>(f,a9,a8,a7,a6,a5,a4,a3,a2,a1,a0)
+</pre>
 <h4 id="chel">Chebyshev library</h4>
 <pre class="syntax">
 <font color="#0074D9">ChebyshevQN</font>(s)
 <font color="#0074D9">ChebyshevQW</font>(s)
-<font color="#0074D9">ChebyshevT1</font>(x)
-<font color="#0074D9">ChebyshevT2</font>(x)
-<font color="#0074D9">ChebyshevT3</font>(x)
-<font color="#0074D9">ChebyshevT4</font>(x)
-<font color="#0074D9">ChebyshevT5</font>(x)
-<font color="#0074D9">ChebyshevT6</font>(x)
-<font color="#0074D9">ChebyshevT7</font>(x)
-<font color="#0074D9">ChebyshevT8</font>(x)
-<font color="#0074D9">ChebyshevT9</font>(x)
-<font color="#0074D9">dChebyshevT1</font>(x)
-<font color="#0074D9">dChebyshevT2</font>(x)
-<font color="#0074D9">dChebyshevT3</font>(x)
-<font color="#0074D9">dChebyshevT4</font>(x)
-<font color="#0074D9">dChebyshevT5</font>(x)
-<font color="#0074D9">dChebyshevT6</font>(x)
-<font color="#0074D9">dChebyshevT7</font>(x)
-<font color="#0074D9">dChebyshevT8</font>(x)
-<font color="#0074D9">dChebyshevT9</font>(x)
-<font color="#0074D9">Chebyshev1</font>(x,a1,a0)
-<font color="#0074D9">Chebyshev2</font>(x,a2,a1,a0)
-<font color="#0074D9">Chebyshev3</font>(x,a3,a2,a1,a0)
-<font color="#0074D9">Chebyshev4</font>(x,a4,a3,a2,a1,a0)
-<font color="#0074D9">Chebyshev5</font>(x,a5,a4,a3,a2,a1,a0)
-<font color="#0074D9">Chebyshev6</font>(x,a6,a5,a4,a3,a2,a1,a0)
-<font color="#0074D9">Chebyshev7</font>(x,a7,a6,a5,a4,a3,a2,a1,a0)
-<font color="#0074D9">Chebyshev8</font>(x,a8,a7,a6,a5,a4,a3,a2,a1,a0)
-<font color="#0074D9">Chebyshev9</font>(x,a9,a8,a7,a6,a5,a4,a3,a2,a1,a0)
-<font color="#0074D9">dChebyshev1</font>(x,a1,a0)
-<font color="#0074D9">dChebyshev2</font>(x,a2,a1,a0)
-<font color="#0074D9">dChebyshev3</font>(x,a3,a2,a1,a0)
-<font color="#0074D9">dChebyshev4</font>(x,a4,a3,a2,a1,a0)
-<font color="#0074D9">dChebyshev5</font>(x,a5,a4,a3,a2,a1,a0)
-<font color="#0074D9">dChebyshev6</font>(x,a6,a5,a4,a3,a2,a1,a0)
-<font color="#0074D9">dChebyshev7</font>(x,a7,a6,a5,a4,a3,a2,a1,a0)
-<font color="#0074D9">dChebyshev8</font>(x,a8,a7,a6,a5,a4,a3,a2,a1,a0)
-<font color="#0074D9">dChebyshev9</font>(x,a9,a8,a7,a6,a5,a4,a3,a2,a1,a0)
+<font color="#0074D9">Chebyshev</font>(deg,x)
+<font color="#0074D9">dChebyshev</font>(deg,x)
 <font color="#0074D9">SChebyshevDim</font>(var,deg)
 <font color="#0074D9">SChebyshev2</font>(deg,x1,x2,coe,ico)
 <font color="#0074D9">SChebyshev3</font>(deg,x1,x2,x3,coe,ico)
@@ -1119,47 +1141,15 @@ Here follows the list of function classes.
 <pre class="syntax">
 <font color="#0074D9">LegendreQN</font>(s)
 <font color="#0074D9">LegendreQW</font>(s)
-<font color="#0074D9">LegendreP1</font>(x)
-<font color="#0074D9">LegendreP2</font>(x)
-<font color="#0074D9">LegendreP3</font>(x)
-<font color="#0074D9">LegendreP4</font>(x)
-<font color="#0074D9">LegendreP5</font>(x)
-<font color="#0074D9">LegendreP6</font>(x)
-<font color="#0074D9">LegendreP7</font>(x)
-<font color="#0074D9">LegendreP8</font>(x)
-<font color="#0074D9">LegendreP9</font>(x)
-<font color="#0074D9">dLegendreP1</font>(x)
-<font color="#0074D9">dLegendreP2</font>(x)
-<font color="#0074D9">dLegendreP3</font>(x)
-<font color="#0074D9">dLegendreP4</font>(x)
-<font color="#0074D9">dLegendreP5</font>(x)
-<font color="#0074D9">dLegendreP6</font>(x)
-<font color="#0074D9">dLegendreP7</font>(x)
-<font color="#0074D9">dLegendreP8</font>(x)
-<font color="#0074D9">dLegendreP9</font>(x)
-<font color="#0074D9">Legendre1</font>(x,a1,a0)
-<font color="#0074D9">Legendre2</font>(x,a2,a1,a0)
-<font color="#0074D9">Legendre3</font>(x,a3,a2,a1,a0)
-<font color="#0074D9">Legendre4</font>(x,a4,a3,a2,a1,a0)
-<font color="#0074D9">Legendre5</font>(x,a5,a4,a3,a2,a1,a0)
-<font color="#0074D9">Legendre6</font>(x,a6,a5,a4,a3,a2,a1,a0)
-<font color="#0074D9">Legendre7</font>(x,a7,a6,a5,a4,a3,a2,a1,a0)
-<font color="#0074D9">Legendre8</font>(x,a8,a7,a6,a5,a4,a3,a2,a1,a0)
-<font color="#0074D9">Legendre9</font>(x,a9,a8,a7,a6,a5,a4,a3,a2,a1,a0)
-<font color="#0074D9">dLegendre1</font>(x,a1,a0)
-<font color="#0074D9">dLegendre2</font>(x,a2,a1,a0)
-<font color="#0074D9">dLegendre3</font>(x,a3,a2,a1,a0)
-<font color="#0074D9">dLegendre4</font>(x,a4,a3,a2,a1,a0)
-<font color="#0074D9">dLegendre5</font>(x,a5,a4,a3,a2,a1,a0)
-<font color="#0074D9">dLegendre6</font>(x,a6,a5,a4,a3,a2,a1,a0)
-<font color="#0074D9">dLegendre7</font>(x,a7,a6,a5,a4,a3,a2,a1,a0)
-<font color="#0074D9">dLegendre8</font>(x,a8,a7,a6,a5,a4,a3,a2,a1,a0)
-<font color="#0074D9">dLegendre9</font>(x,a9,a8,a7,a6,a5,a4,a3,a2,a1,a0)
+<font color="#0074D9">Legendre</font>(deg,x)
+<font color="#0074D9">dLegendre</font>(deg,x)
 </pre>
 <h4 id="herl">Hermite library</h4>
 <pre class="syntax">
 <font color="#0074D9">HermiteQN</font>(s)
 <font color="#0074D9">HermiteQW</font>(s)
+<font color="#0074D9">Hermite</font>(deg,s)
+<font color="#0074D9">dHermite</font>(deg,s)
 </pre>
 <h4 id="taul">Tauchen library</h4>
 <pre class="syntax">
@@ -1257,7 +1247,7 @@ dyna-gather-nfs.cmd	<font color="#808080"><i>Gather run statistics of DYNA simul
 dyna-gnuplot.cmd	<font color="#808080"><i>Invoke Gnuplot with the results of a DYNA model</i></font>
 dyna-publish.cmd	<font color="#808080"><i>DYNA syntax highlighting and conversion to html of the given file(s)</i></font>
 dyna-setenv.cmd		<font color="#808080"><i>Set environment variables for DYNA2GAMS</i></font>
-dyna-shell.cmd		<font color="#808080"><i>Starts a new shell for DYNA2GAMS</i></font>
+dyna-shell.cmd		<font color="#808080"><i>Start a new shell for DYNA2GAMS</i></font>
 </pre>
 <p>Type in &lt;cmd-file&gt; --help to get a description of their usage.
 
@@ -1268,6 +1258,7 @@ stage. Once judged useful and mature, they should be called upon through the @ s
 <pre class="syntax">
 <font color="#FF8000">$LIBINCLUDE</font> dyna-empmodel &lt;emp-file&gt;
 <font color="#FF8000">$LIBINCLUDE</font> dyna-file2put &lt;input-file&gt; [&lt;output-file&gt;]
+<font color="#FF8000">$LIBINCLUDE</font> dyna-fim-numeric EPS &lt;value&gt; | DF &lt;value&gt; | &lt;set-of-to-be-identified-par&gt; &lt;par-statistics-table&gt; L{&lt;target-par&gt;}
 <font color="#FF8000">$LIBINCLUDE</font> dyna-fractder {JG|GL} L{&lt;par&gt;}
 <font color="#FF8000">$LIBINCLUDE</font> dyna-fractint JG L{&lt;par&gt;}
 <font color="#FF8000">$LIBINCLUDE</font> dyna-fractional-laplacian &lt;xx&gt; &lt;DeltaX&gt; &lt;TickX&gt; &lt;s&gt; &lt;matrix-A&gt; &lt;matrix-B&gt; [&lt;xa&gt; [&lt;xb&gt;]]
