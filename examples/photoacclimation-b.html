@@ -1,0 +1,89 @@
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Microalgae photoacclimation as an optimal control problem of resource allocation</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Microalgae photoacclimation as an optimal control problem of resource allocation
+</pre>
+<p>
+  Photosynthetic microorganisms are known to adjust their photosynthetic capacity
+  according to light intensity. This so-called photoacclimation process may correspond at
+  equilibrium to the optimal behavior in order to maximize growth. But its dynamics under
+  varying condition remains less understood. To tackle this problem, we propose here a
+  resource allocation model, at coarse-grained, to represent microalgae growth and
+  photoacclimation. Using the Pontryagin maximum principle and numerical simulations, we
+  determine the optimal strategy of resource allocation in order to optimize microalgal
+  growth rate over a time horizon. We show that, after a transient, the optimal trajectory
+  approaches the optimal steady state, a behavior known as the turnpike property. Then,
+  the model is fitted with experimental data, resulting in a bi-level optimization problem
+  which is solved numerically. The fitted trajectory represents well a Dunaliella
+  tertiolecta culture facing a light down-shift. Finally, we compute the optimal trajectory
+  under day/night cycle and show that the synthesis of the photosynthetic apparatus starts
+  a few hours before dawn. This anticipatory behavior has actually been observed both in
+  the laboratory and in the field. This shows the algal predictive capacity and the
+  interest of our method which predicts this phenomenon.
+<p>
+  Reference:
+  <ol>
+  <li>F. Mairet and T. Bayen,
+  <em>The promise of dawn: microalgae photoacclimation as an optimal control problem
+  of resource allocation</em>,
+  Preprint, https://hal.inria.fr/hal-02925993, 2020.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  kP = 1.81
+  kR = 1.52
+  K = 62.1
+  tf = 1
+
+<font color="red"><b>tpa:</b></font>
+  It = (1000*<font color="#2ECC40">sqr</font>(<font color="#2ECC40">sin</font>(2*pi*(<font color="#0074D9">Time</font>-0.458)/(2*(1-0.458)))))$(<font color="#0074D9">Time</font>&gt;0.458)
+
+<font color="red"><b>dyn:</b></font>
+  c
+  p
+  J
+  u
+
+<font color="red"><b>lim:</b></font>
+  0 &lt;= c &lt;= 1
+  0 &lt;= p &lt;= 1
+  0 &lt;= u &lt;= 1
+
+<font color="red"><b>t=t0:</b></font>
+  J = 0
+
+<font color="red"><b>equ:</b></font>
+  c&acute; == kP*p*It/(K+p*It)*(1-c) - kR*c*(1-c-p)
+  p&acute; == u*kR*c*(1-c-p) - p*kP*p*It/(K+p*It)
+  J&acute; == kP*p*It/(K+p*It)
+  0 == <font color="#0074D9">initial</font>(c) - <font color="#0074D9">final</font>(c)
+  0 == <font color="#0074D9">initial</font>(p) - <font color="#0074D9">final</font>(p)
+  0 &lt;= <font color="#0074D9">initial</font>(c) + <font color="#0074D9">initial</font>(p)
+  1 &gt;= <font color="#0074D9">initial</font>(c) + <font color="#0074D9">initial</font>(p)
+
+<font color="red"><b>ini:</b></font>
+  c = 0.1
+  p = 0.4
+  u = 0.5
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">maximize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp
+</pre>
+</body>
+</html>

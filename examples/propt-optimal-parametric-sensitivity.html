@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -43,7 +43,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 
 <font color="red"><b>dyn:</b></font>
   x{1:4}	<font color="#808080"><i># state variables</i></font>
-  u	<font color="#808080"><i># control variable</i></font>
+  u		<font color="#808080"><i># control variable</i></font>
 
 <font color="red"><b>lim:</b></font>
   0 &lt;= u &lt;= umax
@@ -68,6 +68,9 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 
 <font color="red"><b>obj:</b></font>
   <font color="#8A2BE2">maximize</font> <font color="#0074D9">final</font>(x4) <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#8A2BE2">@solveloop</font> Method=movavg, Paraml=3 0.95, Varl=u x1 x3
 </pre>
 </body>
 </html>

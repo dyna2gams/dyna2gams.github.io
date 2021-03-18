@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -92,14 +92,14 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J)+0.5*<font color="#3D9970">sum</font>(scen,<font color="#0074D9">final</font>(<font color="#2ECC40">sqr</font>(x[scen])))/<font color="#3D9970">card</font>(scen) <font color="#8A2BE2">using</font> nlp
 
 <font color="red"><b>gms:</b></font>
-  <font color="#8A2BE2">@tpa</font> mean; mean = <font color="#3D9970">sum</font>(scen, W[scen])/<font color="#3D9970">card</font>(scen);
-  <font color="#8A2BE2">@tpa</font> sigm; sigm = <font color="#2ECC40">sqrt</font>(<font color="#3D9970">sum</font>(scen, <font color="#2ECC40">sqr</font>(W[scen]-mean))/<font color="#3D9970">card</font>(scen));
+  <font color="#8A2BE2">@tpa</font> mean = <font color="#3D9970">sum</font>(scen, W[scen])/<font color="#3D9970">card</font>(scen);
+  <font color="#8A2BE2">@tpa</font> sigm = <font color="#2ECC40">sqrt</font>(<font color="#3D9970">sum</font>(scen, <font color="#2ECC40">sqr</font>(W[scen]-mean))/<font color="#3D9970">card</font>(scen));
   W[scen] = (W[scen]-mean)/sigm/<font color="#2ECC40">sqrt</font>(<font color="#0074D9">dTime</font>);
   <font color="#8A2BE2">@solve</font>
   <font color="#808080"><i># Generate data to plot u = u(x)</i></font>
-  <font color="#8A2BE2">@tpa</font> xp; xp = <font color="#0074D9">AllTimeMin</font>(<font color="#3D9970">smin</font>(scen,x.l[scen])) +
+  <font color="#8A2BE2">@tpa</font> xp = <font color="#0074D9">AllTimeMin</font>(<font color="#3D9970">smin</font>(scen,x.l[scen])) + \
     (<font color="#0074D9">AllTimeMax</font>(<font color="#3D9970">smax</font>(scen,x.l[scen]))-<font color="#0074D9">AllTimeMin</font>(<font color="#3D9970">smin</font>(scen,x.l[scen])))*<font color="#0074D9">Time</font>/tf;
-  <font color="#8A2BE2">@tpa</font> up; up = a0.l + <font color="#3D9970">sum</font>(i, a.l[i]*<font color="#2ECC40">cos</font>(2*pi*<font color="#3D9970">ord</font>(i)*xp/mu.l) + b.l[i]*<font color="#2ECC40">sin</font>(2*pi*<font color="#3D9970">ord</font>(i)*xp/mu.l));
+  <font color="#8A2BE2">@tpa</font> up = a0.l + <font color="#3D9970">sum</font>(i, a.l[i]*<font color="#2ECC40">cos</font>(2*pi*<font color="#3D9970">ord</font>(i)*xp/mu.l) + b.l[i]*<font color="#2ECC40">sin</font>(2*pi*<font color="#3D9970">ord</font>(i)*xp/mu.l));
   <font color="#8A2BE2">@csvsave</font> xp up
 </pre>
 </body>

@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -65,8 +65,8 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   C_P_AIR = 1000		<font color="#808080"><i># \frac{J}{kg \cdot K}	Heat capacity of air</i></font>
   UA_WALL_REF_MAX = 4000	<font color="#808080"><i># \frac{J}{s \cdot K}	Maximum heat transfer coefficient between refrigerant and evaporator wall</i></font>
   TAU_FILL = 40			<font color="#808080"><i># s			Parameter describing the filling time of the evaporator under opened valve</i></font>
-  M_REF_MAX = 1 		<font color="#808080"><i># kg			Maximum mass of refrigerant in evaporator  					</i></font>
-  T_SH = 10			<font color="#808080"><i># K			Superheat in the suction manifold	</i></font>
+  M_REF_MAX = 1 		<font color="#808080"><i># kg			Maximum mass of refrigerant in evaporator</i></font>
+  T_SH = 10			<font color="#808080"><i># K			Superheat in the suction manifold</i></font>
   V_SUC = 5			<font color="#808080"><i># m^3			Total volume of suction manifold</i></font>
   V_SL = \			<font color="#808080"><i># \frac{m^3}{s}		Total displacement volume</i></font>
     0.08$(<font color="#3D9970">card</font>(v)=2) + 0.095$(<font color="#3D9970">card</font>(v)=3)
@@ -85,15 +85,15 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   deltamax
 
 <font color="red"><b>dyn:</b></font>
-  pressure   <font color="#808080"><i># describes the suction pressure in the suction manifold (in bar)</i></font>
-  goods[v]   <font color="#808080"><i># is the goods&rsquo; temperature (in &deg;C)</i></font>
-  wall[v]    <font color="#808080"><i># the one of the evaporator wall (in &deg;C)</i></font>
-  air[v]     <font color="#808080"><i># the air temperature surrounding the goods (in &deg;C)</i></font>
-  mass[v]    <font color="#808080"><i># the mass of the liquefied refrigerant in the evaporator (in kg)</i></font>
+  pressure	<font color="#808080"><i># describes the suction pressure in the suction manifold (in bar)</i></font>
+  goods[v]	<font color="#808080"><i># is the goods&rsquo; temperature (in &deg;C)</i></font>
+  wall[v]	<font color="#808080"><i># the one of the evaporator wall (in &deg;C)</i></font>
+  air[v]	<font color="#808080"><i># the air temperature surrounding the goods (in &deg;C)</i></font>
+  mass[v]	<font color="#808080"><i># the mass of the liquefied refrigerant in the evaporator (in kg)</i></font>
   u[v]:<font color="#3D9970">binary</font>	<font color="#808080"><i># describes the inlet valve of the v-th display case</i></font>
-  uc:<font color="#3D9970">binary</font>     <font color="#808080"><i># denotes the activity of the compressors (they are parallel connected)</i></font>
+  uc:<font color="#3D9970">binary</font>	<font color="#808080"><i># denotes the activity of the compressors (they are parallel connected)</i></font>
   cost
-  delta      <font color="#808080"><i># workaround of an infeasibility (I wonder why the solver couldn&rsquo;t do the same)</i></font>
+  delta		<font color="#808080"><i># workaround of an infeasibility (I wonder why the solver couldn&rsquo;t do the same)</i></font>
 
 <font color="red"><b>lim:</b></font>
   650 &lt;= tf &lt;= 750

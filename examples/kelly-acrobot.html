@@ -1,0 +1,140 @@
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Swing-up problem for acrobot</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Swing-up problem for acrobot
+</pre>
+<p>
+  Find the minimum torque-squared trajectory to swing up the acrobot robot: a double pendulum
+  with a motor between the links.
+<p>
+  References:
+  <ol>
+  <li>M. Kelly,
+  <em>An Introduction to Trajectory Optimization: How to Do Your Own Direct Collocation</em>,
+  SIAM Review, 59(4):849-904, 2017.
+  <li>M. Kelly,
+  <em>OptimTraj Users Guide - Version 1.5</em>,
+  https://github.com/MatthewPeterKelly/OptimTraj, May 2018.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">model-option</font> = optfile=1
+  conopt.opt &lt; lkdebg=0
+
+<font color="red"><b>par:</b></font>
+  m1 = 1		<font color="#808080"><i># elbow mass</i></font>
+  m2 = 1		<font color="#808080"><i># wrist mass</i></font>
+  g = 9.81		<font color="#808080"><i># gravity</i></font>
+  l1 = 0.5		<font color="#808080"><i># length of first link</i></font>
+  l2 = 0.5		<font color="#808080"><i># length of second link</i></font>
+  tf = 2
+
+<font color="red"><b>dyn:</b></font>
+  q{1:2}		<font color="#808080"><i># angles</i></font>
+  dq{1:2}		<font color="#808080"><i># angle rates</i></font>
+  ddq{1:2}		<font color="#808080"><i># angle accelerations</i></font>
+  u			<font color="#808080"><i># control</i></font>
+  J
+
+<font color="red"><b>lim:</b></font>
+  -2*pi &lt;= q{1:2} &lt;= 2*pi
+
+<font color="red"><b>t=t0:</b></font>
+  q{1:2} = 0		<font color="#808080"><i># initial angles - stable equilibrium</i></font>
+  dq{1:2} = 0		<font color="#808080"><i># initial angle rates</i></font>
+  J = 0
+
+<font color="red"><b>t=tf:</b></font>
+  q{1:2} = {pi pi}	<font color="#808080"><i># final angles - inverted balance</i></font>
+  dq{1:2} = 0		<font color="#808080"><i># final angle rates</i></font>
+
+<font color="red"><b>equ:</b></font>
+  q{1:2}&acute; == dq{1:2}
+  dq{1:2}&acute; == ddq{1:2}
+  m2*(-l2*<font color="#2ECC40">cos</font>(q2)-l1*<font color="#2ECC40">cos</font>(q1))*(-<font color="#2ECC40">sqr</font>(dq2)*l2*<font color="#2ECC40">sin</font>(q2)+ddq2*l2*<font color="#2ECC40">cos</font>(q2)-<font color="#2ECC40">sqr</font>(dq1)*l1*<font color="#2ECC40">sin</font>(q1)+ddq1*l1*<font color="#2ECC40">cos</font>(q1))-\
+  m2*(l2*<font color="#2ECC40">sin</font>(q2)+l1*<font color="#2ECC40">sin</font>(q1))*(ddq2*l2*<font color="#2ECC40">sin</font>(q2)+<font color="#2ECC40">sqr</font>(dq2)*l2*<font color="#2ECC40">cos</font>(q2)+ddq1*l1*<font color="#2ECC40">sin</font>(q1)+<font color="#2ECC40">sqr</font>(dq1)*l1*<font color="#2ECC40">cos</font>(q1))-\
+  g*m2*(l2*<font color="#2ECC40">sin</font>(q2)+l1*<font color="#2ECC40">sin</font>(q1))-l1*m1*<font color="#2ECC40">cos</font>(q1)*(ddq1*l1*<font color="#2ECC40">cos</font>(q1)-<font color="#2ECC40">sqr</font>(dq1)*l1*<font color="#2ECC40">sin</font>(q1))-\
+  l1*m1*<font color="#2ECC40">sin</font>(q1)*(ddq1*l1*<font color="#2ECC40">sin</font>(q1)+<font color="#2ECC40">sqr</font>(dq1)*l1*<font color="#2ECC40">cos</font>(q1))-g*l1*m1*<font color="#2ECC40">sin</font>(q1) == 0
+  u-l2*m2*<font color="#2ECC40">cos</font>(q2)*(-<font color="#2ECC40">sqr</font>(dq2)*l2*<font color="#2ECC40">sin</font>(q2)+ddq2*l2*<font color="#2ECC40">cos</font>(q2)-<font color="#2ECC40">sqr</font>(dq1)*l1*<font color="#2ECC40">sin</font>(q1)+ddq1*l1*<font color="#2ECC40">cos</font>(q1))-\
+  l2*m2*<font color="#2ECC40">sin</font>(q2)*(ddq2*l2*<font color="#2ECC40">sin</font>(q2)+<font color="#2ECC40">sqr</font>(dq2)*l2*<font color="#2ECC40">cos</font>(q2)+ddq1*l1*<font color="#2ECC40">sin</font>(q1)+<font color="#2ECC40">sqr</font>(dq1)*l1*<font color="#2ECC40">cos</font>(q1))-g*l2*m2*<font color="#2ECC40">sin</font>(q2) == 0
+  J&acute; == <font color="#2ECC40">sqr</font>(u)
+
+<font color="red"><b>fun:</b></font>
+  <font color="#0074D9">Time</font>   &sect;q1   &sect;q2
+  0        0     0	<font color="#808080"><i># initial configuration</i></font>
+  0.5  -1.57     0	<font color="#808080"><i># back swing</i></font>
+  1.5   1.57  3.14	<font color="#808080"><i># front swing</i></font>
+  2     3.14  3.14	<font color="#808080"><i># final configuration</i></font>
+
+<font color="red"><b>ini:</b></font>
+  q{1:2} = &sect;q{1:2}(<font color="#0074D9">Time</font>)
+  dq{1:2} = 0
+  u = 0
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp
+
+<font color="#808080"><i>###:</i></font><font color="#808080"><i> Maxima script to do the math</i></font>
+<font color="#808080"><i>  display2d:false$</i></font>
+<font color="#808080"><i>  load("vect")$</i></font>
+<font color="#808080"><i>  /* Use an existing operator for doing '2d' cross product:</i></font>
+<font color="#808080"><i>     express([a1,a2]~[b1,b2]) gives a1*b2-a2*b1</i></font>
+<font color="#808080"><i>     */</i></font>
+<font color="#808080"><i>  /* Define a function 'column vector to list' */</i></font>
+<font color="#808080"><i>  cv2l(x) := [x[1,1],x[2,1]]$</i></font>
+<font color="#808080"><i>  /* Unit vectors */</i></font>
+<font color="#808080"><i>  i: [1,0]$</i></font>
+<font color="#808080"><i>  j: [0,1]$</i></font>
+<font color="#808080"><i>  /* shoulder -&gt; elbow */ e1: cos(q1)*(-j) + sin(q1)*(i)$</i></font>
+<font color="#808080"><i>  /* elbow    -&gt; wrist */ e2: cos(q2)*(-j) + sin(q2)*(i)$</i></font>
+<font color="#808080"><i>  /* State vectors */</i></font>
+<font color="#808080"><i>  z: [q1,q2,dq1,dq2]$</i></font>
+<font color="#808080"><i>  dz: [dq1,dq2,ddq1,ddq2]$</i></font>
+<font color="#808080"><i>  /* Kinematics */</i></font>
+<font color="#808080"><i>  p1: l1*e1$</i></font>
+<font color="#808080"><i>  p2: p1+l2*e2$</i></font>
+<font color="#808080"><i>  dp1: cv2l(jacobian(p1,z).dz)$</i></font>
+<font color="#808080"><i>  dp2: cv2l(jacobian(p2,z).dz)$</i></font>
+<font color="#808080"><i>  ddp1: cv2l(jacobian(dp1,z).dz)$</i></font>
+<font color="#808080"><i>  ddp2: cv2l(jacobian(dp2,z).dz)$</i></font>
+<font color="#808080"><i>  /* Angular momentum balance of system about shoulder joint */</i></font>
+<font color="#808080"><i>  sumTorques1: express(p1~(-m1*g*j)) + express(p2~(-m2*g*j))$</i></font>
+<font color="#808080"><i>  sumInertial1: express(p1~(m1*ddp1)) + express(p2~(m2*ddp2))$</i></font>
+<font color="#808080"><i>  eqn1: sumTorques1-sumInertial1$</i></font>
+<font color="#808080"><i>  /* Angular momentum balance of outer link about elbow joint */</i></font>
+<font color="#808080"><i>  sumTorques2: express((p2-p1)~(-m2*g*j)) + u$</i></font>
+<font color="#808080"><i>  sumInertial2: express((p2-p1)~(m2*ddp2))$</i></font>
+<font color="#808080"><i>  eqn2: sumTorques2-sumInertial2$</i></font>
+<font color="#808080"><i>  /* At this stage, the model is as follows:</i></font>
+<font color="#808080"><i>     q1&acute; == dq1</i></font>
+<font color="#808080"><i>     q2&acute; == qd2</i></font>
+<font color="#808080"><i>     dq1&acute; == ddq1</i></font>
+<font color="#808080"><i>     dq2&acute; == ddq2</i></font>
+<font color="#808080"><i>     eqn1 == 0</i></font>
+<font color="#808080"><i>     eqn2 == 0</i></font>
+<font color="#808080"><i>     */</i></font>
+<font color="#808080"><i>  /* Write out dynamics in matrix form: MM*ddq = ff */</i></font>
+<font color="#808080"><i>  ddq: [ddq1,ddq2]$</i></font>
+<font color="#808080"><i>  eqns: [eqn1,eqn2]$</i></font>
+<font color="#808080"><i>  MM: jacobian(eqns,ddq)$</i></font>
+<font color="#808080"><i>  ff: ev(-eqns,ddq1=0,ddq2=0)$</i></font>
+<font color="#808080"><i>  /* and so ddq can be analytically computed */</i></font>
+</pre>
+</body>
+</html>

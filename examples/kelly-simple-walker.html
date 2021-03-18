@@ -1,0 +1,182 @@
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">A simple model of walking</h1>
+<pre>
+<font color="red"><b>rem:</b></font> A simple model of walking
+</pre>
+<p>
+  This script sets up a trajectory optimization problem for a simple model of walking. The
+  walking model is a double pendulum, with point feet, no ankle torques, impulsive heel-strike
+  (but not push-off), and continuous hip torque. Both legs have inertia. Cost function is
+  minimize integral of torque-squared.
+<p>
+  References:
+  <ol>
+  <li>M. Kelly,
+  <em>An Introduction to Trajectory Optimization: How to Do Your Own Direct Collocation</em>,
+  SIAM Review, 59(4):849-904, 2017.
+  <li>M. Kelly,
+  <em>OptimTraj Users Guide - Version 1.5</em>,
+  https://github.com/MatthewPeterKelly/OptimTraj, May 2018.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  m = 10		<font color="#808080"><i># leg mass</i></font>
+  I = 1			<font color="#808080"><i># leg inertia about center of mass (CoM)</i></font>
+  g = 9.81		<font color="#808080"><i># gravity</i></font>
+  l = 1			<font color="#808080"><i># leg length</i></font>
+  d = 0.2		<font color="#808080"><i># leg CoM distance from hip</i></font>
+  tf = 1
+  stepAngle = 0.2
+  stepRate = 2*stepAngle/tf
+
+<font color="red"><b>var:</b></font>
+  q{1:2}o
+  q{1:2}f
+  dq{1:2}o
+  dq{1:2}f
+
+<font color="red"><b>dyn:</b></font>
+  q{1:2}
+  dq{1:2}
+  ddq{1:2}
+  u
+  J
+
+<font color="red"><b>lim:</b></font>
+  -pi/3 &lt;= q{1:2} &lt;= pi/3
+
+<font color="red"><b>t=t0:</b></font>
+  q{1:2} = {1 -1}*stepAngle
+  J = 0
+
+<font color="red"><b>equ:</b></font>
+  q{1:2}&acute; == dq{1:2}
+  dq{1:2}&acute; == ddq{1:2}
+  -ddq2*I-ddq1*I+m*(l*<font color="#2ECC40">cos</font>(q1)-d*<font color="#2ECC40">cos</font>(q2))*(-d*<font color="#2ECC40">sqr</font>(dq2)*<font color="#2ECC40">sin</font>(q2)+d*ddq2*<font color="#2ECC40">cos</font>(q2)+<font color="#2ECC40">sqr</font>(dq1)*l*<font color="#2ECC40">sin</font>(q1)-\
+  ddq1*l*<font color="#2ECC40">cos</font>(q1))-m*(d*<font color="#2ECC40">sin</font>(q2)-l*<font color="#2ECC40">sin</font>(q1))*(d*ddq2*<font color="#2ECC40">sin</font>(q2)+d*<font color="#2ECC40">sqr</font>(dq2)*<font color="#2ECC40">cos</font>(q2)-ddq1*l*<font color="#2ECC40">sin</font>(q1)-\
+  <font color="#2ECC40">sqr</font>(dq1)*l*<font color="#2ECC40">cos</font>(q1))-g*m*(d*<font color="#2ECC40">sin</font>(q2)-l*<font color="#2ECC40">sin</font>(q1))+m*(l*<font color="#2ECC40">cos</font>(q1)-d*<font color="#2ECC40">cos</font>(q1))*(<font color="#2ECC40">sqr</font>(dq1)*(l*<font color="#2ECC40">sin</font>(q1)-\
+  d*<font color="#2ECC40">sin</font>(q1))+ddq1*(d*<font color="#2ECC40">cos</font>(q1)-l*<font color="#2ECC40">cos</font>(q1)))-m*(d*<font color="#2ECC40">sin</font>(q1)-l*<font color="#2ECC40">sin</font>(q1))*(ddq1*(d*<font color="#2ECC40">sin</font>(q1)-l*<font color="#2ECC40">sin</font>(q1))+\
+  <font color="#2ECC40">sqr</font>(dq1)*(d*<font color="#2ECC40">cos</font>(q1)-l*<font color="#2ECC40">cos</font>(q1)))-g*m*(d*<font color="#2ECC40">sin</font>(q1)-l*<font color="#2ECC40">sin</font>(q1)) == 0
+  -ddq2*I+u-d*m*<font color="#2ECC40">cos</font>(q2)*(-d*<font color="#2ECC40">sqr</font>(dq2)*<font color="#2ECC40">sin</font>(q2)+d*ddq2*<font color="#2ECC40">cos</font>(q2)+<font color="#2ECC40">sqr</font>(dq1)*l*<font color="#2ECC40">sin</font>(q1)-ddq1*l*<font color="#2ECC40">cos</font>(q1))-\
+  d*m*<font color="#2ECC40">sin</font>(q2)*(d*ddq2*<font color="#2ECC40">sin</font>(q2)+d*<font color="#2ECC40">sqr</font>(dq2)*<font color="#2ECC40">cos</font>(q2)-ddq1*l*<font color="#2ECC40">sin</font>(q1)-\
+  <font color="#2ECC40">sqr</font>(dq1)*l*<font color="#2ECC40">cos</font>(q1))-d*g*m*<font color="#2ECC40">sin</font>(q2) == 0
+  q{1:2}o == <font color="#0074D9">initial</font>(q{1:2})
+  dq{1:2}o == <font color="#0074D9">initial</font>(dq{1:2})
+  q{1:2}f == <font color="#0074D9">final</font>(q{1:2})
+  dq{1:2}f == <font color="#0074D9">final</font>(dq{1:2})
+  q1f == q2o
+  q2f == q1o
+  dq2o*I-dq2f*I+dq1o*I-dq1f*I +m*(d*dq2o*<font color="#2ECC40">sin</font>(q2o)-dq1o*l*<font color="#2ECC40">sin</font>(q1o))*(d*<font color="#2ECC40">sin</font>(q2o)-l*<font color="#2ECC40">sin</font>(q2o))+\
+  dq1o*m*(d*<font color="#2ECC40">sin</font>(q1o)-l*<font color="#2ECC40">sin</font>(q1o))*(d*<font color="#2ECC40">sin</font>(q1o)-l*<font color="#2ECC40">sin</font>(q2o))-m*(d*dq2o*<font color="#2ECC40">cos</font>(q2o)-\
+  dq1o*l*<font color="#2ECC40">cos</font>(q1o))*(l*<font color="#2ECC40">cos</font>(q2o)-d*<font color="#2ECC40">cos</font>(q2o))-dq1o*m*(d*<font color="#2ECC40">cos</font>(q1o)-l*<font color="#2ECC40">cos</font>(q1o))*(l*<font color="#2ECC40">cos</font>(q2o)-\
+  d*<font color="#2ECC40">cos</font>(q1o))-m*(d*<font color="#2ECC40">sin</font>(q2f)-l*<font color="#2ECC40">sin</font>(q1f))*(d*dq2f*<font color="#2ECC40">sin</font>(q2f)-dq1f*l*<font color="#2ECC40">sin</font>(q1f))+m*(l*<font color="#2ECC40">cos</font>(q1f)-\
+  d*<font color="#2ECC40">cos</font>(q2f))*(d*dq2f*<font color="#2ECC40">cos</font>(q2f)-dq1f*l*<font color="#2ECC40">cos</font>(q1f))-dq1f*m*<font color="#2ECC40">sqr</font>(d*<font color="#2ECC40">sin</font>(q1f)-l*<font color="#2ECC40">sin</font>(q1f))+\
+  dq1f*m*(d*<font color="#2ECC40">cos</font>(q1f)-l*<font color="#2ECC40">cos</font>(q1f))*(l*<font color="#2ECC40">cos</font>(q1f)-d*<font color="#2ECC40">cos</font>(q1f)) == 0
+  -dq2f*I+dq1o*I-d*m*<font color="#2ECC40">sin</font>(q2f)*(d*dq2f*<font color="#2ECC40">sin</font>(q2f)-dq1f*l*<font color="#2ECC40">sin</font>(q1f))-d*m*<font color="#2ECC40">cos</font>(q2f)*(d*dq2f*<font color="#2ECC40">cos</font>(q2f)-\
+  dq1f*l*<font color="#2ECC40">cos</font>(q1f))+d*dq1o*m*<font color="#2ECC40">sin</font>(q1o)*(d*<font color="#2ECC40">sin</font>(q1o)-l*<font color="#2ECC40">sin</font>(q1o))+d*dq1o*m*<font color="#2ECC40">cos</font>(q1o)*(d*<font color="#2ECC40">cos</font>(q1o)-\
+  l*<font color="#2ECC40">cos</font>(q1o)) == 0
+  J&acute; == <font color="#2ECC40">sqr</font>(u)
+
+<font color="red"><b>ini:</b></font>
+  q1 = <font color="#0074D9">linspace</font>(stepAngle,-stepAngle)
+  q2 = <font color="#0074D9">linspace</font>(-stepAngle,stepAngle)
+  dq{1:2} = {-1 1}*stepRate
+  u = 0
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp
+
+<font color="#808080"><i>###:</i></font><font color="#808080"><i> Maxima script to do the math for the dynamics</i></font>
+<font color="#808080"><i>  display2d:false$</i></font>
+<font color="#808080"><i>  load("vect")$</i></font>
+<font color="#808080"><i>  /* Use an existing operator for doing '2d' cross product:</i></font>
+<font color="#808080"><i>     express([a1,a2]~[b1,b2]) gives a1*b2-a2*b1</i></font>
+<font color="#808080"><i>     */</i></font>
+<font color="#808080"><i>  /* Define a function 'column vector to list' */</i></font>
+<font color="#808080"><i>  cv2l(x) := [x[1,1],x[2,1]]$</i></font>
+<font color="#808080"><i>  /* Unit vectors */</i></font>
+<font color="#808080"><i>  /* Unit vectors */</i></font>
+<font color="#808080"><i>  i: [1,0]$</i></font>
+<font color="#808080"><i>  j: [0,1]$</i></font>
+<font color="#808080"><i>  /* hip -&gt; stance foot */ e1: cos(q1)*(-j) + sin(q1)*(i)$</i></font>
+<font color="#808080"><i>  /* hip -&gt; swing foot  */ e2: cos(q2)*(-j) + sin(q2)*(i)$</i></font>
+<font color="#808080"><i>  /* State vectors */</i></font>
+<font color="#808080"><i>  z: [q1,q2,dq1,dq2]$</i></font>
+<font color="#808080"><i>  dz: [dq1,dq2,ddq1,ddq2]$</i></font>
+<font color="#808080"><i>  /* Kinematics */</i></font>
+<font color="#808080"><i>  pHip: -l*e1$</i></font>
+<font color="#808080"><i>  /* Center of mass of leg one */ p1: pHip +d*e1$</i></font>
+<font color="#808080"><i>  /* Center of mass of leg two */ p2: pHip +d*e2$</i></font>
+<font color="#808080"><i>  dp1: cv2l(jacobian(p1,z).dz)$</i></font>
+<font color="#808080"><i>  dp2: cv2l(jacobian(p2,z).dz)$</i></font>
+<font color="#808080"><i>  ddp1: cv2l(jacobian(dp1,z).dz)$</i></font>
+<font color="#808080"><i>  ddp2: cv2l(jacobian(dp2,z).dz)$</i></font>
+<font color="#808080"><i>  /* Angular momentum balance of system about stance foot (origin) */</i></font>
+<font color="#808080"><i>  sumTorques1: express(p1~(-m*g*j)) + express(p2~(-m*g*j))$</i></font>
+<font color="#808080"><i>  sumInertial1: express(p1~(m*ddp1)) + I*ddq1 + express(p2~(m*ddp2)) + I*ddq2$</i></font>
+<font color="#808080"><i>  eqn1: sumTorques1-sumInertial1$</i></font>
+<font color="#808080"><i>  /* Angular momentum balance of swing leg about hip joint */</i></font>
+<font color="#808080"><i>  sumTorques2: express((p2-pHip)~(-m*g*j)) + u$</i></font>
+<font color="#808080"><i>  sumInertial2: express((p2-pHip)~(m*ddp2)) + I*ddq2$</i></font>
+<font color="#808080"><i>  eqn2: sumTorques2-sumInertial2$</i></font>
+<font color="#808080"><i>  /* At this stage, the model is as follows:</i></font>
+<font color="#808080"><i>     q1&acute; == dq1</i></font>
+<font color="#808080"><i>     q2&acute; == qd2</i></font>
+<font color="#808080"><i>     dq1&acute; == ddq1</i></font>
+<font color="#808080"><i>     dq2&acute; == ddq2</i></font>
+<font color="#808080"><i>     eqn1 == 0</i></font>
+<font color="#808080"><i>     eqn2 == 0</i></font>
+<font color="#808080"><i>     */</i></font>
+<font color="#808080"><i></i></font>
+<font color="#808080"><i>###:</i></font><font color="#808080"><i> Maxima script to do the math for the periodic gait</i></font>
+<font color="#808080"><i>  /* Swing foot position */ pFoot: pHip + l*e2$</i></font>
+<font color="#808080"><i>  /* Angular momentum of the system about the new stance foot (old swing foot) */</i></font>
+<font color="#808080"><i>  hSysBefore: /* old stance leg */ express((p1-pFoot)~(m*dp1)) + I*dq1 + /* old swing leg */ express((p2-pFoot)~(m*dp2)) + I*dq2$</i></font>
+<font color="#808080"><i>  /* Angular momentum of the old stance leg about the hip */</i></font>
+<font color="#808080"><i>  hLegBefore: express((p1-pHip)~(m*dp1)) + I*dq1$</i></font>
+<font color="#808080"><i>  /* Unit vectors after the collision */</i></font>
+<font color="#808080"><i>  /* hip -&gt; stance foot */ e1New: cos(q1New)*(-j) + sin(q1New)*(i)$</i></font>
+<font color="#808080"><i>  /* hip -&gt; swing foot  */ e2New: cos(q2New)*(-j) + sin(q2New)*(i)$</i></font>
+<font color="#808080"><i>  /* Kinematics */</i></font>
+<font color="#808080"><i>  pHipNew: -l*e1New$</i></font>
+<font color="#808080"><i>  p1New: pHipNew + d*e1New$</i></font>
+<font color="#808080"><i>  p2New: pHipNew + d*e2New$</i></font>
+<font color="#808080"><i>  dp1New: cv2l(jacobian(p1New,[q1New,q2New]).[dq1New,dq2New])$</i></font>
+<font color="#808080"><i>  dp2New: cv2l(jacobian(p2New,[q1New,q2New]).[dq1New,dq2New])$</i></font>
+<font color="#808080"><i>  /* Angular momentum of the system after collision about new stance foot */</i></font>
+<font color="#808080"><i>  hSysAfter: express(p2New~(m*dp2New)) + I*dq2New + express(p1New~(m*dp1New)) + I*dq1New$</i></font>
+<font color="#808080"><i>  /* Angular momentum of the new swing leg about the hip */</i></font>
+<font color="#808080"><i>  hLegAfter: express((p2New-pHipNew)~(m*dp2New)) + I*dq2New$</i></font>
+<font color="#808080"><i>  /* solve the dynamics */</i></font>
+<font color="#808080"><i>  eqnsHs: [hSysBefore-hSysAfter , hLegBefore-hLegAfter]$</i></font>
+<font color="#808080"><i>  varsHs: [dq1New , dq2New]$</i></font>
+<font color="#808080"><i>  /* The results are as follows:</i></font>
+<font color="#808080"><i>     q1New = q2</i></font>
+<font color="#808080"><i>     q2New = q1</i></font>
+<font color="#808080"><i>     dq1New & dq2New obtained by solving eqnsHs == [0,0]</i></font>
+<font color="#808080"><i>     */</i></font>
+<font color="#808080"><i>  eqn1Hs: ev(hSysBefore-hSysAfter,q1=q1o,q2=q2o,dq1=dq1o,dq2=dq2o,q1New=q1f,q2New=q2f,dq1New=dq1f,dq2New=dq2f)$</i></font>
+<font color="#808080"><i>  eqn2Hs: ev(hLegBefore-hLegAfter,q1=q1o,q2=q2o,dq1=dq1o,dq2=dq2o,q1New=q1f,q2New=q2f,dq1New=dq1f,dq2New=dq2f)$</i></font>
+<font color="#808080"><i>  /* q1f == q2o</i></font>
+<font color="#808080"><i>     q2f == q1o</i></font>
+<font color="#808080"><i>     dq1f & dq2f obtained by solving eqn1Hs == 0 & eqn2Hs == 0</i></font>
+<font color="#808080"><i>     */</i></font>
+</pre>
+</body>
+</html>

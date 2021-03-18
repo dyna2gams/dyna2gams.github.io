@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -198,7 +198,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   j2c == <font color="#0074D9">Poly5</font>(1/(0.1*gamma*x1-1),c52,c42,c32,c22,c12,c02)
   <font color="#808080"><i># j2  == ifthen(x1&lt;=v2,j2a,ifthen(x1&lt;=v3,j2b,j2c))</i></font>
   j2  == j2b*<font color="#0074D9">rectangle</font>(x1,v2,v3) + j2c*<font color="#0074D9">rectangle</font>(x1,v3,x1mx)
-  
+
   penalty == theta * (<font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(x0)/x0mx-1) + <font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(x1)/x1mx))
 
 <font color="red"><b>equ:</b></font>
@@ -213,8 +213,8 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <font color="red"><b>gms:</b></font>
   <font color="#FF8000">$$ifthen</font> <font color="#8A2BE2">%ITER%</font>==<font color="#8A2BE2">%ITERMAX%</font>
   <font color="#808080"><i># replace terminal conditions by a penalty</i></font>
-  <font color="#8A2BE2">@setlimf</font> x0 0 x0mx
-  <font color="#8A2BE2">@setlimf</font> x1 0 x1mx
+  <font color="#8A2BE2">@setlimf</font> x0, 0, x0mx
+  <font color="#8A2BE2">@setlimf</font> x1, 0, x1mx
   theta = 1e+6
   <font color="#8A2BE2">@seekcia</font> ControlVar=w[i], optcr=0.25
   <font color="#3D9970">scalars</font> TrueFinalJ,FinalX0,FinalX1;

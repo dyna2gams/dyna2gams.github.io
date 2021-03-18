@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -27,7 +27,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   We consider the one-dimensional stochastic regulator problem
 <p>
   \[
-  \min \ \mathbb{E} \Bigg[ \frac{1}{2} \int_0^1 \big(X_t^2 + u_t^2\big) \ \mathrm{d}t 
+  \min \ \mathbb{E} \Bigg[ \frac{1}{2} \int_0^1 \big(X_t^2 + u_t^2\big) \ \mathrm{d}t
   + \frac{1}{2} X_1^2 \Bigg]
   \]
 <p>
@@ -90,16 +90,16 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <font color="red"><b>gms:</b></font>
   <font color="#808080"><i># We can get a better agreement between the analytical and numerical solutions</i></font>
   <font color="#808080"><i># by controlling the sample</i></font>
-  <font color="#8A2BE2">@tpa</font> mean; mean = <font color="#3D9970">sum</font>(scen, W[scen])/<font color="#3D9970">card</font>(scen);
-  <font color="#8A2BE2">@tpa</font> sigm; sigm = <font color="#2ECC40">sqrt</font>(<font color="#3D9970">sum</font>(scen, <font color="#2ECC40">sqr</font>(W[scen]-mean))/<font color="#3D9970">card</font>(scen));
+  <font color="#8A2BE2">@tpa</font> mean = <font color="#3D9970">sum</font>(scen, W[scen])/<font color="#3D9970">card</font>(scen);
+  <font color="#8A2BE2">@tpa</font> sigm = <font color="#2ECC40">sqrt</font>(<font color="#3D9970">sum</font>(scen, <font color="#2ECC40">sqr</font>(W[scen]-mean))/<font color="#3D9970">card</font>(scen));
   W[scen] = (W[scen]-mean)/sigm;
-  <font color="#8A2BE2">@tpa</font> skew; skew = <font color="#3D9970">sum</font>(scen, <font color="#2ECC40">power</font>(W[scen],3))/<font color="#3D9970">card</font>(scen);   <font color="#808080"><i># should be 0 for a perfect normal(0,1) distribution</i></font>
-  <font color="#8A2BE2">@tpa</font> kurt; kurt = <font color="#3D9970">sum</font>(scen, <font color="#2ECC40">power</font>(W[scen],4))/<font color="#3D9970">card</font>(scen);   <font color="#808080"><i># should be 3 for a perfect normal(0,1) distribution</i></font>
-  <font color="#8A2BE2">@csvsave</font> skew, kurt
+  <font color="#8A2BE2">@tpa</font> skew = <font color="#3D9970">sum</font>(scen, <font color="#2ECC40">power</font>(W[scen],3))/<font color="#3D9970">card</font>(scen);   <font color="#808080"><i># should be 0 for a perfect normal(0,1) distribution</i></font>
+  <font color="#8A2BE2">@tpa</font> kurt = <font color="#3D9970">sum</font>(scen, <font color="#2ECC40">power</font>(W[scen],4))/<font color="#3D9970">card</font>(scen);   <font color="#808080"><i># should be 3 for a perfect normal(0,1) distribution</i></font>
+  <font color="#8A2BE2">@csvsave</font> skew kurt
   W[scen] = W[scen]/<font color="#2ECC40">sqrt</font>(<font color="#0074D9">dTime</font>);
   <font color="#8A2BE2">@solve</font>
   <font color="#808080"><i># Analytical solution</i></font>
-  <font color="#8A2BE2">@tpa</font> ko; ko = <font color="#2ECC40">sqrt</font>(2)*<font color="#2ECC40">tanh</font>(<font color="#2ECC40">sqrt</font>(2)*(<font color="#0074D9">Time</font>-1)) - 1;
+  <font color="#8A2BE2">@tpa</font> ko = <font color="#2ECC40">sqrt</font>(2)*<font color="#2ECC40">tanh</font>(<font color="#2ECC40">sqrt</font>(2)*(<font color="#0074D9">Time</font>-1)) - 1;
   <font color="#8A2BE2">@csvsave</font> ko
 </pre>
 </body>

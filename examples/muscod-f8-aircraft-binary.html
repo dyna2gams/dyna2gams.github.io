@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -19,7 +19,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <font color="red"><b>rem:</b></font> F-8 aircraft (binary variant)
 </pre>
 <p>
-  The F-8 aircraft control problem is based on a very simple aircraft model. 
+  The F-8 aircraft control problem is based on a very simple aircraft model.
   The control problem aims at controlling an aircraft in a time-optimal way from an
   initial state to a terminal state.
 <p>
@@ -65,8 +65,8 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 
 <font color="red"><b>exp:</b></font>
   penalty == <font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(x0)) + <font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(x1)) + <font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(x2))
-  
-<font color="red"><b>equ:</b></font> 
+
+<font color="red"><b>equ:</b></font>
   x0&acute; == -0.877*x0 + x2 - 0.088*x0*x2 + 0.47*x0*x0 - 0.019*x1*x1 -x0*x0*x2 + 3.846*x0*x0*x0 \
       + 0.215*ksi - 0.28*x0*x0*ksi + 0.47*x0*ksi*ksi - 0.63*ksi*ksi*ksi \
       - 2*u * ( 0.215*ksi - 0.28*x0*x0*ksi - 0.63*ksi*ksi*ksi )
@@ -81,13 +81,13 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <font color="red"><b>gms:</b></font>
   <font color="#FF8000">$$ifthen</font> <font color="#8A2BE2">%ITER%</font>==<font color="#8A2BE2">%ITERMAX%</font>
   <font color="#808080"><i># replace terminal conditions by a penalty</i></font>
-  <font color="#8A2BE2">@setlimf</font> x0 -<font color="#3D9970">inf</font> +<font color="#3D9970">inf</font>
-  <font color="#8A2BE2">@setlimf</font> x1 -<font color="#3D9970">inf</font> +<font color="#3D9970">inf</font>
-  <font color="#8A2BE2">@setlimf</font> x2 -<font color="#3D9970">inf</font> +<font color="#3D9970">inf</font>
+  <font color="#8A2BE2">@setlimf</font> x0, -<font color="#3D9970">inf</font>, +<font color="#3D9970">inf</font>
+  <font color="#8A2BE2">@setlimf</font> x1, -<font color="#3D9970">inf</font>, +<font color="#3D9970">inf</font>
+  <font color="#8A2BE2">@setlimf</font> x2, -<font color="#3D9970">inf</font>, +<font color="#3D9970">inf</font>
   theta = 1e+4
   <font color="#8A2BE2">@seekcia</font> ControlVar=u
   <font color="#FF8000">$$endif</font>
-  
+
 </pre>
 </body>
 </html>

@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -31,7 +31,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <p>
   with coefficients \(\theta_i \geq 0\). Initial conditions are known.
 <p>
-  Source: <a href="http://www.mcs.anl.gov/~more/cops/">COPS - Large-Scale Optimization Problems</a>
+  See: <a href="http://www.mcs.anl.gov/~more/cops/">COPS: Large-Scale Optimization Problems</a>
 <p>
   Reference:
   <ol>
@@ -88,7 +88,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   x3&acute; == (theta1*x1*(x2+theta5*x1))/((theta2+theta5)*x1+x2)+theta4*x1
 
 <font color="red"><b>obj:</b></font>	<font color="#808080"><i># a dedicated function for the lack-of-fit </i></font>
-  <font color="#8A2BE2">minimize</font> <font color="#3D9970">sum</font>{1:3, <font color="#0074D9">ObservedErr</font>(x{:})} <font color="#8A2BE2">using</font> nlp
+  <font color="#8A2BE2">minimize</font> <font color="#3D9970">sum</font>{1:3, <font color="#0074D9">ObservedSSE</font>(x{:})} <font color="#8A2BE2">using</font> nlp
 
 <font color="red"><b>gms:</b></font>	<font color="#808080"><i># dedicated keywords to build a customized report</i></font>
   <font color="#3D9970">parameter</font> report(*,*);

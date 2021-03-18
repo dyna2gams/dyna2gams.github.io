@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -44,6 +44,13 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   <br>    [5.24 1] / [1 2.19 6.50 6.30 5.24 1]
   <br>    [6.76 1] / [1 6.12 13.42 17.16 14.14 6.76 1]
 <p>
+  Reference:
+  <ol>
+  <li>D. Graham and R.C. Lathrop,
+  <em>The synthesis of optimum response: criteria and standard forms</em>,
+  Transactions of the AIEE, 72(II):273-288, 1953.
+  </ol>
+<p>
 <pre>
 <font color="#FF8000">$if</font> not set D <font color="#FF8000">$set</font> D 6   <font color="#808080"><i># degree of polynomial</i></font>
 </pre>
@@ -52,47 +59,50 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <font color="red"><b>set:</b></font>
   degree = 1:%D%
   <font color="#8A2BE2">alias</font>(d,dd,degree)
-  iter = ITER1:ITER9
+  iter = iter1:iter9
 
 <font color="red"><b>par:</b></font>
-  tf = 20
   report[iter,degree]
+  tf = 20
 
 <font color="red"><b>var:</b></font>
   <font color="#808080"><i># Coefficients of the denominator of the transfer function: s^n+a[n]*s^{n-1}+...+a[3]*s^2+a[2]*s+a[1]</i></font>
   denom[degree]
 
-<font color="red"><b>dyn:</b></font> j x[degree]
+<font color="red"><b>dyn:</b></font>
+  x[degree]
+  J
 
 <font color="red"><b>lim:</b></font>
   1 &lt;= denom[d]$(<font color="#3D9970">ord</font>(d)=1) &lt;= 1
   1 &lt;= denom[d]$(<font color="#3D9970">ord</font>(d)&gt;1) &lt;= 10
 
 <font color="red"><b>t=t0:</b></font>
-  j = 0
   x[d] = 0
+  J = 0
 
 <font color="red"><b>ini:</b></font>
-  j = 0
   x[d] = 0
+  J = 0
   denom[d] = 1
 
 <font color="red"><b>equ:</b></font>
-  j&acute; == <font color="#0074D9">Time</font>*<font color="#2ECC40">sqrt</font>(1e-16+<font color="#2ECC40">sqr</font>(x[1]-1))
   <font color="#808080"><i># State equations</i></font>
   <font color="#808080"><i># x&acute;[1] = x[2]</i></font>
   <font color="#808080"><i># x&acute;[2] = x[3]</i></font>
   <font color="#808080"><i># ...</i></font>
   <font color="#808080"><i># x&acute;[n] = - a[1]*x[1] - a[2]*x[2] - ... - a[n]*x[n] + 1</i></font>
   x&acute;[d] == <font color="#3D9970">sum</font>(dd$(<font color="#3D9970">ord</font>(dd)=<font color="#3D9970">ord</font>(d)+1),x[dd])$(<font color="#3D9970">ord</font>(d)&lt;<font color="#3D9970">card</font>(d)) + (1-<font color="#3D9970">sum</font>(dd,denom(dd)*x[dd]))$(<font color="#3D9970">ord</font>(d)=<font color="#3D9970">card</font>(d))
+  J&acute; == <font color="#0074D9">Time</font>*<font color="#2ECC40">sqrt</font>(1e-16+<font color="#2ECC40">sqr</font>(x[1]-1))
 
-<font color="red"><b>obj:</b></font> <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(j) <font color="#8A2BE2">using</font> nlp
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp
 
-<font color="red"><b>gdx:</b></font> report[iter,degree]
+<font color="red"><b>gdx:</b></font>
+  report[iter,degree]
 
 <font color="red"><b>gms:</b></font>
-  report[iter,degree]$(<font color="#3D9970">ord</font>(iter)=<font color="#0074D9">dyna_iter</font>) = denom.l[degree];
-  <font color="#3D9970">display</font> report;
+  report[iter,degree]$(<font color="#3D9970">ord</font>(iter)=<font color="#8A2BE2">%ITER%</font>) = denom.l[degree];
 </pre>
 </body>
 </html>

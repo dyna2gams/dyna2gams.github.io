@@ -1,0 +1,108 @@
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Pendulum robust control</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Pendulum robust control
+</pre>
+<p>
+  A framework of nonlinear optimal control robust to parameter variation is considered.
+<p>
+  In [1], the authors evaluate the sensitivity of the system regarding the parameter
+  variation by using variational system. The objective is to generate the optimal trajectory
+  of the input and state, which brings the response of the state with a small perturbation of
+  the system parameter and that of the state with the nominal system parameter very close.
+<p>
+  Reference:
+  <ol>
+  <li>Y. Okura and K. Fujimoto,
+  <em>A Study on Robust Nonlinear Optimal Control for Parameter Variation</em>,
+  IEEE 55th Conference on Decision and Control, Las Vegas, USA, December 12-14, 2016.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  g = 9.81
+  m = 1
+  l = 1
+  gam = 0
+  tf = 5
+
+<font color="red"><b>dyn:</b></font>
+  x{1:2}
+  z{1:2}	<font color="#808080"><i># dx{1:2}/dl</i></font>
+  u
+  J
+
+<font color="red"><b>t=t0:</b></font>
+  x{1:2} = {0.9 0}
+  z{1:2} = 0
+  J = 0
+
+<font color="red"><b>t=tf:</b></font>
+  x{1:2} = 0
+  z{1:2} = 0
+
+<font color="red"><b>equ:</b></font>
+  x1&acute; == x2
+  x2&acute; == -g/l*<font color="#2ECC40">sin</font>(x1) + u/m/<font color="#2ECC40">sqr</font>(l)
+  z1&acute; == z2
+  z2&acute; == g/<font color="#2ECC40">sqr</font>(l)*<font color="#2ECC40">sin</font>(x1) - g/l*<font color="#2ECC40">cos</font>(x1)*z2 - 2/m/<font color="#2ECC40">power</font>(l,3)*u
+  J&acute; == 0.5*(<font color="#2ECC40">sqr</font>(x1) + <font color="#2ECC40">sqr</font>(x2) + gam*<font color="#2ECC40">sqr</font>(z1) + gam*<font color="#2ECC40">sqr</font>(z2) + <font color="#2ECC40">sqr</font>(u))
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#8A2BE2">@gdxsave</font>
+  <font color="#808080"><i># open loop control with increasing penalty on sensitivity</i></font>
+  <font color="#8A2BE2">@tpa</font> u_0 = u.l
+  gam = 1;
+  <font color="#8A2BE2">@solve</font>
+  <font color="#8A2BE2">@tpa</font> u_1 = u.l
+  gam = 10;
+  <font color="#8A2BE2">@solve</font>
+  <font color="#8A2BE2">@tpa</font> u_10 = u.l
+  gam = 100;
+  <font color="#8A2BE2">@solve</font>
+  <font color="#8A2BE2">@tpa</font> u_100 = u.l
+  gam = 1000;
+  <font color="#8A2BE2">@solve</font>
+  <font color="#8A2BE2">@tpa</font> u_1000 = u.l
+  <font color="#8A2BE2">@csvsave</font> u_0 u_1 u_10 u_100 u_1000
+  <font color="#808080"><i># performance of open-loop control for various penalty</i></font>
+  l = 1.1;
+  <font color="#8A2BE2">@setlimf</font> Var=x{1:2}, Vlo=-<font color="#3D9970">inf</font>, Vup=+<font color="#3D9970">inf</font>
+  <font color="#8A2BE2">@setlimf</font> Var=z{1:2}, Vlo=-<font color="#3D9970">inf</font>, Vup=+<font color="#3D9970">inf</font>
+  <font color="#8A2BE2">@setlim</font> Var=u, Vlo=u_0, Vup=u_0
+  <font color="#8A2BE2">@solve</font>
+  <font color="#8A2BE2">@tpa</font> x{1:2}_0 = x{1:2}.l
+  <font color="#8A2BE2">@setlim</font> Var=u, Vlo=u_1, Vup=u_1
+  <font color="#8A2BE2">@solve</font>
+  <font color="#8A2BE2">@tpa</font> x{1:2}_1 = x{1:2}.l
+  <font color="#8A2BE2">@setlim</font> Var=u, Vlo=u_10, Vup=u_10
+  <font color="#8A2BE2">@solve</font>
+  <font color="#8A2BE2">@tpa</font> x{1:2}_10 = x{1:2}.l
+  <font color="#8A2BE2">@setlim</font> Var=u, Vlo=u_100, Vup=u_100
+  <font color="#8A2BE2">@solve</font>
+  <font color="#8A2BE2">@tpa</font> x{1:2}_100 = x{1:2}.l
+  <font color="#8A2BE2">@setlim</font> Var=u, Vlo=u_1000, Vup=u_1000
+  <font color="#8A2BE2">@solve</font>
+  <font color="#8A2BE2">@tpa</font> x{1:2}_1000 = x{1:2}.l
+  <font color="#8A2BE2">@csvsave</font> x{1:2}_0 x{1:2}_1 x{1:2}_10 x{1:2}_100 x{1:2}_1000
+</pre>
+</body>
+</html>

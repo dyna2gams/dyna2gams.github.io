@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -106,7 +106,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <font color="red"><b>gms:</b></font>
   <font color="#808080"><i># Analytical solution</i></font>
   <font color="#3D9970">scalar</font> nu; nu = <font color="#2ECC40">sqr</font>(alpha-r)/2/<font color="#2ECC40">sqr</font>(sigma)/(1-gamma)+r;
-  <font color="#8A2BE2">@tpa</font> u2o; u2o = 1/((1-gamma)/(rho-nu*gamma)*(1-<font color="#2ECC40">exp</font>(-(rho-nu*gamma)/(1-gamma)*(tf-<font color="#0074D9">Time</font>))));
+  <font color="#8A2BE2">@tpa</font> u2o = 1/((1-gamma)/(rho-nu*gamma)*(1-<font color="#2ECC40">exp</font>(-(rho-nu*gamma)/(1-gamma)*(tf-<font color="#0074D9">Time</font>))));
   <font color="#8A2BE2">@csvsave</font> u2o
   <font color="#3D9970">scalar</font> u1o; u1o = (alpha-r)/<font color="#2ECC40">sqr</font>(sigma)/(1-gamma);
   <font color="#3D9970">display</font> u1o;

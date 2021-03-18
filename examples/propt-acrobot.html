@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -41,9 +41,6 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   lc2 = l2/2
   I1 = m1*l1^2/3
   I2 = 1
-  tempA = m2*g*l2
-  tempB = m2*l1*lc2
-  h22 = I2
   tf = 4
 
 <font color="red"><b>dyn:</b></font>
@@ -65,12 +62,15 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 
 <font color="red"><b>ini:</b></font>
   x1 = <font color="#0074D9">linspace</font>(0,pi)
-  x{2:4} = <font color="#2ECC40">uniform</font>(-0.1,0.1)
+  x{2:4} = <font color="#2ECC40">uniform</font>(-1,1)
   u = <font color="#2ECC40">uniform</font>(-0.1,0.1)
 
 <font color="red"><b>exp:</b></font>
+  tempA == m2*g*l2
+  tempB == m2*l1*lc2
   h11 == I1 + I2 + m2*<font color="#2ECC40">sqr</font>(l1) + 2*tempB*<font color="#2ECC40">cos</font>(x2)
   h12 == I2 + tempB*<font color="#2ECC40">cos</font>(x2)
+  h22 == I2
   phi1 == 2*tempB*<font color="#2ECC40">sin</font>(x2)*x3*x4 + tempB*<font color="#2ECC40">sin</font>(x2)*<font color="#2ECC40">sqr</font>(x4) - (m1*lc1 + m2*l1)*g*<font color="#2ECC40">sin</font>(x1) - tempA*<font color="#2ECC40">sin</font>(x1+x2) - b1*x3
   phi2 == u - tempB*<font color="#2ECC40">sin</font>(x2)*<font color="#2ECC40">sqr</font>(x3) - tempA*<font color="#2ECC40">sin</font>(x1+x2) - b2*x4
   detH == h11*h22 - <font color="#2ECC40">sqr</font>(h12)
@@ -83,7 +83,10 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   J&acute; == <font color="#2ECC40">sqr</font>(u)
 
 <font color="red"><b>obj:</b></font>
-  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp <font color="#8A2BE2">with</font> ipopt|conopt
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#8A2BE2">@solveloop</font> Method=movavg, Paraml=3 0.95, Varl=u, Target=infes, Maxiter=3
 </pre>
 </body>
 </html>

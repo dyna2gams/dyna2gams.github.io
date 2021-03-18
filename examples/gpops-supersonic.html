@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -21,22 +21,22 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <p>
   The minimum time-to-climb of a supersonic aircraft optimal control problem is stated as follows.
 <p>
-  Minimize the cost functional 
+  Minimize the cost functional
 <p>
   \[
   J = t_f
-  \] 
+  \]
 <p>
-  subject to the dynamic constraints 
+  subject to the dynamic constraints
 <p>
   \[
   \dot{h}(t) = v(t)\sin\alpha(t) \\
   \dot{v}(t) = \frac{T\cos\alpha(t)-D}{m(t)} \\
   \dot{\gamma}(t) = \frac{T\sin\alpha(t)+L}{m(t)v(t)} + \big(\frac{v(t)}{r(t)} - \frac{\mu}{v(t)r^2(t)}\big) \cos\gamma(t) \\
   \dot{m}(t) = -\frac{T}{g_0 I_{sp}}
-  \] 
+  \]
 <p>
-  and the boundary conditions 
+  and the boundary conditions
 <p>
   \[
   h(0)=0, \ h(t_f)=19994.88 \\
@@ -155,8 +155,8 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   tf
 
 <font color="red"><b>dyn:</b></font>
-  h v fpa m                     <font color="#808080"><i># state variables</i></font>
-  alpha                         <font color="#808080"><i># control variable</i></font>
+  h v fpa m		<font color="#808080"><i># state variables</i></font>
+  alpha			<font color="#808080"><i># control variable</i></font>
 
 <font color="red"><b>lim:</b></font>
   100 &lt;= tf &lt;= 600
@@ -167,22 +167,22 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   -45/180*pi &lt;= alpha &lt;= +45/180*pi
 
 <font color="red"><b>t=t0:</b></font>
-  h = 0           <font color="#808080"><i># Initial altitude (meters)</i></font>
-  v = 129.314     <font color="#808080"><i># Initial speed (m/s)</i></font>
-  fpa = 0         <font color="#808080"><i># Initial flight path angle (rad)</i></font>
-  m = 19050.864   <font color="#808080"><i># Initial mass (kg)</i></font>
+  h = 0			<font color="#808080"><i># Initial altitude (meters)</i></font>
+  v = 129.314		<font color="#808080"><i># Initial speed (m/s)</i></font>
+  fpa = 0		<font color="#808080"><i># Initial flight path angle (rad)</i></font>
+  m = 19050.864		<font color="#808080"><i># Initial mass (kg)</i></font>
 
 <font color="red"><b>t=tf:</b></font>
-  h = 19994.88    <font color="#808080"><i># Final altitude (meters)</i></font>
-  v = 295.092     <font color="#808080"><i># Final speed (m/s)</i></font>
-  fpa = 0         <font color="#808080"><i># Final flight path angle (rad)</i></font>
+  h = 19994.88		<font color="#808080"><i># Final altitude (meters)</i></font>
+  v = 295.092		<font color="#808080"><i># Final speed (m/s)</i></font>
+  fpa = 0		<font color="#808080"><i># Final flight path angle (rad)</i></font>
 
 <font color="red"><b>exp:</b></font>
   CD == CD0 + eta * CLalpha * alpha * alpha
   CL == CLalpha * alpha
   q == 0.5 * rho * v * v
-  D == q * S * CD     <font color="#808080"><i># D is the magnitude of the drag force</i></font>
-  L == q * S * CL     <font color="#808080"><i># L is the magnitude of the lift force</i></font>
+  D == q * S * CD	<font color="#808080"><i># D is the magnitude of the drag force</i></font>
+  L == q * S * CL	<font color="#808080"><i># L is the magnitude of the lift force</i></font>
   r == h + Re
   rho == &sect;AD(h)
   sos == &sect;SS(h)

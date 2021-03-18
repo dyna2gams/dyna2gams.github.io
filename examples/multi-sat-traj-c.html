@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -21,7 +21,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <p>
   A semimajor axis change scenario.
 <p>
-  Reference: 
+  Reference:
   <ol>
   <li>P.B. Mendy Jr.,
   <em>Multiple satellite trajectory optimization</em>,
@@ -58,11 +58,11 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <font color="red"><b>dyn:</b></font>
   a		<font color="#808080"><i># semimajor axis</i></font>
   P{1:2}	<font color="#808080"><i># {g- f-}component of the eccentricity vector</i></font>
-  Q{1:2} 	<font color="#808080"><i># {g- f-}component of the ascending node vector</i></font>
+  Q{1:2}	<font color="#808080"><i># {g- f-}component of the ascending node vector</i></font>
   L		<font color="#808080"><i># true longitude</i></font>
   M		<font color="#808080"><i># mass of the satellite</i></font>
   T{r t <font color="#0074D9">n</font>}1	<font color="#808080"><i># thrust in radial, transverse and normal (positive) directions</i></font>
-  T{r t <font color="#0074D9">n</font>}2     <font color="#808080"><i># thrust in radial, transverse and normal (negative) directions  </i></font>
+  T{r t <font color="#0074D9">n</font>}2	<font color="#808080"><i># thrust in radial, transverse and normal (negative) directions</i></font>
 
 <font color="red"><b>lim:</b></font>
   0.1*<font color="#2ECC40">sqrt</font>(Re^3/muo) &lt;= tf &lt;= 10*<font color="#2ECC40">sqrt</font>(Re^3/muo)
@@ -130,7 +130,6 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <font color="#808080"><i></i></font>
 <font color="red"><b>obj:</b></font>
   <font color="#8A2BE2">maximize</font> <font color="#0074D9">final</font>(M) <font color="#8A2BE2">using</font> nlp
-
 </pre>
 </body>
 </html>

@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -92,7 +92,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 
 <font color="#FF8000">$macro</font> SChebyshev2m(deg,x1,x2,coe,ico) sum((i1_,i2_)$(ord(i1_)+ord(i2_)&lt;=deg+2),\
   <font color="#3D9970">sum</font>(ico$(<font color="#3D9970">ord</font>(ico)-1=cheby2_(<font color="#3D9970">ord</font>(i1_)-1,<font color="#3D9970">ord</font>(i2_)-1,deg)),coe[ico,m])*\
-  ChebyshevT_(i1_,x1)*ChebyshevT_(i2_,x2))
+  Chebyshev_(i1_,x1)*Chebyshev_(i2_,x2))
 
 <font color="red"><b>mac:</b></font>
   @norm(z,l,u) ((&z-(&l+&u)/2)/((&u-&l)/2))

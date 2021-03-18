@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -31,7 +31,8 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   D(v,h) = D_c v^2 e^{-h_c \big(\frac{h-h_0}{h_0}\big)} \\
   g(h) = g_0 \big(\frac{h_0}{h}\big)^2 \\
   h(0) = h_0, \ \ v(0) = v_0, \ \ m(0) = m_0 \\
-  m(t_f) = m_f
+  m(t_f) = m_f \\
+  0 \leq T \leq T_{\text{max}}
   \]
 <p>
 <pre>
@@ -58,7 +59,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   0.01 &lt;= tf &lt;= 1
   h0 &lt;= h &lt;= +<font color="#3D9970">inf</font>
   v0 &lt;= v &lt;= +<font color="#3D9970">inf</font>
-  -<font color="#3D9970">inf</font> &lt;= m &lt;= m0
+  mf &lt;= m &lt;= m0
   0 &lt;= T &lt;= Tmax
 
 <font color="red"><b>t=t0:</b></font>	<font color="#808080"><i># set the initial conditions</i></font>

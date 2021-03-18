@@ -1,0 +1,105 @@
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Geodesic problem</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Geodesic problem
+</pre>
+<p>
+  This problem is about calculating the geodesic curve that joins two points on Earth
+  using optimal control. The problem is posed in the form of estimating the shortest
+  fligh path for an airliner to fly from New Yorks&rsquo;s JFK to London&rsquo;s LHR airport.
+<p>
+  Source: PSOPT - Optimal Control Solver, User Manual, Release 5 build 2020.
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  V = 900			<font color="#808080"><i># speed [km/h]</i></font>
+  a = 6384			<font color="#808080"><i># Earth semi-major axis [km]</i></font>
+  b = 6353			<font color="#808080"><i># Earth semi-minor axis [km]</i></font>
+  lat_lhr = <font color="#0074D9">deg2rad</font>(51.74)	<font color="#808080"><i># coordinates of LHR: 51.4700&deg; N, 0.4543&deg; W</i></font>
+  lon_lhr = <font color="#0074D9">deg2rad</font>(0.4543)
+  lat_jfk = <font color="#0074D9">deg2rad</font>(40.6413)	<font color="#808080"><i># coordinates of JFK: 40.6413&deg; N, 73.7781&deg; W</i></font>
+  lon_jfk = <font color="#0074D9">deg2rad</font>(73.7781)
+    <font color="#808080"><i># Below, theta=0 corresponds to 90 deg latitude north, growing positive towards the</i></font>
+    <font color="#808080"><i># south while phi=0 corresponds to 0 longitude, growing positive towards the east</i></font>
+  theta0 = pi/2 - lat_jfk	<font color="#808080"><i># initial elevation angle, for JFK in New York</i></font>
+  phi0   = 2*pi - lon_jfk	<font color="#808080"><i># initial azimuth angle, for JFK in New York</i></font>
+  thetaf = pi/2 - lat_lhr	<font color="#808080"><i># final elevation angle, for LHR in London</i></font>
+  phif   = 2*pi - lon_lhr	<font color="#808080"><i># final azimuth angle, for LHR in London</i></font>
+  x0 = a*<font color="#2ECC40">sin</font>(theta0)*<font color="#2ECC40">cos</font>(phi0)
+  y0 = a*<font color="#2ECC40">sin</font>(theta0)*<font color="#2ECC40">sin</font>(phi0)
+  z0 = b*<font color="#2ECC40">cos</font>(theta0)
+  xf = a*<font color="#2ECC40">sin</font>(thetaf)*<font color="#2ECC40">cos</font>(phif)
+  yf = a*<font color="#2ECC40">sin</font>(thetaf)*<font color="#2ECC40">sin</font>(phif)
+  zf = b*<font color="#2ECC40">cos</font>(thetaf)
+
+<font color="red"><b>var:</b></font>
+  tf
+
+<font color="red"><b>dyn:</b></font>
+  x y z		<font color="#808080"><i># states</i></font>
+  theta phi	<font color="#808080"><i># controls</i></font>
+  J
+
+<font color="red"><b>lim:</b></font>
+  -a &lt;= x &lt;= a
+  -a &lt;= y &lt;= a
+  -b &lt;= z &lt;= b
+  0 &lt;= theta &lt;= pi
+  0 &lt;= phi &lt;= 2*pi
+  3 &lt;= tf &lt;= 7	<font color="#808080"><i># [hour]</i></font>
+
+<font color="red"><b>t=t0:</b></font>
+  x = x0
+  y = y0
+  z = z0
+  J = 0
+
+<font color="red"><b>t=tf:</b></font>
+  x = xf
+  y = yf
+  z = zf
+
+<font color="red"><b>exp:</b></font>
+  <font color="#808080"><i># the components of the velocity vector in spherical coordinates</i></font>
+  xdot == V*<font color="#2ECC40">sin</font>(theta)*<font color="#2ECC40">cos</font>(phi)
+  ydot == V*<font color="#2ECC40">sin</font>(theta)*<font color="#2ECC40">sin</font>(phi)
+  zdot == V*<font color="#2ECC40">cos</font>(theta)
+
+<font color="red"><b>equ:</b></font>
+  x&acute; == xdot
+  y&acute; == ydot
+  z&acute; == zdot
+  <font color="#808080"><i># geodesic constraint to stay on the surface of the spheroid</i></font>
+  <font color="#2ECC40">sqr</font>(x/a) + <font color="#2ECC40">sqr</font>(y/a) + <font color="#2ECC40">sqr</font>(z/b) == 1
+  <font color="#808080"><i># the norm of the speed vector</i></font>
+  J&acute; == <font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqr</font>(xdot) + <font color="#2ECC40">sqr</font>(ydot) + <font color="#2ECC40">sqr</font>(zdot))
+
+<font color="red"><b>ini:</b></font>
+  x = x0
+  y = y0
+  z = z0
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#8A2BE2">@solveloop</font> Method=movavg, Paraml=3 0.95, Varl=theta phi, Target=infes, Maxiter=3
+  <font color="#8A2BE2">@solveloop</font> Method=movavg, Paraml=3 0.95, Varl=theta phi
+</pre>
+</body>
+</html>

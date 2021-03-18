@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -24,7 +24,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <p>
   Reference:
   <ol>
-  <li>T.J.J. van den Boom, J.B. Klaassens, R. Meiland,
+  <li>T.J.J. van den Boom, J.B. Klaassens and R. Meiland,
   <em>Real-time optimal control for a non linear container crane using a neural network</em>,
   Informatics in control automation and robotics II, Springer, pp.79-84, 2007.
   </ol>
@@ -70,7 +70,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <font color="red"><b>t=t0:</b></font>
   x{1:6} = {0 0 0 0 ht 0}
   J = 0
-  
+
 <font color="red"><b>t=tf:</b></font>
   x{1:6} = {He 0 0 0 ht 0}
 
@@ -87,10 +87,10 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   d2x == ((mc+Gh)*Ft-mc*Fh*<font color="#2ECC40">sin</font>(x3)+mc*gr*Gh*<font color="#2ECC40">sin</font>(x3)*<font color="#2ECC40">cos</font>(x3)+mc*Gh*x5*x4*x4*<font color="#2ECC40">sin</font>(x3))/((mc+Gh)*(mt+Gt)+mc*Gh*(1-<font color="#2ECC40">sqr</font>(<font color="#2ECC40">cos</font>(x3))))
   xc == x1+x5*<font color="#2ECC40">sin</font>(x3)			<font color="#808080"><i># xc is the container x position against time</i></font>
   hc == ht-x5*<font color="#2ECC40">cos</font>(x3)			<font color="#808080"><i># hc is the height of the container against time</i></font>
-  <font color="#808080"><i>#do == sqr(xc-(xor+xol)/2)/sqr((xor-xol)/2) + sqr(hc)/sqr(hob) - 1     # square distance from container to obstacle (ellipse)</i></font>
-  do == <font color="#2ECC40">max</font>(<font color="#2ECC40">max</font>(xol-xc,xc-xor),hc-hob)	<font color="#808080"><i># do is a distance measure from the container to the obstacle (rectangle) </i></font>
+  <font color="#808080"><i>#do == sqr(xc-(xor+xol)/2)/sqr((xor-xol)/2) + sqr(hc)/sqr(hob) - 1	# square distance from container to obstacle (ellipse)</i></font>
+  do == <font color="#2ECC40">max</font>(<font color="#2ECC40">max</font>(xol-xc,xc-xor),hc-hob)	<font color="#808080"><i># do is a distance measure from the container to the obstacle (rectangle)</i></font>
   <font color="#808080"><i>#do == ((xol-xc)*exp(1e+0*(xol-xc))+(xc-xor)*exp(1e+0*(xc-xor))+(hc-hob)*exp(1e+0*(hc-hob)))/(exp(1e+0*(xol-xc))+exp(1e+0*(xc-xor))+exp(1e+0*(hc-hob)))</i></font>
-  
+
 <font color="#808080"><i>###:</i></font><font color="#808080"><i></i></font>
 <font color="#808080"><i>  Obstacle is defined by O(xz,hz) = {(xz,hz) \in R^2 s.t.</i></font>
 <font color="#808080"><i>    xz &gt;= xol  -&gt;  xol - xz &lt;= 0</i></font>

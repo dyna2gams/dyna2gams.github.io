@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -53,7 +53,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   y2&acute; ==  mu*mu*y1 - (mu*mu + p*p)*<font color="#2ECC40">sin</font>(p*<font color="#0074D9">Time</font>)
 
 <font color="red"><b>obj:</b></font>
-  <font color="#8A2BE2">minimize</font> <font color="#3D9970">sum</font>{1:2,<font color="#0074D9">ObservedErr</font>(y{:})} <font color="#8A2BE2">using</font> nlp
+  <font color="#8A2BE2">minimize</font> <font color="#3D9970">sum</font>{1:2,<font color="#0074D9">ObservedSSE</font>(y{:})} <font color="#8A2BE2">using</font> nlp
 </pre>
 </body>
 </html>

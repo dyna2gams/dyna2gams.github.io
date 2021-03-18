@@ -1,0 +1,127 @@
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Water rocket</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Water rocket
+</pre>
+<p>
+  This contribution presents a model of a soda-bottle water rocket. Optimization results for
+  flight range and height at apogee with respect to empty mass, initial water volume and
+  launch angle are presented.
+<p>
+  It is important to notice that this model has a singularity in the flight path angle
+  derivative when the flight speed is zero and suffers from numerical difficulties when the
+  flight speed is close to zero.
+<p>
+  References:
+  <ol>
+  <li>B.B. Monteiro,
+  <em>Optimization of a Water Rocket in OpenMDAO/dymos</em>,
+  Preprint, engrXiv, 2 August 2020.
+  <li>R.D. Falck and J.S. Gray,
+  <em>Optimal Control within the Context of Multidisciplinary Design, Analysis, and Optimization</em>,
+  AIAA Scitech Forum 2019.
+  </ol>
+<p>
+  See: <a href="https://openmdao.github.io/dymos/examples/water_rocket/water_rocket.html">
+  Dymos - Multidisciplinary Optimal Control Library</a>
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">substitute-symbol</font> = T&gt;TT
+
+<font color="red"><b>set:</b></font>
+  phase = ph1:ph3		<font color="#808080"><i># Propelled ascent, Ballistic ascent and Descent</i></font>
+
+<font color="red"><b>par:</b></font>
+  rhow = 1000			<font color="#808080"><i># water density [kg/m³]</i></font>
+  pa = 1.013e+5			<font color="#808080"><i># ambient pressure [Pa]</i></font>
+  Aout = pi*<font color="#2ECC40">sqr</font>(22e-3)/4	<font color="#808080"><i># nozzle area [m²]</i></font>
+  Vb = 2e-3			<font color="#808080"><i># internal volume of the rocket [m³]</i></font>
+  rho = 1.2			<font color="#808080"><i># air density [kg/m³]</i></font>
+  k = 1.2			<font color="#808080"><i># polytropic constant</i></font>
+  S = pi*<font color="#2ECC40">sqr</font>(106e-3)/4		<font color="#808080"><i># cross sectional area [m²]</i></font>
+  CD = 0.3450
+  g = 9.80665			<font color="#808080"><i># gravitational acceleration [m/s²]</i></font>
+  tf = 1
+
+<font color="red"><b>var:</b></font>
+  me				<font color="#808080"><i># empty mass [kg]</i></font>
+  tlen[phase]
+
+<font color="red"><b>dyn:</b></font>
+  t[phase]
+  Vw[phase]			<font color="#808080"><i># water volume in the rocket</i></font>
+  p[phase]			<font color="#808080"><i># pressure in the rocket</i></font>
+  v[phase]
+  gam[phase]
+  h[phase]
+  r[phase]
+
+<font color="red"><b>lim:</b></font>
+  0.1 &lt;= me &lt;= 0.3
+  {1e-3 1 1} &lt;= tlen['ph{1:3}'] &lt;= {1 10 10}
+  1.001*pa &lt;= p[phase] &lt;= +<font color="#3D9970">inf</font>
+  0 &lt;= Vw[phase] &lt;= 0.999*Vb
+  0.001 &lt;= v[phase] &lt;= +<font color="#3D9970">inf</font>
+  0 &lt;= gam['ph2'] &lt;= +<font color="#3D9970">inf</font>
+  -<font color="#3D9970">inf</font> &lt;= gam['ph3'] &lt;= 0
+
+<font color="red"><b>t=t0:</b></font>
+  t['ph1'] = 0
+  0.5e-3 &lt;= Vw['ph1'] &lt;= 1.5e-3	<font color="#808080"><i># initial water volume [m³]</i></font>
+  p['ph1'] = 6.5e+5		<font color="#808080"><i># [Pa]</i></font>
+  -<font color="#3D9970">inf</font> &lt;= gam['ph1'] &lt;= +<font color="#3D9970">inf</font>	<font color="#808080"><i># launch angle [rad]</i></font>
+  v['ph1'] = 0.01		<font color="#808080"><i># [m/s]</i></font>
+  h['ph1'] = 0			<font color="#808080"><i># [m]</i></font>
+  r['ph1'] = 0			<font color="#808080"><i># [m]</i></font>
+
+<font color="red"><b>t=tf:</b></font>
+  Vw['ph1'] = 0
+  h['ph3'] = 0
+
+<font color="red"><b>exp:</b></font>
+  TimeDot == tlen[phase] / tf
+  vout == <font color="#2ECC40">sqrt</font>(2*(p[phase]-pa)/rhow)			<font color="#808080"><i># water exhaust speed</i></font>
+  T == (rhow*vout*vout*Aout)$<font color="#2ECC40">sameas</font>(phase,'ph1')	<font color="#808080"><i># water thrust</i></font>
+  q == 0.5*rho*v[phase]*v[phase]
+  D == q*S*CD
+  m == me + rhow*Vw[phase]
+
+<font color="red"><b>equ:</b></font>
+  t&acute;[phase] / TimeDot == 1
+  Vw&acute;[phase] / TimeDot == (-vout*Aout)$<font color="#2ECC40">sameas</font>(phase,'ph1')				<font color="#808080"><i># water flow rate</i></font>
+  p&acute;[phase] / TimeDot == (k*p[phase]*(-vout*Aout)/(Vb-Vw[phase]))$<font color="#2ECC40">sameas</font>(phase,'ph1')	<font color="#808080"><i># pressure rate</i></font>
+  gam&acute;[phase] / TimeDot == T/m/v[phase] - g*<font color="#2ECC40">cos</font>(gam[phase])/v[phase]
+  v&acute;[phase] / TimeDot == (T-D)/m - g*<font color="#2ECC40">sin</font>(gam[phase])
+  h&acute;[phase] / TimeDot == v[phase]*<font color="#2ECC40">sin</font>(gam[phase])
+  r&acute;[phase] / TimeDot == v[phase]*<font color="#2ECC40">cos</font>(gam[phase])
+  <font color="#8A2BE2">@linkphases</font>
+
+<font color="red"><b>ini:</b></font>
+  tlen['ph{1:3}'] = {0.1 2 4}
+  p['ph{1:3}'] = {3 1.001 1.001}*pa
+  v[phase] = 10
+  h[phase] = 2
+  r[phase] = 0
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">maximize</font> <font color="#0074D9">final</font>(h['ph2']) <font color="#8A2BE2">using</font> nlp
+  <font color="#808080"><i># maximize final(r['ph3']) using nlp</i></font>
+</pre>
+</body>
+</html>

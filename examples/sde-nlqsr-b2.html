@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -22,7 +22,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   We consider the one-dimensional stochastic regulator problem
 <p>
   \[
-  \min \ \mathbb{E} \Bigg[ \frac{1}{2} \int_0^1 \big(X_t^2 + u_t^2\big) \ \mathrm{d}t 
+  \min \ \mathbb{E} \Bigg[ \frac{1}{2} \int_0^1 \big(X_t^2 + u_t^2\big) \ \mathrm{d}t
   + \frac{1}{2} X_1^2 \Bigg]
   \]
 <p>
@@ -79,7 +79,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   J = 0
 
 <font color="red"><b>exp:</b></font>
-  u == <font color="#0074D9">Legendre5</font>(@norm(x[scen],0,1.5),a5,a4,a3,a2,a1,a0)
+  u == <font color="#0074D9">SeriesOf5</font>(<font color="#0074D9">Legendre</font>,@norm(x[scen],0,1.5),a5,a4,a3,a2,a1,a0)
 
 <font color="red"><b>equ:</b></font>
   W[scen] ~~ <font color="#7FDBFF">Wiener</font>
@@ -90,14 +90,14 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J)+0.5*<font color="#3D9970">sum</font>(scen,<font color="#0074D9">final</font>(<font color="#2ECC40">sqr</font>(x[scen])))/<font color="#3D9970">card</font>(scen) <font color="#8A2BE2">using</font> nlp
 
 <font color="red"><b>gms:</b></font>
-  <font color="#8A2BE2">@tpa</font> mean; mean = <font color="#3D9970">sum</font>(scen, W[scen])/<font color="#3D9970">card</font>(scen);
-  <font color="#8A2BE2">@tpa</font> sigm; sigm = <font color="#2ECC40">sqrt</font>(<font color="#3D9970">sum</font>(scen, <font color="#2ECC40">sqr</font>(W[scen]-mean))/<font color="#3D9970">card</font>(scen));
+  <font color="#8A2BE2">@tpa</font> mean = <font color="#3D9970">sum</font>(scen, W[scen])/<font color="#3D9970">card</font>(scen);
+  <font color="#8A2BE2">@tpa</font> sigm = <font color="#2ECC40">sqrt</font>(<font color="#3D9970">sum</font>(scen, <font color="#2ECC40">sqr</font>(W[scen]-mean))/<font color="#3D9970">card</font>(scen));
   W[scen] = (W[scen]-mean)/sigm/<font color="#2ECC40">sqrt</font>(<font color="#0074D9">dTime</font>);
   <font color="#8A2BE2">@solve</font>
   <font color="#808080"><i># Generate data to plot u = u(x)</i></font>
-  <font color="#8A2BE2">@tpa</font> xp; xp = <font color="#0074D9">AllTimeMin</font>(<font color="#3D9970">smin</font>(scen,x.l[scen])) +
+  <font color="#8A2BE2">@tpa</font> xp = <font color="#0074D9">AllTimeMin</font>(<font color="#3D9970">smin</font>(scen,x.l[scen])) + \
     (<font color="#0074D9">AllTimeMax</font>(<font color="#3D9970">smax</font>(scen,x.l[scen]))-<font color="#0074D9">AllTimeMin</font>(<font color="#3D9970">smin</font>(scen,x.l[scen])))*<font color="#0074D9">Time</font>/tf;
-  <font color="#8A2BE2">@tpa</font> up; up = <font color="#0074D9">Legendre5</font>(@norm(xp,0,1.5),a5.l,a4.l,a3.l,a2.l,a1.l,a0.l);
+  <font color="#8A2BE2">@tpa</font> up = <font color="#0074D9">SeriesOf5</font>(<font color="#0074D9">Legendre</font>,@norm(xp,0,1.5),a5.l,a4.l,a3.l,a2.l,a1.l,a0.l);
   <font color="#8A2BE2">@csvsave</font> xp up
 </pre>
 </body>

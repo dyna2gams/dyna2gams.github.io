@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -34,7 +34,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <pre>
 <font color="red"><b>par:</b></font>
   tf = 200
-  g = 981   <font color="#808080"><i># gravitational constant (cm/s^2)</i></font>
+  g = 981	<font color="#808080"><i># gravitational constant (cm/s^2)</i></font>
 
   <font color="#808080"><i># tank cross-sectional area (cm^2)</i></font>
   Area1 = 28
@@ -42,11 +42,11 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   Area3 = 28
   Area4 = 32
 
-  kc = 0.50   <font color="#808080"><i># relation of level to voltage measurement (V/cm)</i></font>
+  kc = 0.50	<font color="#808080"><i># relation of level to voltage measurement (V/cm)</i></font>
 
   <font color="#808080"><i># relation of input voltage to pump flow rate (cm^3/sec / V)</i></font>
-  km = 10.0   <font color="#808080"><i># &gt;=3.0, &lt;=20.0  slope</i></font>
-  kb = 0.0    <font color="#808080"><i># &gt;=-20.0, &lt;=20.0   intercept</i></font>
+  km = 10.0	<font color="#808080"><i># &gt;=3.0, &lt;=20.0  slope</i></font>
+  kb = 0.0	<font color="#808080"><i># &gt;=-20.0, &lt;=20.0   intercept</i></font>
 
   <font color="#808080"><i># correction factors to fit model to real data</i></font>
   c1 = 0.416
@@ -55,9 +55,9 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   c4 = 0.349
 
   <font color="#808080"><i># fractional split to tank 1 vs. tank 4</i></font>
-  gamma1 = 0.43   <font color="#808080"><i># &gt;=0, &lt;=1</i></font>
+  gamma1 = 0.43	<font color="#808080"><i># &gt;=0, &lt;=1</i></font>
   <font color="#808080"><i># fractional split to tank 2 vs. tank 3</i></font>
-  gamma2 = 0.34   <font color="#808080"><i># &gt;=0, &lt;=1</i></font>
+  gamma2 = 0.34	<font color="#808080"><i># &gt;=0, &lt;=1</i></font>
 
 <font color="red"><b>dyn:</b></font>
   <font color="#808080"><i># tank height - diameter = 6 cm,  max height = 20 cm</i></font>
@@ -71,8 +71,8 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 
 <font color="red"><b>exp:</b></font>
   <font color="#808080"><i># voltage to pump A & B</i></font>
-  v1 == 5 + 1.0*<font color="#0074D9">TimeStep</font>(50)     <font color="#808080"><i># &gt;=0, &lt;=10 Volt</i></font>
-  v2 == 5 - 1.0*<font color="#0074D9">TimeStep</font>(110)    <font color="#808080"><i># &gt;=0, &lt;=10 Volt</i></font>
+  v1 == 5 + 1.0*<font color="#0074D9">TimeStep</font>(50)	<font color="#808080"><i># &gt;=0, &lt;=10 Volt</i></font>
+  v2 == 5 - 1.0*<font color="#0074D9">TimeStep</font>(110)	<font color="#808080"><i># &gt;=0, &lt;=10 Volt</i></font>
 
   <font color="#808080"><i># pump flows</i></font>
   qa == v1 * km + kb

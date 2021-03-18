@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -74,10 +74,10 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <p>
   \[
   x(0) = y(0) = 0 \ \textrm{m}\\
-  v(0) = w(0) = 0\ \textrm{m}\backslash\textrm{s} \\
+  v(0) = w(0) = 0\ \textrm{m/s} \\
   x(t_j) - y(t_j) = L \\
   x(t_f) = y(t_f) = -0.1\ \textrm{m} \\
-  v(t_f) = w(t_f) = 0\ \textrm{m}\backslash\textrm{s}
+  v(t_f) = w(t_f) = 0\ \textrm{m/s}
   \]
 <p>
   i.e. we start both the hand and the jojo at rest at the position 0. Moreover at the
@@ -155,7 +155,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   v&acute;[phase] / TimeDot == u[phase]
   y&acute;[phase] / TimeDot == w[phase]
   w&acute;[phase] / TimeDot == -mu*g + k*u[phase] + a*(v[phase]-w[phase])
-  phi&acute;[phase] == <font color="#2ECC40">sqr</font>(u[phase])
+  phi&acute;[phase] / TimeDot == <font color="#2ECC40">sqr</font>(u[phase])
   <font color="#8A2BE2">@linkphases</font> -x w	<font color="#808080"><i># link final and initial conditions across phases for state variables, except for variable w, which is given here after</i></font>
   [phase]$((<font color="#3D9970">ord</font>(phase)&lt;<font color="#3D9970">card</font>(phase))<font color="#8A2BE2">$once</font>).. <font color="#0074D9">initial</font>(w[phase+1]) == <font color="#0074D9">final</font>(k*v[phase] + @ssqrt(<font color="#2ECC40">sqr</font>(k*v[phase]) + k*(<font color="#2ECC40">sqr</font>(w[phase])-2*w[phase]*v[phase])))
   <font color="#8A2BE2">$once</font>.. <font color="#0074D9">final</font>(x['ph1'])-<font color="#0074D9">final</font>(y['ph1']) == L

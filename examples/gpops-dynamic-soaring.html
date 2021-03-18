@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -32,25 +32,25 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   CD0 = 0.00873
   K = 0.045
   g = 32.2
-  m = 5.6   <font color="#808080"><i># the glider mass</i></font>
+  m = 5.6	<font color="#808080"><i># the glider mass</i></font>
   S = 45.09703
   W0 = 0
   CLmax = 1.5
 
 <font color="red"><b>var:</b></font>
   tf
-  beta      <font color="#808080"><i># the average wind gradient slope</i></font>
+  beta		<font color="#808080"><i># the average wind gradient slope</i></font>
 
 <font color="red"><b>dyn:</b></font>
   <font color="#808080"><i># state variables</i></font>
-  x y       <font color="#808080"><i># (East,North) position  </i></font>
-  z         <font color="#808080"><i># the altitude</i></font>
-  v         <font color="#808080"><i># the air-relative speed </i></font>
-  gamma     <font color="#808080"><i># the air-relative flight path angle  </i></font>
-  psi       <font color="#808080"><i># the azimuth angle (measured clockwise from the North)</i></font>
+  x y		<font color="#808080"><i># (East,North) position</i></font>
+  z		<font color="#808080"><i># the altitude</i></font>
+  v		<font color="#808080"><i># the air-relative speed</i></font>
+  gamma		<font color="#808080"><i># the air-relative flight path angle</i></font>
+  psi		<font color="#808080"><i># the azimuth angle (measured clockwise from the North)</i></font>
   <font color="#808080"><i># control variables</i></font>
-  CL        <font color="#808080"><i># the coefficient of lift</i></font>
-  sigma     <font color="#808080"><i># the glider bank angle           </i></font>
+  CL		<font color="#808080"><i># the coefficient of lift</i></font>
+  sigma		<font color="#808080"><i># the glider bank angle</i></font>
 
 <font color="red"><b>lim:</b></font>
   1 &lt;= tf &lt;= 30
@@ -73,7 +73,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   x = 0
   y = 0
   z = 0
-  
+
 <font color="red"><b>ini:</b></font>
   tf = 24
   x = 500*<font color="#2ECC40">cos</font>(2*pi*<font color="#0074D9">linspace</font>(0,1))-500
@@ -82,19 +82,22 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   v = 160*(0.375+<font color="#2ECC40">cos</font>(2*pi*<font color="#0074D9">linspace</font>(0,1)))
   gamma = pi/6*<font color="#2ECC40">sin</font>(2*pi*<font color="#0074D9">linspace</font>(0,1))
   psi = -1-6*<font color="#0074D9">linspace</font>(0,1)
-  CL = CLmax/3 
+  CL = CLmax/3
   sigma = -0.6
   beta = 0.08
 
 <font color="red"><b>exp:</b></font>
-  Wx == (beta*z+W0)                     <font color="#808080"><i># the wind component along the East direction</i></font>
-  Wxdot == beta*v*<font color="#2ECC40">sin</font>(gamma)            <font color="#808080"><i># dWx/dt</i></font>
-                                        <font color="#808080"><i># rho*v^2/2 is the dynamic pressure</i></font>
-                                        <font color="#808080"><i># S is the vehicle reference area</i></font>
-                                        <font color="#808080"><i># CD0+K*CL^2 is the coefficient of drag</i></font>
-                                        <font color="#808080"><i># CL is the coefficient of lift</i></font>
-  D == 0.5*rho*v*v * S * (CD0+K*CL*CL)  <font color="#808080"><i># the drag force</i></font>
-  L == 0.5*rho*v*v * S * CL             <font color="#808080"><i># the lift force</i></font>
+  Wx == beta*z+W0			<font color="#808080"><i># the wind component along the East direction</i></font>
+  Wxdot == beta*v*<font color="#2ECC40">sin</font>(gamma)		<font color="#808080"><i># dWx/dt</i></font>
+					<font color="#808080"><i># rho*v^2/2 is the dynamic pressure</i></font>
+					<font color="#808080"><i># S is the vehicle reference area</i></font>
+					<font color="#808080"><i># CD0+K*CL^2 is the coefficient of drag</i></font>
+					<font color="#808080"><i># CL is the coefficient of lift</i></font>
+  D == 0.5*rho*v*v * S * (CD0+K*CL*CL)	<font color="#808080"><i># the drag force</i></font>
+  L == 0.5*rho*v*v * S * CL		<font color="#808080"><i># the lift force</i></font>
+
+<font color="red"><b>par:</b></font>
+  shape = <font color="#3D9970">yes</font>
 
 <font color="red"><b>equ:</b></font>
   x&acute; == v*<font color="#2ECC40">cos</font>(gamma)*<font color="#2ECC40">sin</font>(psi) + Wx
@@ -106,8 +109,15 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   0 == <font color="#0074D9">final</font>(v) - <font color="#0074D9">initial</font>(v)
   0 == <font color="#0074D9">final</font>(gamma) - <font color="#0074D9">initial</font>(gamma)
   0 == <font color="#0074D9">final</font>(psi) + 2*pi - <font color="#0074D9">initial</font>(psi)
+  $shape.. CL :: <font color="#7FDBFF">spline3</font>
 
-<font color="red"><b>obj:</b></font> <font color="#8A2BE2">minimize</font> beta <font color="#8A2BE2">using</font> nlp
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> beta <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#8A2BE2">@gdxsave</font>
+  shape = <font color="#3D9970">no</font>;
+  <font color="#8A2BE2">@solve</font>
 </pre>
 </body>
 </html>

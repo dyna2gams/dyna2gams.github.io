@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -30,31 +30,20 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <font color="red"><b>dyn:</b></font>
   x y v   <font color="#808080"><i># state variables</i></font>
   u{1:2}  <font color="#808080"><i># control variables</i></font>
-  
+
 <font color="red"><b>lim:</b></font>
   -10 &lt;= x &lt;= 10
   -10 &lt;= y &lt;= 10
   -10 &lt;= v &lt;= 10
   -1 &lt;= u{1:2} &lt;= 1
-  
+
 <font color="red"><b>t=t0:</b></font>
   x = 0
   y = 0
-  v = 0 
-  
+  v = 0
+
 <font color="red"><b>t=tf:</b></font>
   y = 0.1
-  
-<font color="red"><b>ini:</b></font>
-  x = <font color="#0074D9">initial</font>(x)
-  y = <font color="#0074D9">initial</font>(y)
-  v = <font color="#0074D9">initial</font>(v)
-  <font color="#808080"><i># To reproduce the results</i></font>
-  u1 = <font color="#0074D9">linspace</font>(1,-1)
-  u2 = <font color="#2ECC40">sqrt</font>(1-u1*u1)
-  <font color="#808080"><i># Improved objective function</i></font>
-  <font color="#808080"><i># u1 = sqrt(0.5)</i></font>
-  <font color="#808080"><i># u2 = -sqrt(0.5)</i></font>
 
 <font color="red"><b>equ:</b></font>
   x&acute; == v*u1
@@ -62,7 +51,11 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   v&acute; == a-g*u2
   u1*u1 + u2*u2 == 1
 
-<font color="red"><b>obj:</b></font> 
+<font color="red"><b>ini:</b></font>
+  u1 = <font color="#2ECC40">sqrt</font>(0.5)
+  u2 = -<font color="#2ECC40">sqrt</font>(0.5)
+
+<font color="red"><b>obj:</b></font>
   <font color="#8A2BE2">maximize</font> <font color="#0074D9">final</font>(x) <font color="#8A2BE2">using</font> nlp
 </pre>
 </body>

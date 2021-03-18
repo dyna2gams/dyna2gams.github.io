@@ -1,0 +1,203 @@
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Aircraft Balanced Field Length Calculation</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Aircraft Balanced Field Length Calculation
+</pre>
+<p>
+  The United States Federal Aviation Regulations Part 25 defines a balanced field length
+  for the aircraft as the shortest field which can accommodate a &ldquo;balanced takeoff&rdquo;. In
+  a balanced takeoff the aircraft accelerates down the runway to some critical speed
+  &ldquo;V1&rdquo;.
+<p>
+  Before achieving V1, the aircraft must be capable of rejecting the takeoff and coming
+  to a stop before the end of the runway.
+<p>
+  After V1, the aircraft must be capable of achieving an altitude of 35 feet above the end
+  of the runway with a speed of V2 (the minimum safe takeoff speed or 1.2 times the stall
+  speed) while on a single engine (for two engine aircraft).
+<p>
+  At V1, both options must be available. The nominal phase sequence for this trajectory
+  is:
+  <ul>
+  <li><em>Break Release to V1</em>.
+  <br>Accelerate down the runway under the power of two engines. V1 is some
+  as-yet-undetermined speed.
+  <li><em>V1 to Vr</em>.
+  <br>Accelerate down the runway under the power of a single engine. End at &ldquo;Vr&rdquo; or the
+  rotation speed. The rotation speed here is defined as 1.2 times the stall speed.
+  <li><em>Rotate</em>.
+  <br>Operating under the power of a single engine, begin pitching the nose up
+  (increasing alpha) while rolling down the runway.
+  <li><em>Climb</em>.
+  <br>Still operating with one engine, begin climbing to a flight path angle of no more
+  than 5 degrees. This phase ends when the aircraft is 35 feet above the ground with
+  an airspeed of 1.25 times the stall speed.
+  <li><em>Rejected Takeoff</em>.
+  <br>Shut down all engines (zero thrust) and apply brakes (increase of runway \(\mu\)
+  coefficient to 0.3) until the aircraft airspeed is zero. This phase is continuous
+  in time and state with the first phase, and so forms a branch off of the nominal
+  trajectory.
+  </ul>
+<p>
+  Since the RTO phase and the climb phase both must end such that they do not exceed the
+  end of the runway, the final value of range in each of these two phases must be the same.
+<p>
+  In this problem two sets of ordinary differential equations are used: one for the
+  aircraft motion on the runway, and one for the aircraft motion once airborne.
+<p>
+  For simplification, we&rsquo;re going to assume a constant atmospheric model since the
+  aircraft will never exceed 35 feet of altitude. Also, since the duration of the
+  trajectory is small, we&rsquo;re going to assume that the vehicle fuel burn is negligible.
+<p>
+  Reference:
+  <ol>
+  <li>D. Raymer,
+  <em>Aircraft design: a conceptual approach</em>,
+  American Institute of Aeronautics and Astronautics, Inc., 2012.
+  </ol>
+<p>
+  See: <a href="https://openmdao.github.io/dymos/examples/balanced_field/balanced_field.html">
+  Dymos - Multidisciplinary Optimal Control Library</a>
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">substitute-symbol</font> = T&gt;thrust
+
+<font color="red"><b>set:</b></font>
+  <font color="#808080"><i># First phase: Brake release to V1 - both engines operable</i></font>
+  <font color="#808080"><i># Second phase: Rejected takeoff at V1 - no engines operable</i></font>
+  <font color="#808080"><i># Third phase: V1 to Vr - single engine operable</i></font>
+  <font color="#808080"><i># Fourth phase: Rotate - single engine operable</i></font>
+  <font color="#808080"><i># Fifth phase: Climb to target speed and altitude at end of runway</i></font>
+  <font color="#808080"><i># Phase sequence is:</i></font>
+  <font color="#808080"><i>#   1 - 2</i></font>
+  <font color="#808080"><i>#     - 3 - 4 - 5</i></font>
+  phase = |br_to_v1,rto,v1_to_vr,rotate,climb|
+  runway(phase) = |br_to_v1,rto,v1_to_vr,rotate|	<font color="#808080"><i># ground roll operation mode</i></font>
+  flight(phase) = |climb|				<font color="#808080"><i># flight operation mode</i></font>
+  ph13(phase) = |br_to_v1,rto,v1_to_vr|			<font color="#808080"><i># phases 1 to 3</i></font>
+
+<font color="red"><b>par:</b></font>
+  g = 9.80665		<font color="#808080"><i># gravitational acceleration [m/s²]</i></font>
+  rho = 1.225		<font color="#808080"><i># atmospheric density at runway [kg/m³]</i></font>
+  S = 124.7		<font color="#808080"><i># aerodynamic reference area [m²]</i></font>
+  CD0 = 0.03		<font color="#808080"><i># zero-lift drag coefficient [-]</i></font>
+  CL0 = 0.5		<font color="#808080"><i># zero-alpha lift coefficient [-]</i></font>
+  CL_max = 2		<font color="#808080"><i># maximum lift coefficient for linear fit [-]</i></font>
+  alpha_max = <font color="#0074D9">deg2rad</font>(10)	<font color="#808080"><i># angle of attack at maximum lift [rad]</i></font>
+  h_w = 1		<font color="#808080"><i># height of the wing above the CG [m]</i></font>
+  AR = 9.45		<font color="#808080"><i># wing aspect ratio [-]</i></font>
+  e = 801		<font color="#808080"><i># Oswald span efficiency factor [-]</i></font>
+  span = 35.7		<font color="#808080"><i># Wingspan [m]</i></font>
+  m = 0.453592*174200	<font color="#808080"><i># aircraft mass [kg]</i></font>
+  T[phase] = |br_to_v1 54000, rto 0, v1_to_vr 27000, rotate 27000, climb 27000|		<font color="#808080"><i># thrust [lbf]</i></font>
+  T[phase] *= 4.44822									<font color="#808080"><i># thrust [N]</i></font>
+  mu_r[phase] = |br_to_v1 0.03, rto 0.3, v1_to_vr 0.03, rotate 0.03, climb 0.03|	<font color="#808080"><i># runway friction coefficient [-]</i></font>
+  tf = 1
+
+<font color="red"><b>var:</b></font>
+  tlen[phase]
+
+<font color="red"><b>dyn:</b></font>
+  t[phase]		<font color="#808080"><i># time [s]</i></font>
+  r[phase]		<font color="#808080"><i># aircraft position [m]</i></font>
+  v[phase]		<font color="#808080"><i># aircraft true airspeed [m/s]</i></font>
+  alpha[phase]		<font color="#808080"><i># angle of attack [rad]</i></font>
+  h[phase]		<font color="#808080"><i># altitude [m]</i></font>
+  gam[phase]		<font color="#808080"><i># flight path angle [rad]</i></font>
+  v_over_v_stall[phase]	<font color="#808080"><i># stall speed [-]</i></font>
+  F_r[phase]		<font color="#808080"><i># Runway normal force [N]</i></font>
+
+<font color="red"><b>lim:</b></font>
+  1 &lt;= tlen[phase]$ph13(phase) &lt;= 100
+  1 &lt;= tlen['rotate'] &lt;= 5
+  1 &lt;= tlen['climb'] &lt;= 100
+  0 &lt;= r[phase] &lt;= <font color="#3D9970">inf</font>
+  0 &lt;= v[phase] &lt;= <font color="#3D9970">inf</font>
+  0 &lt;= alpha[phase]$ph13(phase) &lt;= 0
+  0 &lt;= alpha['rotate'] &lt;= <font color="#0074D9">deg2rad</font>(10)
+  -<font color="#0074D9">deg2rad</font>(10) &lt;= alpha['climb'] &lt;= <font color="#0074D9">deg2rad</font>(15)
+  0 &lt;= h[phase]$runway(phase) &lt;= 0
+  0 &lt;= h['climb'] &lt;= <font color="#3D9970">inf</font>
+  0 &lt;= gam[phase]$runway(phase) &lt;= 0
+  0 &lt;= gam['climb'] &lt;= <font color="#0074D9">deg2rad</font>(5)
+
+<font color="red"><b>t=t0:</b></font>
+  t['br_to_v1'] = 0
+  r['br_to_v1'] = 0
+  v['br_to_v1'] = 0
+  h['climb'] = 0
+
+<font color="red"><b>t=tf:</b></font>
+  1.2 &lt;= v_over_v_stall['v1_to_vr'] &lt;= +<font color="#3D9970">inf</font>
+  1.25 &lt;= v_over_v_stall['climb'] &lt;= +<font color="#3D9970">inf</font>
+  F_r['rotate'] = 0
+  v['rto'] = 0
+  h['climb'] = 0.3048*35
+  gam['climb'] = <font color="#0074D9">deg2rad</font>(5)
+
+<font color="red"><b>exp:</b></font>
+  TimeDot == tlen[phase] / tf
+  W == m * g					<font color="#808080"><i># aircraft weight [N]</i></font>
+  v_stall == <font color="#2ECC40">sqrt</font>(2 * W / rho / S / CL_max)	<font color="#808080"><i># stall speed [m/s]</i></font>
+  CL == CL0 + (alpha[phase] / alpha_max) * (CL_max - CL0)	<font color="#808080"><i># lift coefficient [-]</i></font>
+  K_nom == 1 / (pi * AR * e)
+  b == span / 2
+  fact == <font color="#2ECC40">rpower</font>((h[phase] + h_w) / b, 1.5)
+  K == K_nom * 33 * fact / (1 + 33 * fact)	<font color="#808080"><i># drag-due-to-lift factor [-]</i></font>
+  q == 0.5 * rho * <font color="#2ECC40">sqr</font>(v[phase])		<font color="#808080"><i># dynamic pressure [Pa]</i></font>
+  L == q * S * CL				<font color="#808080"><i># lift force [N]</i></font>
+  D == q * S * (CD0 + K * <font color="#2ECC40">sqr</font>(CL))		<font color="#808080"><i># drag force [N]</i></font>
+
+<font color="red"><b>equ:</b></font>
+  v_over_v_stall[phase] == v[phase] / v_stall
+  F_r[phase] == m * g - L * <font color="#2ECC40">cos</font>(alpha[phase]) - T[phase] * <font color="#2ECC40">sin</font>(alpha[phase])
+
+  t&acute;[phase] / TimeDot == 1
+
+  <font color="#808080"><i># Equations of motion</i></font>
+  $runway(phase).. v&acute;[phase] / TimeDot == (T[phase] * <font color="#2ECC40">cos</font>(alpha[phase]) - D - F_r[phase] * mu_r[phase]) / m
+  $runway(phase).. r&acute;[phase] / TimeDot == v[phase]
+  $flight(phase).. v&acute;[phase] / TimeDot == (T[phase] * <font color="#2ECC40">cos</font>(alpha[phase]) - D) / m - g * <font color="#2ECC40">sin</font>(gam[phase])
+  $flight(phase).. r&acute;[phase] / TimeDot == v[phase] * <font color="#2ECC40">cos</font>(gam[phase])
+  $flight(phase).. gam&acute;[phase] / TimeDot == (T[phase] * <font color="#2ECC40">sin</font>(alpha[phase]) + L) / (m * v[phase]) - (g / v[phase]) * <font color="#2ECC40">cos</font>(gam[phase])
+  $flight(phase).. h&acute;[phase] / TimeDot == v[phase] * <font color="#2ECC40">sin</font>(gam[phase])
+
+  <font color="#808080"><i># Standard &ldquo;end of first phase to beginning of second phase&rdquo; linkages</i></font>
+  0 == <font color="#0074D9">final</font>(t['{br_to_v1 br_to_v1 v1_to_vr rotate}']) - <font color="#0074D9">initial</font>(t['{rto v1_to_vr rotate climb}'])
+  0 == <font color="#0074D9">final</font>(r['{br_to_v1 br_to_v1 v1_to_vr rotate}']) - <font color="#0074D9">initial</font>(r['{rto v1_to_vr rotate climb}'])
+  0 == <font color="#0074D9">final</font>(v['{br_to_v1 br_to_v1 v1_to_vr rotate}']) - <font color="#0074D9">initial</font>(v['{rto v1_to_vr rotate climb}'])
+  0 == <font color="#0074D9">final</font>(alpha['{v1_to_vr rotate}']) - <font color="#0074D9">initial</font>(alpha['{rotate climb}'])
+
+  <font color="#808080"><i># Less common &ldquo;final value of r must be the match at ends of two phases&rdquo;</i></font>
+  0 == <font color="#0074D9">final</font>(r['rto']) - <font color="#0074D9">final</font>(r['climb'])
+
+<font color="red"><b>ini:</b></font>
+  tlen['{br_to_v1 rto v1_to_vr rotate climb}'] = {35 35 35 5 15}
+  t['{br_to_v1 rto v1_to_vr rotate climb}'] = <font color="#0074D9">linspace</font>({0 35 35 70 75},{35 70 70 75 90})
+  r['{br_to_v1 rto v1_to_vr rotate climb}'] = 0.3048*<font color="#0074D9">linspace</font>({0 2500 2500 1750 5000},{2500 5000 300 1800 5500})
+  v['{br_to_v1 rto v1_to_vr rotate climb}'] = 0.514444*<font color="#0074D9">linspace</font>({0 110 100 80 160},{100 0 110 85 170})
+  alpha['{br_to_v1 rto v1_to_vr rotate climb}'] = <font color="#0074D9">deg2rad</font>({0 0 0 0 5})
+  h['climb'] = 0.3048*<font color="#0074D9">linspace</font>(0,35)
+  gam['climb'] = <font color="#0074D9">linspace</font>(0,<font color="#0074D9">deg2rad</font>(5))
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(r['rto']) <font color="#8A2BE2">using</font> nlp
+</pre>
+</body>
+</html>
