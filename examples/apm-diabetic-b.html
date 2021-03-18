@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -61,7 +61,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 
 <font color="red"><b>var:</b></font>
   K Ti Td
-  
+
 <font color="red"><b>lim:</b></font>
   0 &lt;= g &lt;= +<font color="#3D9970">inf</font>
   0 &lt;= x &lt;= +<font color="#3D9970">inf</font>
@@ -69,7 +69,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   0.1 &lt;= K &lt;= 10
   0.1 &lt;= Ti &lt;= 40
   0.1 &lt;= Td &lt;= 10
-  
+
 <font color="red"><b>t=t0:</b></font>
   g = g_basal
   x = x_basal
@@ -84,15 +84,19 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <font color="red"><b>exp:</b></font>
   d == A*<font color="#2ECC40">exp</font>(-b*(<font color="#0074D9">Time</font>-Tmeal))$<font color="#0074D9">TimeIsGT</font>(Tmeal)	<font color="#808080"><i># meal glucose disturbance (mmol/l-min)</i></font>
   e == g - g_basal
-  
+
 <font color="red"><b>equ:</b></font>
-  g&acute; == -p1*(g-g_basal) - (x-x_basal)*g + d 
-  x&acute; == -p2*(x-x_basal) + p3*(i-i_basal) 
-  i&acute; == -p4*(i-i_basal) + <font color="#2ECC40">max</font>(0,u)/v1 
+  g&acute; == -p1*(g-g_basal) - (x-x_basal)*g + d
+  x&acute; == -p2*(x-x_basal) + p3*(i-i_basal)
+  i&acute; == -p4*(i-i_basal) + <font color="#2ECC40">max</font>(0,u)/v1
   J&acute; == <font color="#2ECC40">sqr</font>(g-g_basal)
   <font color="#8A2BE2">@pid</font> K=K, Ti=Ti, Td=Td, In=e, Out=u
-  
-<font color="red"><b>obj:</b></font> <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> dnlp
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> dnlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#8A2BE2">@solveloop</font> Method=bndobj
 </pre>
 </body>
 </html>

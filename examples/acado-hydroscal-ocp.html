@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -260,7 +260,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
     tray38 4.503716811689627,\
     tray39 4.507271960563973,\
     tray40 4.510049896978241\
-    |				
+    |
 
 <font color="red"><b>t=t0:</b></font>
   X[l] = X_0[l]
@@ -347,7 +347,8 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   n_00[t] = 0
 
 <font color="red"><b>gms:</b></font>
-  <font color="#FF8000">$$ifthen</font> <font color="#8A2BE2">%ITER%</font>==<font color="#8A2BE2">%ITERMAX%</font>
+  <font color="#808080"><i># Save current solution for a later warm restart</i></font>
+  <font color="#8A2BE2">@gdxsave</font>
   <font color="#808080"><i># A first pass stabilized the system around nominal conditions.</i></font>
   <font color="#808080"><i># This second pass simulates a departure from those onwards.</i></font>
   X_00[l] = <font color="#0074D9">final</font>(X.l[l]);
@@ -362,7 +363,6 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   <font color="#808080"><i>#XF = 0.32 * normal(1,0.05);</i></font>
   <font color="#8A2BE2">@solve</font>
   <font color="#8A2BE2">@csvsave</font> Fvol
-  <font color="#FF8000">$$endif</font>
 </pre>
 </body>
 </html>

@@ -14,47 +14,55 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
 </head>
 <body>
-<h1 align="center" style="color:#7EAEAC">Pendulum motion</h1>
+<h1 align="center" style="color:#7EAEAC">An academic problem</h1>
 <pre>
-<font color="red"><b>rem:</b></font> Pendulum motion
+<font color="red"><b>rem:</b></font> An academic problem
 </pre>
 <p>
-  Index-3 DAE form
+  Consider the following problem:
 <p>
-  See: <a href="http://www.apmonitor.com">APMonitor Modeling Language</a>
+  \[
+  \max \int_0^1 x \ \mathrm{d}t\\
+  x(0) = 0\\
+  x(1) = 0\\
+  \int_0^1 \sqrt{1+\dot{x}^2} \ \mathrm{d}t = 2
+  \]
 <p>
 <pre>
 <font color="red"><b>par:</b></font>
-  m = 1
-  g = 9.81
-  s = 1
-  tf = 5
+  tf = 1
 
 <font color="red"><b>dyn:</b></font>
-  x y v w lam
+  x
+  u
+  y
+  J
 
 <font color="red"><b>t=t0:</b></font>
   x = 0
-  y = -s
-  v = 1
-  w = 0
+  y = 0
+  J = 0
 
-<font color="red"><b>ini:</b></font>
-  lam = m*(1+s*g)/2*s*s
+<font color="red"><b>t=tf:</b></font>
   x = 0
-  y = -s
-  v = 1
-  w = 0
+  y = 2
 
 <font color="red"><b>equ:</b></font>
-  x*x + y*y == s*s
-  x&acute; == v
-  y&acute; == w
-  m*v&acute; == -2*x*lam
-  m*w&acute; == -m*g - 2*y*lam
+  x&acute; == u
+  y&acute; == 1 + u*u
+  J&acute; == x
+
+<font color="red"><b>ini:</b></font>
+  x = 1
+  u = 1
 
 <font color="red"><b>obj:</b></font>
-  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(y) <font color="#8A2BE2">using</font> nlp
+  <font color="#8A2BE2">maximize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#808080"><i># solution</i></font>
+  <font color="#8A2BE2">@tpa</font> s = <font color="#2ECC40">sqrt</font>(3)*<font color="#0074D9">Time</font>*(1-<font color="#0074D9">Time</font>)
+  <font color="#8A2BE2">@csvsave</font> s
 </pre>
 </body>
 </html>

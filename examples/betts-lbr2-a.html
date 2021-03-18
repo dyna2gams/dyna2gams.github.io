@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -105,7 +105,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   <font color="#8A2BE2">minimize</font> theta*tf + (1-theta)*<font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(Jacobi)-Jacobi0) <font color="#8A2BE2">using</font> nlp
 
 <font color="red"><b>gms:</b></font>
-  <font color="#FF8000">$$ifthen</font> <font color="#8A2BE2">%ITER%</font>==<font color="#8A2BE2">%ITERMAX%</font>
+  <font color="#8A2BE2">@gdxsave</font>
   <font color="#3D9970">set</font> family /F0*F1/;
   <font color="#3D9970">parameter</font> lfic[family,*] Lyapunov Family <font color="#0074D9">Initial</font> Conditions;
   <font color="#FF8000">$$ondotl</font>
@@ -123,7 +123,6 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
     lfic[family,'T'] = tf;
     );
   <font color="#3D9970">display</font> lfic;
-  <font color="#FF8000">$$endif</font>
 
 <font color="#808080"><i>###:</i></font><font color="#808080"><i></i></font>
 <font color="#808080"><i>  </i></font><font color="#808080"><i># Maxima script to do the symbolic math</i></font>

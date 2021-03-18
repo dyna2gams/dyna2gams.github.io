@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -124,8 +124,8 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
     <font color="#8A2BE2">@solve</font>
     <font color="#3D9970">until</font> mu &lt; 1e-6);
   <font color="#808080"><i># Generate data to plot c = c(w) on the relevant interval</i></font>
-  <font color="#8A2BE2">@tpa</font> wp; wp = <font color="#0074D9">AllTimeMin</font>(<font color="#3D9970">smin</font>(scen,w.l[scen])) + (<font color="#0074D9">AllTimeMax</font>(<font color="#3D9970">smax</font>(scen,w.l[scen]))-<font color="#0074D9">AllTimeMin</font>(<font color="#3D9970">smin</font>(scen,w.l[scen])))*<font color="#0074D9">Time</font>/<font color="#8A2BE2">%N%</font>/ts;
-  <font color="#8A2BE2">@tpa</font> cp; cp = <font color="#0074D9">Poly3</font>(wp,a3.l,a2.l,a1.l,a0.l);
+  <font color="#8A2BE2">@tpa</font> wp = <font color="#0074D9">AllTimeMin</font>(<font color="#3D9970">smin</font>(scen,w.l[scen])) + (<font color="#0074D9">AllTimeMax</font>(<font color="#3D9970">smax</font>(scen,w.l[scen]))-<font color="#0074D9">AllTimeMin</font>(<font color="#3D9970">smin</font>(scen,w.l[scen])))*<font color="#0074D9">Time</font>/<font color="#8A2BE2">%N%</font>/ts;
+  <font color="#8A2BE2">@tpa</font> cp = <font color="#0074D9">Poly3</font>(wp,a3.l,a2.l,a1.l,a0.l);
   <font color="#8A2BE2">@csvsave</font> wp cp 
 </pre>
 </body>

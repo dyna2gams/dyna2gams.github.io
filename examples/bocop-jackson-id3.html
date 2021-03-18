@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -35,7 +35,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <pre>
 <font color="red"><b>par:</b></font>
   tf = 4
-  u = 0.5   <font color="#808080"><i># the control</i></font>
+  u = 0.5	<font color="#808080"><i># the control</i></font>
 
 <font color="red"><b>var:</b></font>
   k1 k2 k3
@@ -43,7 +43,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <font color="red"><b>dyn:</b></font>
   a	<font color="#808080"><i># the mole fraction of A</i></font>
   b	<font color="#808080"><i># the mole fraction of B</i></font>
-  c     <font color="#808080"><i># the mole fraction of C</i></font>
+  c	<font color="#808080"><i># the mole fraction of C</i></font>
 
 <font color="red"><b>t=t0:</b></font>
   a = 1
@@ -88,7 +88,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   <font color="#808080"><i># bw = sum(m1,bo[m1])/card(m1); bw = sum(m1,sqr(bo[m1]-bw))/sqr(card(m1));</i></font>
   <font color="#808080"><i># cw = sum(m2,co[m2])/card(m2); cw = sum(m2,sqr(co[m2]-cw))/sqr(card(m2));</i></font>
   {a b c}w = 1;
-  
+
 <font color="red"><b>equ:</b></font>
   a&acute; == -u*(k1*a-k2*b)
   b&acute; == u*(k1*a-k2*b) - (1-u)*k3*b

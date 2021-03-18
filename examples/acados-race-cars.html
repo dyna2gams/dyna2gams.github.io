@@ -1,0 +1,168 @@
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Autonomous Car Racing</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Autonomous Car Racing
+</pre>
+<p>
+  Autonomous car racing poses a particular challenge for control methods, because the vehicle
+  is driven at its handling limits. The objective is to reach the minimal lap time while
+  keeping the vehicle on the track and avoiding obstacles.
+<p>
+  Hereafter, [1] formalizes an obstacle-free periodic time-optimal racing problem that
+  minimizes the lap time \(t_f\). The car's pose is projected onto the center line of the
+  race track for a compact formulation.
+<p>
+  <center><img src="acados-race-cars.jpg" alt="" width="25%"/></center>
+<p>
+  References:
+  <ol>
+  <li>D. Kloeser, T. Schoels, T. Sartor, A. Zanelli, G. Frison and M. Diehl,
+  <em>NMPC for Racing Using a Singularity-Free Path-Parametric Model with Obstacle Avoidance</em>,
+  Proceedings of the 21th IFAC World Congress, Berlin, Germany, July 2020.
+  <li>R. Verschueren, G. Frison, D. Kouzoupis, N. van Duijkeren, A. Zanelli, B. Novoselnik,
+  J. Frey, T. Albin, R. Quirynen and M. Diehl,
+  <em>acados: a modular open-source framework for fast embedded optimal control</em>,
+  arXiv:1910.13753 [math.OC] 30 Oct 2019.
+  </ol>
+<p>
+  Source: ACADOS - A Modular Open-Source Framework for Fast Embedded Optimal Control.
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">tabulation-knots-number</font> = 600
+  conopt.opt &lt; lkdebg=0
+  <font color="#39CCCC">model-option</font> = optfile=1
+
+<font color="red"><b>par:</b></font>
+  m = 0.043
+  C1 = 0.5
+  C2 = 15.5
+  Cm1 = 0.28
+  Cm2 = 0.05
+  Cr0 = 0.011
+  Cr2 = 0.006
+  Cr3 = 5
+  tw = 0.12
+  theta{1:3} = {1 0 0}		<font color="#808080"><i># set up objective to first find a feasible solution</i></font>
+
+<font color="red"><b>var:</b></font>
+  tf
+
+<font color="red"><b>fun:</b></font>
+  <font color="#8A2BE2">@readcsv</font> ifile=.\examples\<font color="#8B0000"><font color="#8B0000">@ifnam@</font></font>.csv
+
+<font color="red"><b>dyn:</b></font>
+  s w alpha v D delta		<font color="#808080"><i># states</i></font>
+  derD derDelta			<font color="#808080"><i># controls</i></font>
+
+<font color="red"><b>lim:</b></font>
+  0 &lt;= s &lt;= 17
+  -tw &lt;= w &lt;= tw		<font color="#808080"><i># width of the track [m]</i></font>
+  -1 &lt;= D &lt;= 1			<font color="#808080"><i># throttle</i></font>
+  -0.4 &lt;= delta &lt;= 0.4		<font color="#808080"><i># steering angle [rad]</i></font>
+  -10 &lt;= derD &lt;= 10		<font color="#808080"><i># throttle change rate</i></font>
+  -2 &lt;= derDelta &lt;= 2		<font color="#808080"><i># change rate of steering angle [rad/s]</i></font>
+  0 &lt;= tf &lt;= 15
+
+<font color="red"><b>t=t0:</b></font>
+  s = 0
+  w = 0
+  alpha = 0
+  v = 0
+  D = 0
+  delta = 0
+
+<font color="red"><b>t=tf:</b></font>
+  s &gt;= 8.7105
+
+<font color="red"><b>exp:</b></font>
+  Fxd == (Cm1 - Cm2 * v) * D - Cr2 * v * v - Cr0 * <font color="#2ECC40">tanh</font>(Cr3 * v)
+  sdot == (v * <font color="#2ECC40">cos</font>(alpha + C1 * delta)) / (1 - &sect;kapparef(s) * w)
+
+<font color="red"><b>equ:</b></font>
+  s&acute; == sdot
+  w&acute; ==  v * <font color="#2ECC40">sin</font>(alpha + C1 * delta)
+  alpha&acute; ==  v * C2 * delta - &sect;kapparef(s) * sdot
+  v&acute; == Fxd / m * <font color="#2ECC40">cos</font>(C1 * delta)
+  D&acute; == derD
+  delta&acute; == derDelta
+  <font color="#808080"><i># constraint on forces</i></font>
+  -4 &lt;= C2 * v * v * delta + Fxd * <font color="#2ECC40">sin</font>(C1 * delta) / m &lt;= 4	<font color="#808080"><i># lateral force [m/s²]</i></font>
+  -4 &lt;= Fxd / m &lt;= 4						<font color="#808080"><i># longitudinal force [m/s²]</i></font>
+  <font color="#808080"><i># seek a periodic solution</i></font>
+  $theta2.. 0 == <font color="#0074D9">initial</font>({w alpha v D delta derD derDelta}) - <font color="#0074D9">final</font>({w alpha v D delta derD derDelta})
+
+<font color="red"><b>ini:</b></font>
+  s = <font color="#0074D9">linspace</font>(<font color="#0074D9">initial</font>(s),9)
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> theta1+theta2*<font color="#0074D9">final</font>(s)+theta3*tf <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#8A2BE2">@gdxsave</font>			<font color="#808080"><i># save solution for a later warm restart</i></font>
+  theta1 = 0; theta2 = 1;	<font color="#808080"><i># minimize final(s)</i></font>
+  <font color="#8A2BE2">@setlim0</font> Var={w alpha v D delta}, Vlo={-0.12 -<font color="#3D9970">inf</font> -<font color="#3D9970">inf</font> -1 -0.4}, Vup={0.12 +<font color="#3D9970">inf</font> +<font color="#3D9970">inf</font> 1 0.4}
+  <font color="#8A2BE2">@solve</font>
+  theta2 = 0; theta3 = 1;	<font color="#808080"><i># minimize time period</i></font>
+  <font color="#8A2BE2">@setlimf</font> Var=s, Vlo=<font color="#0074D9">final</font>(s.l), Vup=<font color="#0074D9">final</font>(s.l)
+  <font color="#8A2BE2">@solve</font>
+  <font color="#FF8000">$$ondotl</font>
+  <font color="#808080"><i># driven trajectory</i></font>
+  <font color="#8A2BE2">@tpa</font> p = w - <font color="#2ECC40">sin</font>(&sect;psiref(s))*&sect;xref(s) + <font color="#2ECC40">cos</font>(&sect;psiref(s))*&sect;yref(s);
+  <font color="#8A2BE2">@tpa</font> q =  <font color="#2ECC40">cos</font>(&sect;psiref(s))*&sect;xref(s) + <font color="#2ECC40">sin</font>(&sect;psiref(s))*&sect;yref(s);
+  <font color="#8A2BE2">@tpa</font> x = -<font color="#2ECC40">sin</font>(&sect;psiref(s))*p + <font color="#2ECC40">cos</font>(&sect;psiref(s))*q;
+  <font color="#8A2BE2">@tpa</font> y =  <font color="#2ECC40">cos</font>(&sect;psiref(s))*p + <font color="#2ECC40">sin</font>(&sect;psiref(s))*q;
+  <font color="#8A2BE2">@csvsave</font> x y
+  <font color="#808080"><i># center line</i></font>
+  <font color="#8A2BE2">@tpa</font> Xref = &sect;xref(s);
+  <font color="#8A2BE2">@tpa</font> Yref = &sect;yref(s);
+  <font color="#808080"><i># track boundaries</i></font>
+  <font color="#8A2BE2">@tpa</font> Xboundlft = &sect;xref(s) - tw*<font color="#2ECC40">sin</font>(&sect;psiref(s));
+  <font color="#8A2BE2">@tpa</font> Yboundlft = &sect;yref(s) + tw*<font color="#2ECC40">cos</font>(&sect;psiref(s));
+  <font color="#8A2BE2">@tpa</font> Xboundrgt = &sect;xref(s) + tw*<font color="#2ECC40">sin</font>(&sect;psiref(s));
+  <font color="#8A2BE2">@tpa</font> Yboundrgt = &sect;yref(s) - tw*<font color="#2ECC40">cos</font>(&sect;psiref(s));
+
+<font color="red"><b>put:</b></font>
+  <font color="#808080"><i># Create a file for Octave/Matlab to plot racetrack map</i></font>
+  "<font color="#8A2BE2">%FN%</font>.<font color="#8A2BE2">%N%</font>.m&lt;"
+  % Created on %system.date1% at %system.time%
+  x = ["x:8:4"];
+  y = ["y:8:4"];
+  Xref = ["Xref:8:4"];
+  Yref = ["Yref:8:4"];
+  Xboundlft = ["Xboundlft:8:4"];
+  Yboundlft = ["Yboundlft:8:4"];
+  Xboundrgt = ["Xboundrgt:8:4"];
+  Yboundrgt = ["Yboundrgt:8:4"];
+  figure('Name','<font color="#8B0000">@ifnam@</font> <font color="#8A2BE2">%N%</font>','NumberTitle','off')
+  % Setup plot
+  ylim([-1.75, 0.35]);
+  xlim([-1.1, 1.6]);
+  ylabel('y[m]');
+  xlabel('x[m]');
+  % Plot center line
+  plot(Xref,Yref,'k--');
+  % Draw Trackboundaries
+  hold on;
+  plot(Xboundlft,Yboundlft,'k','LineWidth',1);
+  plot(Xboundrgt,Yboundrgt,'k','LineWidth',1);
+  plot(x,y, '-b');
+  "&lt;"
+</pre>
+</body>
+</html>

@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -23,8 +23,8 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <p>
 <pre>
 <font color="red"><b>set:</b></font>
-  ne = e1:e8    <font color="#808080"><i># set of differential equations</i></font>
-  nm = m1:m21   <font color="#808080"><i># set of measurements</i></font>
+  ne = e1:e8	<font color="#808080"><i># set of differential equations</i></font>
+  nm = m1:m21	<font color="#808080"><i># set of measurements</i></font>
   <font color="#8A2BE2">alias</font>(nm_,nm)
 
 <font color="red"><b>par:</b></font> tau[nm]; z[nm,ne]
@@ -84,8 +84,8 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <font color="red"><b>par:</b></font> tf = <font color="#3D9970">smax</font>(nm, tau[nm])
 
 <font color="red"><b>var:</b></font>
-  g[ne]      <font color="#808080"><i># growth rates</i></font>
-  m[ne]      <font color="#808080"><i># mortality rates</i></font>
+  g[ne]		<font color="#808080"><i># growth rates</i></font>
+  m[ne]		<font color="#808080"><i># mortality rates</i></font>
 
 <font color="red"><b>dyn:</b></font> x[ne]
 

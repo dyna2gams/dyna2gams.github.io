@@ -1,0 +1,109 @@
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Estimation of seasonal transmission parameters in childhood infectious disease</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Estimation of seasonal transmission parameters in childhood infectious disease
+</pre>
+<p>
+  The development of accurate disease models is desirable for the purposes of gaining a
+  better understanding of the underlying dynamics of infectious disease spread and for
+  designing and implementing appropriate control measures to curb infectious disease spread.
+  In their work [1] develops an estimation framework for long-term continuous time infectious
+  disease models that considers both model and estimation noise. We present a nonlinear
+  programming approach for efficient estimation of model parameters, including seasonal
+  transmission profiles. They then demonstrate the effectiveness of this framework using
+  measles data from New York City and Bangkok, and show that a strong correlation exists
+  between estimated seasonal parameters and school term holidays.
+<p>
+  Reference:
+  <ol>
+  <li>D.P. Word, G.H. Abbott, D. Cummings and C.D. Laird,
+  <em>Estimating Seasonal Drivers in Childhood Infectious Diseases with Continuous Time and
+  Discrete-Time Models</em>,
+  Proceedings of the American Control Conference, Baltimore, MD, pp. 5137-5142, 2010.
+  </ol>
+<p>
+  See: <a href="http://www.apmonitor.com">APMonitor Modeling Language</a>
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">time-model</font> = Discrete
+  <font color="#39CCCC">N</font> = 78
+
+<font color="red"><b>par:</b></font>
+  P = 3.2e6		<font color="#808080"><i># population size	(individuals)</i></font>
+  mu = 7.8e-4		<font color="#808080"><i># scaled birth rate	(births/biweek/total population) * 1e5</i></font>
+  rep_frac = 0.45	<font color="#808080"><i># reporting fraction to account for underreporting</i></font>
+  ts = 1
+
+<font color="red"><b>tpa:</b></font>
+  cases_o = <font color="#8A2BE2">@readcsv</font> ifile=.\examples\<font color="#8B0000"><font color="#8B0000">@ifnam@</font></font>.csv, colval=2, skipheader=<font color="#3D9970">yes</font>
+			<font color="#808080"><i># indicate the particular biweek for each data set</i></font>
+  biweek{1:26} = <font color="#8A2BE2">@readcsv</font> ifile=.\examples\<font color="#8B0000"><font color="#8B0000">@ifnam@</font></font>.csv, colval={3:28}, skipheader=<font color="#3D9970">yes</font>
+
+<font color="red"><b>var:</b></font>
+  beta{1:26}		<font color="#808080"><i># transmission parameter (potentially infectious contacts/biweek)</i></font>
+  gamma			<font color="#808080"><i># recovery rate		(recoveries/biweek/infectives)</i></font>
+
+<font color="red"><b>dyn:</b></font>
+  S			<font color="#808080"><i># susceptibles		(individuals in the total population)</i></font>
+  I			<font color="#808080"><i># infectives		(individuals infected)</i></font>
+  V			<font color="#808080"><i># vaccines</i></font>
+  Vr			<font color="#808080"><i># control</i></font>
+  cases			<font color="#808080"><i># cases reported	(new individuals infected per biweek)</i></font>
+
+<font color="red"><b>lim:</b></font>
+  0.1 &lt;= beta{1:26} &lt;= 100
+  0 &lt;= gamma &lt;= 1
+  0 &lt;= cases &lt;= 2*<font color="#0074D9">AllTimeMax</font>(cases_o)
+  0 &lt;= Vr &lt;= 1e4
+
+<font color="red"><b>t=t0:</b></font>			<font color="#808080"><i># better results would be achieved should the model estimate the initial values</i></font>
+  S = 0.06*P
+  I = 0.001*P
+  V = 2e5
+
+<font color="red"><b>exp:</b></font>
+  <font color="#808080"><i># infection rate per biweek</i></font>
+  R0 == 0
+  Rs == S * I / P
+  R{1:26} == biweek{1:26} * beta{1:26} * Rs + R{0:25}
+
+<font color="red"><b>equ:</b></font>
+  S&acute; == S + ts*(-R26 + mu*P - Vr)
+  I&acute; == I + ts*( R26 - gamma*I)
+  V&acute; == V - ts*Vr
+  cases == rep_frac*R26
+  0 &lt;= S &lt;= P
+  0 &lt;= I &lt;= S
+
+<font color="red"><b>ini:</b></font>
+  S = 0.06*P
+  I = 0.001*P
+  V = 0
+  cases = cases_o
+  <font color="#808080"><i># beta{1:26} = 10	# a smaller discrepancy is achieved if default values are used</i></font>
+  <font color="#808080"><i># gamma = 0.07</i></font>
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">AllTimeAvg</font>(<font color="#2ECC40">sqr</font>(cases-cases_o)) <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#8A2BE2">@csvsave</font> cases_o
+</pre>
+</body>
+</html>

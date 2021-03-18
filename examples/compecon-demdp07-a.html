@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -89,8 +89,8 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   market[is,ie].. s[is,ie] == gamma*x[is] + e[ie]*x[is]^beta
   udef[is]..	  u[is] == (sbar[is]-x[is])^(1-alpha)/(1-alpha)
   bound[is]..	  x[is] &lt;= sbar[is]
-  Jdef[is]..	  J[is] == u[is] + delta*<font color="#3D9970">sum</font>(ie, w[ie]*<font color="#0074D9">Chebyshev9</font>(@norm(s[is,ie],slo,sup),a9,a8,a7,a6,a5,a4,a3,a2,a1,a0))
-  lsq..		  ksi == <font color="#3D9970">sum</font>(is, <font color="#2ECC40">sqr</font>(<font color="#0074D9">Chebyshev9</font>(@norm(sbar[is],slo,sup),a9,a8,a7,a6,a5,a4,a3,a2,a1,a0) - J[is]))
+  Jdef[is]..	  J[is] == u[is] + delta*<font color="#3D9970">sum</font>(ie, w[ie]*<font color="#0074D9">SeriesOf9</font>(<font color="#0074D9">Chebyshev</font>,@norm(s[is,ie],slo,sup),a9,a8,a7,a6,a5,a4,a3,a2,a1,a0))
+  lsq..		  ksi == <font color="#3D9970">sum</font>(is, <font color="#2ECC40">sqr</font>(<font color="#0074D9">SeriesOf9</font>(<font color="#0074D9">Chebyshev</font>,@norm(sbar[is],slo,sup),a9,a8,a7,a6,a5,a4,a3,a2,a1,a0) - J[is]))
 
 <font color="red"><b>ini:</b></font>
   a{0:9} = <font color="#2ECC40">uniform</font>(0,1)

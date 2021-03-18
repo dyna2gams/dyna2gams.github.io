@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -100,14 +100,14 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   </ol>
 <p>
 <pre>
-<font color="#FF8000">$macro</font> ddChebyshevT_(i,x) sum(cheby_(i,j9_)$(e_(i,j9_)>=2), c_(i,j9_)*e_(i,j9_)*(e_(i,j9_)-1)*power(x,e_(i,j9_)-2))
+<font color="#FF8000">$macro</font> ddChebyshev_(i,x) sum(cheby_(i,j9_)$(chebye_(i,j9_)>=2), chebyc_(i,j9_)*chebye_(i,j9_)*(chebye_(i,j9_)-1)*power(x,chebye_(i,j9_)-2))
 </pre>
 <p>
 <pre>
 <font color="#FF8000">$macro</font> d4d4SChebyshev4(deg,x1,x2,x3,x4,coe,ico) sum((i1_,i2_,i3_,i4_)$(ord(i1_)+ord(i2_)+ord(i3_)+ord(i4_)<=deg+4),\
 </pre>
  sum(ico$(ord(ico)-1=cheby4_(ord(i1_)-1,ord(i2_)-1,ord(i3_)-1,ord(i4_)-1,deg)),coe[ico])*\
- ChebyshevT_(i1_,x1)*ChebyshevT_(i2_,x2)*ChebyshevT_(i3_,x3)*ddChebyshevT_(i4_,x4))
+ Chebyshev_(i1_,x1)*Chebyshev_(i2_,x2)*Chebyshev_(i3_,x3)*ddChebyshev_(i4_,x4))
 <p>
 <pre>
 <font color="red"><b>run:</b></font>

@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -35,7 +35,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <pre>
 <font color="red"><b>par:</b></font>
   tf = 4
-  u = 0.5   <font color="#808080"><i># the control</i></font>
+  u = 0.5	<font color="#808080"><i># the control</i></font>
 
 <font color="red"><b>var:</b></font>
   k1 k2 k3
@@ -43,11 +43,11 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <font color="red"><b>dyn:</b></font>
   a	<font color="#808080"><i># the mole fraction of A</i></font>
   b	<font color="#808080"><i># the mole fraction of B</i></font>
-  c     <font color="#808080"><i># the mole fraction of C</i></font>
+  c	<font color="#808080"><i># the mole fraction of C</i></font>
 
 <font color="red"><b>obs:</b></font>
   <font color="#808080"><i># NA denotes a missing value</i></font>
-  <font color="#0074D9">Time</font>   a       b       c   
+  <font color="#0074D9">Time</font>   a       b       c
   0.4  0.9144  0.0753    <font color="#3D9970">na</font>
   0.8  0.8928  0.0810    <font color="#3D9970">na</font>
   1.2    <font color="#3D9970">na</font>      <font color="#3D9970">na</font>    0.0424
@@ -76,7 +76,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   c&acute; == (1-u)*k3*b
 
 <font color="red"><b>obj:</b></font>
-  <font color="#8A2BE2">minimize</font> <font color="#0074D9">ObservedErr</font>(a)+<font color="#0074D9">ObservedErr</font>(b)+<font color="#0074D9">ObservedErr</font>(c) <font color="#8A2BE2">using</font> nlp
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">ObservedSSE</font>(a)+<font color="#0074D9">ObservedSSE</font>(b)+<font color="#0074D9">ObservedSSE</font>(c) <font color="#8A2BE2">using</font> nlp
 </pre>
 </body>
 </html>

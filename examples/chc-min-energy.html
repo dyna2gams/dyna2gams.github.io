@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -34,7 +34,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <p>
 <pre>
 <font color="red"><b>set:</b></font>
-  scen = sc1:sc2048
+  scen = sce1:sce2048
 
 <font color="red"><b>par:</b></font>
   l = 0.16
@@ -91,7 +91,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp
 
 <font color="red"><b>gms:</b></font>
-  <font color="#FF8000">$$ifthen</font> <font color="#8A2BE2">%ITERMAX%</font>==<font color="#8A2BE2">%ITER%</font>
+  <font color="#8A2BE2">@gdxsave</font>			<font color="#808080"><i># save current solution for a later warm restart</i></font>
   <font color="#8A2BE2">%MODEL%</font>.solprint = 2;		<font color="#808080"><i># keep silent the computing details</i></font>
   chance = 1;
   <font color="#808080"><i># play with the probability level to get around the loss of feasibility while tightening tolerances with CONOPT</i></font>
@@ -103,7 +103,6 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   <font color="#8A2BE2">%OBJECTIVE%</font>.lo = <font color="#8A2BE2">%OBJECTIVE%</font>.l;
   <font color="#8A2BE2">%MODEL%</font>.solprint = 0;		<font color="#808080"><i># unveil the final results only</i></font>
   <font color="#8A2BE2">@solve</font>
-  <font color="#FF8000">$$endif</font>
 </pre>
 </body>
 </html>

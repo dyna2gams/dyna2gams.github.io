@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -35,7 +35,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   perfect and when \(\sigma=1\) the vaccine has no effect at all. The vaccination loses
   efficacy at a rate \(w\).
 <p>
-  Reference: 
+  Reference:
   <ol>
   <li>H.S. Rodrigues, M.-T.T. Monteiro, D.F.M. Torres,
   <em>Dengue in Cape Verde: vector control and vaccination</em>,
@@ -67,7 +67,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 
 <font color="red"><b>dyn:</b></font>
   Sh		<font color="#808080"><i># Susceptible Human Population</i></font>
-  Vh            <font color="#808080"><i># Vaccinated</i></font>
+  Vh		<font color="#808080"><i># Vaccinated</i></font>
   Ih		<font color="#808080"><i># Infected</i></font>
   Rh		<font color="#808080"><i># Resistant</i></font>
   Am		<font color="#808080"><i># Aquatic phase Mosquito</i></font>
@@ -111,7 +111,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   cost&acute; == gammaD*<font color="#2ECC40">sqr</font>(Ih) + gammaS*<font color="#2ECC40">sqr</font>(cm) + gammaL*<font color="#2ECC40">sqr</font>(cA) + gammaE*<font color="#2ECC40">sqr</font>(1-alpha)
 
 <font color="red"><b>obj:</b></font>
-  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(cost) <font color="#8A2BE2">using</font> nlp
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(cost) <font color="#8A2BE2">using</font> nlp <font color="#8A2BE2">with</font> ipopt
 </pre>
 </body>
 </html>

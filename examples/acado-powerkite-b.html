@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -24,7 +24,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <pre>
 <font color="red"><b>run:</b></font>
   <font color="#39CCCC">gams-option</font> = reslim=3600
-  
+
 <font color="red"><b>par:</b></font>
   tf = 18
 
@@ -33,7 +33,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   A = 500.0	<font color="#808080"><i># effective area		[m^2]</i></font>
   V = 720.0	<font color="#808080"><i># volume			[m^3]</i></font>
   cd0 = 0.04	<font color="#808080"><i># aerodynamic drag coefficient	[ ] (cd0: without downwash)</i></font>
-  K = 0.04      <font color="#808080"><i># induced drag constant		[ ]</i></font>
+  K = 0.04	<font color="#808080"><i># induced drag constant		[ ]</i></font>
 
   <font color="#808080"><i># Physical constants</i></font>
   g = 9.81	<font color="#808080"><i># gravitational constant	[m /s^2]</i></font>
@@ -121,7 +121,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   CL = 1.500
   power = 1e+6
   eta = 0
-  
+
 <font color="red"><b>exp:</b></font>
   <font color="#808080"><i># The effective mass</i></font>
   mc == rhoc*AQ*r	<font color="#808080"><i># mass of the cable</i></font>
@@ -219,7 +219,17 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   <font color="#8A2BE2">maximize</font> <font color="#0074D9">final</font>(E) <font color="#8A2BE2">using</font> nlp
 
 <font color="red"><b>gms:</b></font>
-  <font color="#8A2BE2">@solveloop</font> Method=movavg, Paraml=3 0.95, Varl=ddr0 dPsi dCL, Target=infes, Maxiter=3
+  <font color="#8A2BE2">@solveloop</font> Method=butterworth, Paraml=0.666, Varl=dPsi, Target=infes, Maxiter=3
+  <font color="#8A2BE2">@solveloop</font> Method=butterworth, Paraml=0.666, Varl=dCL,  Target=infes, Maxiter=3
+  <font color="#8A2BE2">@solveloop</font> Method=butterworth, Paraml=0.666, Varl=ddr0, Target=infes, Maxiter=3
+
+<font color="#808080"><i>###:</i></font><font color="#808080"><i></i></font>
+<font color="#808080"><i>  Achieved solution with CONOPT3 version 3.15G</i></font>
+<font color="#808080"><i>     48  95.2</i></font>
+<font color="#808080"><i>     96 115.6</i></font>
+<font color="#808080"><i>    192	115.5</i></font>
+<font color="#808080"><i>    384 115.4</i></font>
+<font color="#808080"><i></i></font>
 </pre>
 </body>
 </html>

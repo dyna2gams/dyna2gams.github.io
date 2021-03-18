@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -26,8 +26,8 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   tf = 10
 
 <font color="red"><b>var:</b></font>
-  g{1:7}     <font color="#808080"><i># growth rates</i></font>
-  m{1:8}     <font color="#808080"><i># mortality rates</i></font>
+  g{1:7}	<font color="#808080"><i># growth rates</i></font>
+  m{1:8}	<font color="#808080"><i># mortality rates</i></font>
 
 <font color="red"><b>dyn:</b></font>
   x{1:8}
@@ -72,12 +72,12 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   x8&acute; == g7*x7 - m8*x8
 
 <font color="red"><b>obj:</b></font>
-  <font color="#8A2BE2">minimize</font> <font color="#3D9970">sum</font>{1:8,<font color="#0074D9">ObservedErr</font>(x{:})} <font color="#8A2BE2">using</font> nlp
+  <font color="#8A2BE2">minimize</font> <font color="#3D9970">sum</font>{1:8,<font color="#0074D9">ObservedSSE</font>(x{:})} <font color="#8A2BE2">using</font> nlp
 
 <font color="red"><b>gms:</b></font>
   <font color="#3D9970">parameter</font> report(*,*);
   <font color="#3D9970">set</font> o(<font color="#0074D9">Observation</font>);
-  <font color="#0074D9">ObservedSet</font>(x{1:8},o); 
+  <font color="#0074D9">ObservedSet</font>(x{1:8},o);
   <font color="#FF8000">$$ondotL</font>
   report(o,'x{1:8}') = <font color="#0074D9">ObservedGap</font>(x{1:8},o);
   <font color="#3D9970">display</font> report;

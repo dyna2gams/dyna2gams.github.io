@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -64,7 +64,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   0 &lt;= x &lt;= +<font color="#3D9970">inf</font>
   0 &lt;= i &lt;= +<font color="#3D9970">inf</font>
   0 &lt;= u &lt;= 180$<font color="#0074D9">TimeIsGT</font>(Tmeal)
-  
+
 <font color="red"><b>t=t0:</b></font>
   g = g_basal
   x = x_basal
@@ -75,18 +75,18 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   g = <font color="#0074D9">initial</font>(g)
   x = <font color="#0074D9">initial</font>(x)
   i = <font color="#0074D9">initial</font>(i)
-  u = 0
 
 <font color="red"><b>exp:</b></font>
   d == A*<font color="#2ECC40">exp</font>(-b*(<font color="#0074D9">Time</font>-Tmeal))$<font color="#0074D9">TimeIsGT</font>(Tmeal)	<font color="#808080"><i># meal glucose disturbance (mmol/l-min)</i></font>
-  
+
 <font color="red"><b>equ:</b></font>
-  g&acute; == -p1*(g-g_basal) - (x-x_basal)*g + d 
-  x&acute; == -p2*(x-x_basal) + p3*(i-i_basal) 
-  i&acute; == -p4*(i-i_basal) + u/v1 
+  g&acute; == -p1*(g-g_basal) - (x-x_basal)*g + d
+  x&acute; == -p2*(x-x_basal) + p3*(i-i_basal)
+  i&acute; == -p4*(i-i_basal) + u/v1
   J&acute; == <font color="#2ECC40">sqr</font>(g-g_basal)
 
-<font color="red"><b>obj:</b></font> <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp
 </pre>
 </body>
 </html>
