@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -42,16 +42,16 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 
 <font color="red"><b>par:</b></font>
   a = 7071000		<font color="#808080"><i># orbit radius [m]</i></font>
-  mu = 398e+12		<font color="#808080"><i># gravitational constant [N(m/kg)²]</i></font>
+  mu = 398e+12		<font color="#808080"><i># gravitational constant [N(m/kg)&sup2;]</i></font>
   <font color="#0074D9">n</font> = <font color="#2ECC40">sqrt</font>(mu/a^3)	<font color="#808080"><i># mean motion [1/sec]</i></font>
   m = 100		<font color="#808080"><i># satellite mass [kg]</i></font>
   alpha_max = 0.1	<font color="#808080"><i># maximum thrust [N]</i></font>
   tau_max = 1		<font color="#808080"><i># maximum torque [Nm]</i></font>
-  J11 = 1000		<font color="#808080"><i># moment of inertia around x [kg/m²]</i></font>
+  J11 = 1000		<font color="#808080"><i># moment of inertia around x [kg/m&sup2;]</i></font>
   K11 = J11
-  J22 = 2000		<font color="#808080"><i># moment of inertia around y [kg/m²]</i></font>
+  J22 = 2000		<font color="#808080"><i># moment of inertia around y [kg/m&sup2;]</i></font>
   K22 = J22
-  J33 = 1000		<font color="#808080"><i># moment of inertia around z [kg/m²]</i></font>
+  J33 = 1000		<font color="#808080"><i># moment of inertia around z [kg/m&sup2;]</i></font>
   K33 = J33
   a{1:3} = {0 1.01 0}	<font color="#808080"><i># docking point for servicer, target [m]</i></font>
   b{1:3} = a{1:3}

@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -49,8 +49,8 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   TC = 0.33			<font color="#808080"><i># corporate tax rate</i></font>
   TR = 0.05			<font color="#808080"><i># royalty rate</i></font>
   a0 = 25			<font color="#808080"><i># cost function parameter [000$]</i></font>
-  a1 = 28			<font color="#808080"><i># cost function parameter [000$/000m³]</i></font>
-  a2 = 2			<font color="#808080"><i># cost function parameter [000$/(000m³)²]</i></font>
+  a1 = 28			<font color="#808080"><i># cost function parameter [000$/000m&sup3;]</i></font>
+  a2 = 2			<font color="#808080"><i># cost function parameter [000$/(000m&sup3;)&sup2;]</i></font>
   rho = 0.15
   tf = 40			<font color="#808080"><i># quarters</i></font>
 
@@ -61,9 +61,9 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   c{0:14}
 
 <font color="red"><b>dyn:</b></font>
-  p[scen]			<font color="#808080"><i># price [000$/000m³]</i></font>
-  k[scen]			<font color="#808080"><i># inventory [000m³]</i></font>
-  u[scen]			<font color="#808080"><i># cutting rate [000m³]</i></font>
+  p[scen]			<font color="#808080"><i># price [000$/000m&sup3;]</i></font>
+  k[scen]			<font color="#808080"><i># inventory [000m&sup3;]</i></font>
+  u[scen]			<font color="#808080"><i># cutting rate [000m&sup3;]</i></font>
   W				<font color="#808080"><i># value of the logging company [000$]</i></font>
 
 <font color="red"><b>t=t0:</b></font>

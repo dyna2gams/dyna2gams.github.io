@@ -102,8 +102,8 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   D&acute; == derD
   delta&acute; == derDelta
   <font color="#808080"><i># constraint on forces</i></font>
-  -4 &lt;= C2 * v * v * delta + Fxd * <font color="#2ECC40">sin</font>(C1 * delta) / m &lt;= 4	<font color="#808080"><i># lateral force [m/s²]</i></font>
-  -4 &lt;= Fxd / m &lt;= 4						<font color="#808080"><i># longitudinal force [m/s²]</i></font>
+  -4 &lt;= C2 * v * v * delta + Fxd * <font color="#2ECC40">sin</font>(C1 * delta) / m &lt;= 4	<font color="#808080"><i># lateral force [m/s&sup2;]</i></font>
+  -4 &lt;= Fxd / m &lt;= 4						<font color="#808080"><i># longitudinal force [m/s&sup2;]</i></font>
   <font color="#808080"><i># seek a periodic solution</i></font>
   $theta2.. 0 == <font color="#0074D9">initial</font>({w alpha v D delta derD derDelta}) - <font color="#0074D9">final</font>({w alpha v D delta derD derDelta})
 

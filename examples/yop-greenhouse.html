@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -64,15 +64,15 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   tf = 48
 
 <font color="red"><b>tpa:</b></font>
-  <font color="#808080"><i># Intensity of the light entering the greenhouse [W/m²]</i></font>
+  <font color="#808080"><i># Intensity of the light entering the greenhouse [W/m&sup2;]</i></font>
   I = <font color="#2ECC40">max</font>(0, 800*<font color="#2ECC40">sin</font>(4*pi*<font color="#0074D9">Time</font>/tf-0.65*pi))
   <font color="#808080"><i># Temperature outside the greenhouse [&deg;C]</i></font>
   T0 = 15 + 10*<font color="#2ECC40">sin</font>(4*pi*<font color="#0074D9">Time</font>/tf-0.65*pi)
 
 <font color="red"><b>dyn:</b></font>
-  x1	<font color="#808080"><i># Dry weight of the crop [kg/m²]</i></font>
+  x1	<font color="#808080"><i># Dry weight of the crop [kg/m&sup2;]</i></font>
   x2	<font color="#808080"><i># Temperature in the greenhouse [&deg;C]</i></font>
-  u	<font color="#808080"><i># Heat input from the heating system [W/m²]</i></font>
+  u	<font color="#808080"><i># Heat input from the heating system [W/m&sup2;]</i></font>
   J	<font color="#808080"><i># Performance index</i></font>
 
 <font color="red"><b>lim:</b></font>

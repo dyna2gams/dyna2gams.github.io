@@ -48,15 +48,15 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   phase = ph1:ph3		<font color="#808080"><i># Propelled ascent, Ballistic ascent and Descent</i></font>
 
 <font color="red"><b>par:</b></font>
-  rhow = 1000			<font color="#808080"><i># water density [kg/m設</i></font>
+  rhow = 1000			<font color="#808080"><i># water density [kg/m&sup3;]</i></font>
   pa = 1.013e+5			<font color="#808080"><i># ambient pressure [Pa]</i></font>
-  Aout = pi*<font color="#2ECC40">sqr</font>(22e-3)/4	<font color="#808080"><i># nozzle area [m淫</i></font>
-  Vb = 2e-3			<font color="#808080"><i># internal volume of the rocket [m設</i></font>
-  rho = 1.2			<font color="#808080"><i># air density [kg/m設</i></font>
+  Aout = pi*<font color="#2ECC40">sqr</font>(22e-3)/4	<font color="#808080"><i># nozzle area [m&sup2;]</i></font>
+  Vb = 2e-3			<font color="#808080"><i># internal volume of the rocket [m&sup3;]</i></font>
+  rho = 1.2			<font color="#808080"><i># air density [kg/m&sup3;]</i></font>
   k = 1.2			<font color="#808080"><i># polytropic constant</i></font>
-  S = pi*<font color="#2ECC40">sqr</font>(106e-3)/4		<font color="#808080"><i># cross sectional area [m淫</i></font>
+  S = pi*<font color="#2ECC40">sqr</font>(106e-3)/4		<font color="#808080"><i># cross sectional area [m&sup2;]</i></font>
   CD = 0.3450
-  g = 9.80665			<font color="#808080"><i># gravitational acceleration [m/s淫</i></font>
+  g = 9.80665			<font color="#808080"><i># gravitational acceleration [m/s&sup2;]</i></font>
   tf = 1
 
 <font color="red"><b>var:</b></font>
@@ -83,7 +83,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 
 <font color="red"><b>t=t0:</b></font>
   t['ph1'] = 0
-  0.5e-3 &lt;= Vw['ph1'] &lt;= 1.5e-3	<font color="#808080"><i># initial water volume [m設</i></font>
+  0.5e-3 &lt;= Vw['ph1'] &lt;= 1.5e-3	<font color="#808080"><i># initial water volume [m&sup3;]</i></font>
   p['ph1'] = 6.5e+5		<font color="#808080"><i># [Pa]</i></font>
   -<font color="#3D9970">inf</font> &lt;= gam['ph1'] &lt;= +<font color="#3D9970">inf</font>	<font color="#808080"><i># launch angle [rad]</i></font>
   v['ph1'] = 0.01		<font color="#808080"><i># [m/s]</i></font>

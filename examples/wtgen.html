@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -59,7 +59,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   <font color="#8A2BE2">@readcsv</font> ifile=<font color="#8B0000"><font color="#8B0000">@home@</font></font>\examples\wtgen-ct3.csv		<font color="#808080"><i># (X=beta,Y=lambda)</i></font>
 
 <font color="red"><b>par:</b></font>
-  rho = 1.23				<font color="#808080"><i># Air density [kg/m³]</i></font>
+  rho = 1.23				<font color="#808080"><i># Air density [kg/m&sup3;]</i></font>
   R = 63				<font color="#808080"><i># Rotor radius [m]</i></font>
   eta = 0.95				<font color="#808080"><i># Generator efficiency [-]</i></font>
   mT = 347460
@@ -68,10 +68,10 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   mH = 56780
   mTe = mT/4 + mN + mH + 3*mB		<font color="#808080"><i># Tower fore-aft inertia [kg]</i></font>
   iratio = 0.010309278350515		<font color="#808080"><i># Gearbox ratio [-]</i></font>
-  JH = 115926				<font color="#808080"><i># Hub inertia [kg/m²]</i></font>
-  JB = 11776047				<font color="#808080"><i># Blade inertia [kg/m²]</i></font>
-  JG = 534.116				<font color="#808080"><i># Generator inertia [kg/m²]</i></font>
-  J = JH + 3*JB + JG/<font color="#2ECC40">sqr</font>(iratio)	<font color="#808080"><i># Total turbine inertia seen from the rotor [kg/m²]</i></font>
+  JH = 115926				<font color="#808080"><i># Hub inertia [kg/m&sup2;]</i></font>
+  JB = 11776047				<font color="#808080"><i># Blade inertia [kg/m&sup2;]</i></font>
+  JG = 534.116				<font color="#808080"><i># Generator inertia [kg/m&sup2;]</i></font>
+  J = JH + 3*JB + JG/<font color="#2ECC40">sqr</font>(iratio)	<font color="#808080"><i># Total turbine inertia seen from the rotor [kg/m&sup2;]</i></font>
   f0 = 0.32
   ds = 0.01
   dT = 4*pi*mTe*ds*f0			<font color="#808080"><i># Tower damping [Ns/m]</i></font>
@@ -96,7 +96,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   beta		<font color="#808080"><i># Pitch angle (state) [deg]</i></font>
   dbeta		<font color="#808080"><i># Pitch rate (state) [deg/s]</i></font>
   Tg		<font color="#808080"><i># Generator torque (state) [1e-4Nm]</i></font>
-  ddbeta	<font color="#808080"><i># Pitch acceleration (control input) [deg/s²]</i></font>
+  ddbeta	<font color="#808080"><i># Pitch acceleration (control input) [deg/s&sup2;]</i></font>
   dTg		<font color="#808080"><i># Generator torque rate (control input) [1e+4Nm/s]</i></font>
   Pelec  	<font color="#808080"><i># Generated power (ancillary) [MW]</i></font>
   Eelec		<font color="#808080"><i># Generated energy (state) [MWh]</i></font>

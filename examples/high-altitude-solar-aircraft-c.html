@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -67,7 +67,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   Pbattmin = -11	<font color="#808080"><i># Maximum discharge rate [kW]</i></font>
   Pbattmax = 11		<font color="#808080"><i># Maximum charge rate [kW]</i></font>
   Ppayload = 0.250	<font color="#808080"><i># Payload power [kW]</i></font>
-  S = 60		<font color="#808080"><i># Solar panel area [m²]</i></font>
+  S = 60		<font color="#808080"><i># Solar panel area [m&sup2;]</i></font>
   Rprop = 1.58		<font color="#808080"><i># Propeller radius [m]</i></font>
   a1 =  3.77421e-01	<font color="#808080"><i># Coefficient values for aircraft lift surface fit</i></font>
   a2 =  1.24316e-01
@@ -88,10 +88,10 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   c2 = 0.01
   c3 = 1.5692e-5
   c4 = 0.1414
-  g = 9.80665		<font color="#808080"><i># Gravity [m/s²]</i></font>
-  rho11 = 0.364		<font color="#808080"><i># Air density at 11 km [kg/m³]</i></font>
+  g = 9.80665		<font color="#808080"><i># Gravity [m/s&sup2;]</i></font>
+  rho11 = 0.364		<font color="#808080"><i># Air density at 11 km [kg/m&sup3;]</i></font>
   T11 = 216.66		<font color="#808080"><i># Temperature at 11 km [K]</i></font>
-  Rair = 287.041	<font color="#808080"><i># Gas constant for air [m²/s²/K]</i></font>
+  Rair = 287.041	<font color="#808080"><i># Gas constant for air [m&sup2;/s&sup2;/K]</i></font>
   h0 = 18288		<font color="#808080"><i># Initial altitude [m]</i></font>
   chord = 1.4		<font color="#808080"><i># [m]</i></font>
   daylen = 60*60*24	<font color="#808080"><i># [s]</i></font>
@@ -104,7 +104,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <font color="red"><b>tpa:</b></font>
   phis[batch] = <font color="#0074D9">deg2rad</font>(90-&sect;phis(<font color="#2ECC40">mod</font>(<font color="#0074D9">Time</font>+hor*(<font color="#3D9970">ord</font>(batch)-1),daylen)))	<font color="#808080"><i># Solar azimuth [rad]</i></font>
   thetas[batch] = <font color="#0074D9">deg2rad</font>(&sect;thetas(<font color="#2ECC40">mod</font>(<font color="#0074D9">Time</font>+hor*(<font color="#3D9970">ord</font>(batch)-1),daylen)))	<font color="#808080"><i># Solar zenith [rad]</i></font>
-  Fs[batch] = <font color="#2ECC40">max</font>(0,&sect;Fs(<font color="#2ECC40">mod</font>(<font color="#0074D9">Time</font>+hor*(<font color="#3D9970">ord</font>(batch)-1),daylen)))		<font color="#808080"><i># Solar flux available [W/m²]</i></font>
+  Fs[batch] = <font color="#2ECC40">max</font>(0,&sect;Fs(<font color="#2ECC40">mod</font>(<font color="#0074D9">Time</font>+hor*(<font color="#3D9970">ord</font>(batch)-1),daylen)))		<font color="#808080"><i># Solar flux available [W/m&sup2;]</i></font>
 
 <font color="red"><b>dyn:</b></font>
   x[batch] y[batch] h[batch]	<font color="#808080"><i># Aircraft north, east, and altitude positions [m]</i></font>
@@ -158,7 +158,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   mus == <font color="#2ECC40">max</font>(0,@dotprod(SN,<font color="#0074D9">N</font>)/@norm(SN)/@norm(<font color="#0074D9">N</font>))
   Gs == mus*Fs[b]
   Psolar == 1e-3*Gs*etapanel*S
-  rho == rho11*<font color="#2ECC40">exp</font>(-(g/Rair/T11)*(h[b]-11000))		<font color="#808080"><i># Air density [kg/m³]</i></font>
+  rho == rho11*<font color="#2ECC40">exp</font>(-(g/Rair/T11)*(h[b]-11000))		<font color="#808080"><i># Air density [kg/m&sup3;]</i></font>
   Adisk == pi*<font color="#2ECC40">sqr</font>(Rprop)
   etaprop == 2/(1+<font color="#2ECC40">sqrt</font>(Tp[b]/(Adisk*v[b]*v[b]*rho/2)+1))
   Pprop == 1e-3*v[b]*Tp[b]/etaprop/etamotor
