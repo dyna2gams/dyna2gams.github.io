@@ -1,0 +1,78 @@
+<!-- Dyna-to-Html Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Electron Spin Flip in Minimum Time</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Electron Spin Flip in Minimum Time
+</pre>
+<p>
+  We have an electron, initially in up spin state. The spin state of this electron can
+  be changed by exposing it to external magnetic field. Our aim is to flip electron&rsquo;s
+  spin to down spin state in minimum possible time; the magnitude of magnetic
+  field is bounded by 1 &micro;Tesla and the direction of magnetic field is fixed.
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  mu = 1	<font color="#808080"><i># magnetic moment of the electron</i></font>
+  h = 1		<font color="#808080"><i># Planck&rsquo;s constant</i></font>
+  w = mu / h
+  theta = pi/2	<font color="#808080"><i># [rad]</i></font>
+  phi = 3*pi/2	<font color="#808080"><i># [rad]</i></font>
+  Umax = 1	<font color="#808080"><i># [&micro;T]</i></font>
+
+<font color="red"><b>var:</b></font>
+  tf
+
+<font color="red"><b>dyn:</b></font>
+  a{r i}	<font color="#808080"><i># up spin coefficient</i></font>
+  b{r i}	<font color="#808080"><i># down spin coefficient</i></font>
+  U		<font color="#808080"><i># magnetic field amplitude</i></font>
+
+<font color="red"><b>lim:</b></font>
+  1 &lt;= tf &lt;= 5
+  0 &lt;= U &lt;= Umax
+
+<font color="red"><b>t=t0:</b></font>
+  a{r i} = {1 0}
+  b{r i} = {0 0}
+
+<font color="red"><b>t=tf:</b></font>
+  a{r i} = {0 0}
+  b{r i} = {1 0}
+
+<font color="red"><b>equ:</b></font>
+  ar&acute; == U*w*(-ai*<font color="#2ECC40">cos</font>(theta) - (bi*<font color="#2ECC40">cos</font>(phi) - br*<font color="#2ECC40">sin</font>(phi))*<font color="#2ECC40">sin</font>(theta))
+  ai&acute; == U*w*( ar*<font color="#2ECC40">cos</font>(theta) + (bi*<font color="#2ECC40">sin</font>(phi) + br*<font color="#2ECC40">cos</font>(phi))*<font color="#2ECC40">sin</font>(theta))
+  br&acute; == U*w*( bi*<font color="#2ECC40">cos</font>(theta) - (ar*<font color="#2ECC40">sin</font>(phi) + ai*<font color="#2ECC40">cos</font>(phi))*<font color="#2ECC40">sin</font>(theta))
+  bi&acute; == U*w*(-br*<font color="#2ECC40">cos</font>(theta) + (ar*<font color="#2ECC40">cos</font>(phi) - ai*<font color="#2ECC40">sin</font>(phi))*<font color="#2ECC40">sin</font>(theta))
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> tf <font color="#8A2BE2">using</font> nlp
+
+<font color="#808080"><i>###:</i></font><font color="#808080"><i></i></font>
+<font color="#808080"><i>  Maxima script to derive the system dynamics</i></font>
+<font color="#808080"><i>  a: ar+%i*ai$</i></font>
+<font color="#808080"><i>  b: br+%i*bi$</i></font>
+<font color="#808080"><i>  adot: %i*w*U*( a*cos(theta)+b*exp(-%i*phi)*sin(theta))$</i></font>
+<font color="#808080"><i>  bdot: %i*w*U*(-b*cos(theta)+a*exp( %i*phi)*sin(theta))$</i></font>
+<font color="#808080"><i>  realpart(adot);</i></font>
+<font color="#808080"><i>  imagpart(adot);</i></font>
+<font color="#808080"><i>  realpart(bdot);</i></font>
+<font color="#808080"><i>  imagpart(bdot);</i></font>
+<font color="#808080"><i></i></font>
+</pre>
+</body>
+</html>

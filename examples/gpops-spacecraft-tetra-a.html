@@ -1,0 +1,227 @@
+<!-- Dyna-to-Html Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Optimal Configuration of Tetrahedral Spacecraft Formations (One Craft Case)</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Optimal Configuration of Tetrahedral Spacecraft Formations (One Craft Case)
+</pre>
+<p>
+  The problem of determining minimum-fuel maneuver sequences for a four-spacecraft
+  formation is considered. The objective of this paper is to find fuel-optimal
+  spacecraft trajectories that transfer four spacecraft from an initial parking orbit
+  to a desired terminal reference orbit while satisfying a set of constraints on the
+  formation at the terminal time.
+<p>
+  This script is the starting point to solve the final problem. Only one spacecraft
+  is used.
+<p>
+  References:
+  <ol>
+  <li>G.T. Huntington, D.A. Benson, A.V. Rao,
+  <em>Optimal Configuration of Tetrahedral Spacecraft Formations</em>,
+  Journal of the Astronautical Sciences, 55(2):141-169, April 2007.
+  <li>M. Daly,
+  <em>Demonstration of GPOPS-II for Optimal Configuration of a
+  Tetrahedral Spacecraft Formation</em>,
+  Honors Thesis, University of Florida, April 2015.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">substitute-symbols</font> = T&gt;TT | inf&gt;jnf | Om0&gt;OO0 | Omf&gt;OOf
+
+<font color="red"><b>set:</b></font>
+  phase = ph1:ph3	<font color="#808080"><i># coast, burn, coast</i></font>
+
+<font color="red"><b>par:</b></font>
+  <font color="#808080"><i># Orbital Constants</i></font>
+  mu = 3.986004415e14	<font color="#808080"><i># [m&sup3;/s&sup2;] standard gravitational parameter of Earth</i></font>
+  Re = 6378145		<font color="#808080"><i># [m] radius of Earth</i></font>
+  g0 = 9.80665		<font color="#808080"><i># [m/s&sup2;] acceleration due to gravity</i></font>
+  <font color="#808080"><i># Orbital Parameters</i></font>
+  h0 = 600e3		<font color="#808080"><i># [m] initial altitude</i></font>
+  a0 = Re+h0		<font color="#808080"><i># [m] initial semiminor axis (and apogee and perigee radius)</i></font>
+  hf = 7000e3		<font color="#808080"><i># [m] final altitude</i></font>
+  Ra = Re+hf		<font color="#808080"><i># [m] final apogee radius</i></font>
+  af = (Ra+a0)/2	<font color="#808080"><i># [m] final semimajor axis</i></font>
+  ef = (Ra-a0)/(Ra+a0)	<font color="#808080"><i># [no units] final eccentricity</i></font>
+  <font color="#808080"><i># Spacecraft Parameters</i></font>
+  T = 7015		<font color="#808080"><i># [N] constant maximum thrust</i></font>
+  Isp = 285.7		<font color="#808080"><i># [s] specific impulse</i></font>
+  m0 = 500		<font color="#808080"><i># [kg] initial mass of one spacecraft</i></font>
+  mDry = 200		<font color="#808080"><i># [kg] dry mass of one spacecraft</i></font>
+
+  <font color="#808080"><i># Manually Scale the Problem</i></font>
+  LBar = Re		<font color="#808080"><i># [m]</i></font>
+  TBar = <font color="#2ECC40">sqrt</font>(Re^3/mu)	<font color="#808080"><i># [s]</i></font>
+  MBar = m0		<font color="#808080"><i># [kg]</i></font>
+  VBar = LBar/TBar	<font color="#808080"><i># [m/s]</i></font>
+  ABar = VBar/TBar	<font color="#808080"><i># [m/s&sup2;]</i></font>
+  FBar = ABar*MBar	<font color="#808080"><i># [N]</i></font>
+  MuBar = LBar^3/TBar^2	<font color="#808080"><i># [m&sup3;/s&sup2;]</i></font>
+
+  <font color="#808080"><i># Scale Orbital Constants</i></font>
+  Re /= LBar
+  mu /= MuBar
+  g0 /= ABar
+  <font color="#808080"><i># Scale Orbital Parameters</i></font>
+  h0 /= LBar
+  a0 /= LBar
+  hf /= LBar
+  Ra /= LBar
+  af /= LBar
+  <font color="#808080"><i># Scale Spacecraft Parameters</i></font>
+  T /= FBar
+  Isp /= TBar
+  m0 /= MBar
+  mDry /= MBar
+
+  <font color="#808080"><i># Initial Conditions (IC) are defined in orbital elements (OE)</i></font>
+  e0 = 0		<font color="#808080"><i># [no units] eccentricity</i></font>
+  in0 = <font color="#0074D9">deg2rad</font>(28)	<font color="#808080"><i># [rad] inclination (should stay roughly constant)</i></font>
+  Om0 = 0		<font color="#808080"><i># [rad] longitude of ascending node</i></font>
+  om0 = <font color="#0074D9">deg2rad</font>(270)	<font color="#808080"><i># [rad] argument of perigee (expected to stay roughly constant)</i></font>
+  nu0 = <font color="#0074D9">deg2rad</font>(270)	<font color="#808080"><i># [rad] true anomaly (initial location arbitrary)</i></font>
+
+  <font color="#808080"><i># Final Conditions (FC) in OE</i></font>
+  <font color="#3D9970">inf</font> = <font color="#0074D9">deg2rad</font>(28)
+  Omf = 0
+  omf = <font color="#0074D9">deg2rad</font>(270)
+  nuf = <font color="#0074D9">deg2rad</font>(180)
+
+<font color="red"><b>par:</b></font>
+  tf = 1
+
+<font color="red"><b>var:</b></font>
+  tlen[phase]
+
+<font color="red"><b>mac:</b></font>
+  <font color="#808080"><i># translate orbital elements (OE) into modified equinoctial elements (MEE) (true Longitude excepted)</i></font>
+  @oe2mee(a,e,in,Om,om,nu)
+    p = &a*(1-<font color="#2ECC40">sqr</font>(&e));
+    P1 = &e*<font color="#2ECC40">sin</font>(&om+&Om);
+    P2 = &e*<font color="#2ECC40">cos</font>(&om+&Om);
+    Q1 = <font color="#2ECC40">tan</font>(&in/2)*<font color="#2ECC40">sin</font>(&Om);
+    Q2 = <font color="#2ECC40">tan</font>(&in/2)*<font color="#2ECC40">cos</font>(&Om);
+    <font color="#808080"><i># L = &Om+&om+&nu;</i></font>
+
+<font color="#808080"><i>###:</i></font><font color="#808080"><i></i></font>
+<font color="#808080"><i>  </i></font><font color="#808080"><i># modified equinoctial elements to Cartesian coordinates</i></font>
+<font color="#808080"><i>  @mee2rv(pr_,p,g,f,k,h,L)</i></font>
+<font color="#808080"><i>    </i></font><font color="#808080"><i># auxiliary variables</i></font>
+<font color="#808080"><i>    &pr_w1 == &p/(1+&f*cos(&L)+&g*sin(&L));</i></font>
+<font color="#808080"><i>    &pr_w2 == &h*&h-&k*&k;</i></font>
+<font color="#808080"><i>    &pr_w3 == 1+&h*&h+&k*&k;</i></font>
+<font color="#808080"><i>    </i></font><font color="#808080"><i># position</i></font>
+<font color="#808080"><i>    &pr_rX == (&pr_w1/&pr_w3)*(cos(&L)+&pr_w2*cos(&L)+2*&h*&k*sin(&L));</i></font>
+<font color="#808080"><i>    &pr_rY == (&pr_w1/&pr_w3)*(sin(&L)-&pr_w2*sin(&L)+2*&h*&k*cos(&L));</i></font>
+<font color="#808080"><i>    &pr_rZ == (2*&pr_w1/&pr_w3)*(&h*sin(&L)-&k*cos(&L));</i></font>
+<font color="#808080"><i>    </i></font><font color="#808080"><i># velocity</i></font>
+<font color="#808080"><i>    &pr_vX == -1/&pr_w3*sqrt(mu/&p)*( sin(&L) + &pr_w2*sin(&L) - 2*&h*&k*cos(&L) + &g - 2*&f*&h*&k + &pr_w2*&g);</i></font>
+<font color="#808080"><i>    &pr_vY == -1/&pr_w3*sqrt(mu/&p)*(-cos(&L) + &pr_w2*cos(&L) + 2*&h*&k*sin(&L) - &f + 2*&g*&h*&k + &pr_w2*&f);</i></font>
+<font color="#808080"><i>    &pr_vZ ==  2/&pr_w3*sqrt(mu/&p)*(&h*cos(&L) + &k*sin(&L) + &f*&h + &g*&k);</i></font>
+<font color="#808080"><i></i></font>
+<font color="#808080"><i>  </i></font><font color="#808080"><i># orbital elements to Cartesian coordinates</i></font>
+<font color="#808080"><i>  @oe2rv(pr_,a,e,in,Om,om,nu) @mee2rv(&pr_,(&a*(1-sqr(&e))),(&e*sin(&om+&Om)),(&e*cos(&om+&Om)),(tan(&in/2)*sin(&Om)),(tan(&in/2)*cos(&Om)),(&Om+&om+&nu))</i></font>
+<font color="#808080"><i></i></font>
+<font color="red"><b>dyn:</b></font>
+  t[phase]
+  p
+  P{1:2}
+  Q{1:2}
+  L[phase]
+  m
+  u{r t <font color="#0074D9">n</font>}
+
+<font color="red"><b>lim:</b></font>
+  0.01 &lt;= tlen[phase] &lt;= 10e5/TBar	<font color="#808080"><i># arbitrary maximum time</i></font>
+  0.5*a0 &lt;= p &lt;= 1.5*af
+  -1 &lt;= P{1:2} &lt;= 1
+  -1 &lt;= Q{1:2} &lt;= 1
+  -10*pi &lt;= L[phase] &lt;= 10*pi
+  mDry &lt;= m &lt;= m0
+  -1 &lt;= u{r t <font color="#0074D9">n</font>} &lt;= 1
+
+<font color="red"><b>t=t0:</b></font>
+  t["ph1"] = 0
+  m = m0
+  @oe2mee(a0,e0,in0,Om0,om0,nu0)	<font color="#808080"><i># convert IC's from OE to MEE</i></font>
+  <font color="#808080"><i>#L["ph1"] = Om0+om0+nu0		# is replaced by a penalty in first instance</i></font>
+
+<font color="red"><b>t=tf:</b></font>
+  @oe2mee(af,ef,<font color="#3D9970">inf</font>,Omf,omf,nuf)	<font color="#808080"><i># convert FC's from OE to MEE</i></font>
+  <font color="#808080"><i>#L["ph3"] = Omf+omf+nuf		# is replaced by a penalty in first instance</i></font>
+
+<font color="red"><b>exp:</b></font>
+  TimeDot == tlen[phase] / tf
+  w == 1 + P1*<font color="#2ECC40">sin</font>(L["ph2"]) + P2*<font color="#2ECC40">cos</font>(L["ph2"])
+  sSq == 1 + <font color="#2ECC40">sqr</font>(Q1) + <font color="#2ECC40">sqr</font>(Q2)
+  a{r t <font color="#0074D9">n</font>} == T/m*u{r t <font color="#0074D9">n</font>}
+  penalty == \
+    <font color="#2ECC40">sqr</font>(<font color="#2ECC40">cos</font>(Om0+om0+nu0)-<font color="#0074D9">initial</font>(<font color="#2ECC40">cos</font>(L["ph1"]))) +\
+    <font color="#2ECC40">sqr</font>(<font color="#2ECC40">sin</font>(Om0+om0+nu0)-<font color="#0074D9">initial</font>(<font color="#2ECC40">sin</font>(L["ph1"]))) +\
+    <font color="#2ECC40">sqr</font>(<font color="#2ECC40">cos</font>(Omf+omf+nuf)-<font color="#0074D9">final</font>(<font color="#2ECC40">cos</font>(L["ph3"]))) +\
+    <font color="#2ECC40">sqr</font>(<font color="#2ECC40">sin</font>(Omf+omf+nuf)-<font color="#0074D9">final</font>(<font color="#2ECC40">sin</font>(L["ph3"])))
+
+<font color="red"><b>par:</b></font>
+  pen = 1e3$(<font color="#8A2BE2">%ITER%</font>=1)
+
+<font color="red"><b>equ:</b></font>
+  t&acute;[phase] / TimeDot == 1
+
+  <font color="#808080"><i># System dynamics</i></font>
+  [phase]$<font color="#2ECC40">sameas</font>(phase,"ph2")..  p&acute; / TimeDot == 2*p/w*<font color="#2ECC40">sqrt</font>(p/mu)*at
+  [phase]$<font color="#2ECC40">sameas</font>(phase,"ph2").. P1&acute; / TimeDot == <font color="#2ECC40">sqrt</font>(p/mu) * (-ar*<font color="#2ECC40">cos</font>(L[phase]) + ((w+1)*<font color="#2ECC40">sin</font>(L[phase])+P1)*at/w + (Q2*<font color="#2ECC40">sin</font>(L[phase])-Q1*<font color="#2ECC40">cos</font>(L[phase]))*P2*an/w)
+  [phase]$<font color="#2ECC40">sameas</font>(phase,"ph2").. P2&acute; / TimeDot == <font color="#2ECC40">sqrt</font>(p/mu) * ( ar*<font color="#2ECC40">sin</font>(L[phase]) + ((w+1)*<font color="#2ECC40">cos</font>(L[phase])+P2)*at/w - (Q2*<font color="#2ECC40">sin</font>(L[phase])-Q1*<font color="#2ECC40">cos</font>(L[phase]))*P1*an/w)
+  [phase]$<font color="#2ECC40">sameas</font>(phase,"ph2").. Q1&acute; / TimeDot == <font color="#2ECC40">sqrt</font>(p/mu) * (sSq/(2*w))*an*<font color="#2ECC40">sin</font>(L[phase])
+  [phase]$<font color="#2ECC40">sameas</font>(phase,"ph2").. Q2&acute; / TimeDot == <font color="#2ECC40">sqrt</font>(p/mu) * (sSq/(2*w))*an*<font color="#2ECC40">cos</font>(L[phase])
+  [phase]$<font color="#2ECC40">sameas</font>(phase,"ph2")..  m&acute; / TimeDot == -T/(g0*Isp)
+  $<font color="#2ECC40">sameas</font>(phase,"ph1")..  L&acute;[phase] / TimeDot == <font color="#2ECC40">sqrt</font>(mu*<font color="#0074D9">initial</font>(p))/<font color="#2ECC40">sqr</font>(<font color="#0074D9">initial</font>(p))*<font color="#2ECC40">sqr</font>(1+<font color="#0074D9">initial</font>(P1)*<font color="#2ECC40">sin</font>(L[phase])+<font color="#0074D9">initial</font>(P2)*<font color="#2ECC40">cos</font>(L[phase]))
+  $<font color="#2ECC40">sameas</font>(phase,"ph2")..  L&acute;[phase] / TimeDot == <font color="#2ECC40">sqrt</font>(mu*p)*<font color="#2ECC40">sqr</font>(w/p) + <font color="#2ECC40">sqrt</font>(p/mu)*(Q2*<font color="#2ECC40">sin</font>(L[phase])-Q1*<font color="#2ECC40">cos</font>(L[phase]))*an/w
+  $<font color="#2ECC40">sameas</font>(phase,"ph3")..  L&acute;[phase] / TimeDot == <font color="#2ECC40">sqrt</font>(mu*<font color="#0074D9">final</font>(p))/<font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(p))*<font color="#2ECC40">sqr</font>(1+<font color="#0074D9">final</font>(P1)*<font color="#2ECC40">sin</font>(L[phase])+<font color="#0074D9">final</font>(P2)*<font color="#2ECC40">cos</font>(L[phase]))
+  <font color="#2ECC40">sqr</font>(ur) + <font color="#2ECC40">sqr</font>(ut) + <font color="#2ECC40">sqr</font>(un) == 1
+
+  <font color="#808080"><i># Phase linkages</i></font>
+  [phase]$(<font color="#3D9970">ord</font>(phase)&lt;<font color="#3D9970">card</font>(phase)).. 0 == <font color="#0074D9">final</font>(t[phase]) - <font color="#0074D9">initial</font>(t[phase+1]);
+  [phase]$(<font color="#3D9970">ord</font>(phase)&lt;<font color="#3D9970">card</font>(phase)).. 0 == <font color="#0074D9">final</font>(L[phase]) - <font color="#0074D9">initial</font>(L[phase+1]);
+
+  <font color="#808080"><i># Initial and final conditions on true longitude (in terms of its sin and cos)</i></font>
+  $(pen=0).. <font color="#2ECC40">cos</font>(Om0+om0+nu0) == <font color="#0074D9">initial</font>(<font color="#2ECC40">cos</font>(L["ph1"]))
+  $(pen=0).. <font color="#2ECC40">sin</font>(Om0+om0+nu0) == <font color="#0074D9">initial</font>(<font color="#2ECC40">sin</font>(L["ph1"]))
+  $(pen=0).. <font color="#2ECC40">cos</font>(Omf+omf+nuf) == <font color="#0074D9">final</font>(<font color="#2ECC40">cos</font>(L["ph3"]))
+  $(pen=0).. <font color="#2ECC40">sin</font>(Omf+omf+nuf) == <font color="#0074D9">final</font>(<font color="#2ECC40">sin</font>(L["ph3"]))
+
+<font color="red"><b>ini:</b></font>
+  tlen["ph{1:3}"] = {1500 50 5000}/TBAR
+  u{r t <font color="#0074D9">n</font>} = {0 1 0}
+  m = <font color="#0074D9">linspace</font>(m0,mDry)
+  @oe2mee(<font color="#0074D9">linspace</font>(a0,af),<font color="#0074D9">linspace</font>(e0,ef),<font color="#0074D9">linspace</font>(in0,<font color="#3D9970">inf</font>),<font color="#0074D9">linspace</font>(Om0,Omf),<font color="#0074D9">linspace</font>(om0,omf),<font color="#0074D9">linspace</font>(nu0,nuf))
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">maximize</font> <font color="#0074D9">final</font>(m)-pen*penalty <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#808080"><i># move from a penalty to a hard constraint on initial/final conditions on true longitude</i></font>
+  <font color="#FF8000">$$ifthen</font> <font color="#8A2BE2">%ITER%</font>==1
+  pen = 0;
+  <font color="#8A2BE2">@solve</font>
+  <font color="#808080"><i># match the initial value of the paper</i></font>
+  L.l[phase] = L.l[phase] + (Om0+om0+nu0) - <font color="#0074D9">initial</font>(L.l["ph1"]);
+  <font color="#8A2BE2">@solve</font>
+  <font color="#FF8000">$$endif</font>
+</pre>
+</body>
+</html>

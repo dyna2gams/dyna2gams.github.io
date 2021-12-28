@@ -1,0 +1,118 @@
+<!-- Dyna-to-Html Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Kinetic Batch Reactor Problem</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Kinetic Batch Reactor Problem
+</pre>
+<p>
+  This problem is taken from the following reference:
+  <ol>
+  <li>J.T. Betts,
+  <em>Practical Methods for Optimal Control Using Nonlinear Programming</em>,
+  SIAM Press, Philadelphia, 2009.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">substitute-symbols</font> = K{1:3}&gt;KK{1:3}
+
+<font color="red"><b>set:</b></font>
+  phase = ph1:ph3
+  ph12[phase] = ph1:ph2
+
+<font color="red"><b>par:</b></font>
+  k1hat = 1.3708e+12		<font color="#808080"><i># [kg/gmol/hr]</i></font>
+  kminus1hat = 1.6215e+20	<font color="#808080"><i># [kg/gmol/hr]</i></font>
+  k2hat = 5.2282e+12		<font color="#808080"><i># [kg/gmol/hr]</i></font>
+  beta1 = 9.2984e+3		<font color="#808080"><i># [K]</i></font>
+  betaminus1 = 1.3108e+4	<font color="#808080"><i># [K]</i></font>
+  beta2 = 9.5999e+3		<font color="#808080"><i># [K]</i></font>
+  K1 = 2.575e-16		<font color="#808080"><i># [gmol/kg]</i></font>
+  K2 = 4.876e-14		<font color="#808080"><i># [gmol/kg]</i></font>
+  K3 = 1.7884e-16		<font color="#808080"><i># [gmol/kg]</i></font>
+  a = 2				<font color="#808080"><i># [gmol/kg/hr&sup2;]</i></font>
+  tf = 1
+
+<font color="red"><b>var:</b></font>
+  tlen[phase]			<font color="#808080"><i># [hr]</i></font>
+
+<font color="red"><b>dyn:</b></font>
+  t[phase]			<font color="#808080"><i># Time [hr]</i></font>
+  y{1:6}[phase]			<font color="#808080"><i># State variables</i></font>
+  z{1:4}[phase]			<font color="#808080"><i># Algebraic variables</i></font>
+  Temp[phase] :: <font color="#7FDBFF">control</font>	<font color="#808080"><i># Control variable [K]</i></font>
+
+<font color="red"><b>lim:</b></font>
+  {0 5 0 0 0 0} &lt;= y{1:6}[phase] &lt;= {2 10 1 1.5 1.5 0.1}
+  0 &lt;= z{1:4}[phase] &lt;= {15 0.02 2e-5 2e-5}
+  293.15 &lt;= Temp[phase] &lt;= 393.15
+  0.01 &lt;= tlen['ph{1:3}'] &lt;= {0.01 +<font color="#3D9970">inf</font> +<font color="#3D9970">inf</font>}
+
+<font color="red"><b>t=t0:</b></font>
+  t['ph1'] = 0
+  y{1:5}['ph1'] = {1.5776 8.32 0 0 0}
+  0 &lt;= y6['ph1'] &lt;= 0.0262
+
+<font color="red"><b>t=tf:</b></font>
+  1 &lt;= y4['ph3'] &lt;= 1.5
+
+<font color="red"><b>exp:</b></font>
+  k1 == k1hat*<font color="#2ECC40">exp</font>(-beta1/Temp[phase])
+  kminus1 == kminus1hat*<font color="#2ECC40">exp</font>(-betaminus1/Temp[phase])
+  k2 == k2hat*<font color="#2ECC40">exp</font>(-beta2/Temp[phase])
+  k3 == k1
+  kminus3 == 0.5*kminus1
+  TimeDot == tlen[phase] / tf
+
+<font color="red"><b>equ:</b></font>
+  t&acute;[phase]  / TimeDot == 1
+  <font color="#808080"><i># differential mass balance equations</i></font>
+  y1&acute;[phase] / TimeDot == -k2*y2[phase]*z2[phase]
+  y2&acute;[phase] / TimeDot == -k1*y2[phase]*y6[phase] + kminus1*z4[phase] - k2*y2[phase]*z2[phase]
+  y3&acute;[phase] / TimeDot ==  k2*y2[phase]*z2[phase] - kminus3*z3[phase] + k3*y4[phase]*y6[phase]
+  y4&acute;[phase] / TimeDot == -k3*y4[phase]*y6[phase] + kminus3*z3[phase]
+  y5&acute;[phase] / TimeDot ==  k1*y2[phase]*y6[phase] - kminus1*z4[phase]
+  y6&acute;[phase] / TimeDot == -k1*y2[phase]*y6[phase] + kminus1*z4[phase] - k3*y4[phase]*y6[phase] + kminus3*z3[phase]
+  <font color="#808080"><i># electroneutrality condition</i></font>
+  y6[phase] + z2[phase] + z3[phase] + z4[phase] == <font color="#0074D9">initial</font>(y6['ph1']) + 10^(-z1[phase])
+  <font color="#808080"><i># equilibrium conditions</i></font>
+  z2[phase] == K2*y1[phase]/(K2+10^(-z1[phase]))
+  z3[phase] == K3*y3[phase]/(K3+10^(-z1[phase]))
+  z4[phase] == K1*y5[phase]/(K1+10^(-z1[phase]))
+  <font color="#808080"><i># restrict the rate of product formation during the initial 25% of the process time</i></font>
+  $ph12(phase).. y4[phase] &lt;= a*<font color="#2ECC40">sqr</font>(t[phase])
+  0.01 &lt;= tlen['ph2'] &lt;= <font color="#3D9970">sum</font>(phase,tlen[phase])/4 - tlen['ph1']
+  0.01 &lt;= tlen['ph3'] &lt;= <font color="#3D9970">sum</font>(phase,tlen[phase])*3/4
+  <font color="#8A2BE2">@linkphases</font>
+
+<font color="red"><b>ini:</b></font>
+  tlen['ph{2:3}'] = {0.5 2}
+  y{1:5}['ph1'] = <font color="#0074D9">initial</font>(y{1:5}['ph1'])
+  y{1:5}['ph2'] = {0.5 6 0.6 0.5 0.5}
+  y{1:5}['ph3'] = <font color="#0074D9">linspace</font>({0.5 6 0.6 0.5 0.5},{0.2 5.5 0.6 1 1})
+  y6[phase] = 0.013
+  z1[phase] = 10
+  z2[phase] = K2*y1[phase]/(K2+10^(-z1[phase]))
+  z3[phase] = K3*y3[phase]/(K3+10^(-z1[phase]))
+  z4[phase] = K1*y5[phase]/(K1+10^(-z1[phase]))
+  Temp[phase] = 393.15
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#3D9970">sum</font>(phase,tlen[phase])+100*<font color="#0074D9">initial</font>(y6['ph1']) <font color="#8A2BE2">using</font> nlp <font color="#8A2BE2">with</font> ipopt
+</pre>
+</body>
+</html>

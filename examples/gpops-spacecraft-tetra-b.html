@@ -1,0 +1,266 @@
+<!-- Dyna-to-Html Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Optimal Configuration of Tetrahedral Spacecraft Formations</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Optimal Configuration of Tetrahedral Spacecraft Formations
+</pre>
+<p>
+  The problem of determining minimum-fuel maneuver sequences for a four-spacecraft
+  formation is considered. The objective of this paper is to find fuel-optimal
+  spacecraft trajectories that transfer four spacecraft from an initial parking orbit
+  to a desired terminal reference orbit while satisfying a set of constraints on the
+  formation at the terminal time.
+<p>
+  References:
+  <ol>
+  <li>G.T. Huntington, D.A. Benson, A.V. Rao,
+  <em>Optimal Configuration of Tetrahedral Spacecraft Formations</em>,
+  Journal of the Astronautical Sciences, 55(2):141-169, April 2007.
+  <li>M. Daly,
+  <em>Demonstration of GPOPS-II for Optimal Configuration of a
+  Tetrahedral Spacecraft Formation</em>,
+  Honors Thesis, University of Florida, April 2015.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">substitute-symbols</font> = T&gt;TT | inf&gt;jnf | Om0&gt;OO0 | Omf&gt;OOf
+  <font color="#39CCCC">default-time-steps-number</font> = 12
+
+<font color="red"><b>set:</b></font>
+  phase = ph1:ph3	<font color="#808080"><i># coast, burn, coast</i></font>
+  craft = c1:c4		<font color="#808080"><i># spacecrafts</i></font>
+  <font color="#8A2BE2">alias</font>(craf2,craft)
+  edges[craft,craf2]$(<font color="#3D9970">ord</font>(craft)&lt;<font color="#3D9970">ord</font>(craf2)) = <font color="#3D9970">yes</font>
+
+<font color="red"><b>par:</b></font>
+  <font color="#808080"><i># Orbital Constants</i></font>
+  mu = 3.986004415e14	<font color="#808080"><i># [m&sup3;/s&sup2;] standard gravitational parameter of Earth</i></font>
+  Re = 6378145		<font color="#808080"><i># [m] radius of Earth</i></font>
+  g0 = 9.80665		<font color="#808080"><i># [m/s&sup2;] acceleration due to gravity</i></font>
+  <font color="#808080"><i># Orbital Parameters</i></font>
+  h0 = 600e3		<font color="#808080"><i># [m] initial altitude</i></font>
+  a0 = Re+h0		<font color="#808080"><i># [m] initial semiminor axis (and apogee and perigee radius)</i></font>
+  hf = 7000e3		<font color="#808080"><i># [m] final altitude</i></font>
+  Ra = Re+hf		<font color="#808080"><i># [m] final apogee radius</i></font>
+  af = (Ra+a0)/2	<font color="#808080"><i># [m] final semimajor axis</i></font>
+  aMin = a0 - 200e3	<font color="#808080"><i># [m] minimum semimajor axis (for bounds)</i></font>
+  aMax = af + 400e3	<font color="#808080"><i># [m] maximum semimajor axis (for bounds)</i></font>
+  ef = (Ra-a0)/(Ra+a0)	<font color="#808080"><i># [no units] final eccentricity</i></font>
+  <font color="#808080"><i># Spacecraft Parameters</i></font>
+  T = 7015		<font color="#808080"><i># [N] constant maximum thrust</i></font>
+  Isp = 285.7		<font color="#808080"><i># [s] specific impulse</i></font>
+  m0 = 500		<font color="#808080"><i># [kg] initial mass of one spacecraft</i></font>
+  mDry = 200		<font color="#808080"><i># [kg] dry mass of one spacecraft</i></font>
+
+  <font color="#808080"><i># Manually Scale the Problem</i></font>
+  LBar = Re		<font color="#808080"><i># [m]</i></font>
+  TBar = <font color="#2ECC40">sqrt</font>(Re^3/mu)	<font color="#808080"><i># [s]</i></font>
+  MBar = m0		<font color="#808080"><i># [kg]</i></font>
+  VBar = LBar/TBar	<font color="#808080"><i># [m/s]</i></font>
+  ABar = VBar/TBar	<font color="#808080"><i># [m/s&sup2;]</i></font>
+  FBar = ABar*MBar	<font color="#808080"><i># [N]</i></font>
+  MuBar = LBar^3/TBar^2	<font color="#808080"><i># [m&sup3;/s&sup2;]</i></font>
+
+  <font color="#808080"><i># Scale Orbital Constants</i></font>
+  Re /= LBar
+  mu /= MuBar
+  g0 /= ABar
+  <font color="#808080"><i># Scale Orbital Parameters</i></font>
+  h0 /= LBar
+  a0 /= LBar
+  hf /= LBar
+  Ra /= LBar
+  af /= LBar
+  aMin /= LBar
+  aMax /= LBar
+  <font color="#808080"><i># Scale Spacecraft Parameters</i></font>
+  T /= FBar
+  Isp /= TBar
+  m0 /= MBar
+  mDry /= MBar
+
+  <font color="#808080"><i># Initial Conditions (IC) are defined in orbital elements (OE)</i></font>
+  e0 = 0		<font color="#808080"><i># [no units] eccentricity</i></font>
+  in0 = <font color="#0074D9">deg2rad</font>(28)	<font color="#808080"><i># [rad] inclination (should stay roughly constant)</i></font>
+  Om0 = 0		<font color="#808080"><i># [rad] longitude of ascending node</i></font>
+  om0 = <font color="#0074D9">deg2rad</font>(270)	<font color="#808080"><i># [rad] argument of perigee (expected to stay roughly constant)</i></font>
+  nu0 = <font color="#0074D9">deg2rad</font>(270)	<font color="#808080"><i># [rad] true anomaly (initial location arbitrary)</i></font>
+
+  <font color="#808080"><i># Final Conditions (FC) in OE</i></font>
+  <font color="#3D9970">inf</font> = <font color="#0074D9">deg2rad</font>(28)
+  Omf = 0
+  omf = <font color="#0074D9">deg2rad</font>(270)
+  nuf = <font color="#0074D9">deg2rad</font>(180)
+
+<font color="red"><b>par:</b></font>
+  tf = 1
+
+<font color="red"><b>var:</b></font>
+  tlen[phase,craft]
+  Meso{w1 w2 w3 rX rY rZ vX vY vZ}[craft]
+  iApo{w1 w2 w3 rX rY rZ vX vY vZ}
+  len[craft,craf2]
+  lenAvg
+
+<font color="red"><b>mac:</b></font>
+  <font color="#808080"><i># translate orbital elements (OE) into modified equinoctial elements (MEE) (true Longitude excepted)</i></font>
+  @oe2mee(a,e,in,Om,om,nu)
+    p[craft] = &a*(1-<font color="#2ECC40">sqr</font>(&e));
+    P1[craft] = &e*<font color="#2ECC40">sin</font>(&om+&Om);
+    P2[craft] = &e*<font color="#2ECC40">cos</font>(&om+&Om);
+    Q1[craft] = <font color="#2ECC40">tan</font>(&in/2)*<font color="#2ECC40">sin</font>(&Om);
+    Q2[craft] = <font color="#2ECC40">tan</font>(&in/2)*<font color="#2ECC40">cos</font>(&Om);
+    <font color="#808080"><i># L[craft] = &Om+&om+&nu;</i></font>
+
+  <font color="#808080"><i># modified equinoctial elements to Cartesian coordinates</i></font>
+  @mee2rv(idx,dot,pr_,p,g,f,k,h,L)
+    <font color="#808080"><i># auxiliary variables</i></font>
+    &idx &dot &pr_w1&idx == &p/(1+&f*<font color="#2ECC40">cos</font>(&L)+&g*<font color="#2ECC40">sin</font>(&L));
+    &idx &dot &pr_w2&idx == &h*&h-&k*&k;
+    &idx &dot &pr_w3&idx == 1+&h*&h+&k*&k;
+    <font color="#808080"><i># position</i></font>
+    &idx &dot &pr_rX&idx == (&pr_w1&idx/&pr_w3&idx)*(<font color="#2ECC40">cos</font>(&L)+&pr_w2&idx*<font color="#2ECC40">cos</font>(&L)+2*&h*&k*<font color="#2ECC40">sin</font>(&L));
+    &idx &dot &pr_rY&idx == (&pr_w1&idx/&pr_w3&idx)*(<font color="#2ECC40">sin</font>(&L)-&pr_w2&idx*<font color="#2ECC40">sin</font>(&L)+2*&h*&k*<font color="#2ECC40">cos</font>(&L));
+    &idx &dot &pr_rZ&idx == (2*&pr_w1&idx/&pr_w3&idx)*(&h*<font color="#2ECC40">sin</font>(&L)-&k*<font color="#2ECC40">cos</font>(&L));
+    <font color="#808080"><i># velocity</i></font>
+    &idx &dot &pr_vX&idx == -1/&pr_w3&idx*<font color="#2ECC40">sqrt</font>(mu/&p)*( <font color="#2ECC40">sin</font>(&L) + &pr_w2&idx*<font color="#2ECC40">sin</font>(&L) - 2*&h*&k*<font color="#2ECC40">cos</font>(&L) + &g - 2*&f*&h*&k + &pr_w2&idx*&g);
+    &idx &dot &pr_vY&idx == -1/&pr_w3&idx*<font color="#2ECC40">sqrt</font>(mu/&p)*(-<font color="#2ECC40">cos</font>(&L) + &pr_w2&idx*<font color="#2ECC40">cos</font>(&L) + 2*&h*&k*<font color="#2ECC40">sin</font>(&L) - &f + 2*&g*&h*&k + &pr_w2&idx*&f);
+    &idx &dot &pr_vZ&idx ==  2/&pr_w3&idx*<font color="#2ECC40">sqrt</font>(mu/&p)*(&h*<font color="#2ECC40">cos</font>(&L) + &k*<font color="#2ECC40">sin</font>(&L) + &f*&h + &g*&k);
+
+  <font color="#808080"><i># orbital elements to Cartesian coordinates</i></font>
+  @oe2rv(pr_,a,e,in,Om,om,nu) @mee2rv(,,&pr_,(&a*(1-<font color="#2ECC40">sqr</font>(&e))),(&e*<font color="#2ECC40">sin</font>(&om+&Om)),(&e*<font color="#2ECC40">cos</font>(&om+&Om)),(<font color="#2ECC40">tan</font>(&in/2)*<font color="#2ECC40">sin</font>(&Om)),(<font color="#2ECC40">tan</font>(&in/2)*<font color="#2ECC40">cos</font>(&Om)),(&Om+&om+&nu))
+
+  <font color="#808080"><i># volume(u,v,w) = (1/6)*dot(u,cross(v,w))</i></font>
+  @volume(uX,uY,uZ,vX,vY,vZ,wX,wY,wZ) ((&uX)*((&vY)*(&wZ)-(&vZ)*(&wY))+(&uY)*((&vZ)*(&wX)-(&vX)*(&wZ))+(&uZ)*((&vX)*(&wY)-(&vY)*(&wX)))/6
+
+<font color="red"><b>dyn:</b></font>
+  t[phase,craft]
+  p[craft]
+  P{1:2}[craft]
+  Q{1:2}[craft]
+  L[phase,craft]
+  m[craft]
+  u{r t <font color="#0074D9">n</font>}[craft]
+
+<font color="red"><b>lim:</b></font>
+  0.01 &lt;= tlen[phase,craft] &lt;= 10e5/TBar	<font color="#808080"><i># arbitrary maximum time</i></font>
+  aMin &lt;= p[craft] &lt;= aMax
+  -1 &lt;= P{1:2}[craft] &lt;= 1
+  -1 &lt;= Q{1:2}[craft] &lt;= 1
+  -10*pi &lt;= L[phase,craft] &lt;= 10*pi
+  mDry &lt;= m[craft] &lt;= m0
+  -1 &lt;= u{r t <font color="#0074D9">n</font>}[craft] &lt;= 1
+  0 &lt;= len[edges] &lt;= 1
+  0 &lt;= lenAvg &lt;= 1
+
+<font color="red"><b>t=t0:</b></font>
+  t["ph1",craft] = 0
+  m[craft] = m0
+  @oe2mee(a0,e0,in0,Om0,om0,nu0)	<font color="#808080"><i># convert IC's from OE to MEE</i></font>
+  <font color="#808080"><i>#L["ph1",craft] = Om0+om0+nu0		# is replaced by a penalty in first instance</i></font>
+
+<font color="red"><b>exp:</b></font>
+  TimeDot == tlen[phase,craft] / tf
+  w == 1 + P1[craft]*<font color="#2ECC40">sin</font>(L["ph2",craft]) + P2[craft]*<font color="#2ECC40">cos</font>(L["ph2",craft])
+  sSq == 1 + <font color="#2ECC40">sqr</font>(Q1[craft]) + <font color="#2ECC40">sqr</font>(Q2[craft])
+  a{r t <font color="#0074D9">n</font>} == T/m[craft]*u{r t <font color="#0074D9">n</font>}[craft]
+  penalty1 == <font color="#3D9970">sum</font>(craft,\
+    <font color="#2ECC40">sqr</font>(<font color="#2ECC40">cos</font>(Om0+om0+nu0)-<font color="#0074D9">initial</font>(<font color="#2ECC40">cos</font>(L["ph1",craft]))) +\
+    <font color="#2ECC40">sqr</font>(<font color="#2ECC40">sin</font>(Om0+om0+nu0)-<font color="#0074D9">initial</font>(<font color="#2ECC40">sin</font>(L["ph1",craft]))))
+  penalty2 == <font color="#3D9970">sum</font>(edges, <font color="#2ECC40">sqr</font>(len[edges]-11000/LBar))
+  penalty3{1:6} == <font color="#2ECC40">sqr</font>(iApo{rX rY rZ vX vY vZ} - <font color="#3D9970">sum</font>(craft, Meso{rX rY rZ vX vY vZ}[craft]) / <font color="#3D9970">card</font>(craft))
+  penalty3 == <font color="#3D9970">sum</font>{1:6, penalty3{:}}
+
+<font color="red"><b>par:</b></font>
+  pen1 = 1e3$(<font color="#8A2BE2">%ITER%</font>=1)
+  pen2 = 1e9$(<font color="#8A2BE2">%ITER%</font>=1)
+  pen3 = 1e4$(<font color="#8A2BE2">%ITER%</font>=1)
+
+<font color="red"><b>equ:</b></font>
+  t&acute;[phase,craft] / TimeDot == 1
+
+  <font color="#808080"><i># System dynamics</i></font>
+  [phase,craft]$<font color="#2ECC40">sameas</font>(phase,"ph2")..  p&acute;[craft] / TimeDot == 2*p[craft]/w*<font color="#2ECC40">sqrt</font>(p[craft]/mu)*at
+  [phase,craft]$<font color="#2ECC40">sameas</font>(phase,"ph2").. P1&acute;[craft] / TimeDot == <font color="#2ECC40">sqrt</font>(p[craft]/mu) * (-ar*<font color="#2ECC40">cos</font>(L[phase,craft]) + ((w+1)*<font color="#2ECC40">sin</font>(L[phase,craft])+P1[craft])*at/w + (Q2[craft]*<font color="#2ECC40">sin</font>(L[phase,craft])-Q1[craft]*<font color="#2ECC40">cos</font>(L[phase,craft]))*P2[craft]*an/w)
+  [phase,craft]$<font color="#2ECC40">sameas</font>(phase,"ph2").. P2&acute;[craft] / TimeDot == <font color="#2ECC40">sqrt</font>(p[craft]/mu) * ( ar*<font color="#2ECC40">sin</font>(L[phase,craft]) + ((w+1)*<font color="#2ECC40">cos</font>(L[phase,craft])+P2[craft])*at/w - (Q2[craft]*<font color="#2ECC40">sin</font>(L[phase,craft])-Q1[craft]*<font color="#2ECC40">cos</font>(L[phase,craft]))*P1[craft]*an/w)
+  [phase,craft]$<font color="#2ECC40">sameas</font>(phase,"ph2").. Q1&acute;[craft] / TimeDot == <font color="#2ECC40">sqrt</font>(p[craft]/mu) * (sSq/(2*w))*an*<font color="#2ECC40">sin</font>(L[phase,craft])
+  [phase,craft]$<font color="#2ECC40">sameas</font>(phase,"ph2").. Q2&acute;[craft] / TimeDot == <font color="#2ECC40">sqrt</font>(p[craft]/mu) * (sSq/(2*w))*an*<font color="#2ECC40">cos</font>(L[phase,craft])
+  [phase,craft]$<font color="#2ECC40">sameas</font>(phase,"ph2")..  m&acute;[craft] / TimeDot == -T/(g0*Isp)
+  $<font color="#2ECC40">sameas</font>(phase,"ph1")..  L&acute;[phase,craft] / TimeDot == <font color="#2ECC40">sqrt</font>(mu*<font color="#0074D9">initial</font>(p[craft]))/<font color="#2ECC40">sqr</font>(<font color="#0074D9">initial</font>(p[craft]))*<font color="#2ECC40">sqr</font>(1+<font color="#0074D9">initial</font>(P1[craft])*<font color="#2ECC40">sin</font>(L[phase,craft])+<font color="#0074D9">initial</font>(P2[craft])*<font color="#2ECC40">cos</font>(L[phase,craft]))
+  $<font color="#2ECC40">sameas</font>(phase,"ph2")..  L&acute;[phase,craft] / TimeDot == <font color="#2ECC40">sqrt</font>(mu*p[craft])*<font color="#2ECC40">sqr</font>(w/p[craft]) + <font color="#2ECC40">sqrt</font>(p[craft]/mu)*(Q2[craft]*<font color="#2ECC40">sin</font>(L[phase,craft])-Q1[craft]*<font color="#2ECC40">cos</font>(L[phase,craft]))*an/w
+  $<font color="#2ECC40">sameas</font>(phase,"ph3")..  L&acute;[phase,craft] / TimeDot == <font color="#2ECC40">sqrt</font>(mu*<font color="#0074D9">final</font>(p[craft]))/<font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(p[craft]))*<font color="#2ECC40">sqr</font>(1+<font color="#0074D9">final</font>(P1[craft])*<font color="#2ECC40">sin</font>(L[phase,craft])+<font color="#0074D9">final</font>(P2[craft])*<font color="#2ECC40">cos</font>(L[phase,craft]))
+  <font color="#2ECC40">sqr</font>(ur[craft]) + <font color="#2ECC40">sqr</font>(ut[craft]) + <font color="#2ECC40">sqr</font>(un[craft]) == 1
+
+  <font color="#808080"><i># Phase linkages</i></font>
+  [phase,craft]$(<font color="#3D9970">ord</font>(phase)&lt;<font color="#3D9970">card</font>(phase)).. 0 == <font color="#0074D9">final</font>(t[phase,craft]) - <font color="#0074D9">initial</font>(t[phase+1,craft])
+  [phase,craft]$(<font color="#3D9970">ord</font>(phase)&lt;<font color="#3D9970">card</font>(phase)).. 0 == <font color="#0074D9">final</font>(L[phase,craft]) - <font color="#0074D9">initial</font>(L[phase+1,craft])
+
+  <font color="#808080"><i># Break symmetry by arbitrarily ranking crafts (otherwise any permutation of crafts is also a solution)</i></font>
+  [craft]$(<font color="#3D9970">ord</font>(craft)&lt;<font color="#3D9970">card</font>(craft)).. tlen["ph3",craft] &lt;= tlen["ph3",craft+1]
+
+  <font color="#808080"><i># Initial conditions on true longitude (in terms of its sin and cos)</i></font>
+  [craft]$(pen1=0).. <font color="#2ECC40">cos</font>(Om0+om0+nu0) == <font color="#0074D9">initial</font>(<font color="#2ECC40">cos</font>(L["ph1",craft]))
+  [craft]$(pen1=0).. <font color="#2ECC40">sin</font>(Om0+om0+nu0) == <font color="#0074D9">initial</font>(<font color="#2ECC40">sin</font>(L["ph1",craft]))
+
+  <font color="#808080"><i># Final conditions: time at the end of the last phase of each spacecraft must be the same</i></font>
+  [craft]$(<font color="#3D9970">ord</font>(craft)&lt;<font color="#3D9970">card</font>(craft)).. <font color="#3D9970">sum</font>(phase, tlen[phase,craft]) == <font color="#3D9970">sum</font>(phase, tlen[phase,craft+1])
+
+  <font color="#808080"><i># Final conditions: constrain the mesocenter of the tetrahedron at the end</i></font>
+  @mee2rv([craft],..,Meso,<font color="#0074D9">final</font>(p[craft]),<font color="#0074D9">final</font>(P1[craft]),<font color="#0074D9">final</font>(P2[craft]),<font color="#0074D9">final</font>(Q1[craft]),<font color="#0074D9">final</font>(Q2[craft]),<font color="#0074D9">final</font>(L["ph3",craft]))
+  @oe2rv(iApo,af,ef,<font color="#3D9970">inf</font>,Omf,omf,nuf)
+  $(pen3=0).. iApo{rX rY rZ vX vY vZ} == <font color="#3D9970">sum</font>(craft, Meso{rX rY rZ vX vY vZ}[craft]) / <font color="#3D9970">card</font>(craft)
+
+  <font color="#808080"><i># Final conditions: tetrahedron shape constraints</i></font>
+  [craft,craf2]$edges[craft,craf2].. len[craft,craf2] == <font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqr</font>(MesorX[craft]-MesorX[craf2]) + <font color="#2ECC40">sqr</font>(MesorY[craft]-MesorY[craf2]) + <font color="#2ECC40">sqr</font>(MesorZ[craft]-MesorZ[craf2]))
+  [craft,craf2]$(edges[craft,craf2]$(pen2=0)).. 4000/LBar &lt;= len[craft,craf2] &lt;= 18000/LBar
+  lenAvg == <font color="#3D9970">sum</font>(edges, len[edges]) / <font color="#3D9970">card</font>(edges)
+  <font color="#2ECC40">sqrt</font>(<font color="#0074D9">dyna_eps</font> +\
+    <font color="#2ECC40">sqr</font>(@volume(MesorX["c4"]-MesorX["c1"], MesorY["c4"]-MesorY["c1"], MesorZ["c4"]-MesorZ["c1"],\
+                MesorX["c2"]-MesorX["c1"], MesorY["c2"]-MesorY["c1"], MesorZ["c2"]-MesorZ["c1"],\
+                MesorX["c3"]-MesorX["c1"], MesorY["c3"]-MesorY["c1"], MesorZ["c3"]-MesorZ["c1"])))\
+    &gt;= 0.9*lenAvg^3/(6*<font color="#2ECC40">sqrt</font>(2))
+
+  <font color="#808080"><i># Final conditions: semimajor axis of each spacecraft must be equivalent</i></font>
+  [craft]$(<font color="#3D9970">ord</font>(craft)&lt;<font color="#3D9970">card</font>(craft)).. 0 == <font color="#0074D9">final</font>(p[craft]) / (1-<font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(P1[craft]))-<font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(P2[craft]))) - <font color="#0074D9">final</font>(p[craft+1]) / (1-<font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(P1[craft+1]))-<font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(P2[craft+1])))
+
+<font color="red"><b>ini:</b></font>
+  tlen["ph{1:3}",craft] = {1500 50 5000}/TBAR
+  u{r t <font color="#0074D9">n</font>}[craft] = {0 1 0}
+  m[craft] = <font color="#0074D9">linspace</font>(m0,mDry)
+  Mesow3[craft] = 1
+  iApow3 = 1
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">maximize</font> <font color="#3D9970">sum</font>(craft,<font color="#0074D9">final</font>(m[craft]))-pen1*penalty1-pen2*penalty2-pen3*penalty3 <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#8A2BE2">@solveloop</font> Method=movavg, Paraml=3 0.95, Varl=ur[craft] ut[craft] un[craft], Target=infes, Maxiter=3
+  <font color="#808080"><i># move from a penalty to a hard constraint on initial/final conditions</i></font>
+  <font color="#FF8000">$$ifthen</font> <font color="#8A2BE2">%ITER%</font>==1
+  pen1 = 0;
+  pen2 = 0;
+  pen3 = 0;
+  <font color="#8A2BE2">@solve</font>
+  <font color="#808080"><i># match the initial value of the paper</i></font>
+  L.l[phase,craft] = L.l[phase,craft] + (Om0+om0+nu0) - <font color="#0074D9">initial</font>(L.l["ph1",craft]);
+  <font color="#8A2BE2">@solve</font>
+  <font color="#FF8000">$$endif</font>
+
+</pre>
+</body>
+</html>

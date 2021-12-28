@@ -1,0 +1,253 @@
+<!-- Dyna-to-Html Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Aeroassisted Orbit Transfer from Geostationary to Low Earth Orbit</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Aeroassisted Orbit Transfer from Geostationary to Low Earth Orbit
+</pre>
+<p>
+  A direct transcription method is used to find the optimal solution to a minimum-impulse
+  aeroassited orbit transfer from geostationary to low Earth orbit. Utilizing aerodynamic
+  forces to reduce the speed of a spacecraft and perform an inclination change has the
+  ability to significantly reduce overall fuel expenditure during a mission. This script
+  implements a two-impulse orbit transfer using a single gliding pass through Earth&rsquo;s
+  atmosphere. Constraints are placed on angle of attack and heating rate of the vehicle.
+<p>
+  Reference:
+  <ol>
+  <li>A. Montgomery,
+  <em>Numerical Optimization of Aeroassisted Orbit Transfer from Geostationary to Low Earth Orbit</em>,
+  Honors Thesis, University of Florida, May 2019.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>set:</b></font>
+	<font color="#808080"><i># Phase 1: De-Orbit Into Atmosphere</i></font>
+	<font color="#808080"><i># Phase 2: Atmospheric Flight</i></font>
+	<font color="#808080"><i># Phase 3: Exo-Atmospheric Ascent to Final Orbit</i></font>
+  phase = ph1:ph3
+
+<font color="red"><b>mac:</b></font>
+  @dot(u,v) ((&ux)*(&vx)+(&uy)*(&vy)+(&uz)*(&vz))
+
+  @sph2cart(r,v,rad,lon,lat,speed,fpa,head)	<font color="#808080"><i># Convert Spherical Coordinates to Cartesian Position and Velocity</i></font>
+    &r{x y z} == &rad*{<font color="#2ECC40">cos</font>(&lat)*<font color="#2ECC40">cos</font>(&lon) <font color="#2ECC40">cos</font>(&lat)*<font color="#2ECC40">sin</font>(&lon) <font color="#2ECC40">sin</font>(&lat)};
+    &v{x y z} == &speed*({\
+      (<font color="#2ECC40">sin</font>(&fpa)*<font color="#2ECC40">cos</font>(&lat)-<font color="#2ECC40">cos</font>(&fpa)*<font color="#2ECC40">sin</font>(&head)*<font color="#2ECC40">sin</font>(&lat))*<font color="#2ECC40">cos</font>(&lon)-<font color="#2ECC40">cos</font>(&fpa)*<font color="#2ECC40">cos</font>(&head)*<font color="#2ECC40">sin</font>(&lon)\
+      (<font color="#2ECC40">sin</font>(&fpa)*<font color="#2ECC40">cos</font>(&lat)-<font color="#2ECC40">cos</font>(&fpa)*<font color="#2ECC40">sin</font>(&head)*<font color="#2ECC40">sin</font>(&lat))*<font color="#2ECC40">sin</font>(&lon)+<font color="#2ECC40">cos</font>(&fpa)*<font color="#2ECC40">cos</font>(&head)*<font color="#2ECC40">cos</font>(&lon)\
+       <font color="#2ECC40">sin</font>(&fpa)*<font color="#2ECC40">sin</font>(&lat)+<font color="#2ECC40">cos</font>(&fpa)*<font color="#2ECC40">sin</font>(&head)*<font color="#2ECC40">cos</font>(&lat)});
+
+<font color="#808080"><i>###:</i></font><font color="#808080"><i></i></font>
+<font color="#808080"><i>  </i></font><font color="#808080"><i># Maxima script to get the analytical formulation of the velocity in sph2cart</i></font>
+<font color="#808080"><i>  cross(u,v) := [u[2]*v[3]-v[2]*u[3], v[1]*u[3]-u[1]*v[3], u[1]*v[2]-v[1]*u[2]]$</i></font>
+<font color="#808080"><i>  dot(u,v) := u[1]*v[1] + u[2]*v[2] + u[3]*v[3]$</i></font>
+<font color="#808080"><i>  norm(u) := sqrt(dot(u,u))$</i></font>
+<font color="#808080"><i>  Ez: [0,0,1];</i></font>
+<font color="#808080"><i>  Up: [cos(lat)*cos(lon),cos(lat)*sin(lon),sin(lat)];</i></font>
+<font color="#808080"><i>  East: cross(Ez,Up);</i></font>
+<font color="#808080"><i>  East: East/norm(East);</i></font>
+<font color="#808080"><i>  North: cross(Up,East);</i></font>
+<font color="#808080"><i>  v_: [cos(fpa)*cos(head),cos(fpa)*sin(head),sin(fpa)].[East,North,Up];</i></font>
+<font color="#808080"><i>  assume(cos(lat)&gt;=0);</i></font>
+<font color="#808080"><i>  trigsimp(v_);</i></font>
+<font color="#808080"><i></i></font>
+<font color="red"><b>par:</b></font>
+  Rmax = 2.5			<font color="#808080"><i># 2.2 - 1.9</i></font>
+  incf = <font color="#0074D9">deg2rad</font>(50)		<font color="#808080"><i># 60 - 70 - 80</i></font>
+  Qdotmax = 2200		<font color="#808080"><i># 1800 - 1400 - 1000</i></font>
+  m0 = 7580			<font color="#808080"><i># 800 - 1200</i></font>
+  Kpolar = 1.4
+  CD0 = 1/(4*Kpolar*<font color="#2ECC40">sqr</font>(Rmax))
+
+  Re = 6378145			<font color="#808080"><i># Earth Radius [m]</i></font>
+  mu = 3.98574405096e14		<font color="#808080"><i># Earth Gravitational Parameter [m&sup3;/s&sup2;]</i></font>
+  g0 = 9.80665			<font color="#808080"><i># Sea Level Earth Gravitational Acceleration [m/s&sup2;]</i></font>
+  rho0 = 1.225			<font color="#808080"><i># Sea Level Air Density [kg/m&sup3;]</i></font>
+  H = 7200			<font color="#808080"><i># Density Scale Height [m]</i></font>
+  S = 11.69			<font color="#808080"><i># Vehicle Reference Area [m&sup2;]</i></font>
+  K = 1.4			<font color="#808080"><i># Drag Polar Parameter [dimensionless]</i></font>
+  CLalpha = 0.5699		<font color="#808080"><i># Lift Slope [dimensionless]</i></font>
+  CLbar = 0.4			<font color="#808080"><i># Maximum Allowable Lift Coefficient</i></font>
+  Isp = 310			<font color="#808080"><i># Engine Specific Impulse [s]</i></font>
+  Qdothat = 19987		<font color="#808080"><i># Heating Rate Constant [W/cm&sup2;]</i></font>
+  vc = <font color="#2ECC40">sqrt</font>(mu/Re)		<font color="#808080"><i># Circular Speed at Radius of Earth [m/s]</i></font>
+
+  hatm = 110000			<font color="#808080"><i># Altitude at Edge of Sensable Atmosphere [m]</i></font>
+  ratm = hatm+Re		<font color="#808080"><i># Radius at Edge of Sensable Atmosphere [m]</i></font>
+
+  h0 = 35786000			<font color="#808080"><i># Initial Altitude [m]</i></font>
+  rad0 = h0+Re			<font color="#808080"><i># Initial Radius = Initial Altitude + Earth Radius [m]</i></font>
+  lon0 = 0			<font color="#808080"><i># Initial Longitude [rad]</i></font>
+  lat0 = 0			<font color="#808080"><i># Initial Latitude [rad]</i></font>
+  speed0 = <font color="#2ECC40">sqrt</font>(mu/rad0)	<font color="#808080"><i># Initial Speed [m/s]</i></font>
+  fpa0 = 0			<font color="#808080"><i># Initial Flight Path Angle [rad]</i></font>
+  head0 = 0			<font color="#808080"><i># Initial Heading (Due East) [rad]</i></font>
+
+  hf = 185200			<font color="#808080"><i># Terminal Altitude [m]</i></font>
+  radf = hf+Re			<font color="#808080"><i># Terminal Radius = Terminal Altitude + Earth Radius [m]</i></font>
+  speedf = <font color="#2ECC40">sqrt</font>(mu/radf)	<font color="#808080"><i># Terminal Speed [m/s]</i></font>
+  fpaf = 0			<font color="#808080"><i># Terminal Flight Path Angle [rad]</i></font>
+
+  fpaEntryMin = -<font color="#0074D9">deg2rad</font>(85)
+  fpaEntryMax = -<font color="#0074D9">deg2rad</font>(5)
+  fpaExitMin = <font color="#0074D9">deg2rad</font>(5)
+  fpaExitMax = <font color="#0074D9">deg2rad</font>(85)
+
+  tf = 1
+
+<font color="red"><b>var:</b></font>
+  tlen[phase]			<font color="#808080"><i># Duration of each phase [s]</i></font>
+
+  dV1{x y z}			<font color="#808080"><i># Initial De-Orbit Impulse</i></font>
+  dV2{x y z}			<font color="#808080"><i># Terminal Circularization Impulse</i></font>
+  mass0				<font color="#808080"><i># Vehicle mass at end of initial orbit</i></font>
+  massAtm			<font color="#808080"><i># Vehicle mass at end of atmospheric flight</i></font>
+  massAfterdV2			<font color="#808080"><i># Vehicle mass at end of final orbit</i></font>
+
+  lonf				<font color="#808080"><i># Terminal Longitude [rad]</i></font>
+  latf				<font color="#808080"><i># Terminal Latitude [rad]</i></font>
+  headf				<font color="#808080"><i># Terminal Heading [rad]</i></font>
+
+<font color="red"><b>dyn:</b></font>
+  t[phase]
+  rad[phase]
+  lon[phase]
+  lat[phase]
+  v[phase]
+  fpa[phase]
+  head[phase]
+  CLcbank			<font color="#808080"><i># Control variable during atmospheric flight</i></font>
+  CLsbank			<font color="#808080"><i># Control variable during atmospheric flight</i></font>
+
+<font color="red"><b>lim:</b></font>
+  1 &lt;= tlen['ph{1:3}'] &lt;= {20000 2000 2000}
+
+  Re &lt;= rad[phase] &lt;= Re+h0
+  -<font color="#0074D9">deg2rad</font>(720) &lt;= lon[phase] &lt;= <font color="#0074D9">deg2rad</font>(720)
+  -<font color="#0074D9">deg2rad</font>(85) &lt;= lat[phase] &lt;= <font color="#0074D9">deg2rad</font>(85)
+  50 &lt;= v[phase] &lt;= 100*<font color="#2ECC40">sqrt</font>(2*mu/Re)
+  -<font color="#0074D9">deg2rad</font>(85) &lt;= fpa[phase] &lt;= <font color="#0074D9">deg2rad</font>(85)
+  -<font color="#0074D9">deg2rad</font>(720) &lt;= head[phase] &lt;= <font color="#0074D9">deg2rad</font>(720)
+
+  -CLbar &lt;= CLcbank &lt;= CLbar
+  -CLbar &lt;= CLsbank &lt;= CLbar
+
+  -2500 &lt;= dV1{x y z} &lt;= 2500
+  -2500 &lt;= dV2{x y z} &lt;= 2500
+  m0 &lt;= mass0 &lt;= m0
+  0.1*m0 &lt;= massAtm &lt;= m0
+  0.1*m0 &lt;= massAfterdV2 &lt;= m0
+
+<font color="red"><b>t=t0:</b></font>
+  t['ph1'] = 0
+  rad['ph1'] = rad0
+  lon['ph1'] = lon0
+  lat['ph1'] = lat0
+
+<font color="red"><b>t=tf:</b></font>
+  rad['ph1'] = ratm
+  fpaEntryMin &lt;= fpa['ph1'] &lt;= fpaEntryMax
+
+  rad['ph2'] = ratm
+  fpaExitMin &lt;= fpa['ph2'] &lt;= fpaExitMax
+
+<font color="red"><b>exp:</b></font>
+  TimeDot == tlen[phase]/tf
+  gravity == mu/<font color="#2ECC40">sqr</font>(rad[phase])
+  CLsquared == <font color="#2ECC40">sqr</font>(CLcbank) + <font color="#2ECC40">sqr</font>(CLsbank)
+  altitude == rad[phase] - Re
+  CD == CD0 + K*CLsquared
+  rho == rho0*<font color="#2ECC40">exp</font>(-altitude/H)
+  q == 0.5*rho*<font color="#2ECC40">sqr</font>(v[phase])
+  qSoverm == q*S/massAtm
+  D == qSoverm*CD
+  Lcbank == qSoverm*CLcbank
+  Lsbank == qSoverm*CLsbank
+  Qdot == Qdothat*<font color="#2ECC40">exp</font>(-altitude/(2*H))*(v[phase]/vc)^3.15
+
+  @sph2cart(r0,v0,rad0,lon0,lat0,speed0,fpa0,head0)
+  @sph2cart(r0i,v0i,<font color="#0074D9">initial</font>(rad['ph1']),<font color="#0074D9">initial</font>(lon['ph1']),<font color="#0074D9">initial</font>(lat['ph1']),<font color="#0074D9">initial</font>(v['ph1']),<font color="#0074D9">initial</font>(fpa['ph1']),<font color="#0074D9">initial</font>(head['ph1']))
+  @sph2cart(rf,vf,radf,lonf,latf,speedf,fpaf,headf)
+  @sph2cart(rff,vff,<font color="#0074D9">final</font>(rad['ph3']),<font color="#0074D9">final</font>(lon['ph3']),<font color="#0074D9">final</font>(lat['ph3']),<font color="#0074D9">final</font>(v['ph3']),<font color="#0074D9">final</font>(fpa['ph3']),<font color="#0074D9">final</font>(head['ph3']))
+
+<font color="red"><b>equ:</b></font>
+  t&acute;[phase] / TimeDot == 1
+  rad&acute;[phase] / TimeDot == v[phase]*<font color="#2ECC40">sin</font>(fpa[phase])
+  lon&acute;[phase] / TimeDot == v[phase]*<font color="#2ECC40">cos</font>(fpa[phase])*<font color="#2ECC40">cos</font>(head[phase])/(rad[phase]*<font color="#2ECC40">cos</font>(lat[phase]))
+  lat&acute;[phase] / TimeDot == v[phase]*<font color="#2ECC40">cos</font>(fpa[phase])*<font color="#2ECC40">sin</font>(head[phase])/rad[phase]
+  v&acute;[phase] / TimeDot == -D$<font color="#2ECC40">sameas</font>(phase,'ph2') - gravity*<font color="#2ECC40">sin</font>(fpa[phase])
+  fpa&acute;[phase] / TimeDot == (Lcbank$<font color="#2ECC40">sameas</font>(phase,'ph2')-<font color="#2ECC40">cos</font>(fpa[phase])*(gravity-<font color="#2ECC40">sqr</font>(v[phase])/rad[phase]))/v[phase]
+  [phase]$(<font color="#3D9970">not</font> <font color="#2ECC40">sameas</font>(phase,'ph2')).. head&acute;[phase] / TimeDot == -v[phase]*<font color="#2ECC40">cos</font>(fpa[phase])*<font color="#2ECC40">cos</font>(head[phase])*<font color="#2ECC40">tan</font>(lat[phase])/rad[phase]
+  [phase]$(<font color="#2ECC40">sameas</font>(phase,'ph2')).. head&acute;[phase] / TimeDot == (Lsbank/<font color="#2ECC40">cos</font>(fpa[phase])-<font color="#2ECC40">sqr</font>(v[phase])*<font color="#2ECC40">cos</font>(fpa[phase])*<font color="#2ECC40">cos</font>(head[phase])*<font color="#2ECC40">tan</font>(lat[phase])/rad[phase])/v[phase]
+
+  CLsquared &lt;= <font color="#2ECC40">sqr</font>(CLbar)
+  [phase]$<font color="#2ECC40">sameas</font>(phase,'ph2').. Qdot &lt;= Qdotmax
+  <font color="#808080"><i># rddot: 0 &lt;= vdot*sin(fpa) + v*fpadot*cos(fpa) &lt;= 5000</i></font>
+
+  <font color="#808080"><i># Post and Pre Delta-V1 ECI Velocities</i></font>
+  v0i{x y z} == v0{x y z} + dV1{x y z}
+
+  <font color="#808080"><i># Post and Pre Delta-V2 ECI Velocities</i></font>
+  vf{x y z} == vff{x y z} + dV2{x y z}
+  rf{x y z} == rff{x y z}
+  <font color="#2ECC40">cos</font>(incf) == <font color="#2ECC40">cos</font>(latf)*<font color="#2ECC40">cos</font>(headf)
+
+  <font color="#808080"><i># Relationships Between Delta-V and Mass</i></font>
+  <font color="#2ECC40">sqrt</font>(@dot(dV1,dV1)) == g0*Isp*<font color="#2ECC40">log</font>(mass0/massAtm)
+  <font color="#2ECC40">sqrt</font>(@dot(dV2,dV2)) == g0*Isp*<font color="#2ECC40">log</font>(massAtm/massAfterdV2)
+
+  <font color="#8A2BE2">@linkphases</font>
+
+<font color="red"><b>ini:</b></font>
+  rad['ph1'] = <font color="#0074D9">linspace</font>(rad0,ratm)
+  lon['ph1'] = <font color="#0074D9">linspace</font>(lon0,lon0+<font color="#0074D9">deg2rad</font>(5))
+  lat['ph1'] = <font color="#0074D9">linspace</font>(lat0,lat0+<font color="#0074D9">deg2rad</font>(3))
+  v['ph1'] = <font color="#0074D9">linspace</font>(speed0,<font color="#2ECC40">sqrt</font>(mu/ratm))
+  fpa['ph1'] = <font color="#0074D9">linspace</font>(fpa0,fpaEntryMax)
+  head['ph1'] = head0
+
+  rad['ph2'] = ratm
+  lon['ph2'] = <font color="#0074D9">linspace</font>(lon0+<font color="#0074D9">deg2rad</font>(5),lon0+<font color="#0074D9">deg2rad</font>(10))
+  lat['ph2'] = <font color="#0074D9">linspace</font>(lat0+<font color="#0074D9">deg2rad</font>(3),lat0+<font color="#0074D9">deg2rad</font>(5))
+  v['ph2'] = <font color="#2ECC40">sqrt</font>(mu/ratm)
+  fpa['ph2'] = <font color="#0074D9">linspace</font>(fpaEntryMin,fpaExitMin)
+  head['ph2'] = head0
+  CLcbank = <font color="#0074D9">linspace</font>(0,CLbar)
+  CLsbank = <font color="#0074D9">linspace</font>(CLbar,0)
+
+  rad['ph3'] = <font color="#0074D9">linspace</font>(ratm,rad0)
+  lon['ph3'] = <font color="#0074D9">linspace</font>(lon0+<font color="#0074D9">deg2rad</font>(10),lon0+<font color="#0074D9">deg2rad</font>(15))
+  lat['ph3'] = <font color="#0074D9">linspace</font>(lat0+<font color="#0074D9">deg2rad</font>(5),lat0+<font color="#0074D9">deg2rad</font>(7))
+  v['ph3'] = <font color="#0074D9">linspace</font>(<font color="#2ECC40">sqrt</font>(mu/ratm),speed0)
+  fpa['ph3'] = <font color="#0074D9">linspace</font>(fpaExitMin,fpaf)
+  head['ph3'] = head0
+
+  dV1{x y z} = -100
+  dV2{x y z} = 100
+  mass0 = m0
+  massAtm = m0
+  massAfterdV2 = m0
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">maximize</font> massAfterdV2 <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#FF8000">$$ondotl</font>
+  <font color="#8A2BE2">@tpa</font> altit[phase] = altitude;
+  <font color="#8A2BE2">@csvsave</font> altit[phase]
+</pre>
+</body>
+</html>

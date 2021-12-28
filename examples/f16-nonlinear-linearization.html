@@ -1,0 +1,447 @@
+<!-- Dyna-to-Html Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Linearization of the F-16 model</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Linearization of the F-16 model
+</pre>
+<p>
+  See companion file for a brief introduction.
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">model-option</font> = optfile=1
+  conopt.opt &lt; lkdebg=0
+  <font color="#39CCCC">gams-option</font> = reslim=10800
+  <font color="#39CCCC">default-time-steps-number</font> = 12
+  <font color="#39CCCC">default-iterations-number</font> = 1
+
+<font color="red"><b>par:</b></font>
+  rho0 = 2.377e-3	<font color="#808080"><i># reference air density [slug/ft&sup3;]</i></font>
+  s = 300		<font color="#808080"><i># reference area [ft&sup2;]</i></font>
+  b = 30		<font color="#808080"><i># wing span [ft]</i></font>
+  cbar = 11.32		<font color="#808080"><i># mean chord [ft]</i></font>
+  xcgr = 0.35		<font color="#808080"><i># reference cg [%chord]</i></font>
+  xcg = 0.35		<font color="#808080"><i># actual cg [%chord]</i></font>
+  hx = 160		<font color="#808080"><i># turbine momentum along roll axis</i></font>
+  g = 32.17		<font color="#808080"><i># acceleration of gravity [ft/s&sup2;]</i></font>
+  weight = 20490.446	<font color="#808080"><i># weight [slug]</i></font>
+  axx = 9496		<font color="#808080"><i># moment of inertia about x</i></font>
+  ayy = 55814		<font color="#808080"><i># moment of inertia about y</i></font>
+  azz = 63100		<font color="#808080"><i># moment of inertia about z</i></font>
+  axz = 982		<font color="#808080"><i># xz moment of inertia</i></font>
+  arlim = 60		<font color="#808080"><i># actuators rate limit</i></font>
+  artau = 20.202	<font color="#808080"><i># actuators reciprocal of time constant</i></font>
+  tf = 30
+
+<font color="red"><b>gms:</b></font>
+  <font color="#0074D9">smoothEPS</font> = 1e-2;	<font color="#808080"><i># will iteratively enforce non-smooth non-linearities</i></font>
+
+<font color="red"><b>fun:</b></font>
+  alpha_deg	&sect;CXq	&sect;CYr	&sect;CYp	&sect;CZq	&sect;Clr	&sect;Clp	&sect;Cmq	&sect;Cnr	&sect;Cnp	&sect;Czz
+  -10		-0.267	0.882	-0.108	-8.8	-0.126	-0.36	-7.21	-0.38	0.061	0.77
+  -5		-0.11	0.852	-0.108	-25.8	-0.026	-0.359	-0.54	-0.363	0.052	0.241
+  0		0.308	0.876	-0.188	-28.9	0.063	-0.443	-5.23	-0.378	0.052	-0.1
+  5		1.34	0.958	0.11	-31.4	0.113	-0.42	-5.26	-0.386	-0.012	-0.416
+  10		2.08	0.962	0.258	-31.2	0.208	-0.383	-6.11	-0.37	-0.013	-0.731
+  15		2.91	0.974	0.226	-30.7	0.23	-0.375	-6.64	-0.453	-0.024	-1.053
+  20		2.76	0.819	0.344	-27.7	0.319	-0.329	-5.69	-0.55	0.05	-1.366
+  25		2.05	0.483	0.362	-28.2	0.437	-0.294	-6	-0.582	0.15	-1.646
+  30		1.5	0.59	0.611	-29	0.68	-0.23	-6.2	-0.595	0.13	-1.917
+  35		1.49	1.21	0.529	-29.8	0.1	-0.21	-6.4	-0.637	0.158	-2.12
+  40		1.83	-0.493	0.298	-38.3	0.447	-0.12	-6.6	-1.02	0.24	-2.248
+  45		1.21	-1.04	-2.27	-35.3	-0.33	-0.1	-6	-0.84	0.15	-2.229
+
+  &sect;Cx = <font color="#7FDBFF">GridXY</font> <font color="#808080"><i>#(elv_deg,alpha_deg)</i></font>
+  	-10	-5	0	5	10	15	20	25	30	35	40	45
+  -24	-0.099	-0.081	-0.081	-0.063	-0.025	0.044	0.097	0.113	0.145	0.167	0.174	0.166
+  -12	-0.048	-0.038	-0.04	-0.021	0.016	0.083	0.127	0.137	0.162	0.177	0.179	0.167
+  0	-0.022	-0.02	-0.021	-0.004	0.032	0.094	0.128	0.13	0.154	0.161	0.155	0.138
+  12	-0.04	-0.038	-0.039	-0.025	0.006	0.062	0.087	0.085	0.1	0.11	0.104	0.091
+  24	-0.083	-0.073	-0.076	-0.072	-0.046	0.012	0.024	0.025	0.043	0.053	0.047	0.04
+
+  &sect;Cl = <font color="#7FDBFF">GridXY</font> <font color="#808080"><i>#(|beta_deg|,alpha_deg)</i></font>
+  	-10	-5	0	5	10	15	20	25	30	35	40	45
+  0	0	0	0	0	0	0	0	0	0	0	0	0
+  5	-0.001	-0.004	-0.008	-0.012	-0.016	-0.019	-0.02	-0.02	-0.015	-0.008	-0.013	-0.015
+  10	-0.003	-0.009	-0.017	-0.024	-0.03	-0.034	-0.04	-0.037	-0.016	-0.002	-0.01	-0.019
+  15	-0.001	-0.01	-0.02	-0.03	-0.039	-0.044	-0.05	-0.049	-0.023	-0.006	-0.014	-0.027
+  20	0	-0.01	-0.022	-0.034	-0.047	-0.046	-0.059	-0.061	-0.033	-0.036	-0.035	-0.035
+  25	0.007	-0.01	-0.023	-0.034	-0.049	-0.046	-0.068	-0.071	-0.06	-0.058	-0.062	-0.059
+  30	0.009	-0.011	-0.023	-0.037	-0.05	-0.047	-0.074	-0.079	-0.091	-0.076	-0.077	-0.076
+
+  &sect;Cm = <font color="#7FDBFF">GridXY</font> <font color="#808080"><i>#(elv_deg,alpha_deg)</i></font>
+  	-10	-5	0	5	10	15	20	25	30	35	40	45
+  -24	0.205	0.168	0.186	0.196	0.213	0.251	0.245	0.238	0.252	0.231	0.198	0.192
+  -12	0.081	0.077	0.107	0.11	0.11	0.141	0.127	0.119	0.133	0.108	0.081	0.093
+  0	-0.046	-0.02	-0.009	-0.005	-0.006	0.01	0.006	-0.001	0.014	0	-0.013	0.032
+  12	-0.174	-0.145	-0.121	-0.127	-0.129	-0.102	-0.097	-0.113	-0.087	-0.084	-0.069	-0.006
+  24	-0.259	-0.202	-0.184	-0.193	-0.199	-0.15	-0.16	-0.167	-0.104	-0.076	-0.041	-0.005
+
+  &sect;Cn = <font color="#7FDBFF">GridXY</font> <font color="#808080"><i>#(|beta_deg|,alpha_deg)</i></font>
+  	-10	-5	0	5	10	15	20	25	30	35	40	45
+  0	0	0	0	0	0	0	0	0	0	0	0	0
+  5	0.018	0.019	0.018	0.019	0.019	0.018	0.013	0.007	0.004	-0.014	-0.017	-0.033
+  10	0.038	0.042	0.042	0.042	0.043	0.039	0.03	0.017	0.004	-0.035	-0.047	-0.057
+  15	0.056	0.057	0.059	0.058	0.058	0.053	0.032	0.012	0.002	-0.046	-0.071	-0.073
+  20	0.064	0.077	0.076	0.074	0.073	0.057	0.029	0.007	0.012	-0.034	-0.065	-0.041
+  25	0.074	0.086	0.093	0.089	0.08	0.062	0.049	0.022	0.028	-0.012	-0.002	-0.013
+  30	0.079	0.09	0.106	0.106	0.096	0.08	0.068	0.03	0.064	0.015	0.011	-0.001
+
+  &sect;DlDa = <font color="#7FDBFF">GridXY</font> <font color="#808080"><i>#(beta_deg,alpha_deg)</i></font>
+  	-10	-5	0	5	10	15	20	25	30	35	40	45
+  -30	-0.041	-0.052	-0.053	-0.056	-0.05	-0.056	-0.082	-0.059	-0.042	-0.038	-0.027	-0.017
+  -20	-0.041	-0.053	-0.053	-0.053	-0.05	-0.051	-0.066	-0.043	-0.038	-0.027	-0.023	-0.016
+  -10	-0.042	-0.053	-0.052	-0.051	-0.049	-0.049	-0.043	-0.035	-0.026	-0.016	-0.018	-0.014
+  0	-0.04	-0.052	-0.051	-0.052	-0.048	-0.048	-0.042	-0.037	-0.031	-0.026	-0.017	-0.012
+  10	-0.043	-0.049	-0.048	-0.049	-0.043	-0.042	-0.042	-0.036	-0.025	-0.021	-0.016	-0.011
+  20	-0.044	-0.048	-0.048	-0.047	-0.042	-0.041	-0.02	-0.028	-0.013	-0.014	-0.011	-0.01
+  30	-0.043	-0.049	-0.047	-0.045	-0.042	-0.037	-0.003	-0.013	-0.01	-0.003	-0.007	-0.008
+
+  &sect;DlDr = <font color="#7FDBFF">GridXY</font> <font color="#808080"><i>#(beta_deg,alpha_deg)</i></font>
+  	-10	-5	0	5	10	15	20	25	30	35	40	45
+  -30	0.005	0.017	0.014	0.01	-0.005	0.009	0.019	0.005	0	-0.005	-0.011	0.008
+  -20	0.007	0.016	0.014	0.014	0.013	0.009	0.012	0.005	0	0.004	0.009	0.007
+  -10	0.013	0.013	0.011	0.012	0.011	0.009	0.008	0.005	-0.002	0.005	0.003	0.005
+  0	0.018	0.015	0.015	0.014	0.014	0.014	0.014	0.015	0.013	0.011	0.006	0.001
+  10	0.015	0.014	0.013	0.013	0.012	0.011	0.011	0.01	0.008	0.008	0.007	0.003
+  20	0.021	0.011	0.01	0.011	0.01	0.009	0.008	0.01	0.006	0.005	0	0.001
+  30	0.023	0.01	0.011	0.011	0.011	0.01	0.008	0.01	0.006	0.014	0.02	0.000
+
+  &sect;DnDa = <font color="#7FDBFF">GridXY</font> <font color="#808080"><i>#(beta_deg,alpha_deg)</i></font>
+  	-10	-5	0	5	10	15	20	25	30	35	40	45
+  -30	0.001	-0.027	-0.017	-0.013	-0.012	-0.016	0.001	0.017	0.011	0.017	0.008	0.016
+  -20	0.002	-0.014	-0.016	-0.016	-0.014	-0.019	-0.021	0.002	0.012	0.015	0.015	0.011
+  -10	-0.006	-0.008	-0.006	-0.006	-0.005	-0.008	-0.005	0.007	0.004	0.007	0.006	0.006
+  0	-0.011	-0.011	-0.01	-0.009	-0.008	-0.006	0	0.004	0.007	0.01	0.004	0.01
+  10	-0.015	-0.015	-0.014	-0.012	-0.011	-0.008	-0.002	0.002	0.006	0.012	0.011	0.011
+  20	-0.024	-0.01	-0.004	-0.002	-0.001	0.003	0.014	0.006	-0.001	0.004	0.004	0.006
+  30	-0.022	0.002	-0.003	-0.005	-0.003	-0.001	-0.009	-0.009	-0.001	0.003	-0.002	0.001
+
+  &sect;DnDr = <font color="#7FDBFF">GridXY</font> <font color="#808080"><i># (beta_deg,alpha_deg)</i></font>
+  	-10	-5	0	5	10	15	20	25	30	35	40	45
+  -30	-0.018	-0.052	-0.052	-0.052	-0.054	-0.049	-0.059	-0.051	-0.03	-0.037	-0.026	-0.013
+  -20	-0.028	-0.051	-0.043	-0.046	-0.045	-0.049	-0.057	-0.052	-0.03	-0.033	-0.03	-0.008
+  -10	-0.037	-0.041	-0.038	-0.04	-0.04	-0.038	-0.037	-0.03	-0.027	-0.024	-0.019	-0.013
+  0	-0.048	-0.045	-0.045	-0.045	-0.044	-0.045	-0.047	-0.048	-0.049	-0.045	-0.033	-0.016
+  10	-0.043	-0.044	-0.041	-0.041	-0.04	-0.038	-0.034	-0.035	-0.035	-0.029	-0.022	-0.009
+  20	-0.052	-0.034	-0.036	-0.036	-0.035	-0.028	-0.024	-0.023	-0.02	-0.016	-0.01	-0.014
+  30	-0.062	-0.034	-0.027	-0.028	-0.027	-0.027	-0.023	-0.023	-0.019	-0.009	-0.025	-0.010
+
+  &sect;tidl = <font color="#7FDBFF">GridXY</font> <font color="#808080"><i>#(mach,alt) aka thrust_idle</i></font>
+  	0	10000	20000	30000	40000	50000
+  0	1060	670	890	1140	1500	1860
+  0.2	635	425	690	1010	1330	1700
+  0.4	60	25	345	755	1130	1525
+  0.6	-1020	-710	-300	350	910	1360
+  0.8	-2700	-1900	-1300	-247	600	1100
+  1	-3600	-1400	-595	-342	-200	700
+
+  &sect;tmil = <font color="#7FDBFF">GridXY</font> <font color="#808080"><i>#(mach,alt) aka thrust_mil</i></font>
+  	0	10000	20000	30000	40000	50000
+  0	12680	9150	6200	3950	2450	1400
+  0.2	12680	9150	6313	4040	2470	1400
+  0.4	12610	9312	6610	4290	2600	1560
+  0.6	12640	9839	7090	4660	2840	1660
+  0.8	12390	10176	7750	5320	3250	1930
+  1	11680	9848	8050	6100	3800	2310
+
+  &sect;tmax = <font color="#7FDBFF">GridXY</font> <font color="#808080"><i>#(mach,alt) aka thrust_max</i></font>
+  	0	10000	20000	30000	40000	50000
+  0	20000	15000	10800	7000	4000	2500
+  0.2	21420	15700	11225	7323	4435	2600
+  0.4	22700	16860	12250	8154	5000	2835
+  0.6	24240	18910	13760	9285	5700	3215
+  0.8	26070	21075	15975	11115	6860	3950
+  1	28886	23319	18300	13484	8642	5057
+
+<font color="red"><b>dyn:</b></font>
+  <font color="#808080"><i># The vehicle state</i></font>
+  VT		<font color="#808080"><i># true velocity [ft/s]</i></font>
+  alpha		<font color="#808080"><i># angle of attack [rad]</i></font>
+  beta		<font color="#808080"><i># sideslip angle [rad]</i></font>
+  phi		<font color="#808080"><i># roll angle [rad]</i></font>
+  theta		<font color="#808080"><i># pitch angle [rad]</i></font>
+  psi		<font color="#808080"><i># yaw angle [rad]</i></font>
+  P		<font color="#808080"><i># body roll rate [rad/s]</i></font>
+  Q		<font color="#808080"><i># body pitch rate [rad/s]</i></font>
+  R		<font color="#808080"><i># body yaw rate [rad/s]</i></font>
+  p_N		<font color="#808080"><i># north position [ft]</i></font>
+  p_E		<font color="#808080"><i># east position [ft]</i></font>
+  alt		<font color="#808080"><i># altitude [ft]</i></font>
+  power		<font color="#808080"><i># power [0-100]</i></font>
+  ail_deg	<font color="#808080"><i># aileron position [deg]</i></font>
+  elv_deg	<font color="#808080"><i># elevator position [deg]</i></font>
+  rdr_deg	<font color="#808080"><i># rudder position [deg]</i></font>
+
+  <font color="#808080"><i># The control input</i></font>
+  thtl		<font color="#808080"><i># throttle [0-1]</i></font>
+  ail_cmd_deg	<font color="#808080"><i># aileron command [deg]</i></font>
+  elv_cmd_deg	<font color="#808080"><i># elevator command [deg]</i></font>
+  rdr_cmd_deg	<font color="#808080"><i># rudder command [deg]</i></font>
+
+  <font color="#808080"><i># Ancillary variable</i></font>
+  thrust
+
+  <font color="#808080"><i># The cost criteria</i></font>
+  J
+  JT
+
+<font color="red"><b>lim:</b></font>
+  300 &lt;= VT &lt;= 900
+  5000 &lt;= alt &lt;= 50000
+  -21.5 &lt;= ail_deg &lt;= 21.5
+  -24.0 &lt;= elv_deg &lt;= 24.0
+  -30.0 &lt;= rdr_deg &lt;= 30.0
+  -21.5 &lt;= ail_cmd_deg &lt;= 21.5
+  -24.0 &lt;= elv_cmd_deg &lt;= 24.0
+  -30.0 &lt;= rdr_cmd_deg &lt;= 30.0
+  <font color="#0074D9">deg2rad</font>(-10) &lt;= alpha &lt;= <font color="#0074D9">deg2rad</font>(45)
+  <font color="#0074D9">deg2rad</font>(-30) &lt;= beta  &lt;= <font color="#0074D9">deg2rad</font>(30)
+  1000 &lt;= thrust &lt;= 19000
+  0 &lt;= thtl &lt;= 1
+  0 &lt;= power &lt;= 100
+
+<font color="red"><b>t=t0:</b></font>
+  VT = 502
+  p_N = 0
+  p_E = 0
+  alt = 10000
+  J = 0
+  JT = 0
+
+<font color="red"><b>t=tf:</b></font>
+  alt = 10000
+
+<font color="red"><b>mac:</b></font>
+  @dot(z)
+    &z["{VT alpha beta phi theta psi P Q R p_N p_E alt power ail elv rdr}"] =\
+    <font color="#0074D9">initial</font>({VT_dot alpha_dot beta_dot phi_dot theta_dot psi_dot P_dot Q_dot R_dot V_N V_E alt_dot power_dot ail_deg_dot elv_deg_dot rdr_deg_dot});
+  @lin(xu,i,ab,<font color="#3D9970">eps</font>)
+    zo = <font color="#0074D9">initial</font>(&xu.l);
+    zh = &<font color="#3D9970">eps</font>*<font color="#2ECC40">abs</font>(zo); zh$(zh=0) = &<font color="#3D9970">eps</font>;
+    &xu.l = zo + zh; @dot(zr);
+    &xu.l = zo - zh; @dot(zl);
+    &ab[nx,"&i"] = (zr[nx]-zl[nx])/2/zh;
+    &xu.l = zo;
+
+<font color="red"><b>exp:</b></font>
+  alpha_deg == <font color="#0074D9">rad2deg</font>(alpha)
+  beta_deg == <font color="#0074D9">rad2deg</font>(beta)
+
+  <font color="#808080"><i># mass properties</i></font>
+  mass == weight/g
+
+  <font color="#808080"><i># engine model = f(power,mach,alt)</i></font>
+  thrust_model == <font color="#0074D9">smoothIfPos</font>(50-power,\
+    &sect;tidl(mach,alt) + (&sect;tmil(mach,alt) - &sect;tidl(mach,alt))*power*0.02,\
+    &sect;tmil(mach,alt) + (&sect;tmax(mach,alt) - &sect;tmil(mach,alt))*(power - 50)*0.02)
+
+  <font color="#808080"><i># reciprocal of time constant = f(dp)</i></font>
+  rtau(dp) == <font color="#0074D9">smoothIfPos</font>(25-dp, 1, <font color="#0074D9">smoothIfPos</font>(dp-50, 0.1, 1.9 - 0.036*(dp)))
+
+  <font color="#808080"><i># power command vs. throttle relationship = f(thtl)</i></font>
+  power_cmd == <font color="#0074D9">smoothIfPos</font>(0.77-thtl, 64.94*thtl, 217.38*thtl - 117.38)
+
+  <font color="#808080"><i># rate of change of power = f(power,power_cmd)</i></font>
+  power_dot == <font color="#0074D9">smoothIfPos</font>(power_cmd-50,\
+    <font color="#0074D9">smoothIfPos</font>(power-50, 5*(power_cmd - power), rtau(60 - power)*(60 - power)),\
+    <font color="#0074D9">smoothIfPos</font>(power-50, 5*(40 - power), rtau(power_cmd - power)*(power_cmd - power)))
+
+  <font color="#808080"><i># atmosphere</i></font>
+  Tfac == 1 - 0.703e-5*alt
+  T == <font color="#0074D9">smoothIfPos</font>(alt/1000-35, 390, 519*Tfac)
+  rho == rho0*<font color="#2ECC40">rpower</font>(Tfac,4.14)
+  mach == VT/<font color="#2ECC40">sqrt</font>(1.4*1716.3*T)		<font color="#808080"><i># mach = f(VT,alt)</i></font>
+  qbar == 0.5*rho*<font color="#2ECC40">sqr</font>(VT)		<font color="#808080"><i># qbar = f(VT,alt)</i></font>
+
+  <font color="#808080"><i># damping</i></font>
+  Cy == -0.02*beta_deg + 0.021*ail_deg/20 + 0.086*rdr_deg/30
+  Cz == &sect;Czz(alpha_deg)*(1 - <font color="#2ECC40">sqr</font>(beta_deg/57.3)) - 0.19*elv_deg/25
+  cxt == &sect;Cx(elv_deg,alpha_deg) + 0.5*cbar*Q/VT*&sect;CXq(alpha_deg)
+  cyt == Cy + 0.5*b/VT*(&sect;CYr(alpha_deg)*R + &sect;CYp(alpha_deg)*P)
+  czt == Cz + 0.5*cbar*Q/VT*&sect;CZq(alpha_deg)
+  clt == <font color="#2ECC40">sign</font>(beta_deg)*&sect;Cl(<font color="#2ECC40">abs</font>(beta_deg),alpha_deg) \
+    + &sect;DlDa(beta_deg,alpha_deg)*ail_deg/20 \
+    + &sect;DlDr(beta_deg,alpha_deg)*rdr_deg/30 \
+    + 0.5*b/VT*(&sect;Clr(alpha_deg)*R + &sect;Clp(alpha_deg)*P)
+  cmt == &sect;Cm(elv_deg,alpha_deg) \
+    + 0.5*cbar*Q/VT*&sect;Cmq(alpha_deg) \
+    + czt*(xcgr-xcg)
+  cnt == <font color="#2ECC40">sign</font>(beta_deg)*&sect;Cn(<font color="#2ECC40">abs</font>(beta_deg),alpha_deg) \
+    + &sect;DnDa(beta_deg,alpha_deg)*ail_deg/20 \
+    + &sect;DnDr(beta_deg,alpha_deg)*rdr_deg/30 \
+    + 0.5*b/VT*(&sect;Cnr(alpha_deg)*R + &sect;Cnp(alpha_deg)*P) \
+    - cyt*(xcgr-xcg)*cbar/b
+
+  <font color="#808080"><i># force</i></font>
+  Fx == -mass*g*<font color="#2ECC40">sin</font>(theta) + qbar*s*cxt + thrust
+  Fy == mass*g*<font color="#2ECC40">cos</font>(theta)*<font color="#2ECC40">sin</font>(phi) + qbar*s*cyt
+  Fz == mass*g*<font color="#2ECC40">cos</font>(theta)*<font color="#2ECC40">cos</font>(phi) + qbar*s*czt
+
+  <font color="#808080"><i># moment</i></font>
+  Mx == qbar*s*b*clt		<font color="#808080"><i># roll</i></font>
+  My == qbar*s*cbar*cmt - R*hx	<font color="#808080"><i># pitch</i></font>
+  Mz == qbar*s*b*cnt + Q*hx	<font color="#808080"><i># yaw</i></font>
+
+  U == VT*<font color="#2ECC40">cos</font>(alpha)*<font color="#2ECC40">cos</font>(beta)
+  V == VT*<font color="#2ECC40">sin</font>(beta)
+  W == VT*<font color="#2ECC40">sin</font>(alpha)*<font color="#2ECC40">cos</font>(beta)
+
+  <font color="#808080"><i># kinematics</i></font>
+  phi_dot == P + <font color="#2ECC40">sin</font>(theta)/<font color="#2ECC40">cos</font>(theta)*(Q*<font color="#2ECC40">sin</font>(phi) + R*<font color="#2ECC40">cos</font>(phi))
+  theta_dot == Q*<font color="#2ECC40">cos</font>(phi) - R*<font color="#2ECC40">sin</font>(phi)
+  psi_dot == (Q*<font color="#2ECC40">sin</font>(phi) + R*<font color="#2ECC40">cos</font>(phi))/<font color="#2ECC40">cos</font>(theta)
+
+  <font color="#808080"><i># force equations</i></font>
+  U_dot == R*V - Q*W + Fx/mass
+  V_dot == P*W - R*U + Fy/mass
+  W_dot == Q*U - P*V + Fz/mass
+
+  VT_dot == (U*U_dot + V*V_dot + W*W_dot)/VT
+  alpha_dot == (U*W_dot - W*U_dot) / (U*U + W*W)
+  beta_dot == (VT*V_dot - V*VT_dot)*<font color="#2ECC40">cos</font>(beta) / (U*U + W*W)
+
+  <font color="#808080"><i># body roll/pitch/yaw rate</i></font>
+  xqr == azz*(azz - ayy) + axz*axz
+  xpq == axz*(axx - ayy + azz)
+  zpq == (axx - ayy)*axx + axz*axz
+  gam == axx*azz - axz*axz
+  ypr == azz - axx
+
+  P_dot == (xpq*P*Q - xqr*Q*R + azz*Mx + axz*Mz) / gam
+  Q_dot == (ypr*P*R - axz*(P*P - R*R) + My) / ayy
+  R_dot == (zpq*P*Q - xpq*Q*R + axz*Mx + axx*Mz) / gam
+
+  <font color="#808080"><i># navigation</i></font>
+  t1 == <font color="#2ECC40">sin</font>(phi)*<font color="#2ECC40">cos</font>(psi)
+  t2 == <font color="#2ECC40">cos</font>(phi)*<font color="#2ECC40">sin</font>(theta)
+  t3 == <font color="#2ECC40">sin</font>(phi)*<font color="#2ECC40">sin</font>(psi)
+  s1 == <font color="#2ECC40">cos</font>(theta)*<font color="#2ECC40">cos</font>(psi)
+  s2 == <font color="#2ECC40">cos</font>(theta)*<font color="#2ECC40">sin</font>(psi)
+  s3 == t1*<font color="#2ECC40">sin</font>(theta) - <font color="#2ECC40">cos</font>(phi)*<font color="#2ECC40">sin</font>(psi)
+  s4 == t3*<font color="#2ECC40">sin</font>(theta) + <font color="#2ECC40">cos</font>(phi)*<font color="#2ECC40">cos</font>(psi)
+  s5 == <font color="#2ECC40">sin</font>(phi)*<font color="#2ECC40">cos</font>(theta)
+  s6 == t2*<font color="#2ECC40">cos</font>(psi) + t3
+  s7 == t2*<font color="#2ECC40">sin</font>(psi) - t1
+  s8 == <font color="#2ECC40">cos</font>(phi)*<font color="#2ECC40">cos</font>(theta)
+
+  V_N == U*s1 + V*s3 + W*s6
+  V_E == U*s2 + V*s4 + W*s7
+  alt_dot == U*<font color="#2ECC40">sin</font>(theta) - V*s5 - W*s8
+
+  <font color="#808080"><i># actuators</i></font>
+  ail_deg_dot == artau*(ail_cmd_deg - ail_deg)
+  elv_deg_dot == artau*(elv_cmd_deg - elv_deg)
+  rdr_deg_dot == artau*(rdr_cmd_deg - rdr_deg)
+
+  <font color="#808080"><i># criterion</i></font>
+  J_dot == <font color="#2ECC40">sqr</font>(VT_dot) + 100*(<font color="#2ECC40">sqr</font>(alpha_dot) + <font color="#2ECC40">sqr</font>(beta_dot)) + 10*(<font color="#2ECC40">sqr</font>(P_dot) + <font color="#2ECC40">sqr</font>(Q_dot) + <font color="#2ECC40">sqr</font>(R_dot))
+
+<font color="red"><b>equ:</b></font>
+  -arlim &lt;= ail_deg_dot &lt;= arlim
+  -arlim &lt;= elv_deg_dot &lt;= arlim
+  -arlim &lt;= rdr_deg_dot &lt;= arlim
+  0 &lt;= mach &lt;= 1
+  power&acute; == power_dot
+  phi&acute; == phi_dot
+  theta&acute; == theta_dot
+  psi&acute; == psi_dot
+  VT&acute; == VT_dot
+  alpha&acute; == alpha_dot
+  beta&acute; == beta_dot
+  P&acute; == P_dot
+  Q&acute; == Q_dot
+  R&acute; == R_dot
+  p_N&acute; == V_N
+  p_E&acute; == V_E
+  alt&acute; == alt_dot
+  ail_deg&acute; == ail_deg_dot
+  elv_deg&acute; == elv_deg_dot
+  rdr_deg&acute; == rdr_deg_dot
+  J&acute; == J_dot
+  JT&acute; == 1e-4*<font color="#2ECC40">sqr</font>(thrust_model-thrust)
+
+  power_dot == 0
+  phi_dot == 0
+  theta_dot == 0
+  psi_dot == 0
+  VT_dot == 0
+  alpha_dot == 0
+  beta_dot == 0
+  P_dot == 0
+  Q_dot == 0
+  R_dot == 0
+  p_N&acute; == V_N
+  p_E&acute; == V_E
+  alt_dot == 0
+  ail_deg_dot == 0
+  elv_deg_dot == 0
+  rdr_deg_dot == 0
+
+<font color="red"><b>ini:</b></font>
+  VT = <font color="#0074D9">initial</font>(VT)
+  p_N = <font color="#0074D9">initial</font>(p_N)
+  p_E = <font color="#0074D9">initial</font>(p_E)
+  alt = <font color="#0074D9">linspace</font>(<font color="#0074D9">initial</font>(alt),<font color="#0074D9">final</font>(alt))
+  thtl = 0.1693
+  thrust = thrust_model
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(JT) <font color="#8A2BE2">using</font> dnlp <font color="#8A2BE2">with</font> conopt
+
+<font color="red"><b>gms:</b></font>
+  <font color="#0074D9">smoothEPS</font> = <font color="#0074D9">smoothEPS</font>/10; <font color="#8A2BE2">@solve</font>
+  <font color="#0074D9">smoothEPS</font> = <font color="#0074D9">smoothEPS</font>/10; <font color="#8A2BE2">@solve</font>
+  <font color="#FF8000">$$ondotl</font>
+  <font color="#8A2BE2">@tpa</font> thrust_error = thrust - thrust_model;
+  <font color="#8A2BE2">@csvsave</font> thrust_error
+  <font color="#808080"><i># linearize around current state and control</i></font>
+  <font color="#3D9970">set</font> nx /"VT","alpha","beta","phi","theta","psi","P","Q","R","p_N","p_E","alt","power","ail","elv","rdr"/;
+  <font color="#3D9970">set</font> nu /"thtl","ail_cmd","elv_cmd","rdr_cmd"/;
+  <font color="#3D9970">alias</font>(nx,nx2);
+  <font color="#3D9970">parameters</font> mA[nx,nx], mB[nx,nu], zl[nx], zr[nx];
+  <font color="#3D9970">scalars</font> zo, zh;
+  <font color="#808080"><i># Richardson scheme for a symmetric function</i></font>
+  <font color="#3D9970">set</font> scen /sc1*sc7/;
+  <font color="#3D9970">alias</font>(scen,scen2);
+  <font color="#3D9970">parameters</font> mAA[nx,nx,scen,scen], mBB[nx,nu,scen,scen];
+  <font color="#3D9970">scalar</font> delta /1e-2/;
+  @lin({VT alpha beta phi theta psi P Q R p_N p_E alt power ail_deg elv_deg rdr_deg},\
+       {VT alpha beta phi theta psi P Q R p_N p_E alt power ail elv rdr},mA,delta)
+  @lin({thtl ail_cmd_deg elv_cmd_deg rdr_cmd_deg},{thtl ail_cmd elv_cmd rdr_cmd},mB,delta)
+  mAA[nx,nx2,scen,scen]$(<font color="#3D9970">ord</font>(scen)=1) = mA[nx,nx2];
+  mBB[nx,nu,scen,scen]$(<font color="#3D9970">ord</font>(scen)=1) = mB[nx,nu];
+  <font color="#3D9970">loop</font>(scen,
+    delta = delta / 2;
+    @lin({VT alpha beta phi theta psi P Q R p_N p_E alt power ail_deg elv_deg rdr_deg},\
+         {VT alpha beta phi theta psi P Q R p_N p_E alt power ail elv rdr},mA,delta)
+    @lin({thtl ail_cmd_deg elv_cmd_deg rdr_cmd_deg},{thtl ail_cmd elv_cmd rdr_cmd},mB,delta)
+    mAA[nx,nx2,scen+1,"sc1"] = mA[nx,nx2];
+    mBB[nx,nu,scen+1,"sc1"] = mB[nx,nu];
+    <font color="#3D9970">loop</font>(scen2$(<font color="#3D9970">ord</font>(scen2)&lt;=<font color="#3D9970">ord</font>(scen)),
+      mAA[nx,nx2,scen+1,scen2+1] = mAA[nx,nx2,scen+1,scen2] + (mAA[nx,nx2,scen+1,scen2]-mAA[nx,nx2,scen,scen2]) / (4**<font color="#3D9970">ord</font>(scen2)-1);
+      mBB[nx,nu,scen+1,scen2+1] = mBB[nx,nu,scen+1,scen2] + (mBB[nx,nu,scen+1,scen2]-mBB[nx,nu,scen,scen2]) / (4**<font color="#3D9970">ord</font>(scen2)-1)
+      )
+    );
+  mA[nx,nx2] = <font color="#3D9970">sum</font>(scen$(<font color="#3D9970">ord</font>(scen)=<font color="#3D9970">card</font>(scen)), mAA[nx,nx2,scen,scen]);
+  mB[nx,nu] = <font color="#3D9970">sum</font>(scen$(<font color="#3D9970">ord</font>(scen)=<font color="#3D9970">card</font>(scen)), mBB[nx,nu,scen,scen]);
+  mA[nx,nx2]$(<font color="#2ECC40">abs</font>(mA[nx,nx2]) &lt; 1e-6) = 0;
+  mB[nx,nu]$(<font color="#2ECC40">abs</font>(mB[nx,nu]) &lt; 1e-6) = 0;
+  <font color="#3D9970">display</font> mA, mB;
+</pre>
+</body>
+</html>

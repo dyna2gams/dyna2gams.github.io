@@ -1,0 +1,274 @@
+<!-- Dyna-to-Html Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Race Car Lap Optimization</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Race Car Lap Optimization
+</pre>
+<p>
+  The goal of this problem is to find an optimal trajectory for the race car with active aerodynamic
+  and four wheel drive controls.
+<p>
+  The following figure describes the states that govern the vehicle position relative to the track.
+<p>
+  <center><img src="dymos-racecar.png" alt="" width="40%"/></center>
+<p>
+  In this figure the curved line represents the centerline of the track with curvature \(\kappa\),
+  \(w\) is the normal distance to the centerline, and \(s\) is the distance along the centerline.
+<p>
+  Reference:
+  <ol>
+  <li>R.D. Falck and J.S. Gray,
+  <em>Optimal Control within the Context of Multidisciplinary Design, Analysis, and Optimization</em>,
+  AIAA Scitech Forum 2019.
+  </ol>
+<p>
+  See: <a href="https://openmdao.github.io/dymos/examples/racecar/racecar.html">
+  Dymos - Multidisciplinary Optimal Control Library</a>
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">tabulation-knots-number</font> = 600
+  conopt.opt &lt; lkdebg=0
+  <font color="#39CCCC">model-option</font> = optfile=1
+  <font color="#39CCCC">gams-option</font> = reslim=3600
+
+<font color="#808080"><i># Generate dynamically data from tracks description file (here use Bahrain track)</i></font>
+<font color="#8B0000">@cmd</font> %gamsp%\gbin\awk -f .\examples\@ifnam@.awk -v track="Bahrain" .\examples\@ifnam@.csv &gt; $track.csv
+<font color="#8B0000">@cmd</font> %gamsp%\gbin\tail -1 $track.csv | %gamsp%\gbin\awk "BEGIN{FS=\",\"}{print $1}" &gt; $tracklen.txt
+<font color="#8B0000">@get</font> tracklen &lt; $tracklen.txt
+
+<font color="red"><b>fun:</b></font>
+  <font color="#8A2BE2">@readcsv</font> ifile=$track.csv
+
+<font color="red"><b>par:</b></font>
+  <font color="#808080"><i># acceleration</i></font>
+  tau_y = 0.2	<font color="#808080"><i># lateral load transfer time constant [s]</i></font>
+  tau_x = 0.2	<font color="#808080"><i># longitudinal load transfer time constant [s]</i></font>
+
+  <font color="#808080"><i># tire</i></font>
+  M = 1184	<font color="#808080"><i># vehicle mass [kg]</i></font>
+  g = 9.81	<font color="#808080"><i># mass [m/s&sup2;]</i></font>
+  a = 1.404	<font color="#808080"><i># center of gravity to front distance [m]</i></font>
+  b = 1.356	<font color="#808080"><i># center of gravity to rear distance [m]</i></font>
+  tw = 0.807	<font color="#808080"><i># half track width [m]</i></font>
+  beta = 0.62	<font color="#808080"><i># braking bias [None]</i></font>
+  k_lambda = 44	<font color="#808080"><i># tire lateral stiffness [None]</i></font>
+
+  <font color="#808080"><i># tire constraints</i></font>
+  mu0_y = 1.68	<font color="#808080"><i># lateral friction coefficient [None]</i></font>
+  mu0_x = 1.68	<font color="#808080"><i># longitudinal friction coefficient [None]</i></font>
+  k_mu = -0.5	<font color="#808080"><i># tire load sensitivity [None]</i></font>
+
+  <font color="#808080"><i># car</i></font>
+  Iz = 1775	<font color="#808080"><i># yaw inertia [kg*m&sup2;]</i></font>
+  CdA = 2	<font color="#808080"><i># drag coefficient [m&sup2;]</i></font>
+
+  <font color="#808080"><i># normal force</i></font>
+  h = 0.4	<font color="#808080"><i># center of gravity height [m]</i></font>
+  chi = 0.5	<font color="#808080"><i># roll stiffness [None]</i></font>
+  CoP = 1.404	<font color="#808080"><i># center of pressure (distance to front) [m]</i></font>
+
+  <font color="#808080"><i># adding downforce</i></font>
+  ClA = 4	<font color="#808080"><i># lift coefficient [m&sup2;]</i></font>
+  rho = 1.2	<font color="#808080"><i># air density [kg/m&sup3;]</i></font>
+
+  <font color="#808080"><i># substitute usual final value of independent variable by track total length</i></font>
+  tf = @tracklen@
+
+<font color="red"><b>dyn:</b></font>
+  <font color="#808080"><i># states</i></font>
+  s		<font color="#808080"><i># distance along the track centerline [m]</i></font>
+  t		<font color="#808080"><i># time [s]</i></font>
+  V		<font color="#808080"><i># speed [m/s]</i></font>
+  lambda	<font color="#808080"><i># body slip angle [rad]</i></font>
+  omega		<font color="#808080"><i># yaw rate [1/rad]</i></font>
+  w		<font color="#808080"><i># distance perpendicular to centerline [m]</i></font>
+  alpha		<font color="#808080"><i># angle relative to centerline [rad]</i></font>
+  ax		<font color="#808080"><i># longitudinal jerk [m/s&sup2;]</i></font>
+  ay		<font color="#808080"><i># lateral jerk [m/s&sup2;]</i></font>
+  <font color="#808080"><i># controls</i></font>
+  delta		<font color="#808080"><i># steering angle [rad]</i></font>
+  brake		<font color="#808080"><i># controls the longitudinal force of the rear tires (braking) [None]</i></font>
+  throt		<font color="#808080"><i># controls the longitudinal force of the rear tires (accelerating) [None]</i></font>
+  J
+
+<font color="red"><b>lim:</b></font>
+  0 &lt;= t &lt;= +<font color="#3D9970">inf</font>
+  0.1 &lt;= V &lt;= +<font color="#3D9970">inf</font>
+  -4 &lt;= w &lt;= 4
+  -pi/2 &lt;= alpha &lt;= pi/2
+  -pi/2 &lt;= lambda &lt;= pi/2
+  -pi/2 &lt;= delta &lt;= pi/2
+  0 &lt;= brake &lt;= +<font color="#3D9970">inf</font>
+  0 &lt;= throt &lt;= +<font color="#3D9970">inf</font>
+
+<font color="red"><b>t=t0:</b></font>
+  s = 0
+  t = 0
+  J = 0
+
+<font color="red"><b>exp:</b></font>
+  kappa == &sect;kapparef(s)
+
+  <font color="#808080"><i># normal force</i></font>
+  downforce == 0.5 * rho * ClA * <font color="#2ECC40">sqr</font>(V)
+  downforce_rear == downforce * (CoP / (a + b))
+  downforce_front == downforce * (1 - (CoP / (a + b)))
+
+  <font color="#808080"><i># normal load outputs</i></font>
+  N_fl == (M * g / 2) * (b / (a + b)) + (M / 4) * ((-(ax * h) / (a + b)) + (ay * chi * h / tw)) + downforce_front / 2		<font color="#808080"><i># normal force fl [N]</i></font>
+  N_fr == (M * g / 2) * (b / (a + b)) + (M / 4) * ((-(ax * h) / (a + b)) - (ay * chi * h / tw)) + downforce_front / 2		<font color="#808080"><i># normal force fr [N]</i></font>
+  N_rl == (M * g / 2) * (a / (a + b)) + (M / 4) * (((ax * h) / (a + b)) + (ay * (1 - chi) * h / tw)) + downforce_rear / 2	<font color="#808080"><i># normal force rl [N]</i></font>
+  N_rr == (M * g / 2) * (a / (a + b)) + (M / 4) * (((ax * h) / (a + b)) - (ay * (1 - chi) * h / tw)) + downforce_rear / 2	<font color="#808080"><i># normal force rr [N]</i></font>
+
+  <font color="#808080"><i># tire constraints</i></font>
+  N0_rr == (M * g / 2) * (a / (a + b))
+  N0_rl == (M * g / 2) * (a / (a + b))
+  N0_fr == (M * g / 2) * (b / (a + b))
+  N0_fl == (M * g / 2) * (b / (a + b))
+
+  mu_x_rr == mu0_x + k_mu * N_rr / N0_rr
+  mu_x_rl == mu0_x + k_mu * N_rl / N0_rl
+  mu_x_fr == mu0_x + k_mu * N_fr / N0_fr
+  mu_x_fl == mu0_x + k_mu * N_fl / N0_fl
+
+  mu_y_rr == mu0_y + k_mu * N_rr / N0_rr
+  mu_y_rl == mu0_y + k_mu * N_rl / N0_rl
+  mu_y_fr == mu0_y + k_mu * N_fr / N0_fr
+  mu_y_fl == mu0_y + k_mu * N_fl / N0_fl
+
+  c_rr == <font color="#2ECC40">sqr</font>(S_rr / (N_rr * mu_x_rr)) + <font color="#2ECC40">sqr</font>(F_rr / (N_rr * mu_y_rr))	<font color="#808080"><i># tire load constraint rr [None]</i></font>
+  c_rl == <font color="#2ECC40">sqr</font>(S_rl / (N_rl * mu_x_rl)) + <font color="#2ECC40">sqr</font>(F_rl / (N_rl * mu_y_rl))	<font color="#808080"><i># tire load constraint rr [None]</i></font>
+  c_fr == <font color="#2ECC40">sqr</font>(S_fr / (N_fr * mu_x_fr)) + <font color="#2ECC40">sqr</font>(F_fr / (N_fr * mu_y_fr))	<font color="#808080"><i># tire load constraint rr [None]</i></font>
+  c_fl == <font color="#2ECC40">sqr</font>(S_fl / (N_fl * mu_x_fl)) + <font color="#2ECC40">sqr</font>(F_fl / (N_fl * mu_y_fl))	<font color="#808080"><i># tire load constraint rr [None]</i></font>
+
+  <font color="#808080"><i># tire load inputs</i></font>
+  S_fl == -(M * g / 2) * brake * beta			<font color="#808080"><i># longitudinal force fl [N]</i></font>
+  S_fr == -(M * g / 2) * brake * beta			<font color="#808080"><i># longitudinal force fr [N]</i></font>
+  S_rl == (M * g / 2) * (throt - brake * (1 - beta))	<font color="#808080"><i># longitudinal force rl [N]</i></font>
+  S_rr == (M * g / 2) * (throt - brake * (1 - beta))	<font color="#808080"><i># longitudinal force rr [N]</i></font>
+  S_front == S_fl + S_fr
+  S_all == S_fl + S_fr + S_rl + S_rr
+
+  F_fl == N_fl * k_lambda * (lambda + delta - (omega * (a + lambda * tw)) / V)	<font color="#808080"><i># lateral force fl [N]</i></font>
+  F_fr == N_fr * k_lambda * (lambda + delta - (omega * (a - lambda * tw)) / V)	<font color="#808080"><i># lateral force fr [N]</i></font>
+  F_rl == N_rl * k_lambda * (lambda + (omega * (b - lambda * tw)) / V)		<font color="#808080"><i># lateral force rl [N]</i></font>
+  F_rr == N_rr * k_lambda * (lambda + (omega * (b + lambda * tw)) / V)		<font color="#808080"><i># lateral force rr [N]</i></font>
+  F_front == F_fl + F_fr
+  F_all == F_fl + F_fr + F_rl + F_rr
+
+  drag == 0.5 * rho * CdA * <font color="#2ECC40">sqr</font>(V)
+  power == V * S_all					<font color="#808080"><i># tractive power [W]</i></font>
+
+  sdot == V * <font color="#2ECC40">cos</font>(alpha-lambda) / (1 - w * kappa)
+  wdot == V * <font color="#2ECC40">sin</font>(alpha-lambda)
+  Vdot == S_all/M - delta*F_front/M - drag/M - omega*V*lambda
+  alphadot == omega - kappa * sdot
+  lambdadot == omega - Vdot * lambda / V - delta * S_front / (M * V) - F_all / (M * V)
+  omegadot == a * (F_fr + F_fl) / Iz - b * (F_rr + F_rl) / Iz + tw * (-S_rr + S_rl - S_fr + S_fl) / Iz
+  axdot == (Vdot + omega*V*lambda - ax) / tau_x
+  aydot == (omega*V - V*lambdadot - Vdot*lambda - ay) / tau_y
+
+  <font color="#808080"><i># prepare change of independent variable</i></font>
+  dt_ds == 1/sdot
+  dw_ds == wdot/sdot
+  dV_ds == Vdot/sdot
+  dalpha_ds == alphadot/sdot
+  dlambda_ds == lambdadot/sdot
+  domega_ds == omegadot/sdot
+  dax_ds == axdot/sdot
+  day_ds == aydot/sdot
+
+<font color="red"><b>equ:</b></font>
+  s&acute; == 1
+  t&acute; == dt_ds
+  w&acute; == dw_ds
+  V&acute; == dV_ds
+  alpha&acute; == dalpha_ds
+  lambda&acute; == dlambda_ds
+  omega&acute; == domega_ds
+  ax&acute; == dax_ds
+  ay&acute; == day_ds
+  <font color="#808080"><i># bounds</i></font>
+  -960000 &lt;= power &lt;= 960000
+  c_rr &lt;= 1
+  c_rl &lt;= 1
+  c_fr &lt;= 1
+  c_fl &lt;= 1
+  <font color="#808080"><i># either brake or accelerate</i></font>
+  brake*throt &lt;= 1e-8
+  <font color="#808080"><i># optional: seek a periodic solution</i></font>
+  0 == <font color="#0074D9">initial</font>({w V alpha lambda omega ax ay}) - <font color="#0074D9">final</font>({w V alpha lambda omega ax ay})
+  <font color="#808080"><i># regularization term</i></font>
+  J&acute; == <font color="#2ECC40">sqr</font>(delta) + <font color="#2ECC40">sqr</font>(brake) + <font color="#2ECC40">sqr</font>(throt)
+
+<font color="red"><b>ini:</b></font>
+  s = <font color="#0074D9">Time</font>
+  t = <font color="#0074D9">linspace</font>(0,100)
+  V = 60
+  throt = 0.1
+  brake = 0
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(t)+1e-4*<font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  <font color="#FF8000">$$ondotl</font>
+  <font color="#808080"><i># driven trajectory</i></font>
+  <font color="#8A2BE2">@tpa</font> p = w - <font color="#2ECC40">sin</font>(&sect;psiref(s))*&sect;xref(s) + <font color="#2ECC40">cos</font>(&sect;psiref(s))*&sect;yref(s);
+  <font color="#8A2BE2">@tpa</font> q =  <font color="#2ECC40">cos</font>(&sect;psiref(s))*&sect;xref(s) + <font color="#2ECC40">sin</font>(&sect;psiref(s))*&sect;yref(s);
+  <font color="#8A2BE2">@tpa</font> x = -<font color="#2ECC40">sin</font>(&sect;psiref(s))*p + <font color="#2ECC40">cos</font>(&sect;psiref(s))*q;
+  <font color="#8A2BE2">@tpa</font> y =  <font color="#2ECC40">cos</font>(&sect;psiref(s))*p + <font color="#2ECC40">sin</font>(&sect;psiref(s))*q;
+  <font color="#8A2BE2">@csvsave</font> x y
+  <font color="#808080"><i># center line</i></font>
+  <font color="#8A2BE2">@tpa</font> Xref = &sect;xref(s);
+  <font color="#8A2BE2">@tpa</font> Yref = &sect;yref(s);
+  <font color="#808080"><i># track boundaries</i></font>
+  <font color="#8A2BE2">@tpa</font> Xboundlft = &sect;xref(s) - tw*<font color="#2ECC40">sin</font>(&sect;psiref(s));
+  <font color="#8A2BE2">@tpa</font> Yboundlft = &sect;yref(s) + tw*<font color="#2ECC40">cos</font>(&sect;psiref(s));
+  <font color="#8A2BE2">@tpa</font> Xboundrgt = &sect;xref(s) + tw*<font color="#2ECC40">sin</font>(&sect;psiref(s));
+  <font color="#8A2BE2">@tpa</font> Yboundrgt = &sect;yref(s) - tw*<font color="#2ECC40">cos</font>(&sect;psiref(s));
+
+<font color="red"><b>put:</b></font>
+  <font color="#808080"><i># Create a file for Octave/Matlab to plot racetrack map</i></font>
+  "<font color="#8A2BE2">%FN%</font>.<font color="#8A2BE2">%N%</font>.m&lt;"
+  % Created on %system.date1% at %system.time%
+  x = ["x:9:3"];
+  y = ["y:9:3"];
+  Xref = ["Xref:9:3"];
+  Yref = ["Yref:9:3"];
+  Xboundlft = ["Xboundlft:9:3"];
+  Yboundlft = ["Yboundlft:9:3"];
+  Xboundrgt = ["Xboundrgt:9:3"];
+  Yboundrgt = ["Yboundrgt:9:3"];
+  figure('Name','<font color="#8B0000">@ifnam@</font> <font color="#8A2BE2">%N%</font>','NumberTitle','off')
+  % Setup plot
+  ylim([-1.75, 0.35]);
+  xlim([-1.1, 1.6]);
+  ylabel('y[m]');
+  xlabel('x[m]');
+  % Plot center line
+  plot(Xref,Yref,'k--');
+  % Draw Trackboundaries
+  hold on;
+  plot(Xboundlft,Yboundlft,'k','LineWidth',1);
+  plot(Xboundrgt,Yboundrgt,'k','LineWidth',1);
+  plot(x,y, '-b');
+  "&lt;"
+</pre>
+</body>
+</html>

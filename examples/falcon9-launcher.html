@@ -1,0 +1,184 @@
+<!-- Dyna-to-Html Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Vertical takeoff and vertical landing reusable rockets</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Vertical takeoff and vertical landing reusable rockets
+</pre>
+<p>
+  This model presents a direct trajectory optimization framework for a vertical
+  takeoff and vertical landing (VTVL) reusable rocket with a two-stage structure for a
+  launch mission to simultaneously deliver a payload to the desired orbit and recover
+  the rocket. A three-phase trajectory optimization problem of VTVL reusable rockets is
+  established, with the main features of the flight process.
+<p>
+  Reference:
+  <ol>
+  <li>L. Ma, K. Wang, Z. Shao, Z. Song and L.T. Biegler,
+  <em>Direct trajectory optimization framework for vertical takeoff and vertical
+  landing reusable rockets: case study of two-stage rockets</em>,
+  Engineering Optimization, 51(4):627-645, 2019.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">gams-option</font> = reslim=3600
+  <font color="#39CCCC">substitute-symbols</font> = T&gt;TT | Vx&gt;VVx | Vy&gt;VVy
+  <font color="#39CCCC">model-option</font> = optfile=1
+  conopt.opt &lt; Rtmaxv=1e+20	<font color="#808080"><i># default value is 1e+10 - avoid manual scaling of the equations</i></font>
+
+<font color="red"><b>set:</b></font>
+  <font color="#808080"><i># bf12 - stages 1 and 2 together before separation</i></font>
+  <font color="#808080"><i># aft1 - stage 1 alone after separation</i></font>
+  <font color="#808080"><i># aft2 - stage 2 alone after separation</i></font>
+  phase = |bf12,aft1,aft2|
+
+<font color="red"><b>par:</b></font>
+  Re = 6378145			<font color="#808080"><i># equatorial radius of the Earth [m]</i></font>
+  rho0 = 1.225			<font color="#808080"><i># atmospheric density at sea level [kg/m&sup3;]</i></font>
+  rhoH = 7200			<font color="#808080"><i># density scale height [m]</i></font>
+  Sa = 4*pi			<font color="#808080"><i># reference area [m&sup2;]</i></font>
+  Cd = 0.5			<font color="#808080"><i># drag coefficient [-]</i></font>
+  muE = 3.986012e14		<font color="#808080"><i># gravitational parameter [m&sup3;/s&sup2;]</i></font>
+  Isp = 340			<font color="#808080"><i># specific impulse of the engine [s]</i></font>
+  g0 = 9.80665			<font color="#808080"><i># gravity acceleration at sea level [m/s&sup2;]</i></font>
+  lat0 = <font color="#0074D9">deg2rad</font>(28.5)
+  lon0 = 0
+  r{x y z}0 = Re*{<font color="#2ECC40">cos</font>(lat0)*<font color="#2ECC40">cos</font>(lon0) <font color="#2ECC40">cos</font>(lat0)*<font color="#2ECC40">sin</font>(lon0) <font color="#2ECC40">sin</font>(lat0)}
+  latf = <font color="#0074D9">deg2rad</font>(28)
+  lonf = <font color="#0074D9">deg2rad</font>(1)
+  r{x y z}af = Re*{<font color="#2ECC40">cos</font>(latf)*<font color="#2ECC40">cos</font>(lonf) <font color="#2ECC40">cos</font>(latf)*<font color="#2ECC40">sin</font>(lonf) <font color="#2ECC40">sin</font>(latf)}
+  thetags = <font color="#0074D9">deg2rad</font>(80)
+  m10 = 431.6e3			<font color="#808080"><i># [kg]</i></font>
+  m1fuel = 409.5e3		<font color="#808080"><i># [kg]</i></font>
+  m20 = 107.5e3			<font color="#808080"><i># [kg]</i></font>
+  m2fuel = 103.5e3		<font color="#808080"><i># [kg]</i></font>
+  q_max = 80e3			<font color="#808080"><i># maximum dynamic pressure [Pa]</i></font>
+  acc_max = 10*g0		<font color="#808080"><i># maximum visual acceleration [m/s&sup2;]</i></font>
+  Tmin = 360e3			<font color="#808080"><i># [N]</i></font>
+  Tmax = 934e3			<font color="#808080"><i># [N]</i></font>
+  tf = 1
+
+<font color="red"><b>var:</b></font>
+  a p r0 x y Vx Vy nu		<font color="#808080"><i># working variables used when converting Keplerian orbital elements to Cartesian state vectors</i></font>
+  tlen[phase]
+
+<font color="red"><b>dyn:</b></font>
+  t[phase]			<font color="#808080"><i># time</i></font>
+  r{x y z}[phase]		<font color="#808080"><i># position vector</i></font>
+  v{x y z}[phase]		<font color="#808080"><i># velocity vector</i></font>
+  T{x y z}[phase]		<font color="#808080"><i># thrust vector</i></font>
+  m[phase]			<font color="#808080"><i># mass</i></font>
+
+<font color="red"><b>lim:</b></font>
+  100 &lt;= tlen[phase] &lt;= 500
+  m10+m20-m1fuel-m2fuel &lt;= m["bf12"] &lt;= m10+m20
+  m10-m1fuel &lt;= m["aft1"] &lt;= m10
+  m20-m2fuel &lt;= m["aft2"] &lt;= m20
+
+<font color="red"><b>t=t0:</b></font>
+  t["bf12"] = 0
+  r{x y z}["bf12"] = r{x y z}0
+  v{x y z}["bf12"] = 0
+  m["bf12"] = m10+m20
+  m["aft2"] = m20
+
+<font color="red"><b>t=tf:</b></font>
+  r{x y z}["aft1"] = r{x y z}af
+  v{x y z}["aft1"] = 0
+
+<font color="red"><b>mac:</b></font>
+  @kep2cart(alt,ecc,inc,w,RAAN,nu)
+    <font color="#808080"><i># alt:  altitude [m]</i></font>
+    <font color="#808080"><i># ecc:  eccentricity</i></font>
+    <font color="#808080"><i># inc:  inclination [rad]</i></font>
+    <font color="#808080"><i># w:    argument of perigee [rad]</i></font>
+    <font color="#808080"><i># RAAN: right ascension of ascending node [rad]</i></font>
+    <font color="#808080"><i># nu:   true anomaly i.e.satellite position [rad]</i></font>
+    a == &alt + Re;
+    p == a*(1-<font color="#2ECC40">sqr</font>(&ecc));
+    r0 == p / (1 + &ecc * <font color="#2ECC40">cos</font>(&nu));
+    <font color="#808080"><i># Coordinates in the perifocal reference system Oxy</i></font>
+    <font color="#808080"><i># - position vector coordinates</i></font>
+    x == r0 * <font color="#2ECC40">cos</font>(&nu);
+    y == r0 * <font color="#2ECC40">sin</font>(&nu);
+    <font color="#808080"><i># - velocity vector coordinates</i></font>
+    Vx == -<font color="#2ECC40">sqrt</font>(muE/p) * <font color="#2ECC40">sin</font>(&nu);
+    Vy == <font color="#2ECC40">sqrt</font>(muE/p) * (&ecc + <font color="#2ECC40">cos</font>(&nu));
+    <font color="#808080"><i># Coordinates in the geocentric-equatorial reference system OXYZ</i></font>
+    <font color="#808080"><i># - position vector components</i></font>
+    0 == <font color="#0074D9">final</font>(rx["aft2"]) - ((<font color="#2ECC40">cos</font>(&RAAN) * <font color="#2ECC40">cos</font>(&w) - <font color="#2ECC40">sin</font>(&RAAN) * <font color="#2ECC40">sin</font>(&w) * <font color="#2ECC40">cos</font>(&inc)) * x + (-<font color="#2ECC40">cos</font>(&RAAN) * <font color="#2ECC40">sin</font>(&w) - <font color="#2ECC40">sin</font>(&RAAN) * <font color="#2ECC40">cos</font>(&w) * <font color="#2ECC40">cos</font>(&inc)) * y);
+    0 == <font color="#0074D9">final</font>(ry["aft2"]) - ((<font color="#2ECC40">sin</font>(&RAAN) * <font color="#2ECC40">cos</font>(&w) + <font color="#2ECC40">cos</font>(&RAAN) * <font color="#2ECC40">sin</font>(&w) * <font color="#2ECC40">cos</font>(&inc)) * x + (-<font color="#2ECC40">sin</font>(&RAAN) * <font color="#2ECC40">sin</font>(&w) + <font color="#2ECC40">cos</font>(&RAAN) * <font color="#2ECC40">cos</font>(&w) * <font color="#2ECC40">cos</font>(&inc)) * y);
+    0 == <font color="#0074D9">final</font>(rz["aft2"]) - ((<font color="#2ECC40">sin</font>(&w) * <font color="#2ECC40">sin</font>(&inc)) * x + (<font color="#2ECC40">cos</font>(&w) * <font color="#2ECC40">sin</font>(&inc)) * y);
+    <font color="#808080"><i># - velocity vector components</i></font>
+    0 == <font color="#0074D9">final</font>(vx["aft2"]) - ((<font color="#2ECC40">cos</font>(&RAAN) * <font color="#2ECC40">cos</font>(&w) - <font color="#2ECC40">sin</font>(&RAAN) * <font color="#2ECC40">sin</font>(&w) * <font color="#2ECC40">cos</font>(&inc)) * Vx + (-<font color="#2ECC40">cos</font>(&RAAN) * <font color="#2ECC40">sin</font>(&w) - <font color="#2ECC40">sin</font>(&RAAN) * <font color="#2ECC40">cos</font>(&w) * <font color="#2ECC40">cos</font>(&inc)) * Vy);
+    0 == <font color="#0074D9">final</font>(vy["aft2"]) - ((<font color="#2ECC40">sin</font>(&RAAN) * <font color="#2ECC40">cos</font>(&w) + <font color="#2ECC40">cos</font>(&RAAN) * <font color="#2ECC40">sin</font>(&w) * <font color="#2ECC40">cos</font>(&inc)) * Vx + (-<font color="#2ECC40">sin</font>(&RAAN) * <font color="#2ECC40">sin</font>(&w) + <font color="#2ECC40">cos</font>(&RAAN) * <font color="#2ECC40">cos</font>(&w) * <font color="#2ECC40">cos</font>(&inc)) * Vy);
+    0 == <font color="#0074D9">final</font>(vz["aft2"]) - ((<font color="#2ECC40">sin</font>(&w) * <font color="#2ECC40">sin</font>(&inc)) * Vx + (<font color="#2ECC40">cos</font>(&w) * <font color="#2ECC40">sin</font>(&inc)) * Vy);
+
+<font color="red"><b>exp:</b></font>
+  TimeDot == tlen[phase] / tf
+  r_mag == <font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqr</font>(rx[phase])+<font color="#2ECC40">sqr</font>(ry[phase])+<font color="#2ECC40">sqr</font>(rz[phase]))
+  v_sq == <font color="#2ECC40">sqr</font>(vx[phase])+<font color="#2ECC40">sqr</font>(vy[phase])+<font color="#2ECC40">sqr</font>(vz[phase])
+  v_mag == <font color="#2ECC40">sqrt</font>(v_sq)
+  T_mag == <font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqr</font>(Tx[phase])+<font color="#2ECC40">sqr</font>(Ty[phase])+<font color="#2ECC40">sqr</font>(Tz[phase]))
+  h == r_mag - Re
+  rho == rho0 * <font color="#2ECC40">exp</font>(-h/rhoH)
+  D{x y z} == -0.5 * rho * Sa * Cd * v_mag * v{x y z}[phase]
+  g{x y z} == -muE / (r_mag*r_mag*r_mag) * r{x y z}[phase]
+
+<font color="red"><b>equ:</b></font>
+  <font color="#808080"><i># dynamics</i></font>
+  t&acute;[phase] / TimeDot == 1
+  r{x y z}&acute;[phase] / TimeDot == v{x y z}[phase]
+  v{x y z}&acute;[phase] / TimeDot == T{x y z}[phase]/m[phase] + D{x y z}/m[phase] + g{x y z}
+  m&acute;[phase] / TimeDot == -T_mag / (Isp * g0)
+  <font color="#808080"><i># control constraints</i></font>
+  [phase]$<font color="#2ECC40">sameas</font>(phase,"bf12").. T_mag == 9*Tmax
+  [phase]$<font color="#2ECC40">sameas</font>(phase,"aft1").. Tmin &lt;= T_mag &lt;= Tmax
+  [phase]$<font color="#2ECC40">sameas</font>(phase,"aft2").. T_mag == Tmax
+  <font color="#808080"><i># path constraints</i></font>
+  [phase].. r_mag &gt;= Re
+  [phase].. 0.5 * rho * v_sq &lt;= q_max
+  [phase].. <font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqr</font>(Tx[phase]+Dx)+<font color="#2ECC40">sqr</font>(Ty[phase]+Dy)+<font color="#2ECC40">sqr</font>(Tz[phase]+Dz)) &lt;= m[phase]*acc_max
+  (rx["aft1"]-rxaf)*rxaf + (ry["aft1"]-ryaf)*ryaf + (rz["aft1"]-rzaf)*rzaf &gt;= \
+    <font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqr</font>(rx["aft1"]-rxaf)+<font color="#2ECC40">sqr</font>(ry["aft1"]-ryaf)+<font color="#2ECC40">sqr</font>(rz["aft1"]-rzaf)) * \
+    <font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqr</font>(rxaf)+<font color="#2ECC40">sqr</font>(ryaf)+<font color="#2ECC40">sqr</font>(rzaf)) * <font color="#2ECC40">cos</font>(thetags)
+  <font color="#808080"><i># phases linking</i></font>
+  0 == <font color="#0074D9">final</font>(t["bf12"]) - <font color="#0074D9">initial</font>(t["aft1"])
+  0 == <font color="#0074D9">final</font>(t["bf12"]) - <font color="#0074D9">initial</font>(t["aft2"])
+  0 == <font color="#0074D9">final</font>(r{x y z}["bf12"]) - <font color="#0074D9">initial</font>(r{x y z}["aft1"])
+  0 == <font color="#0074D9">final</font>(r{x y z}["bf12"]) - <font color="#0074D9">initial</font>(r{x y z}["aft2"])
+  0 == <font color="#0074D9">final</font>(v{x y z}["bf12"]) - <font color="#0074D9">initial</font>(v{x y z}["aft1"])
+  0 == <font color="#0074D9">final</font>(v{x y z}["bf12"]) - <font color="#0074D9">initial</font>(v{x y z}["aft2"])
+  0 == <font color="#0074D9">final</font>(m["bf12"]) - <font color="#0074D9">initial</font>(m["aft1"]) - <font color="#0074D9">initial</font>(m["aft2"])
+  <font color="#808080"><i># final position of second stage - the exact location within the orbit is not constrained</i></font>
+  @kep2cart(218000,0.0076,<font color="#0074D9">deg2rad</font>(28.5),<font color="#0074D9">deg2rad</font>(130.5),<font color="#0074D9">deg2rad</font>(269.8),nu)
+
+<font color="red"><b>sca:</b></font>
+  r{x y z}[phase] = Re
+  v{x y z}[phase] = <font color="#2ECC40">sqrt</font>(muE/Re)
+  m[phase] = m10+m20
+  T{x y z}[phase] = 1e3
+
+<font color="red"><b>ini:</b></font>
+  r{x y z}[phase] = Re
+  p = Re
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">maximize</font> <font color="#0074D9">final</font>(m["aft2"]) <font color="#8A2BE2">using</font> nlp <font color="#8A2BE2">with</font> conopt
+</pre>
+</body>
+</html>
