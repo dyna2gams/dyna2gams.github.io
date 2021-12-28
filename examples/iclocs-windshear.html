@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -213,7 +213,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   fpa&acute; == T/m/v*<font color="#2ECC40">sin</font>(alpha+delta) + L/m/v - g/v*<font color="#2ECC40">cos</font>(fpa) + wd_dot*<font color="#2ECC40">sin</font>(fpa)/v - wh_dot*<font color="#2ECC40">cos</font>(fpa)/v
   h &gt;= hmin
   <font color="#0074D9">deg2rad</font>(-3) &lt;= <font color="#0074D9">slope</font>(alpha) &lt;= <font color="#0074D9">deg2rad</font>(3)
-  alpha :: <font color="#7FDBFF">Spline3</font>
+  alpha :: <font color="#7FDBFF">spline3</font>
 
 <font color="red"><b>obj:</b></font>
   <font color="#8A2BE2">maximize</font> hmin <font color="#8A2BE2">using</font> dnlp <font color="#8A2BE2">with</font> conopt|snopt

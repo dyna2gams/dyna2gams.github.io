@@ -1,0 +1,176 @@
+<!-- Dyna-to-Html Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Elastic beam fixed on a moving cart and carrying lumped tip mass</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Elastic beam fixed on a moving cart and carrying lumped tip mass
+</pre>
+<p>
+  We consider the planar motion of the beam-mass-cart system, shown in the figure here
+  after.
+<p>
+  <center><img src="pde-beam-mass-cart.png" alt="" width="20%"/></center>
+<p>
+  One beam end carries a lumped tip mass, whereas the other is rigidly attached to a
+  carriage, which is allowed to move horizontally. The beam in the undeflected state
+  settles vertically along the axis \(x\). The lateral displacements \(w(t,x)\) at the
+  initial time instant \(t = 0\) is known in the coordinate system connected with the
+  carriage. The horizontal acceleration \(u(t)\) of the carriage is considered as a
+  control input. The origin of the moving system coincides with the lower beam end
+  \(x = 0\) and transfers in an inertial system with the velocity \(v\); the position
+  of the cart in the inertial system is \(z\).
+<p>
+  The elastic beam is assumed to follow the Bernoulli-Euler beam model. In deriving
+  the equations of motion using the extended Hamilton&rsquo;s principle, it is assumed that
+  the beam material is linearly elastic and undergoes small deformation allowing
+  to neglect the effect of axial shortening.
+<p>
+  Referring to the Cartesian coordinates shown in the figure, the beam potential and
+  kinetic energy are given by the following equations:
+<p>
+  \[
+  V = \dfrac{E I}{2} \int_0^L (w_{xx})^2 \ \mathrm{d}x \\
+  T = \dfrac{1}{2} M \dot{z}^2 +
+  \dfrac{1}{2} \int_0^L \big[\rho + m \delta(x-L)\big] (\dot{z}+\dot{w})^2 \ \mathrm{d}x
+  \]
+<p>
+  The mixed ODE/PDE system describing the cart and beam motions with the boundary and
+  initial conditions has the form:
+<p>
+  \[
+  M \ddot{z} + \int_0^L \big[\rho + m \delta(x-L)\big] (\ddot{z}+\ddot{w}) \ \mathrm{d}x = u(t) \\
+  E I (w_{xx})_{xx} + \big[\rho + m \delta(x-L)\big] (\ddot{z}+\ddot{w}) = 0 \\
+  w(t,0) = 0, \: w_x(t,0) = 0 \\
+  w_{xx}(t,L) = 0, \: (w_{xx})_{x}(t,L) = 0 \\
+  w(0,x) = w_0(x), \: \dot{w}(0,x) = \dot{w}_0(x)
+  \]
+<p>
+  where
+  \(M\) is the mass of the cart,
+  \(m\) the lumped mass at the tip of the beam,
+  \(\rho\) the mass per unit length of the beam,
+  \(L\) the length of the beam,
+  \(w(t,x)\) the lateral deformation of the beam at a distance \(x\) measured from the fixed
+  end of the beam along the neutral axis in the undeformed configuration and at time \(t\),
+  \(EI\) the flexural stiffness of the beam and
+  \(\delta(\cdot)\) the Dirac delta function.
+<p>
+  References:
+  <ol>
+  <li>F.A. Ghaith and M.N. Hamdan,
+  <em>Dynamic Modeling and Control of Elastic Beam Fixed on A Moving Cart and Carrying Lumped Tip</em>,
+  Jordan Journal of Mechanical and Industrial Engineering, 5(1):61-70, February 2011.
+  <li>F.A. Ghaith,
+  <em>Nonlinear Dynamic Modeling of Elastic Beam Fixed on A Moving Cart and Carrying Lumped Tip Mass
+  Subjected to External Periodic Force</em>,
+  Proceedings of ASME 2009 International Design Engineering Technical Conferences and Computers
+  and Information in Engineering Conference, San Diego, CA, USA, August 30 - September 2, 2009.
+  <li>S. Park and Y. Youm
+  <em>Motion of A Moving Elastic Beam Carrying A Moving Mass Analysis and Experimental Verification</em>,
+  Journal of Sound and Vibration, 240(1):131-157, 2001.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">substitute-symbol</font> = M &gt; MM
+  <font color="#39CCCC">default-time-steps-number</font> = 24
+  <font color="#39CCCC">model-option</font> = trylinear=1
+
+<font color="red"><b>set:</b></font>
+  x = |x0:x20|
+  xl[x] = |x0|
+  xx[x] = |x1:x19|
+  x4[x] = |x2:x18|
+  xr[x] = |x20|
+
+<font color="red"><b>par:</b></font>
+  M = 10	<font color="#808080"><i># mass of the cart [kg]</i></font>
+  m = 1		<font color="#808080"><i># lumped mass at the tip of the beam [kg]</i></font>
+  rho = 0.788	<font color="#808080"><i># mass per unit length of the beam [kg/m]</i></font>
+  L = 1		<font color="#808080"><i># length of the elastic beam [m]</i></font>
+  E = 2.07e+11	<font color="#808080"><i># Young&rsquo;s modulus of elastic beam [N/m&sup2;]</i></font>
+  I = 5.208e-11	<font color="#808080"><i># area moment of inertia of elastic beam [m^4]</i></font>
+  EI = E*I	<font color="#808080"><i># flexural stiffness of the beam [N.m&sup2;]</i></font>
+  DeltaX = L/(<font color="#3D9970">card</font>(x)-1)
+  NLP = 0	<font color="#808080"><i># switch between LP and NLP model</i></font>
+  tf = 10
+
+<font color="red"><b>mac:</b></font>
+  @derivx2(f) ((&f[x]-2*&f[x+1]+&f[x])$xl[x]+(&f[x-1]-2*&f[x]+&f[x+1])$xx[x]+(&f[x-2]-2*&f[x-1]+&f[x])$xr[x])/<font color="#2ECC40">sqr</font>(DeltaX)
+  @derivx4(f) (&f[x-2]-4*&f[x-1]+6*&f[x]-4*&f[x+1]+&f[x+2])/<font color="#2ECC40">sqr</font>(<font color="#2ECC40">sqr</font>(DeltaX))
+  @integx(f) (0.5*<font color="#3D9970">sum</font>(x$xl[x],&f) + <font color="#3D9970">sum</font>(x$xx[x],&f) + 0.5*<font color="#3D9970">sum</font>(x$xr[x],&f))*DeltaX
+
+<font color="red"><b>var:</b></font>
+  mxPE		<font color="#808080"><i># maximum beam potential energy</i></font>
+
+<font color="red"><b>dyn:</b></font>
+  z		<font color="#808080"><i># position of the cart</i></font>
+  v		<font color="#808080"><i># velocity of the cart</i></font>
+  vdot		<font color="#808080"><i># acceleration of the cart</i></font>
+  <font color="#808080"><i># PE		# beam potential energy</i></font>
+  KE		<font color="#808080"><i># beam kinetic energy</i></font>
+  u		<font color="#808080"><i># control force applied on the cart</i></font>
+  J		<font color="#808080"><i># and the integral of its square</i></font>
+  w[x]		<font color="#808080"><i># lateral deformation of the beam at a distance x measured from the fixed end of</i></font>
+		<font color="#808080"><i># the beam along the neutral axis in the undeformed configuration and at time t</i></font>
+  wt{1:2}[x]	<font color="#808080"><i># d^{1:2}w/dt^{1:2}</i></font>
+
+<font color="red"><b>t=t0:</b></font>
+  w[x] = 0
+  wt1[x] = 0
+  z = 0
+  v = 0
+  J = 0
+
+<font color="red"><b>t=tf:</b></font>
+  z = 10
+  v = 0
+
+<font color="red"><b>equ:</b></font>
+  <font color="#808080"><i># cart</i></font>
+  z&acute; == v
+  vdot == (u - @integx((rho+m$xr[x])*wt2[x]))/(M+rho*L+m)
+  v&acute; == vdot
+  <font color="#808080"><i># beam</i></font>
+  w&acute;[x] == wt1[x]
+  wt1&acute;[x] == wt2[x]
+  $x4[x].. EI*@derivx4(w) + (rho+m$xr[x])*(vdot+wt2[x]) == 0
+  $xl[x].. w[x] == 0						<font color="#808080"><i># w[xl] = 0</i></font>
+  $xl[x].. -1.5*w[x] + 2*w[x+1] - 0.5*w[x+2] == 0		<font color="#808080"><i># wx[xl] = 0</i></font>
+  $xr[x].. w[x-2] - 2*w[x-1] + w[x] == 0			<font color="#808080"><i># wxx[xr] = 0</i></font>
+  $xr[x].. 0.5*w[x-3] - 1.5*w[x-2] + 1.5*w[x-1] - 0.5*w[x] == 0	<font color="#808080"><i># wxxx[xr] = 0</i></font>
+  <font color="#808080"><i># energy</i></font>
+  $(NLP$ALL).. mxPE &gt;= 0.5*EI*@integx(<font color="#2ECC40">sqr</font>(@derivx2(w)))
+  $NLP.. KE == 0.5*M*<font color="#2ECC40">sqr</font>(v) + 0.5*@integx((rho+m$xr[x])*<font color="#2ECC40">sqr</font>(v+wt1[x]))
+  <font color="#808080"><i># control objective</i></font>
+  $NLP.. J&acute; == <font color="#2ECC40">sqr</font>(u)
+
+<font color="red"><b>ini:</b></font>
+  w[x] = 0
+  wt{1:2}[x] = 0
+  z = <font color="#0074D9">linspace</font>(<font color="#0074D9">initial</font>(z),<font color="#0074D9">final</font>(z))
+  v = <font color="#0074D9">linspace</font>(<font color="#0074D9">initial</font>(v),<font color="#0074D9">final</font>(v))
+  u = 0
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">initial</font>(J)$(<font color="#3D9970">not</font> NLP) + (mxPE+<font color="#0074D9">final</font>(1e-2*J))$NLP <font color="#8A2BE2">using</font> nlp
+
+<font color="red"><b>gms:</b></font>
+  NLP = 1;
+  <font color="#8A2BE2">@solve</font> <font color="#8A2BE2">with</font> conopt4
+</pre>
+</body>
+</html>

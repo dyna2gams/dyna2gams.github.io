@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -26,13 +26,13 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <pre>
 <font color="red"><b>par:</b></font>
   <font color="#808080"><i># Generic</i></font>
-  g = 1.6229		<font color="#808080"><i># [m/s^2]	Gravitational Acceleration, default value is Moon</i></font>
+  g = 1.6229		<font color="#808080"><i># [m/s&sup2;]	Gravitational Acceleration, default value is Moon</i></font>
   epsilon = 0.01	<font color="#808080"><i># 		Tunes the smoothing element</i></font>
   Ispg0 = 3049		<font color="#808080"><i># [m/s]		veff. product of the specific impulse with g0</i></font>
-  <font color="#808080"><i># Spaceraft</i></font>
-  Ixx = 30550 * 0.62	<font color="#808080"><i># [kg m^2]	Moment of Inertia Tensor Component - xx</i></font>
-  Iyy = 33014 * 0.62	<font color="#808080"><i># [kg m^2]	Moment of Inertia Tensor Component - yy</i></font>
-  Izz = 33826 * 0.62	<font color="#808080"><i># [kg m^2]	Moment of Inertia Tensor Component - zz</i></font>
+  <font color="#808080"><i># Spacecraft</i></font>
+  Ixx = 30550 * 0.62	<font color="#808080"><i># [kg m&sup2;]	Moment of Inertia Tensor Component - xx</i></font>
+  Iyy = 33014 * 0.62	<font color="#808080"><i># [kg m&sup2;]	Moment of Inertia Tensor Component - yy</i></font>
+  Izz = 33826 * 0.62	<font color="#808080"><i># [kg m&sup2;]	Moment of Inertia Tensor Component - zz</i></font>
   L = 3			<font color="#808080"><i># [m]		Distance thrust center of mass</i></font>
   maxThrust = 44000	<font color="#808080"><i># [N]		Max thrust</i></font>
   maxSecondary = 44	<font color="#808080"><i># [N]		Max secondary thrust for the attitude control</i></font>

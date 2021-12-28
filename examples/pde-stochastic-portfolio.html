@@ -1,0 +1,176 @@
+<!-- Dyna-to-Html Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">A Portfolio Optimization Problem</h1>
+<pre>
+<font color="red"><b>rem:</b></font> A Portfolio Optimization Problem
+</pre>
+<p>
+  Along the lines of [1], we consider a portfolio optimization problem where an investor
+  has the choice of investing in the stock market or to put his money in a bank account.
+  We model the stock market as geometric Brownian motion with time-varying and
+  stochastic mean returns and time-varying and stochastic diffusion term (volatility).
+<p>
+  Some of our data slightly differ from those in [1].
+<p>
+  We present here after the numerical solution of the Hamilton-Jacobi-Bellman equation.
+<p>
+  Reference:
+  <ol>
+  <li>H. Peyrl, F. Herzog, H.P. Geering,
+  <em>Numerical Solution of the Hamilton-Jacobi-Bellman Equation for Stochastic
+  Optimal Control Problems</em>,
+  2005 WSEAS Int. Conf. on Dynamical Systems and Control, Venice, Italy, November 2005.
+  </ol>
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">substitute-symbols</font> = A1&gt;AA1 | A2&gt;AA2 | F&gt;FF | X&gt;TickX | V&gt;TickV
+  <font color="#39CCCC">default-iterations-number</font> = 1
+  <font color="#39CCCC">model-option</font> = workfactor=10
+
+<font color="red"><b>set:</b></font>
+  x = |x0:x16|
+  xl[x] = |x0|
+  xx[x] = |x1:x15|
+  xr[x] = |x16|
+  v = |v0:v16|
+  vl[v] = |v0|
+  vv[v] = |v1:v15|
+  vr[v] = |v16|
+
+<font color="red"><b>par:</b></font>
+  a1 = 0.13
+  A1 = 4.73
+  a2 = 0.25
+  A2 = 0.85
+  nu0 = 0.013
+  sigma0 = 0.287
+  rho12 = 0.20
+  rho13 = -0.62
+  rho23 = -0.16
+  F = 8.96
+  f = 0.32
+  r = 0.044
+  gamma = -5
+  tf = 3
+  DeltaX = 0.6/(<font color="#3D9970">card</font>(x)-1)
+  DeltaV = 0.6/(<font color="#3D9970">card</font>(v)-1)
+  X[x] = -0.2 + (<font color="#3D9970">ord</font>(x)-1)*DeltaX
+  V[v] = 0.1 + (<font color="#3D9970">ord</font>(v)-1)*DeltaV
+
+<font color="red"><b>var:</b></font>
+  nu
+  sigma
+
+<font color="red"><b>dyn:</b></font>
+  H[x,v]
+  Hx[x,v]
+  Hv[x,v]
+  u[x,v]
+
+<font color="red"><b>lim:</b></font>
+  -1 &lt;= u[x,v] &lt;= 1
+
+<font color="red"><b>t=tf:</b></font>
+  H[x,v] = 1
+
+<font color="red"><b>exp:</b></font>
+  Hxx == ((Hx[x+1,v]-Hx[x-1,v])$xx[x]+(-3*Hx[x,v]+4*Hx[x+1,v]-Hx[x+2,v])$xl[x]+(3*Hx[x,v]-4*Hx[x-1,v]+Hx[x-2,v])$xr[x])/2/DeltaX
+  Hvv == ((Hv[x,v+1]-Hv[x,v-1])$vv(v)+(-3*Hv[x,v]+4*Hv[x,v+1]-Hv[x,v+2])$vl(v)+(3*Hv[x,v]-4*Hv[x,v-1]+Hv[x,v-2])$vr(v))/2/DeltaV
+  Hvx == ((Hv[x+1,v]-Hv[x-1,v])$xx[x]+(-3*Hv[x,v]+4*Hv[x+1,v]-Hv[x+2,v])$xl[x]+(3*Hv[x,v]-4*Hv[x-1,v]+Hv[x-2,v])$xr[x])/2/DeltaX
+  Hxv == ((Hx[x,v+1]-Hx[x,v-1])$vv(v)+(-3*Hx[x,v]+4*Hx[x,v+1]-Hx[x,v+2])$vl(v)+(3*Hx[x,v]-4*Hx[x,v-1]+Hx[x,v-2])$vr(v))/2/DeltaV
+
+<font color="red"><b>equ:</b></font>
+  $xx[x].. Hx[x,v] == ( H[x+1,v] - H[x-1,v] )/2/DeltaX
+  $xl[x].. Hx[x,v] == (-3*H[x,v] + 4*H[x+1,v] - H[x+2,v] )/2/DeltaX
+  $xr[x].. Hx[x,v] == ( 3*H[x,v] - 4*H[x-1,v] + H[x-2,v] )/2/DeltaX
+
+  $vv[v].. Hv[x,v] == ( H[x,v+1] - H[x,v-1] )/2/DeltaV
+  $vl[v].. Hv[x,v] == (-3*H[x,v] + 4*H[x,v+1] - H[x,v+2] )/2/DeltaV
+  $vr[v].. Hv[x,v] == ( 3*H[x,v] - 4*H[x,v-1] + H[x,v-2] )/2/DeltaV
+
+  - H&acute;[x,v] == \
+    gamma*(r + u[x,v]*(F*X[x]+f-r) + 0.5*<font color="#2ECC40">sqr</font>(u[x,v])*V(v)*(gamma-1))*H[x,v] + \
+    (a1 - A1*X[x] + gamma*u[x,v]*<font color="#2ECC40">sqrt</font>(V[v])*rho12*nu)*Hx[x,v] + \
+    (a2 - A2*V[v] + gamma*u[x,v]*V[v]*rho13*sigma)*Hv[x,v] + \
+    0.5*<font color="#2ECC40">sqr</font>(nu)*Hxx + \
+    0.5*V[v]*<font color="#2ECC40">sqr</font>(sigma)*Hvv + \
+    <font color="#2ECC40">sqrt</font>(V[v])*sigma*rho23*nu*(Hxv+Hvx)/2
+
+  u[x,v] == <font color="#2ECC40">max</font>(-1,<font color="#2ECC40">min</font>(1,(F*X[x]+f-r + sigma*rho13*V[v]*Hv[x,v]/H[x,v] + nu*<font color="#2ECC40">sqrt</font>(V[v])*rho12*Hx[x,v]/H[x,v])/(1-gamma)/V[v]))
+
+<font color="red"><b>ini:</b></font>
+  H[x,v] = 1
+  nu = 0
+  sigma = 0
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">minimize</font> <font color="#2ECC40">sqr</font>(nu-nu0) + <font color="#2ECC40">sqr</font>(sigma-sigma0) <font color="#8A2BE2">using</font> dnlp <font color="#8A2BE2">with</font> none
+
+<font color="red"><b>gms:</b></font>
+  <font color="#808080"><i># deterministic case</i></font>
+  nu.fx = nu.l; sigma.fx = sigma.l;
+  <font color="#8A2BE2">@solve</font>
+  <font color="#808080"><i># stochastic case</i></font>
+  nu.lo = 0; nu.up = nu0; sigma.lo = 0; sigma.up = sigma0;
+  <font color="#8A2BE2">@solve</font>
+  <font color="#8A2BE2">@export</font> Var=u.l[x,v], Grid=<font color="#0074D9">Time</font> X[x] V[v], <font color="#3D9970">File</font>=$sim-stochastic-portfolio.<font color="#8A2BE2">%N%</font>.txt
+  <font color="#3D9970">execute</font> 'dyna-dbf-init.exe $sim-stochastic-portfolio.<font color="#8A2BE2">%N%</font>.txt $sim-stochastic-portfolio.<font color="#8A2BE2">%N%</font>.dbf'
+
+<font color="red"><b>put:</b></font>
+  <font color="#808080"><i># Create a file for Octave/Matlab</i></font>
+  "<font color="#8A2BE2">%FN%</font>.<font color="#8A2BE2">%N%</font>.m&lt;"
+  % Created on %system.date1% at %system.time%
+  xx = ["X[x]:3"];
+  vv = ["V[v]:3"];
+  "`parameter uu[x,v]; uu[x,v] = final(u.l[x,v]);`"
+  uu = ["uu[x,v]:3;"];
+  "`parameter HH[x,v]; HH[x,v] = initial(H.l[x,v]);`"
+  HH = ["HH[x,v]:3;"];
+  figure('Name','<font color="#8B0000">@ifnam@</font> <font color="#8A2BE2">%N%</font>','NumberTitle','off')
+  surf(vv,xx,uu)
+  title('Optimal investment policy for T=3 years')
+  xlabel('Volatility')
+  ylabel('Return')
+  figure('Name','<font color="#8B0000">@ifnam@</font> <font color="#8A2BE2">%N%</font>','NumberTitle','off')
+  surf(vv,xx,HH)
+  title('Value function for T=0')
+  xlabel('Volatility')
+  ylabel('Return')
+  "&lt;"
+
+<font color="#808080"><i>###:</i></font><font color="#808080"><i> Maxima script to derive the equations</i></font>
+<font color="#808080"><i>  fun: matrix([w*(r+u*(F*x+f-r))],[a1-A1*x],[a2-A2*v])$</i></font>
+<font color="#808080"><i>  sig: matrix([w*u*sqrt(v)],[nu],[sigma*sqrt(v)])$</i></font>
+<font color="#808080"><i>  depends(H,[x,v])$</i></font>
+<font color="#808080"><i>  V: w^gamma/gamma*H$</i></font>
+<font color="#808080"><i>  grad: jacobian([V],[w,x,v])$</i></font>
+<font color="#808080"><i>  hess: hessian(V,[w,x,v])$</i></font>
+<font color="#808080"><i>  rho: matrix([1,rho12,rho13],[rho12,1,rho23],[rho13,rho12,1])$</i></font>
+<font color="#808080"><i>  load ("nchrpl");</i></font>
+<font color="#808080"><i>  expr: transpose(grad).fun + 0.5*mattrace(hess.((sig.transpose(sig))*rho))$</i></font>
+<font color="#808080"><i>  expr2: expr*gamma/w^gamma$</i></font>
+<font color="#808080"><i>  expr3: subst([diff(H,x)=Hx,diff(H,v)=Hv,</i></font>
+<font color="#808080"><i>   diff(diff(H,x),x)=Hxx,diff(diff(H,x),v)=Hxv,</i></font>
+<font color="#808080"><i>   diff(diff(H,v),x)=Hvx,diff(diff(H,v),v)=Hvv],expr2)$</i></font>
+<font color="#808080"><i>  expr4: ratsimp(expr3,H,Hx,Hv,Hxx,Hxv,Hvx,Hvv);</i></font>
+<font color="#808080"><i>  polydecomp(ratcoef(expr4,H),u);</i></font>
+<font color="#808080"><i>  solve(diff(expr4,u),u);</i></font>
+<font color="#808080"><i>  ratsimp(%,H,Hx,Hv);</i></font>
+</pre>
+</body>
+</html>

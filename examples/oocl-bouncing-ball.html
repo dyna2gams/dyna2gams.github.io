@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -23,7 +23,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <p>
 <pre>
 <font color="red"><b>set:</b></font>
-  phase = [bc,ac]		<font color="#808080"><i># before contact, after contact</i></font>
+  phase = [bc,ac]	<font color="#808080"><i># before contact, after contact</i></font>
 
 <font color="red"><b>par:</b></font>
   tf = 1
@@ -35,7 +35,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   t[phase]		<font color="#808080"><i># states</i></font>
   s[phase]
   v[phase]
-  F[phase]		<font color="#808080"><i># control</i></font>
+  F[phase] :: <font color="#7FDBFF">control</font>	<font color="#808080"><i># control</i></font>
   J[phase]		<font color="#808080"><i># criterion</i></font>
 
 <font color="red"><b>lim:</b></font>
@@ -60,7 +60,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   s&acute;[phase] / TimeDot == v[phase]
   v&acute;[phase] / TimeDot == -10 + 10*F[phase]
   J&acute;[phase] / TimeDot == <font color="#2ECC40">sqr</font>(F[phase])
-  <font color="#8A2BE2">@linkphases</font> -x v	<font color="#808080"><i># link final and initial conditions across phases for state variables, except for variable v, which is given here after</i></font>
+  <font color="#8A2BE2">@linkphases</font> -x v	<font color="#808080"><i># link final and initial conditions across phases for state and control variables, except for variable v, which is given here after</i></font>
   <font color="#8A2BE2">$once</font>.. <font color="#0074D9">initial</font>(v['ac']) == -<font color="#0074D9">final</font>(v['bc'])/2
 
 <font color="red"><b>obj:</b></font>
