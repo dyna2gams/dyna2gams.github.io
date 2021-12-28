@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -43,8 +43,8 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   \begin{matrix}
   \dot{x}_1 \\
   \dot{y}_1 \\
-  \dot{\theta}_1 
-  \end{matrix}  
+  \dot{\theta}_1
+  \end{matrix}
   \right) = \sum_{i=1}^{N-1} \big(g_i(\theta_1,\beta_2,\dotsc,\beta_N)\big) \dot{\beta}_{i+1}
   \]
 <p>
@@ -65,13 +65,13 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   \]
 <p>
   References:
-  <ol>  
+  <ol>
   <li>E.M. Purcell,
   <em>Life at low reynolds number</em>,
   American Journal of Physics, 45:3-11, 1977.
   <li>L. Giraldi, P. Martinon and M. Zoppello,
-  <em>Controllability and   Optimal Strokes for N-link Micro-swimmer</em>,
-  In 52nd IEEE Conference on Decision and Control, Firenze, Italy, 2013.
+  <em>Controllability and Optimal Strokes for N-link Micro-swimmer</em>,
+  IEEE Conference on Decision and Control, December 2013.
   <li>L. Giraldi, P. Martinon and M. Zoppello,
   <em>Optimal design of Purcell&rsquo;s three-link swimmer</em>,
   Physical Review E, 91(2):3012, 2015.
@@ -98,14 +98,14 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   0 &lt;= E &lt;= +<font color="#3D9970">inf</font>
   -1 &lt;= u1 &lt;= 1
   -1 &lt;= u2 &lt;= 1
-  
+
 <font color="red"><b>t=t0:</b></font>
   x = 0
   y = 0
-  -Pi/2 &lt;= th &lt;= 0  
+  -Pi/2 &lt;= th &lt;= 0
   E = 0
   -Pi/2 &lt;= b1 &lt;= 0	<font color="#808080"><i># set sign to break symmetries</i></font>
-  
+
 <font color="red"><b>t=tf:</b></font>
   -<font color="#3D9970">inf</font> &lt;= x &lt;= -0.0001
   y = 0
@@ -135,18 +135,18 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   0 == <font color="#0074D9">final</font>(th) - <font color="#0074D9">initial</font>(th)
   0 == <font color="#0074D9">final</font>(b1) - <font color="#0074D9">initial</font>(b1)
   0 == <font color="#0074D9">final</font>(b3) - <font color="#0074D9">initial</font>(b3)
-  
+
 <font color="red"><b>obj:</b></font>
   <font color="#808080"><i># maximal displacement along x-axis (with x(tf) &lt; 0)</i></font>
   <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(x) <font color="#8A2BE2">using</font> nlp
 
-  <font color="#808080"><i># max displacement /  final time</i></font>
+  <font color="#808080"><i># max displacement / final time</i></font>
   <font color="#808080"><i># minimize final(x) / tf using nlp</i></font>
 
   <font color="#808080"><i># max displacement / energy</i></font>
   <font color="#808080"><i># minimize final(x) / final(E) using nlp</i></font>
 
-  <font color="#808080"><i># min "energy"</i></font>
+  <font color="#808080"><i># min energy</i></font>
   <font color="#808080"><i># minimize final(E) using nlp</i></font>
 </pre>
 </body>

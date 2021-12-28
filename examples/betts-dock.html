@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -73,7 +73,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <font color="red"><b>lim:</b></font>
   0 &lt;= tf &lt;= 420
   -tau_max &lt;= tau{1:3} &lt;= tau_max
-  
+
 <font color="red"><b>t=t0:</b></font>
   {x y z} = {0 -10 0}
   {vx vy vz} = 0
@@ -84,26 +84,26 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   J = 0
 
 <font color="red"><b>mac:</b></font>
-  @Quat2Mat(Q,op,q) \
-    &Q11&op &q1*&q1+&q4*&q4-&q2*&q2-&q3*&q3; &Q12&op 2*(&q1*&q2+&q4*&q3); &Q13&op 2*(&q1*&q3-&q4*&q2);\
-    &Q21&op 2*(&q1*&q2-&q4*&q3); &Q22&op &q2*&q2+&q4*&q4-&q1*&q1-&q3*&q3; &Q23&op 2*(&q2*&q3+&q4*&q1);\
+  @Quat2Mat(Q,op,q)
+    &Q11&op &q1*&q1+&q4*&q4-&q2*&q2-&q3*&q3; &Q12&op 2*(&q1*&q2+&q4*&q3); &Q13&op 2*(&q1*&q3-&q4*&q2);
+    &Q21&op 2*(&q1*&q2-&q4*&q3); &Q22&op &q2*&q2+&q4*&q4-&q1*&q1-&q3*&q3; &Q23&op 2*(&q2*&q3+&q4*&q1);
     &Q31&op 2*(&q1*&q3+&q4*&q2); &Q32&op 2*(&q2*&q3-&q4*&q1); &Q33&op &q3*&q3+&q4*&q4-&q1*&q1-&q2*&q2;
-  @MT(Z,op,X) \
-    &Z11&op &X11; &Z12&op &X21; &Z13&op &X31;\
-    &Z21&op &X12; &Z22&op &X22; &Z23&op &X32;\
-    &Z31&op &X13; &Z32&op &X23; &Z33&op &X33; 
-  @MtV(z,op,X,y) \
-    &z1&op &X11*&y1+&X12*&y2+&X13*&y3;\
-    &z2&op &X21*&y1+&X22*&y2+&X23*&y3;\
+  @MT(Z,op,X)
+    &Z11&op &X11; &Z12&op &X21; &Z13&op &X31;
+    &Z21&op &X12; &Z22&op &X22; &Z23&op &X32;
+    &Z31&op &X13; &Z32&op &X23; &Z33&op &X33;
+  @MtV(z,op,X,y)
+    &z1&op &X11*&y1+&X12*&y2+&X13*&y3;
+    &z2&op &X21*&y1+&X22*&y2+&X23*&y3;
     &z3&op &X31*&y1+&X32*&y2+&X33*&y3;
-  @compute_crossprod3(z,op,x,y) \
-    &z1&op &x2*&y3-&x3*&y2;\
-    &z2&op &x3*&y1-&x1*&y3;\
+  @compute_crossprod3(z,op,x,y)
+    &z1&op &x2*&y3-&x3*&y2;
+    &z2&op &x3*&y1-&x1*&y3;
     &z3&op &x1*&y2-&x2*&y1;
-  @compute_dyn(w,q) \
-    &q1&acute; == ( &w3*&q2-&w2*&q3+&w1*&q4)/2;\
-    &q2&acute; == (-&w3*&q1+&w1*&q3+&w2*&q4)/2;\
-    &q3&acute; == ( &w2*&q1-&w1*&q2+&w3*&q4)/2;\
+  @compute_dyn(w,q)
+    &q1&acute; == ( &w3*&q2-&w2*&q3+&w1*&q4)/2;
+    &q2&acute; == (-&w3*&q1+&w1*&q3+&w2*&q4)/2;
+    &q3&acute; == ( &w2*&q1-&w1*&q2+&w3*&q4)/2;
     &q4&acute; == (-&w1*&q1-&w2*&q2-&w3*&q3)/2
 
 <font color="red"><b>exp:</b></font>

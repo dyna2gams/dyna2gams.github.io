@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -20,8 +20,8 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 </pre>
 <p>
   Robert H. Goddard first posed the problem that bears his name in 1919. By
-  making assumptions about the atmospheric density it is possible to derive 
-  expressions that define the optimal trajectory which contains a singular 
+  making assumptions about the atmospheric density it is possible to derive
+  expressions that define the optimal trajectory which contains a singular
   arc [1].
 <p>
   References:
@@ -57,15 +57,15 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   h[phase]
   v[phase]
   m[phase]
-  T[phase]
+  T[phase] :: <font color="#7FDBFF">control</font>
 
 <font color="red"><b>lim:</b></font>
   1 &lt;= tlen['ph1'] &lt;= 45
   1 &lt;= tlen['ph2'] &lt;= +<font color="#3D9970">inf</font>
   1 &lt;= tlen['ph3'] &lt;= +<font color="#3D9970">inf</font>
   Tm &lt;= T['ph1'] &lt;= Tm
-  0  &lt;= T['ph2'] &lt;= Tm  
-  0  &lt;= T['ph3'] &lt;= 0  
+  0  &lt;= T['ph2'] &lt;= Tm
+  0  &lt;= T['ph3'] &lt;= 0
 
 <font color="red"><b>t=t0:</b></font>
   t['ph1'] = 0
@@ -76,7 +76,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <font color="red"><b>t=tf:</b></font>
   v['ph3'] = 0
   m['ph3'] = 1
-  
+
 <font color="red"><b>exp:</b></font>
   TimeDot == tlen[phase] / tf
 
@@ -89,7 +89,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   [phase]$<font color="#2ECC40">sameas</font>(phase,'ph2').. T[phase] - sigma*<font color="#2ECC40">sqr</font>(v[phase])*<font color="#2ECC40">exp</font>(-h[phase]/h0) - m[phase]*g \
     - m[phase]*g/(1+4*c/v[phase]+2*<font color="#2ECC40">sqr</font>(c/v[phase]))*(<font color="#2ECC40">sqr</font>(c)/h0/g*(1+v[phase]/c)-1-2*c/v[phase]) \
     == 0
-  <font color="#8A2BE2">@linkphases</font>
+  <font color="#8A2BE2">@linkphases</font> -x T
 
 <font color="red"><b>ini:</b></font>
   v[phase] = 500
@@ -97,7 +97,6 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 
 <font color="red"><b>obj:</b></font>
   <font color="#8A2BE2">maximize</font> <font color="#0074D9">final</font>(h['ph3']) <font color="#8A2BE2">using</font> nlp
-   
 </pre>
 </body>
 </html>

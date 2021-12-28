@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -20,7 +20,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 </pre>
 <p>
   This well-known problem (see for instance [1],[2]) models the ascent of a rocket through the
-  atmosphere, and we restrict here ourselves to  vertical (monodimensional) trajectories.
+  atmosphere, and we restrict here ourselves to vertical (monodimensional) trajectories.
 <p>
   The state variables are the altitude, speed and mass of the rocket during the flight, for a
   total dimension of 3. The rocket is subject to gravity, thrust and drag forces. The final
@@ -29,7 +29,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <p>
   \[
   \max \ m(t_f)\\
-  \dot r = v\\  
+  \dot r = v\\
   \dot v = - \dfrac{1}{r^2} + \dfrac{1}{m} (T_{max} \ u - D(r,v))\\
   \dot m = - b \ T_{max} \ u\\
   u(\cdot)\in [0,1]\\
@@ -67,10 +67,10 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   A = 310
   k = 500
   r0 = 1
-  <font color="#808080"><i># C = 0.5 </i></font>
+  <font color="#808080"><i># C = 0.5</i></font>
   <font color="#808080"><i># C = 0.65</i></font>
   C = 0.8
-  
+
 <font color="red"><b>var:</b></font>
   tf
 
@@ -83,7 +83,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   1e-2 &lt;= m &lt;= 1
   0 &lt;= u &lt;= 1
   0 &lt;= tf &lt;= 1
-    
+
 <font color="red"><b>t=t0:</b></font>
   r = r0
   v = 0
@@ -98,17 +98,17 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   m = 1
   u = 0
   tf = 0.5
-  
+
 <font color="red"><b>exp:</b></font>
   drag == A * <font color="#2ECC40">sqr</font>(v) * rho
   rho == <font color="#2ECC40">exp</font>(-k*(r-r0))
-  
+
 <font color="red"><b>equ:</b></font>
   r&acute; == v
   v&acute; == (Tmax*u - drag)/m - 1/<font color="#2ECC40">sqr</font>(r)
   m&acute; == -b*u
   drag &lt;= C
-  
+
 <font color="red"><b>obj:</b></font>
   <font color="#8A2BE2">maximize</font> <font color="#0074D9">final</font>(m) <font color="#8A2BE2">using</font> nlp
 </pre>
