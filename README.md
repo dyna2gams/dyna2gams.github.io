@@ -37,8 +37,9 @@ mathematical programming tool with a set of high level features dedicated to opt
 that simplify the formulation of the problems.
 
 DYNA dialect allows to formulate optimal control problems in a way that is very similar to
-their mathematical description. Take a look at the Tutorial to grasp the basic structure and
-characteristics of a DYNA model and how it relates to the mathematical formulation.
+their mathematical description. Take a look at the [Tutorial](https://dyna2gams.github.io/tutorial.html)
+to grasp the basic structure and characteristics of a DYNA model and how it relates to the
+mathematical formulation.
 
 __DYNA2GAMS__ has been developed in the course of the year 2018 and is regularly updated since
 then. It is available for download on this web site. On top, it comes with a very large set of
