@@ -12,10 +12,10 @@ trajectories, virtual test-driving, chassis control...), controller design (line
 regulator, model-predictive control...), process engineering (chemical processes...),
 fishing strategies, biology, etc.
 
-The General Algebraic Modeling System ([GAMS](https://www.gams.com)) is a high-level modeling
-system for mathematical programming and optimization. It consists of a language compiler and a
-range of integrated high-performance solvers. GAMS is specifically designed for modeling
-linear, nonlinear and mixed integer optimization problems.
+The General Algebraic Modeling System ([GAMS](https://www.gams.com/products/gams/gams-language/))
+is a high-level modeling system for mathematical programming and optimization. It consists of
+a language compiler and a range of integrated high-performance solvers. GAMS is specifically
+designed for modeling linear, nonlinear and mixed integer optimization problems.
 
 In a nutshell, optimal control problems (OCP) are usually described by:
 - A state-space model of a system. This can be either a set of ordinary differential
