@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -81,8 +81,8 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   ks = 49.73			<font color="#808080"><i># proxy std dev of k</i></font>
 
 <font color="red"><b>mac:</b></font>
-  @bipoly(p,k) c0+c1*&p+c2*&k+c3*<font color="#2ECC40">sqr</font>(&p)+c4*&p*&k+c5*<font color="#2ECC40">sqr</font>(&k)+\
-    c6*<font color="#2ECC40">power</font>(&p,3)+c7*<font color="#2ECC40">sqr</font>(&p)*&k+c8*&p*<font color="#2ECC40">sqr</font>(&k)+c9*<font color="#2ECC40">power</font>(&k,3)+\
+  @bipoly(p,k) c0+c1*&p+c2*&k+c3*<font color="#2ECC40">sqr</font>(&p)+c4*&p*&k+c5*<font color="#2ECC40">sqr</font>(&k)+
+    c6*<font color="#2ECC40">power</font>(&p,3)+c7*<font color="#2ECC40">sqr</font>(&p)*&k+c8*&p*<font color="#2ECC40">sqr</font>(&k)+c9*<font color="#2ECC40">power</font>(&k,3)+
     c10*<font color="#2ECC40">power</font>(&p,4)+c11*<font color="#2ECC40">power</font>(&p,3)*&k+c12*<font color="#2ECC40">sqr</font>(&p)*<font color="#2ECC40">sqr</font>(&k)+c13*&p*<font color="#2ECC40">power</font>(&k,3)+c14*<font color="#2ECC40">power</font>(&k,4)
   @u(p,k) <font color="#2ECC40">max</font>(0,<font color="#2ECC40">min</font>(&k,@bipoly((&p-pm)/ps,(&k-km)/ks)))
 
@@ -109,7 +109,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 
 <font color="red"><b>gms:</b></font>
   <font color="#808080"><i># Least square Monte Carlo: regress policy wrt price and inventory</i></font>
-  <font color="#808080"><i># Okay, here we need a bit of insight into what's under the hood of DYNA...</i></font>
+  <font color="#808080"><i># Okay, here we need a bit of insight into what&rsquo;s under the hood of DYNA...</i></font>
   <font color="#3D9970">variables</font> error[scen,<font color="#0074D9">N</font>], ksi; <font color="#3D9970">equations</font> e, obj;
   e[scen,<font color="#0074D9">N</font>].. u.l[scen]$(u.l[scen]&lt;k.l[scen]) =e= @bipoly((p.l[scen]-pm)/ps,(k.l[scen]-km)/ks) + error[scen,<font color="#0074D9">N</font>];
   obj.. ksi =e= <font color="#3D9970">sum</font>((scen,<font color="#0074D9">N</font>), <font color="#2ECC40">sqr</font>(error[scen,<font color="#0074D9">N</font>]));

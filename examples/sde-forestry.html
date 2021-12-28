@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -78,8 +78,8 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   ks = 49.73			<font color="#808080"><i># proxy std dev of k</i></font>
 
 <font color="red"><b>mac:</b></font>
-  @bipoly(p,k) c0+c1*&p+c2*&k+c3*<font color="#2ECC40">sqr</font>(&p)+c4*&p*&k+c5*<font color="#2ECC40">sqr</font>(&k)+\
-    c6*<font color="#2ECC40">power</font>(&p,3)+c7*<font color="#2ECC40">sqr</font>(&p)*&k+c8*&p*<font color="#2ECC40">sqr</font>(&k)+c9*<font color="#2ECC40">power</font>(&k,3)+\
+  @bipoly(p,k) c0+c1*&p+c2*&k+c3*<font color="#2ECC40">sqr</font>(&p)+c4*&p*&k+c5*<font color="#2ECC40">sqr</font>(&k)+
+    c6*<font color="#2ECC40">power</font>(&p,3)+c7*<font color="#2ECC40">sqr</font>(&p)*&k+c8*&p*<font color="#2ECC40">sqr</font>(&k)+c9*<font color="#2ECC40">power</font>(&k,3)+
     c10*<font color="#2ECC40">power</font>(&p,4)+c11*<font color="#2ECC40">power</font>(&p,3)*&k+c12*<font color="#2ECC40">sqr</font>(&p)*<font color="#2ECC40">sqr</font>(&k)+c13*&p*<font color="#2ECC40">power</font>(&k,3)+c14*<font color="#2ECC40">power</font>(&k,4)
   @u(p,k) <font color="#2ECC40">max</font>(0,<font color="#2ECC40">min</font>(&k,@bipoly((&p-pm)/ps,(&k-km)/ks)))
 

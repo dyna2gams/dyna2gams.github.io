@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -19,7 +19,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <font color="red"><b>rem:</b></font> Two burn orbit transfer
 </pre>
 <p>
-  The goal of this problem is to compute a trajectory for an spacecraft to go from a standard
+  The goal of this problem is to compute a trajectory for a spacecraft to go from a standard
   space shuttle park orbit to a geosynchronous final orbit. It is assumed that the engines
   operate over two short periods during the mission, and it is desired to compute the timing
   and duration of the burn periods, as well as the instantaneous direction of the thrust
@@ -54,8 +54,8 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <font color="red"><b>par:</b></font>
   T = 1.2		<font color="#808080"><i># [lb]</i></font>
   Isp = 300		<font color="#808080"><i># [sec]</i></font>
-  mu = 1.407645794e16	<font color="#808080"><i># [ft^2/sec^2]</i></font>
-  gs = 32.174		<font color="#808080"><i># [ft/s^2]</i></font>
+  mu = 1.407645794e16	<font color="#808080"><i># [ft&sup2;/sec&sup2;]</i></font>
+  gs = 32.174		<font color="#808080"><i># [ft/s&sup2;]</i></font>
   Re = 20925662.73	<font color="#808080"><i># [ft]</i></font>
   sigma = 1/6076.1154855643
   J2 = 1082.639e-6
@@ -73,7 +73,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   t[phase]
   p[phase] f[phase] g[phase] h[phase] k[phase] L[phase] w[phase]
   <font color="#808080"><i># control variables</i></font>
-  theta[phase] phi[phase]
+  theta[phase] phi[phase] :: <font color="#7FDBFF">controls</font>
   <font color="#808080"><i># ancillary variables (needed otherwise line too long in Gams code)</i></font>
   r{X Y Z}[phase]
   Delta{1:3}[phase]
@@ -204,7 +204,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   L&acute;[phase]  / TimeDot == <font color="#2ECC40">sqrt</font>((Re*p[phase])/mu) * (1/q) * (h[phase]*<font color="#2ECC40">sin</font>(L[phase])-k[phase]*<font color="#2ECC40">cos</font>(L[phase])) * Delta3[phase] \
                         + <font color="#2ECC40">sqrt</font>(mu*(Re*p[phase])) * <font color="#2ECC40">sqr</font>(q/(Re*p[phase]))
   w&acute;[phase]  / TimeDot == (-T/Isp)$ph24[phase]
-  <font color="#8A2BE2">@linkphases</font>
+  <font color="#8A2BE2">@linkphases</font> -x theta phi
   theta[phase] :: <font color="#7FDBFF">spline3</font>
   phi[phase] :: <font color="#7FDBFF">spline3</font>
 
