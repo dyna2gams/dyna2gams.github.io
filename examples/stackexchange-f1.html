@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -34,12 +34,12 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   Find the optimal trajectory that minimizes the time to travel from set \(A\) to set
   \(B\).
 <p>
-  A continuous nonlinear program approach (NLP).
-<p>
   Reference:
   <ol>
   <li>https://math.stackexchange.com/questions/3474468/
   </ol>
+<p>
+  A continuous nonlinear program approach (NLP).
 <p>
 <pre>
 <font color="red"><b>var:</b></font>
@@ -64,7 +64,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   1 &gt;= <font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(x)-4) + <font color="#2ECC40">sqr</font>(<font color="#0074D9">final</font>(y)-4)
 
 <font color="red"><b>ini:</b></font>
-<font color="#808080"><i>#  u = 0		# try to avoid the obvious solution u = pi/4 </i></font>
+<font color="#808080"><i>#  u = 0		# try to avoid the obvious solution u = pi/4</i></font>
 
 <font color="red"><b>obj:</b></font>
   <font color="#8A2BE2">minimize</font> tf <font color="#8A2BE2">using</font> nlp

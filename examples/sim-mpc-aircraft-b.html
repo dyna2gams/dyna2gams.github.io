@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -105,7 +105,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
       );
     <font color="#3D9970">if</font>(<font color="#0074D9">Time</font> &gt;= tm,			<font color="#808080"><i># compare current time and sampling time</i></font>
       mpc_uo('U') = <font color="#0074D9">last</font>(u);		<font color="#808080"><i># sampling</i></font>
-      mpc_x.fx('X{1:4}','K0') = <font color="#0074D9">last</font>(x{1:4}); <font color="#808080"><i># Note: I should use the z's only and estimate all the x's</i></font>
+      mpc_x.fx('X{1:4}','K0') = <font color="#0074D9">last</font>(x{1:4});	<font color="#808080"><i># Note: I should use the z&rsquo;s only and estimate all the x&rsquo;s</i></font>
       tm = tm + te			<font color="#808080"><i># reset sampling time</i></font>
       );
     <font color="#3D9970">if</font>(<font color="#0074D9">Time</font> &gt;= tk,			<font color="#808080"><i># compare current time and control time</i></font>

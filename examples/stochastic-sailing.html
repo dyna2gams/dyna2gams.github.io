@@ -1,0 +1,346 @@
+<!-- Dyna-to-Html Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Stochastic Optimal Control of a Sailboat</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Stochastic Optimal Control of a Sailboat
+</pre>
+<p>
+  In match race sailing, competitors must steer their boats upwind in the presence of
+  unpredictably evolving weather.  Combined with the tacking motion necessary to make
+  upwind progress, this makes it natural to model their path-planning as a hybrid
+  stochastic optimal control problem.  Dynamic programming provides the tools for
+  solving these, but the computational cost can be significant.  [1] designed a
+  rather fast iterative approach with a reduced state space dimension and designed an
+  adaptive timestep discretization that is very nearly causal.  It also provides an
+  accurate tack-switching operator by integrating over potential wind states after
+  the switch.
+<p>
+  The following is excerpted from [1] with minor changes.
+<p>
+  We considers the problem of time-optimal sailboat navigation to a target set
+  \(\mathcal{T}\) when the wind direction evolves stochastically.  For simplicity, we
+  assume that the wind speed is fixed, and the angle \(\phi\) of the upwind direction
+  to the vertical evolves under a drift-diffusion process:
+<p>
+  \[
+  d\phi = a dt + \sigma dW
+  \]
+<p>
+  where \(a\) is the drift rate, \(\sigma\) is the strength of the Brownian motion,
+  and \(dW\) is the differential of a Wiener process.  We control the angle of the
+  boat&rsquo;s velocity relative to the upwind direction.  But at any given time we are
+  also restricted to an interval of angles determined by the sailboat&rsquo;s current tack,
+  or configuration of sails.  We represent the tack as a controlled discrete variable
+  \(q \in \{-1,+1\}\); \(q = -1\) represents the starboard tack, which we model as
+  having access to the angles \([0,\pi]\), while the port tack \(q = +1\) has access
+  to \([-\pi,0]\).
+<p>
+  We use \(q \cdot u\) to encode the velocity angle relative to the upwind direction,
+  with the steering control variable \(u \in [0,\pi]\).  So, the steering angle \(u\)
+  is measured counterclockwise for \(q = -1\) and clockwise for \(q = +1\), with \(u
+  = 0\) corresponding to motion directly against the wind.  Whenever \(u\) changes,
+  the boat is assumed to instantly start travelling in the new direction with the
+  angle-dependent speed \(s(u)\).  The speed profile (termed the <i>polar plot</i>)
+  capturing this dependence is determined by the exact geometry of a specific boat.
+  A typical example is provided hereafter on the left.
+<p>
+  <table>
+  <tr>
+  <td><center><img src="stochastic-sailing-1.png" alt="" width="70%"/></center></td>
+  <td><center><img src="stochastic-sailing-2.png" alt="" width="80%"/></center></td>
+  </tr>
+  <tr>
+  <td><center><em><font size="-1">
+  An example polar speed plot \(s(u)\).
+  </font></em></center></td>
+  <td><center><em><font size="-1">
+  A diagram of the system setup in reduced coordinates.
+  </font></em></center></td>
+  </font>
+  </tr>
+  </table> 
+<p>
+  Assuming that the boat&rsquo;s location is \((x(t), y(t))\), the system dynamics in
+  absolute coordinates is then
+<p>
+  \[
+  dx = s(u) \sin(\phi - q \cdot u) dt\\
+  dy = s(u) \cos(\phi - q \cdot u) dt\\
+  d\phi = a dt + \sigma dW
+  \]
+<p>
+  We now simplify by focusing on radially symmetric problems:  if we assume that the
+  target \(\mathcal{T}\) is circular, we no longer care about an absolute angle of
+  the boat&rsquo;s position relative to the target.  Shifting to a coordinate system
+  centered at \(\mathcal{T}\), we can reduce the \((x, y, \phi)\) state space to just
+  two coordinates \((r, \theta)\), where \(r = \sqrt{x^2 + y^2}\) is the radial
+  distance of the boat from the center of \(\mathcal{T}\) and \(\theta = \arctan(-y/x) +
+  \phi\) is the angle of the wind measured counterclockwise relative to the straight
+  line between the boat and the target; see figure on the right.  In this reduced
+  representation, the dynamics are governed by
+<p>
+  \[
+  dr = - s(u) \cos(\phi - q \cdot u) dt\\
+  d\theta = \Big[ \dfrac{s(u)}{r} \sin(\theta - q \cdot u) + a \Big] dt + \sigma dW
+  \]
+<p>
+  which describe the projections of the velocity vector onto the radial and angular
+  components, combined with the drift diffusion evolution of the wind.
+<p>
+  References:
+  <ol>
+  <li>C. Miles and A. Vladimirsky,
+  <em>Stochastic Optimal Control of a Sailboat</em>,
+  arXiv:2109.08260v1 [math.OC] 17 Sep 2021.
+  <li>https://eikonal-equation.github.io/Stochastic_Sailing
+  </ol>
+<p>
+<pre>
+<font color="#808080"><i>###:</i></font><font color="#808080"><i></i></font>
+<font color="#808080"><i>  Progressive refinement: from coarse to fine grid definition (16x16, 32x32 and 64x64)</i></font>
+<font color="#808080"><i>  dyna-execute .\examples\stochastic-sailing.dyn</i></font>
+<font color="#808080"><i>  dyna-execute .\examples\stochastic-sailing.dyn --iter=2 --/Ssz=16</i></font>
+<font color="#808080"><i>  dyna-execute .\examples\stochastic-sailing.dyn --iter=3 --/Ssz=32</i></font>
+<font color="#808080"><i></i></font>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">tabulation-knots-number</font> = 408
+  <font color="#39CCCC">substitute-symbols</font> = R&gt;RR | Q&gt;QQ | U&gt;UU
+  <font color="#39CCCC">time-model</font> = None
+  <font color="#39CCCC">include-library</font> = Hermite
+
+<font color="red"><b>par:</b></font>
+  target_radius = 0.1	<font color="#808080"><i># radius of the target</i></font>
+  switch_cost = 2	<font color="#808080"><i># switching cost</i></font>
+  &sigma; = 0.1		<font color="#808080"><i># stochastic diffusion of wind</i></font>
+  drift = 0.01		<font color="#808080"><i># angular drift of wind</i></font>
+  exit_cost = 0		<font color="#808080"><i># exit cost</i></font>
+  &lambda; = 0			<font color="#808080"><i># time discounting coefficient</i></font>
+  &epsilon; = 1e-4		<font color="#808080"><i># convergence criterion</i></font>
+  max_iters = 500	<font color="#808080"><i># maximum number of iterations till convergence</i></font>
+
+<font color="#808080"><i>###:</i></font><font color="#808080"><i></i></font>
+<font color="#808080"><i>  Suggested study parameters:</i></font>
+<font color="#808080"><i>  			target	target	switch			exit</i></font>
+<font color="#808080"><i>  			radius	dist	cost	&sigma;	drift	cost</i></font>
+<font color="#808080"><i>  deterministic		0.1	1.8	2.0	0.0	0.0	0.0</i></font>
+<font color="#808080"><i>  stochastic		0.1	1.8	2.0	0.1	0.0	0.0</i></font>
+<font color="#808080"><i>  stoc with drift	0.1	1.8	2.0	0.1	0.1	0.0</i></font>
+<font color="#808080"><i></i></font>
+<font color="#808080"><i>  &sigma;list     = {0.0, 0.05, 0.1, 0.05, 0.05, 0.05}</i></font>
+<font color="#808080"><i>  driftlist = {0.0, 0.0,  0.0, 0.05, 0.10, 0.15}</i></font>
+<font color="#808080"><i></i></font>
+<font color="#FF8000">$eval</font> SZ 8*2^<font color="#8A2BE2">%ITER%</font>
+<font color="red"><b>set:</b></font>
+  r = r1:r%SZ%	<font color="#808080"><i># state component 1 - distance to target</i></font>
+  &theta; = &theta;1:&theta;%SZ%	<font color="#808080"><i># state component 2 - angle of the wind</i></font>
+  q = q1:q2	<font color="#808080"><i># state component 3 - starboard tack (-1) or port tack (+1)</i></font>
+  u = u1:u24	<font color="#808080"><i># action space - steering angle</i></font>
+  &omega; = &omega;1:&omega;5	<font color="#808080"><i># Gauss-Hermite grid nodes for calculation of the expectation</i></font>
+
+<font color="red"><b>par:</b></font>
+  &Delta;r = 2 / (<font color="#3D9970">card</font>(r)-1)
+  &Delta;&theta; = 2*pi / (<font color="#3D9970">card</font>(&theta;)-1)
+  R[r] = (<font color="#3D9970">ord</font>(r)-1)*&Delta;r		<font color="#808080"><i># [0,2]</i></font>
+  &Theta;[&theta;] = (<font color="#3D9970">ord</font>(&theta;)-1)*&Delta;&theta;		<font color="#808080"><i># [0,2*pi]</i></font>
+  Q[q] = 2*<font color="#3D9970">ord</font>(q)-3
+  Rlo = <font color="#3D9970">smin</font>(r, R[r])
+  &Theta;lo = <font color="#3D9970">smin</font>(&theta;, &Theta;[&theta;])
+  U[u] = [0 5 10 15 20 25 32 36 40 45 52 60 70 80 90 100 110 120 130 140 150 160 170 180]
+  U[u] *= pi/180
+  <font color="#808080"><i># Parameters of Gauss-Hermite quadrature</i></font>
+  &Omega;[&omega;] = <font color="#0074D9">HermiteQW</font>(&omega;)/<font color="#2ECC40">sqrt</font>(pi)
+  &Zeta;[&omega;] = <font color="#2ECC40">sqrt</font>(2*switch_cost)*&sigma;*<font color="#0074D9">HermiteQN</font>(&omega;)
+
+<font color="red"><b>fun:</b></font>
+  <font color="#808080"><i># Boat speed for Sun Odyssey as a function of True Wind Angle (twa - degree) and Speed (tws - kn)</i></font>
+  &sect;bs = <font color="#7FDBFF">GridXY</font>
+         0    4    6    8   10   12   14   16   20   25   30   35   40   45   50   55   60
+    0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0
+    5  0.0  0.3  0.5  0.6  0.7  0.8  0.9  0.9  0.9  0.9  0.9  0.7  0.1  0.0  0.0  0.0  0.0
+   10  0.0  0.6  0.9  1.2  1.5  1.6  1.8  1.8  1.8  1.8  1.7  1.4  0.3  0.1  0.1  0.0  0.0
+   15  0.0  0.9  1.4  1.8  2.2  2.5  2.6  2.7  2.8  2.7  2.6  2.1  0.7  0.3  0.2  0.0  0.0
+   20  0.0  1.1  1.6  2.1  2.5  2.8  3.0  3.1  3.2  3.1  3.0  2.4  1.1  0.5  0.2  0.0  0.0
+   25  0.0  1.3  1.9  2.5  3.0  3.4  3.6  3.7  3.8  3.7  3.5  2.8  1.6  0.7  0.3  0.0  0.0
+   32  0.0  2.1  3.1  4.1  5.0  5.6  6.0  6.2  6.3  6.2  5.9  4.7  3.5  1.4  0.5  0.0  0.0
+   36  0.0  2.4  3.6  4.6  5.5  6.2  6.5  6.6  6.8  6.8  6.7  6.4  5.2  2.1  0.6  0.0  0.0
+   40  0.0  2.8  4.0  5.0  5.9  6.5  6.8  7.0  7.1  7.1  7.1  7.0  6.2  2.5  1.1  0.0  0.0
+   45  0.0  3.1  4.4  5.4  6.3  6.8  7.1  7.3  7.4  7.5  7.5  7.4  7.0  2.6  1.1  0.0  0.0
+   52  0.0  3.5  4.9  5.8  6.6  7.2  7.4  7.6  7.7  7.8  7.8  7.8  7.6  2.7  1.2  0.0  0.0
+   60  0.0  3.8  5.2  6.2  7.0  7.4  7.7  7.8  7.9  8.0  8.1  8.1  8.1  3.2  1.6  0.0  0.0
+   70  0.0  4.0  5.4  6.4  7.1  7.5  7.8  8.0  8.2  8.4  8.5  8.5  8.5  3.4  1.7  0.0  0.0
+   80  0.0  4.1  5.5  6.5  7.2  7.6  7.9  8.1  8.4  8.6  8.7  8.8  8.8  3.5  1.8  0.0  0.0
+   90  0.0  4.0  5.5  6.5  7.2  7.7  8.0  8.2  8.5  8.7  8.9  9.0  9.0  4.1  2.3  0.5  0.5
+  100  0.0  4.0  5.4  6.5  7.3  7.7  8.0  8.2  8.7  8.9  9.1  9.3  9.3  4.7  2.8  0.5  0.5
+  110  0.0  3.9  5.3  6.4  7.3  7.7  8.0  8.3  9.0  9.4  9.8 10.1 10.1  5.6  3.5  1.0  1.0
+  120  0.0  3.7  5.1  6.2  7.0  7.5  7.8  8.1  8.8  9.4 10.0 10.5 10.5  6.3  4.2  1.1  1.1
+  130  0.0  3.2  4.6  5.7  6.6  7.2  7.6  7.9  8.6  9.4 10.2 10.9 10.9  7.1  4.9  1.6  1.6
+  140  0.0  2.8  4.2  5.2  6.1  6.9  7.4  7.7  8.3  9.4 10.7 11.9 11.9  8.9  6.5  2.4  1.8
+  150  0.0  2.4  3.7  4.7  5.6  6.3  7.0  7.4  8.0  9.6 11.5 13.5 13.5 10.8  8.1  2.7  2.7
+  160  0.0  2.1  3.2  4.2  5.1  6.0  6.7  7.2  7.7  9.0 11.1 13.6 13.6 11.6  8.8  3.4  2.7
+  170  0.0  1.9  3.0  3.9  4.7  5.7  6.4  6.9  7.4  8.5 10.3 12.5 12.5 11.9  9.4  3.8  3.1
+  180  0.0  1.8  2.8  3.6  4.4  5.3  6.2  6.7  7.2  8.1  9.5 11.5 11.5 11.5  9.2  3.5  2.9
+
+<font color="#8B0000">@case</font> sz
+<font color="#8B0000">@whennset</font>
+<font color="#8B0000">@otherwise</font>
+  &sect;valuegrid1 = Grid2Dim $stochastic-sailing-vgrid1.@sz@
+  &sect;valuegrid2 = Grid2Dim $stochastic-sailing-vgrid2.@sz@
+<font color="#8B0000">@endcase</font>
+
+<font color="red"><b>mac:</b></font>
+  <font color="#808080"><i># Computes a bilinear interpolation at (R,&Theta;) of the values of the four nearest grid points for index q given.</i></font>
+  @interpolate110(z, vgrid, R, &Theta;, q)
+    <font color="#808080"><i># 1e-9 jitter is to handle case when R is exactly a multiple of &Delta;r, won't affect others</i></font>
+    ir = <font color="#2ECC40">floor</font>((&R - Rlo) / &Delta;r + 1e-9) + 1;
+    i&theta; = <font color="#2ECC40">floor</font>((&&Theta; - &Theta;lo) / &Delta;&theta; + 1e-9) + 1;
+    frac_r = (&R - Rlo - &Delta;r*(ir-1)) / &Delta;r;
+    frac_&theta; = (&&Theta; - &Theta;lo - &Delta;&theta;*(i&theta;-1)) / &Delta;&theta;;
+    <font color="#808080"><i># Also some jitter to prevent 0 * Inf. Not needed if not using Infs</i></font>
+    frac_r = <font color="#2ECC40">min</font>(<font color="#2ECC40">max</font>(frac_r, 1e-9), 1-1e-9);
+    frac_&theta; = <font color="#2ECC40">min</font>(<font color="#2ECC40">max</font>(frac_&theta;, 1e-9), 1-1e-9);
+    <font color="#3D9970">if</font>(ir &lt;= 0,
+      &z = <font color="#3D9970">sum</font>((r9,&theta;9)$(<font color="#3D9970">ord</font>(r9)=1 and <font color="#3D9970">ord</font>(&theta;9)=1), &vgrid(r9,&theta;9,&q));
+    <font color="#3D9970">else</font> <font color="#3D9970">if</font>(ir &gt;= <font color="#3D9970">card</font>(r),
+      &z = <font color="#3D9970">Inf</font>;
+    <font color="#3D9970">else</font> <font color="#3D9970">loop</font>((r9,&theta;9)$(<font color="#3D9970">ord</font>(r9)=ir and <font color="#3D9970">ord</font>(&theta;9)=i&theta;),
+      interp_top = frac_r * &vgrid(r9+1,&theta;9+1,&q) + (1-frac_r) * &vgrid(r9,&theta;9+1,&q);
+      interp_bot = frac_r * &vgrid(r9+1,&theta;9,&q) + (1-frac_r) * &vgrid(r9,&theta;9,&q));
+      &z = frac_&theta; * interp_top + (1-frac_&theta;) * interp_bot
+      ));
+
+  <font color="#808080"><i># Computes a linear interpolation at &Theta; of the values of the two nearest grid points for indices (r,q) given.</i></font>
+  @interpolate010(z, vgrid, r, &Theta;, q)
+    i&theta; = <font color="#2ECC40">floor</font>((&&Theta; - &Theta;lo) / &Delta;&theta; + 1e-9) + 1;
+    frac_&theta; = (&&Theta; - &Theta;lo - &Delta;&theta;*(i&theta;-1)) / &Delta;&theta;;
+    &z = <font color="#3D9970">sum</font>(&theta;9$(<font color="#3D9970">ord</font>(&theta;9)=i&theta;), frac_&theta; * &vgrid(&r,&theta;9+1,&q) + (1-frac_&theta;) * &vgrid(&r,&theta;9,&q));
+
+  <font color="#808080"><i># Approximates the expected value function integral at state (r,&theta;,q) under wind evolution.</i></font>
+  <font color="#808080"><i># Uses Gauss-Hermite quadrature with card(&omega;) nodes.</i></font>
+  @gauss_hermite_switch(z, vgrid, r, &theta;, q)
+    &z  = 0;
+    <font color="#3D9970">loop</font>(&omega;,
+      &Theta;prime = &Zeta;(&omega;) + &Theta;[&&theta;] + drift*switch_cost;
+      &Theta;prime = modulo(&Theta;prime,2*pi);
+      <font color="#3D9970">loop</font>(q9$(<font color="#3D9970">not</font> <font color="#2ECC40">sameas</font>(q9,&q)),
+        @interpolate010(val&theta;, &vgrid, &r, &Theta;prime, q9)
+        );
+      &z = &z + &Omega;[&omega;] * val&theta;;
+      );
+
+<font color="red"><b>exp:</b></font>
+  modulo(x_,y_) == <font color="#2ECC40">mod</font>(x_,y_) + <font color="#2ECC40">ifthen</font>(x_&lt;0,y_,0)
+  bs(twa_,tws_) == &sect;bs(twa_/pi*180,tws_)		<font color="#808080"><i># Sun Odyssey speed</i></font>
+  bsw(twa_) == bs(twa_,8)*0.05/6.5			<font color="#808080"><i># our boat speed for a given wind speed</i></font>
+  rdot(r_,&theta;_,q_,u_) == -<font color="#2ECC40">cos</font>(&theta;_ - q_*u_)			<font color="#808080"><i># u_ is the steering angle</i></font>
+  &theta;dot(r_,&theta;_,q_,u_) ==  <font color="#2ECC40">sin</font>(&theta;_ - q_*u_) / r_
+  <font color="#808080"><i># &Delta;t_disc(sr_,s&theta;_) == 1.5*&Delta;r/(abs(sr_)+1e-8)		# so-called row-wise iteration strategy: faster but less accurate</i></font>
+  &Delta;t_disc(sr_,s&theta;_) == <font color="#2ECC40">min</font>(1.5*&Delta;r/(<font color="#2ECC40">abs</font>(sr_)+1e-8), 1.5*&Delta;&theta;/(<font color="#2ECC40">abs</font>(s&theta;_)+1e-8))
+
+<font color="red"><b>gms:</b></font>
+  <font color="#808080"><i># Declarations</i></font>
+  <font color="#3D9970">scalars</font> max_diff,it,ok,speed_r,speed_&theta;,&Delta;t,newr,new&theta;,new&theta;p,new&theta;m,val&theta;p,val&theta;m,best&xi;,V&Delta;;
+  <font color="#3D9970">scalars</font> ir,i&theta;,frac_r,frac_&theta;,interp_top,interp_bot;
+  <font color="#3D9970">scalars</font> &Theta;prime,val&theta;;
+  <font color="#3D9970">alias</font>(r9,r);
+  <font color="#3D9970">alias</font>(&theta;9,&theta;);
+  <font color="#3D9970">alias</font>(q9,q);
+  <font color="#3D9970">parameters</font>
+    dirgrid[r,&theta;,q]		<font color="#808080"><i># control action 1: steering angle</i></font>
+    switchgrid[r,&theta;,q]		<font color="#808080"><i># control action 2: tack or not</i></font>
+    valuegrid[r,&theta;,q]		<font color="#808080"><i># value function: estimated cost to reach the target</i></font>
+    &xi;[u];
+  <font color="#3D9970">file</font> msg /''/;
+
+  <font color="#808080"><i># Initialize by interpolation from previous results or from scratch</i></font>
+  put_utility msg 'shell' / 'echo Current grid is %SZ%x%SZ%.';
+  <font color="#FF8000">$$ifthen</font> <font color="#3D9970">not</font> <font color="#8A2BE2">%ITER%</font>==1
+  put_utility msg 'shell' / 'echo Initialization from previous run with grid @sz@x@sz@.';
+  valuegrid[r,&theta;,'q1'] = &sect;valuegrid1(R[r],&Theta;[&theta;]);
+  valuegrid[r,&theta;,'q2'] = &sect;valuegrid2(R[r],&Theta;[&theta;]);
+  <font color="#FF8000">$$else</font>
+  put_utility msg 'shell' / 'echo Initialization from scratch.';
+  valuegrid(r,&theta;,q)$(R[r]&gt;target_radius) = 1e6;
+  <font color="#FF8000">$$endif</font>
+  valuegrid(r,&theta;,q)$(R[r]&lt;=target_radius) = exit_cost;
+
+  <font color="#808080"><i># Value iterations</i></font>
+  max_diff = +<font color="#3D9970">Inf</font>;
+  it = 0;
+  ok = 1;
+  <font color="#3D9970">while</font>(ok = 1 and max_diff &gt; &epsilon;,
+    it = it + 1;
+    max_diff = -<font color="#3D9970">Inf</font>;
+    <font color="#808080"><i># for each possible state</i></font>
+    <font color="#3D9970">loop</font>(r$(R[r]&gt;=target_radius),
+    <font color="#3D9970">loop</font>(q,
+    <font color="#3D9970">loop</font>(&theta;,
+      <font color="#808080"><i># explore action space - steering angle</i></font>
+      <font color="#3D9970">loop</font>(u,
+        speed_r = bsw(U[u]) * rdot(R[r],&Theta;[&theta;],Q[q],U[u]);
+        speed_&theta; = bsw(U[u]) * &theta;dot(R[r],&Theta;[&theta;],Q[q],U[u]) + drift;
+        &Delta;t = &Delta;t_disc(speed_r, speed_&theta;);
+        newr = R[r] + speed_r*&Delta;t;
+        new&theta; = &Theta;[&theta;] + speed_&theta;*&Delta;t;
+        new&theta;p = modulo(new&theta; + <font color="#2ECC40">sqrt</font>(&Delta;t)*&sigma;, 2*pi);
+        new&theta;m = modulo(new&theta; - <font color="#2ECC40">sqrt</font>(&Delta;t)*&sigma;, 2*pi);
+        @interpolate110(val&theta;p, valuegrid, newr, new&theta;p, q)
+        @interpolate110(val&theta;m, valuegrid, newr, new&theta;m, q)
+        &xi;[u] = &Delta;t + <font color="#2ECC40">exp</font>(-&lambda;*&Delta;t)*(val&theta;p+val&theta;m)/2;
+        );
+      <font color="#808080"><i># find the best steering angle and update the policy</i></font>
+      best&xi; = <font color="#3D9970">smin</font>(u, &xi;[u]);
+      dirgrid[r,&theta;,q] = <font color="#3D9970">sum</font>(u$(best&xi;=&xi;[u]), U[u]);
+      <font color="#808080"><i># decide to tack or not; update accordingly the policy and the value function</i></font>
+      @gauss_hermite_switch(V&Delta;, valuegrid, r, &theta;, q)
+      V&Delta; = V&Delta; + switch_cost;
+      <font color="#3D9970">if</font>(V&Delta; &lt; best&xi;,
+        max_diff = <font color="#2ECC40">max</font>(max_diff, <font color="#2ECC40">abs</font>(valuegrid[r,&theta;,q]-V&Delta;));
+        switchgrid[r,&theta;,q] = 1;
+        valuegrid[r,&theta;,q] = V&Delta;;
+      <font color="#3D9970">else</font>
+        <font color="#3D9970">if</font>(best&xi; ne +<font color="#3D9970">Inf</font>, max_diff = <font color="#2ECC40">max</font>(max_diff, <font color="#2ECC40">abs</font>(valuegrid[r,&theta;,q]-best&xi;)));
+        switchgrid[r,&theta;,q] = 0;
+        valuegrid[r,&theta;,q] = best&xi;
+        )
+      )));
+    <font color="#3D9970">if</font>(<font color="#2ECC40">mod</font>(it,1) = 0, put_utility msg 'shell' / 'echo Iteration ' it:0:0 ', maximum difference is ' max_diff:7:3);
+    <font color="#3D9970">if</font>(it = max_iters, put_utility msg 'shell' / 'echo Stopped after ' it:0:0 ' iterations'; ok = 0);
+    );
+  <font color="#3D9970">if</font>(ok = 1, put_utility msg 'shell' / 'echo Finished successfully in ' it:0:0 ' iterations, with final maximum difference ' max_diff:7:3);
+
+  <font color="#808080"><i># Save results for a next round</i></font>
+  <font color="#8A2BE2">@export</font> Var={dir switch value}grid[r,&theta;,'q1'], Grid=R[r] &Theta;[&theta;], <font color="#3D9970">File</font>=$stochastic-sailing-{d s v}grid1.%SZ%.txt
+  <font color="#8A2BE2">@export</font> Var={dir switch value}grid[r,&theta;,'q2'], Grid=R[r] &Theta;[&theta;], <font color="#3D9970">File</font>=$stochastic-sailing-{d s v}grid2.%SZ%.txt
+  <font color="#3D9970">execute</font> 'dyna-dbf-init.exe $stochastic-sailing-{d s v}grid1.%SZ%.txt $stochastic-sailing-{d s v}grid1.%SZ%.dbf'
+  <font color="#3D9970">execute</font> 'dyna-dbf-init.exe $stochastic-sailing-{d s v}grid2.%SZ%.txt $stochastic-sailing-{d s v}grid2.%SZ%.dbf'
+
+<font color="red"><b>put:</b></font>
+  "`parameter d1[r,&theta;]; d1[r,&theta;] = dirgrid[r,&theta;,'q1'];`"
+  "`parameter d2[r,&theta;]; d2[r,&theta;] = dirgrid[r,&theta;,'q2'];`"
+  "$dirgrid1.%SZ%.csv&lt;d1[r,&theta;]"
+  "$dirgrid2.%SZ%.csv&lt;d2[r,&theta;]"
+  "`parameter s1[r,&theta;]; s1[r,&theta;] = switchgrid[r,&theta;,'q1'];`"
+  "`parameter s2[r,&theta;]; s2[r,&theta;] = switchgrid[r,&theta;,'q2'];`"
+  "$switchgrid1.%SZ%.csv&lt;s1[r,&theta;]"
+  "$switchgrid2.%SZ%.csv&lt;s2[r,&theta;]"
+  "`parameter v1[r,&theta;]; v1[r,&theta;] = valuegrid[r,&theta;,'q1'];`"
+  "`parameter v2[r,&theta;]; v2[r,&theta;] = valuegrid[r,&theta;,'q2'];`"
+  "$valuegrid1.%SZ%.csv&lt;v1[r,&theta;]"
+  "$valuegrid2.%SZ%.csv&lt;v2[r,&theta;]"
+</pre>
+</body>
+</html>

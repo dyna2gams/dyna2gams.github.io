@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -26,12 +26,12 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   \int_0^{2T} u^2(t) \ \mathrm{d}t
   \]
 <p>
-  A two-phase approach.
-<p>
   Reference:
   <ol>
   <li>https://math.stackexchange.com/questions/3342856/
   </ol>
+<p>
+  A two-phase approach.
 <p>
 <pre>
 <font color="red"><b>set:</b></font>
@@ -43,7 +43,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <font color="red"><b>dyn:</b></font>
   t[phase]
   x[phase]
-  u[phase]
+  u[phase] :: <font color="#7FDBFF">control</font>
   J[phase]
 
 <font color="red"><b>t=t0:</b></font>
@@ -59,7 +59,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   x&acute;[phase] == x[phase] + u[phase]
   J&acute;[phase] == u[phase]*u[phase]
   u['ph1'] == u['ph2']
-  <font color="#8A2BE2">@linkphases</font>
+  <font color="#8A2BE2">@linkphases</font> -x u
 
 <font color="red"><b>obj:</b></font>
   <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J['ph2']) <font color="#8A2BE2">using</font> nlp

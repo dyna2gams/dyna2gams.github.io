@@ -1,0 +1,165 @@
+<!-- Dyna-to-Html Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Simulation of the Stochastic Optimal Control of a Sailboat</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Simulation of the Stochastic Optimal Control of a Sailboat
+</pre>
+<p>
+  Simulation of the optimal policy calculated in the companion file.
+<p>
+  See also the companion file for documentation and references.
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">tabulation-knots-number</font> = 408
+  <font color="#39CCCC">simulation-method</font> = SDE/SI
+  <font color="#39CCCC">simulation-loops-number</font> = 10
+
+<font color="red"><b>set:</b></font>
+  boat = b1:b6
+
+<font color="#8B0000">@dset</font> sz 32
+
+<font color="red"><b>par:</b></font>
+  target_radius = 0.1	<font color="#808080"><i># radius of the target</i></font>
+  target_radius_eff = 2/@sz@*<font color="#2ECC40">ceil</font>(target_radius/2*@sz@)
+  target_dist = 1.8	<font color="#808080"><i># distance to target</i></font>
+  switch_cost = 2	<font color="#808080"><i># switching cost</i></font>
+  &sigma; = 0.1		<font color="#808080"><i># stochastic diffusion of wind</i></font>
+  drift = 0.01		<font color="#808080"><i># angular drift of wind</i></font>
+  exit_cost = 0		<font color="#808080"><i># exit cost</i></font>
+  WakeUpTime[boat] = 0
+  ArrivalTime[boat] = +<font color="#3D9970">Inf</font>
+  tf = 60
+
+<font color="red"><b>fun:</b></font>
+  <font color="#808080"><i># Boat speed for Sun Odyssey as a function of True Wind Angle (twa - degree) and Speed (tws - kn)</i></font>
+  &sect;bs = <font color="#7FDBFF">GridXY</font>
+         0    4    6    8   10   12   14   16   20   25   30   35   40   45   50   55   60
+    0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0
+    5  0.0  0.3  0.5  0.6  0.7  0.8  0.9  0.9  0.9  0.9  0.9  0.7  0.1  0.0  0.0  0.0  0.0
+   10  0.0  0.6  0.9  1.2  1.5  1.6  1.8  1.8  1.8  1.8  1.7  1.4  0.3  0.1  0.1  0.0  0.0
+   15  0.0  0.9  1.4  1.8  2.2  2.5  2.6  2.7  2.8  2.7  2.6  2.1  0.7  0.3  0.2  0.0  0.0
+   20  0.0  1.1  1.6  2.1  2.5  2.8  3.0  3.1  3.2  3.1  3.0  2.4  1.1  0.5  0.2  0.0  0.0
+   25  0.0  1.3  1.9  2.5  3.0  3.4  3.6  3.7  3.8  3.7  3.5  2.8  1.6  0.7  0.3  0.0  0.0
+   32  0.0  2.1  3.1  4.1  5.0  5.6  6.0  6.2  6.3  6.2  5.9  4.7  3.5  1.4  0.5  0.0  0.0
+   36  0.0  2.4  3.6  4.6  5.5  6.2  6.5  6.6  6.8  6.8  6.7  6.4  5.2  2.1  0.6  0.0  0.0
+   40  0.0  2.8  4.0  5.0  5.9  6.5  6.8  7.0  7.1  7.1  7.1  7.0  6.2  2.5  1.1  0.0  0.0
+   45  0.0  3.1  4.4  5.4  6.3  6.8  7.1  7.3  7.4  7.5  7.5  7.4  7.0  2.6  1.1  0.0  0.0
+   52  0.0  3.5  4.9  5.8  6.6  7.2  7.4  7.6  7.7  7.8  7.8  7.8  7.6  2.7  1.2  0.0  0.0
+   60  0.0  3.8  5.2  6.2  7.0  7.4  7.7  7.8  7.9  8.0  8.1  8.1  8.1  3.2  1.6  0.0  0.0
+   70  0.0  4.0  5.4  6.4  7.1  7.5  7.8  8.0  8.2  8.4  8.5  8.5  8.5  3.4  1.7  0.0  0.0
+   80  0.0  4.1  5.5  6.5  7.2  7.6  7.9  8.1  8.4  8.6  8.7  8.8  8.8  3.5  1.8  0.0  0.0
+   90  0.0  4.0  5.5  6.5  7.2  7.7  8.0  8.2  8.5  8.7  8.9  9.0  9.0  4.1  2.3  0.5  0.5
+  100  0.0  4.0  5.4  6.5  7.3  7.7  8.0  8.2  8.7  8.9  9.1  9.3  9.3  4.7  2.8  0.5  0.5
+  110  0.0  3.9  5.3  6.4  7.3  7.7  8.0  8.3  9.0  9.4  9.8 10.1 10.1  5.6  3.5  1.0  1.0
+  120  0.0  3.7  5.1  6.2  7.0  7.5  7.8  8.1  8.8  9.4 10.0 10.5 10.5  6.3  4.2  1.1  1.1
+  130  0.0  3.2  4.6  5.7  6.6  7.2  7.6  7.9  8.6  9.4 10.2 10.9 10.9  7.1  4.9  1.6  1.6
+  140  0.0  2.8  4.2  5.2  6.1  6.9  7.4  7.7  8.3  9.4 10.7 11.9 11.9  8.9  6.5  2.4  1.8
+  150  0.0  2.4  3.7  4.7  5.6  6.3  7.0  7.4  8.0  9.6 11.5 13.5 13.5 10.8  8.1  2.7  2.7
+  160  0.0  2.1  3.2  4.2  5.1  6.0  6.7  7.2  7.7  9.0 11.1 13.6 13.6 11.6  8.8  3.4  2.7
+  170  0.0  1.9  3.0  3.9  4.7  5.7  6.4  6.9  7.4  8.5 10.3 12.5 12.5 11.9  9.4  3.8  3.1
+  180  0.0  1.8  2.8  3.6  4.4  5.3  6.2  6.7  7.2  8.1  9.5 11.5 11.5 11.5  9.2  3.5  2.9
+
+  <font color="#808080"><i># optimal policies determined by companion file</i></font>
+  &sect;dirgrid{1:2} = Grid2Dim .\examples\sim-stochastic-sailing-dgrid{1:2}.@sz@
+  &sect;switchgrid{1:2} = Grid2Dim .\examples\sim-stochastic-sailing-sgrid{1:2}.@sz@
+  <font color="#808080"><i># &sect;dirgrid{1:2} = Grid2Dim $stochastic-sailing-dgrid{1:2}.@sz@</i></font>
+  <font color="#808080"><i># &sect;switchgrid{1:2} = Grid2Dim $stochastic-sailing-sgrid{1:2}.@sz@</i></font>
+
+<font color="red"><b>tpa:</b></font>
+  W
+
+<font color="red"><b>mac:</b></font>
+  @CheckIfTackOrDone()
+    <font color="#3D9970">loop</font>(boat,
+    <font color="#3D9970">if</font>(<font color="#0074D9">Time</font> &gt; WakeUpTime[boat],
+      <font color="#3D9970">if</font>(<font color="#0074D9">last</font>(r[boat]) &lt; target_radius,
+        WakeUpTime[boat] = +<font color="#3D9970">Inf</font>;
+        ArrivalTime[boat] = <font color="#0074D9">Time</font>
+        );
+      <font color="#3D9970">if</font>(<font color="#0074D9">last</font>(v[boat]) &gt;= 1,
+        WakeUpTime[boat] = <font color="#0074D9">Time</font> + switch_cost;
+        q.l[boat] = -<font color="#0074D9">last</font>(q[boat])
+        )
+      );
+    <font color="#3D9970">if</font>(q[boat] = 0, q.l[boat] = <font color="#0074D9">last</font>(q[boat]))
+    );
+
+<font color="red"><b>dyn:</b></font>
+  r[boat]	<font color="#808080"><i># state component 1 - distance to target</i></font>
+  &theta;[boat]	<font color="#808080"><i># state component 2 - angle of the wind</i></font>
+  q[boat]	<font color="#808080"><i># state component 3 - starboard tack (-1) or port tack (+1)</i></font>
+  u[boat]	<font color="#808080"><i># control action - steering angle</i></font>
+  v[boat]	<font color="#808080"><i># control action - tack decision</i></font>
+  &theta;Wind		<font color="#808080"><i># wind direction	</i></font>
+
+<font color="red"><b>t=t0:</b></font>
+  r['b{1:6}'] = target_dist * {1 1 <font color="#2ECC40">sqrt</font>(1+0.4^2) <font color="#2ECC40">sqrt</font>(1+0.4^2) <font color="#2ECC40">sqrt</font>(1+0.4^2) <font color="#2ECC40">sqrt</font>(1+0.4^2)}
+  &theta;['b{1:6}'] = {0 0 <font color="#2ECC40">arctan2</font>(0.4,1) <font color="#2ECC40">arctan2</font>(0.4,1) -<font color="#2ECC40">arctan2</font>(0.4,1) -<font color="#2ECC40">arctan2</font>(0.4,1)}
+  q['b{1:6}'] = {-1 +1 -1 +1 -1 +1}
+  &theta;Wind = 0
+
+<font color="red"><b>exp:</b></font>
+  modulo(x_,y_) == <font color="#2ECC40">mod</font>(x_,y_) + <font color="#2ECC40">ifthen</font>(x_&lt;0,y_,0)
+  bs(twa_,tws_) == &sect;bs(twa_/pi*180,tws_)			<font color="#808080"><i># Sun Odyssey speed</i></font>
+  bsw(twa_) == bs(twa_,8)*0.05/6.5				<font color="#808080"><i># our boat speed for a given wind speed</i></font>
+  rel&theta; == modulo((&theta;[boat] + &theta;Wind), 2*pi)			<font color="#808080"><i># differs from the paper</i></font>
+  rmx == <font color="#2ECC40">max</font>(r[boat],target_radius_eff)
+
+<font color="red"><b>sim:</b></font>
+  W ~~ <font color="#7FDBFF">Wiener</font>
+  &theta;Wind&acute; := drift + &sigma;*W
+  @CheckIfTackOrDone()
+  u[boat] := <font color="#2ECC40">ifthen</font>(q[boat]&lt;0, &sect;dirgrid1(rmx,rel&theta;), &sect;dirgrid2(rmx,rel&theta;))
+  v[boat] := <font color="#2ECC40">trunc</font>(0.25+<font color="#2ECC40">ifthen</font>(q[boat]&lt;0, &sect;switchgrid1((r[boat]),rel&theta;), &sect;switchgrid2((r[boat]),rel&theta;)))
+  r&acute;[boat] := <font color="#2ECC40">ifthen</font>(<font color="#0074D9">Time</font>&gt;WakeUpTime[boat], -bsw((u[boat]))*<font color="#2ECC40">cos</font>(rel&theta; - q[boat]*u[boat]), 0)
+  &theta;&acute;[boat] := <font color="#2ECC40">ifthen</font>(<font color="#0074D9">Time</font>&gt;WakeUpTime[boat],  bsw((u[boat]))*<font color="#2ECC40">sin</font>(rel&theta; - q[boat]*u[boat])/r[boat], 0)
+
+<font color="red"><b>put:</b></font>
+  "<font color="#8A2BE2">%FN%</font>.<font color="#8A2BE2">%N%</font>.m&lt;"
+  target_radius = "target_radius:3";
+  target_dist = "target_dist:3";
+  &sigma; = "&sigma;:3";
+  drift = "drift:3";
+  function z = circle(target_dist, radius, num_pts)
+    stop = 2*pi;
+    angles = 0.0 : stop/num_pts : stop;
+    z = [radius*cos(angles)' target_dist+radius*sin(angles)'];
+    end
+  r = ["r.l[boat]:3;"];
+  &theta; = ["&theta;.l[boat]:3;"];
+  q = ["q.l[boat]:3;"];
+  v = ["v.l[boat]:3;"];
+  x = r.*sin(&theta;);
+  y = target_dist - r.*cos(&theta;);
+  figure
+  hold on
+  xlim([-target_dist target_dist]);
+  ylim([-0.2 target_dist+target_radius]);
+  plot(x', y', 'r')   % Plot trajectory  
+  circle_pts = circle(target_dist, target_radius, 32);
+  plot(circle_pts(:,1), circle_pts(:,2), 'k')   % Plot target
+  xx = reshape(x',1,[]);
+  yy = reshape(y',1,[]);
+  vv = reshape(v',1,[]);
+  scatter(xx(find(vv)), yy(find(vv)), 'b')   % Plot switch points
+  title(['{\sigma}=' num2str(&sigma;) ' drift=' num2str(drift) ' Grid=@sz@x@sz@ N=<font color="#8A2BE2">%N%</font>'],'interpreter','tex')
+  "&lt;"
+</pre>
+</body>
+</html>

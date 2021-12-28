@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -109,8 +109,8 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   xy&acute;[dim,age] := x[dim,age]*<font color="#2ECC40">exp</font>(-bet/fmax*f[age])
   y&acute;[age] := <font color="#2ECC40">exp</font>(-bet/fmax*f[age])
   fp[age] := @f(xy[dim,age]/y[age],dim)
-  x&acute;[dim,age] := - lambda*(x[dim,age]-m[dim])*<font color="#0074D9">Heaviside</font>((f[age]-fm))*<font color="#0074D9">Heaviside</font>((fp[age]-fm)) \
-                 - mu*(x[dim,age]-xy[dim,age]/y[age])*<font color="#0074D9">Heaviside</font>((f[age]-fp[age]))*<font color="#0074D9">Heaviside</font>((fm-fp[age])) \
+  x&acute;[dim,age] := - lambda*(x[dim,age]-m[dim])*<font color="#0074D9">smoothHeaviside</font>((f[age]-fm))*<font color="#0074D9">smoothHeaviside</font>((fp[age]-fm)) \
+                 - mu*(x[dim,age]-xy[dim,age]/y[age])*<font color="#0074D9">smoothHeaviside</font>((f[age]-fp[age]))*<font color="#0074D9">smoothHeaviside</font>((fm-fp[age])) \
                  + <font color="#2ECC40">sqrt</font>(2)*sig*<font color="#2ECC40">abs</font>(x[dim,age]-m[dim])*W[dim,age]
 
 <font color="red"><b>gms:</b></font>

@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -112,8 +112,8 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   psi[phase]
   omega[phase]
   m[phase]
-  k[phase]		<font color="#808080"><i># controls</i></font>
-  alpha[phase]
+  k[phase] :: <font color="#7FDBFF">control</font>	<font color="#808080"><i># controls</i></font>
+  alpha[phase] :: <font color="#7FDBFF">control</font>
   A[phase]		<font color="#808080"><i># regularization term</i></font>
 
 <font color="red"><b>lim:</b></font>
@@ -156,7 +156,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   omega&acute;[phase] / TimeDot == alpha[phase]
   m&acute;[phase] / TimeDot == -Tm*k[phase]/Vex
   A&acute;[phase] / TimeDot == <font color="#2ECC40">sqr</font>(alpha[phase])
-  <font color="#8A2BE2">@linkphases</font>
+  <font color="#8A2BE2">@linkphases</font> -x k alpha
   Req+15e+3 == <font color="#0074D9">final</font>(<font color="#2ECC40">sqr</font>(r['ph1']*vt['ph1'])/mu/(1+<font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqr</font>(r['ph1']*<font color="#2ECC40">sqr</font>(vt['ph1'])/mu-1)+<font color="#2ECC40">sqr</font>(r['ph1']*vr['ph1']*vt['ph1']/mu))))
   alpha[phase] :: <font color="#7FDBFF">spline3</font>
 

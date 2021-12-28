@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -87,7 +87,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   f[age] := @f(x[dim,age],dim)
   m[dim] := <font color="#3D9970">sum</font>(age, x[dim,age]*<font color="#2ECC40">exp</font>(-alf/fmax*f[age])) / <font color="#3D9970">sum</font>(age, <font color="#2ECC40">exp</font>(-alf/fmax*f[age]))
   fm := @f(m[dim],dim)
-  x&acute;[dim,age] := -lambda*(x[dim,age]-m[dim])*<font color="#0074D9">Heaviside</font>((f[age]-fm)) + <font color="#2ECC40">sqrt</font>(2)*sig*<font color="#2ECC40">abs</font>(x[dim,age]-m[dim])*W[dim,age]
+  x&acute;[dim,age] := -lambda*(x[dim,age]-m[dim])*<font color="#0074D9">smoothHeaviside</font>((f[age]-fm)) + <font color="#2ECC40">sqrt</font>(2)*sig*<font color="#2ECC40">abs</font>(x[dim,age]-m[dim])*W[dim,age]
 
 <font color="red"><b>gms:</b></font>
   <font color="#3D9970">equation</font> obj;
