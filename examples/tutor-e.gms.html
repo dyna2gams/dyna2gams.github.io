@@ -1,0 +1,578 @@
+<html> 
+<head> 
+<script type="text/javascript" language="javascript" src="https://www.gams.com/latest/docs/style/prism.js"></script> 
+<link href="https://www.gams.com/latest/docs/style/prism.css" rel="stylesheet" type="text/css" /> 
+<style> 
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;} 
+:not(pre) > code[class*="language-"],pre[class*="language-"] {background-color: white; border: none;} 
+</style> 
+</head> 
+<h1 align="center" style="color:#7EAEAC">TUTOR-E - Gams model</h1> 
+<pre><code class="language-gams"> 
+* Dyna-to-Gams Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved.
+* Translated from .\examples\tutor-e.dyn on 26 Dec 2021 at 19:14:46
+$offlisting
+$if not set DEBUG $set DEBUG 0
+$if %DEBUG%==1 $onlisting
+$if not set HOME $set HOME "d:\dyna2gams"
+$if not set N $set N 48
+$if not set CM $set CM L3A4
+$if not set QM $set QM 1
+$if not set IN $set IN 4
+$if not set SS $set SS ""
+$if not set DFGDX $set DFGDX 1
+$if not set CF $set CF IL
+$set SF SH
+$set MODEL tutor_e
+$set TF tf
+$set T0 ""
+$set TS ts
+$if not set MULTI $set MULTI YES
+$if not set ITER $set ITER 1
+$set TIMDL C
+$if not set SM $set SM DP853
+$if not set GOPT $set GOPT 
+$if not set OCTAVE $set OCTAVE "d:\octave-5.1.0.0\mingw64\bin\octave-cli.exe"
+$log [DYNA] Model name: %model%
+$log [DYNA] Model type: NLP
+$log [DYNA] Number of parameters: 5
+$log [DYNA] Number of tabulated functions: 6
+$log [DYNA] Number of symbolic variables: 13
+$log [DYNA] Number of dynamic variables: 5
+$log [DYNA] Number of static variables: 1
+$log [DYNA] Number of equations: 4
+$log [DYNA] List of parameters: Re mu S g0 Isp
+$log [DYNA] List of tabulated functions: AD SS Thrust CLalpha CD0 eta
+$log [DYNA] List of symbolic variables: CD CL q D L r rho sos Mach CD0 CLalpha eta Thrust
+$log [DYNA] List of dynamic variables: h v fpa m alpha
+$log [DYNA] List of static variables: tf
+$ifi %TIMDL%==C $libinclude dyna-continuous
+$ifi %TIMDL%==D $libinclude dyna-discrete
+$ifi %TIMDL%==N $libinclude dyna-none
+$libinclude dyna-utilities
+$if setglobal NRESET $set N %NRESET%
+$set dyna_ifile .\examples\tutor-e.dyn
+$set dyna_ifnam tutor-e
+$set objective dyna_ksi
+variable %objective%;
+option limrow=0,limcol=0,solvelink=5,threads=0,solprint=off,nlp=conopt,minlp=bonmin;
+$onlisting
+$macro CD(N) (CD0(N) + eta(N) * CLalpha(N) * alpha[N] * alpha[N])
+$macro CL(N) (CLalpha(N) * alpha[N])
+$macro q(N) (0.5 * rho(N) * v[N] * v[N])
+$macro D(N) (q(N) * S * CD(N))
+$macro L(N) (q(N) * S * CL(N))
+$macro r(N) (h[N] + Re)
+$macro rho(N) (tabulatedFun1(h[N]))
+$macro sos(N) (tabulatedFun2(h[N]))
+$macro Mach(N) (v[N] / sos(N))
+$macro CD0(N) (tabulatedFun5(Mach(N)))
+$macro CLalpha(N) (tabulatedFun4(Mach(N)))
+$macro eta(N) (tabulatedFun6(Mach(N)))
+$macro Thrust(N) (tabulatedFun3(Mach(N),h[N]))
+$macro tabulatedFun1(xx) PCSX(xx,1)
+$macro tabulatedFun2(xx) PCSX(xx,2)
+$macro tabulatedFun3(xx,yy) PCSXYG(xx,yy,3)
+$macro tabulatedFun4(xx) PCSX(xx,4)
+$macro tabulatedFun5(xx) PCSX(xx,5)
+$macro tabulatedFun6(xx) PCSX(xx,6)
+$macro tabulatedFunStat(xx,ii) FUNSTAT(xx,ii)
+set fun_s_ /0*255/; alias(fun_s_,fun_s__,fun_s1_,fun_s1__,fun_s2_,fun_s2__);
+*** Begin of Dyna-for-Gams Extrinsic Function Package ***
+$onecho > $dynafun.par
+%system.iFile%
+1 2 4 5 6
+3
+
+
+
+
+$offecho
+$ifthen GamsVersion 244
+$if %system.buildcode% == VS8 $funclibin dynalib %HOME%\bin\dynadclib-nf.dll
+$if %system.buildcode% == WEI $funclibin dynalib %HOME%\bin\dynadclib-nf64.dll
+$else
+$if %system.buildcode% == VS8 $funclibin dynalib %HOME%\bin\dynadclib.dll
+$if %system.buildcode% == WEI $funclibin dynalib %HOME%\bin\dynadclib64.dll
+$endif
+$if not %system.buildcode% == VS8 $if not %system.buildcode% == WEI $abort [DYNA] Dyna-for-Gams Extrinsic Function Package is not available for your operating system.
+function
+  FUNSTAT /dynalib.funstat/
+  PCSX /dynalib.pcsx/
+  PCSXYS /dynalib.pcsxys/
+  PCSXYG /dynalib.pcsxyg/
+  PCSYZG /dynalib.pcsyzg/
+  PCSXYZG /dynalib.pcsxyzg/
+  PCSWXYZG /dynalib.pcswxyzg/
+  PCHX /dynalib.pchx/
+  PCHXYG /dynalib.pchxyg/;
+***  End of Dyna-for-Gams Extrinsic Function Package  ***
+$onmulti
+parameter fun_data_(*,fun_s_,*) /
+$offlisting
+$if %DEBUG%==1 $onlisting
+1.0.X -2000
+1.0.F 1.478e+00
+2.0.X -2000
+2.0.F 3.479e+02
+1.1.X 0
+1.1.F 1.225e+00
+2.1.X 0
+2.1.F 3.403e+02
+1.2.X 2000
+1.2.F 1.007e+00
+2.2.X 2000
+2.2.F 3.325e+02
+1.3.X 4000
+1.3.F 8.193e-01
+2.3.X 4000
+2.3.F 3.246e+02
+1.4.X 6000
+1.4.F 6.601e-01
+2.4.X 6000
+2.4.F 3.165e+02
+1.5.X 8000
+1.5.F 5.258e-01
+2.5.X 8000
+2.5.F 3.081e+02
+1.6.X 10000
+1.6.F 4.135e-01
+2.6.X 10000
+2.6.F 2.995e+02
+1.7.X 12000
+1.7.F 3.119e-01
+2.7.X 12000
+2.7.F 2.951e+02
+1.8.X 14000
+1.8.F 2.279e-01
+2.8.X 14000
+2.8.F 2.951e+02
+1.9.X 16000
+1.9.F 1.665e-01
+2.9.X 16000
+2.9.F 2.951e+02
+1.10.X 18000
+1.10.F 1.216e-01
+2.10.X 18000
+2.10.F 2.951e+02
+1.11.X 20000
+1.11.F 8.891e-02
+2.11.X 20000
+2.11.F 2.951e+02
+1.12.X 22000
+1.12.F 6.451e-02
+2.12.X 22000
+2.12.F 2.964e+02
+1.13.X 24000
+1.13.F 4.694e-02
+2.13.X 24000
+2.13.F 2.977e+02
+1.14.X 26000
+1.14.F 3.426e-02
+2.14.X 26000
+2.14.F 2.991e+02
+1.15.X 28000
+1.15.F 2.508e-02
+2.15.X 28000
+2.15.F 3.004e+02
+1.16.X 30000
+1.16.F 1.841e-02
+2.16.X 30000
+2.16.F 3.017e+02
+1.17.X 32000
+1.17.F 1.355e-02
+2.17.X 32000
+2.17.F 3.030e+02
+1.18.X 34000
+1.18.F 9.887e-03
+2.18.X 34000
+2.18.F 3.065e+02
+1.19.X 36000
+1.19.F 7.257e-03
+2.19.X 36000
+2.19.F 3.101e+02
+1.20.X 38000
+1.20.F 5.366e-03
+2.20.X 38000
+2.20.F 3.137e+02
+1.21.X 40000
+1.21.F 3.995e-03
+2.21.X 40000
+2.21.F 3.172e+02
+1.22.X 42000
+1.22.F 2.995e-03
+2.22.X 42000
+2.22.F 3.207e+02
+1.23.X 44000
+1.23.F 2.259e-03
+2.23.X 44000
+2.23.F 3.241e+02
+1.24.X 46000
+1.24.F 1.714e-03
+2.24.X 46000
+2.24.F 3.275e+02
+1.25.X 48000
+1.25.F 1.317e-03
+2.25.X 48000
+2.25.F 3.298e+02
+1.26.X 50000
+1.26.F 1.027e-03
+2.26.X 50000
+2.26.F 3.298e+02
+1.27.X 52000
+1.27.F 8.055e-04
+2.27.X 52000
+2.27.F 3.288e+02
+1.28.X 54000
+1.28.F 6.389e-04
+2.28.X 54000
+2.28.F 3.254e+02
+1.29.X 56000
+1.29.F 5.044e-04
+2.29.X 56000
+2.29.F 3.220e+02
+1.30.X 58000
+1.30.F 3.962e-04
+2.30.X 58000
+2.30.F 3.186e+02
+1.31.X 60000
+1.31.F 3.096e-04
+2.31.X 60000
+2.31.F 3.151e+02
+1.32.X 62000
+1.32.F 2.407e-04
+2.32.X 62000
+2.32.F 3.115e+02
+1.33.X 64000
+1.33.F 1.860e-04
+2.33.X 64000
+2.33.F 3.080e+02
+1.34.X 66000
+1.34.F 1.429e-04
+2.34.X 66000
+2.34.F 3.044e+02
+1.35.X 68000
+1.35.F 1.091e-04
+2.35.X 68000
+2.35.F 3.007e+02
+1.36.X 70000
+1.36.F 8.281e-05
+2.36.X 70000
+2.36.F 2.971e+02
+1.37.X 72000
+1.37.F 6.236e-05
+2.37.X 72000
+2.37.F 2.934e+02
+1.38.X 74000
+1.38.F 4.637e-05
+2.38.X 74000
+2.38.F 2.907e+02
+1.39.X 76000
+1.39.F 3.430e-05
+2.39.X 76000
+2.39.F 2.880e+02
+1.40.X 78000
+1.40.F 2.523e-05
+2.40.X 78000
+2.40.F 2.853e+02
+1.41.X 80000
+1.41.F 1.845e-05
+2.41.X 80000
+2.41.F 2.825e+02
+1.42.X 82000
+1.42.F 1.341e-05
+2.42.X 82000
+2.42.F 2.797e+02
+1.43.X 84000
+1.43.F 9.690e-06
+2.43.X 84000
+2.43.F 2.769e+02
+1.44.X 86000
+1.44.F 6.955e-06
+2.44.X 86000
+2.44.F 2.741e+02
+$onlisting
+/;
+$offmulti
+$onmulti
+parameter fun_data_(*,fun_s_,*) /
+$offlisting
+$if %DEBUG%==1 $onlisting
+3.0.Y 0
+3.1.Y 1524
+3.2.Y 3048
+3.3.Y 4572
+3.4.Y 6096
+3.5.Y 7620
+3.6.Y 9144
+3.7.Y 12192
+3.8.Y 15240
+3.9.Y 21336
+3.0.X 0
+3.0.F 107646.9724
+3.1.F 106757.328
+3.2.F 90298.9066
+3.3.F 76954.2406
+3.4.F 64499.219
+3.5.F 54268.3084
+3.6.F 45371.8644
+3.7.F 25354.8654
+3.8.F 15123.9548
+3.9.F 444.8222
+3.1.X 0.2
+3.10.F 124550.216
+3.11.F 109426.2612
+3.12.F 93857.4842
+3.13.F 80512.8182
+3.14.F 67612.9744
+3.15.F 56937.2416
+3.16.F 47595.9754
+3.17.F 28913.443
+3.18.F 17348.0658
+3.19.F 889.6444
+3.2.X 0.4
+3.20.F 125884.6826
+3.21.F 112095.1944
+3.22.F 97416.0618
+3.23.F 83181.7514
+3.24.F 70726.7298
+3.25.F 59606.1748
+3.26.F 49820.0864
+3.27.F 32472.0206
+3.28.F 19572.1768
+3.29.F 1779.2888
+3.3.X 0.6
+3.30.F 137005.2376
+3.31.F 120991.6384
+3.32.F 105867.6836
+3.33.F 91188.551
+3.34.F 76954.2406
+3.35.F 65388.8634
+3.36.F 54713.1306
+3.37.F 36030.5982
+3.38.F 21796.2878
+3.39.F 3558.5776
+3.4.X 0.8
+3.40.F 153463.659
+3.41.F 134781.1266
+3.42.F 118322.7052
+3.43.F 103198.7504
+3.44.F 88074.7956
+3.45.F 74730.1296
+3.46.F 62719.9302
+3.47.F 41813.2868
+3.48.F 24910.0432
+3.49.F 4893.0442
+3.5.X 1
+3.50.F 168587.6138
+3.51.F 152574.0146
+3.52.F 135225.9488
+3.53.F 119212.3496
+3.54.F 103643.5726
+3.55.F 88074.7956
+3.56.F 74730.1296
+3.57.F 49820.0864
+3.58.F 30247.9096
+3.59.F 6227.5108
+3.6.X 1.2
+3.60.F 160580.8142
+3.61.F 169032.436
+3.62.F 155242.9478
+3.63.F 139229.3486
+3.64.F 121436.4606
+3.65.F 104978.0392
+3.66.F 89409.2622
+3.67.F 59606.1748
+3.68.F 36920.2426
+3.69.F 7561.9774
+3.7.X 1.4
+3.70.F 160580.8142
+3.71.F 162804.9252
+3.72.F 171256.547
+3.73.F 160580.8142
+3.74.F 140563.8152
+3.75.F 124995.0382
+3.76.F 107646.9724
+3.77.F 72061.1964
+3.78.F 44482.22
+3.79.F 9786.0884
+3.8.X 1.6
+3.80.F 160580.8142
+3.81.F 156577.4144
+3.82.F 187270.1462
+3.83.F 172146.1914
+3.84.F 158801.5254
+3.85.F 142343.104
+3.86.F 124995.0382
+3.87.F 85850.6846
+3.88.F 52933.8418
+3.89.F 12899.8438
+3.9.X 1.8
+3.90.F 160580.8142
+3.91.F 150349.9036
+3.92.F 203283.7454
+3.93.F 183711.5686
+3.94.F 177039.2356
+3.95.F 153908.4812
+3.96.F 138339.7042
+3.97.F 96526.4174
+3.98.F 59161.3526
+3.99.F 13789.4882
+$onlisting
+/;
+$offmulti
+$onmulti
+parameter fun_data_(*,fun_s_,*) /
+$offlisting
+$if %DEBUG%==1 $onlisting
+4.0.X 0.0
+4.0.F 3.44
+5.0.X 0.0
+5.0.F 0.013
+6.0.X 0.0
+6.0.F 0.54
+4.1.X 0.4
+4.1.F 3.44
+5.1.X 0.4
+5.1.F 0.013
+6.1.X 0.4
+6.1.F 0.54
+4.2.X 0.8
+4.2.F 3.44
+5.2.X 0.8
+5.2.F 0.013
+6.2.X 0.8
+6.2.F 0.54
+4.3.X 0.9
+4.3.F 3.58
+5.3.X 0.9
+5.3.F 0.014
+6.3.X 0.9
+6.3.F 0.75
+4.4.X 1.0
+4.4.F 4.44
+5.4.X 1.0
+5.4.F 0.031
+6.4.X 1.0
+6.4.F 0.79
+4.5.X 1.2
+4.5.F 3.44
+5.5.X 1.2
+5.5.F 0.041
+6.5.X 1.2
+6.5.F 0.78
+4.6.X 1.4
+4.6.F 3.01
+5.6.X 1.4
+5.6.F 0.039
+6.6.X 1.4
+6.6.F 0.89
+4.7.X 1.6
+4.7.F 2.86
+5.7.X 1.6
+5.7.F 0.036
+6.7.X 1.6
+6.7.F 0.93
+4.8.X 1.8
+4.8.F 2.44
+5.8.X 1.8
+5.8.F 0.035
+6.8.X 1.8
+6.8.F 0.93
+$onlisting
+/;
+$offmulti
+scalar Re; Re = 6378145;
+scalar mu; mu = 3.986e14;
+scalar S; S = 49.2386;
+scalar g0; g0 = 9.80665;
+scalar Isp; Isp = 1600;
+variable tf; tf.l$NO = 0;
+variable h[N]; h.l[N]$NO = 0;
+variable v[N]; v.l[N]$NO = 0;
+variable fpa[N]; fpa.l[N]$NO = 0;
+variable m[N]; m.l[N]$NO = 0;
+variable alpha[N]; alpha.l[N]$NO = 0;
+tf.lo = 100; tf.up = 600; tf.l = midpoint((tf.lo),(tf.up));
+h.lo[N] = 0; h.up[N] = 21031.2; h.l[N] = midpoint((h.lo[N]),(h.up[N]));
+v.lo[N] = 5; v.up[N] = 1000; v.l[N] = midpoint((v.lo[N]),(v.up[N]));
+fpa.lo[N] = -40/180*pi; fpa.up[N] = +40/180*pi; fpa.l[N] = midpoint((fpa.lo[N]),(fpa.up[N]));
+m.lo[N] = 22; m.up[N] = 20410; m.l[N] = midpoint((m.lo[N]),(m.up[N]));
+alpha.lo[N] = -45/180*pi; alpha.up[N] = +45/180*pi; alpha.l[N] = midpoint((alpha.lo[N]),(alpha.up[N]));
+$ondotL
+$if not %N%==0 h.fx[N0(N)] = 0;
+$if not %N%==0 h.l[N0(N)] = midpoint((h.lo[N]),(h.up[N]));
+$if     %N%==0 h.l[N0(N)] = 0;
+$if not %N%==0 v.fx[N0(N)] = 129.314;
+$if not %N%==0 v.l[N0(N)] = midpoint((v.lo[N]),(v.up[N]));
+$if     %N%==0 v.l[N0(N)] = 129.314;
+$if not %N%==0 fpa.fx[N0(N)] = 0;
+$if not %N%==0 fpa.l[N0(N)] = midpoint((fpa.lo[N]),(fpa.up[N]));
+$if     %N%==0 fpa.l[N0(N)] = 0;
+$if not %N%==0 m.fx[N0(N)] = 19050.864;
+$if not %N%==0 m.l[N0(N)] = midpoint((m.lo[N]),(m.up[N]));
+$if     %N%==0 m.l[N0(N)] = 19050.864;
+$offdotL
+$ondotL
+$if not %N%==0 h.fx[NF(N)] = 19994.88;
+$if not %N%==0 h.l[NF(N)] = midpoint((h.lo[N]),(h.up[N]));
+$if     %N%==0 h.l[NF(N)] = 19994.88;
+$if not %N%==0 v.fx[NF(N)] = 295.092;
+$if not %N%==0 v.l[NF(N)] = midpoint((v.lo[N]),(v.up[N]));
+$if     %N%==0 v.l[NF(N)] = 295.092;
+$if not %N%==0 fpa.fx[NF(N)] = 0;
+$if not %N%==0 fpa.l[NF(N)] = midpoint((fpa.lo[N]),(fpa.up[N]));
+$if     %N%==0 fpa.l[NF(N)] = 0;
+$offdotL
+$ondotL
+tf.l = min(max(300,tf.lo),tf.up);
+h.l[N] = min(max(linspace(initial(h(N_),N),final(h(N_),N)),h.lo[N]),h.up[N]);
+v.l[N] = min(max(linspace(initial(v(N_),N),final(v(N_),N)),v.lo[N]),v.up[N]);
+fpa.l[N] = min(max(linspace(initial(fpa(N_),N),final(fpa(N_),N)),fpa.lo[N]),fpa.up[N]);
+m.l[N] = min(max(initial(m(N_),N),m.lo[N]),m.up[N]);
+alpha.l[N] = min(max(linspace(45/180*pi,-45/180*pi),alpha.lo[N]),alpha.up[N]);
+$offdotL
+equation dyna_equ1(N);
+$macro m_1_(N) (v[N] * sin(fpa[N]))
+dyna_equ1(NM1(N)).. derivative(h(N_),N) =e= integral(m_1_,N);
+equation dyna_equ2(N);
+$macro m_2_(N) ((Thrust(N) * cos(alpha[N]) - D(N)) / m[N] - mu * sin(fpa[N]) / (r(N) * r(N)))
+dyna_equ2(NM1(N)).. derivative(v(N_),N) =e= integral(m_2_,N);
+equation dyna_equ3(N);
+$macro m_3_(N) ((Thrust(N) * sin(alpha[N]) + L(N)) / (m[N] * v[N]) + cos(fpa[N]) * (v[N] / r(N) - mu / (v[N] * r(N) * r(N))))
+dyna_equ3(NM1(N)).. derivative(fpa(N_),N) =e= integral(m_3_,N);
+equation dyna_equ4(N);
+$macro m_4_(N) (-Thrust(N) / (g0 * Isp))
+dyna_equ4(NM1(N)).. derivative(m(N_),N) =e= integral(m_4_,N);
+equation dyna_obj; dyna_obj.. %objective% =e= tf;
+$ondotL
+%objective%.l = tf;
+$offdotL
+model %model% /
+dyna_equ1
+dyna_equ2
+dyna_equ3
+dyna_equ4
+dyna_obj
+/;
+%model%.optfile=0;
+%model%.bratio$(dyna_iter>1)=0;
+$batinclude "%gams.ldir%dyna-gdx-load" @open %objective% tf h[N] v[N] fpa[N] m[N] alpha[N] @close
+$ifi '%TIMDL%'=='C' $ifi not '%CF%'=='NA'  execute 'echo Optimization launched (N=%N%^|CM=%CM%^|CF=%CF%)';
+$ifi '%TIMDL%'=='C' $ifi '%CF%%QM%'=='NA0' execute 'echo Optimization launched (N=%N%^|QM=Rectangle)';
+$ifi '%TIMDL%'=='C' $ifi '%CF%%QM%'=='NA1' execute 'echo Optimization launched (N=%N%^|QM=Trapeze)';
+$ifi '%TIMDL%'=='D' execute 'echo Optimization launched (N=%N%) Discrete Time Model';
+solve %model% minimizing %objective% using NLP;
+$onecho > $tmp$$.sed
+$offecho
+$set UTF8
+$batinclude "%gams.ldir%dyna-csv-save" #open
+display Re,mu,S,g0,Isp;
+display tf.l;
+$batinclude "%gams.ldir%dyna-csv-save" h.l[N] v.l[N] fpa.l[N] m.l[N] alpha.l[N] #close
+$if not declared NN $batinclude "%gams.ldir%dyna-gdx-save" @open %objective% tf h[N] v[N] fpa[N] m[N] alpha[N] @close
+$libinclude dyna-info-optimization
+$libinclude dyna-housekeeping
+</code></pre> 
+</body> 
+</html> 

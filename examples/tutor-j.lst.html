@@ -1,0 +1,246 @@
+<html> 
+<head> 
+<script type="text/javascript" language="javascript" src="https://www.gams.com/latest/docs/style/prism.js"></script> 
+<link href="https://www.gams.com/latest/docs/style/prism.css" rel="stylesheet" type="text/css" /> 
+<style> 
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;} 
+:not(pre) > code[class*="language-"],pre[class*="language-"] {background-color: white; border: none;} 
+</style> 
+</head> 
+<h1 align="center" style="color:#7EAEAC">TUTOR-J - Self-contained Gams file</h1>
+<pre><code class="language-gams"> 
+* Dyna-to-Gams Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved.
+* Translated from .\examples\tutor-j.dyn on 26 Dec 2021 at 19:15:25
+$ondotL
+sets
+  N      / N0*N20 /
+  NM1(N) / N0*N19 /
+  N0(N)  / N0 /
+  NF(N)  / N20 /
+; alias(N,N_,N1_,N2_,N3_,N9_);
+parameter Tick_(N);
+Tick_(N) = (ord(N)-1)/20;
+set MP_ /P0/; set dyna_mpset /P,N,L,R/;
+table dyna_mptab(MP_,dyna_mpset)
+    N  L  R
+P0  1  1  1;
+dyna_mptab('P0','P') = 0.5;
+scalars dyna_mpcy1 /2/, dyna_mpcy2 /2/;
+scalar dyna_eps /1/; repeat (dyna_eps = dyna_eps/2; until 1+dyna_eps=1); dyna_eps = 2*dyna_eps;
+scalar dyna_pi; dyna_pi = arccos(-1);
+scalar dyna_iter /1/;
+scalar dyna_iter_max /1/;
+set CartesianCoordinates /x,y,z/;
+alias(c_c_,CartesianCoordinates);
+set SphericalCoordinates 'radial distance, inclination (or elevation), azimuth' /rho,tta,phi/;
+scalar smoothEPS; smoothEPS = dyna_eps;
+variable dyna_ksi;
+option limrow=0,limcol=0,solvelink=5,threads=0,solprint=off,nlp=conopt,minlp=bonmin;
+scalar ts; ts = 1;
+variable k11; k11.l$NO = 0;
+variable k12; k12.l$NO = 0;
+variable k13; k13.l$NO = 0;
+variable k14; k14.l$NO = 0;
+variable d1; d1.l$NO = 0;
+variable k21; k21.l$NO = 0;
+variable k22; k22.l$NO = 0;
+variable k23; k23.l$NO = 0;
+variable k24; k24.l$NO = 0;
+variable d2; d2.l$NO = 0;
+variable x1[N]; x1.l[N]$NO = 0;
+variable x3[N]; x3.l[N]$NO = 0;
+variable x2[N]; x2.l[N]$NO = 0;
+variable x4[N]; x4.l[N]$NO = 0;
+variable u1[N]; u1.l[N]$NO = 0;
+variable u2[N]; u2.l[N]$NO = 0;
+variable J[N]; J.l[N]$NO = 0;
+x1.fx[N0(N)] = 0;
+x1.l[N0(N)] = ((((x1.lo[N])*(1+1$((x1.up[N])=+inf)))$((x1.lo[N])<>-inf)+((x1.up[N])*(1+1$((x1.lo[N])=-inf)))$((x1.up[N])<>+inf))/2);
+x2.fx[N0(N)] = 0;
+x2.l[N0(N)] = ((((x2.lo[N])*(1+1$((x2.up[N])=+inf)))$((x2.lo[N])<>-inf)+((x2.up[N])*(1+1$((x2.lo[N])=-inf)))$((x2.up[N])<>+inf))/2);
+x3.fx[N0(N)] = 0;
+x3.l[N0(N)] = ((((x3.lo[N])*(1+1$((x3.up[N])=+inf)))$((x3.lo[N])<>-inf)+((x3.up[N])*(1+1$((x3.lo[N])=-inf)))$((x3.up[N])<>+inf))/2);
+x4.fx[N0(N)] = 1;
+x4.l[N0(N)] = ((((x4.lo[N])*(1+1$((x4.up[N])=+inf)))$((x4.lo[N])<>-inf)+((x4.up[N])*(1+1$((x4.lo[N])=-inf)))$((x4.up[N])<>+inf))/2);
+J.fx[N0(N)] = 0;
+J.l[N0(N)] = ((((J.lo[N])*(1+1$((J.up[N])=+inf)))$((J.lo[N])<>-inf)+((J.up[N])*(1+1$((J.lo[N])=-inf)))$((J.up[N])<>+inf))/2);
+equation dyna_equ1(N);
+dyna_equ1(NM1(N)).. sum(sameas(N_,N+1),x1(N_)) =e= ((0.18 * x1[N]                                     + 2.0 * u1[N] + 4.50));
+equation dyna_equ2(N);
+dyna_equ2(NM1(N)).. sum(sameas(N_,N+1),x2(N_)) =e= ((-0.25 * x1[N] + 0.27 * x2[N]                                    + 6.15));
+equation dyna_equ3(N);
+dyna_equ3(NM1(N)).. sum(sameas(N_,N+1),x3(N_)) =e= ((0.55 * x1[N]             + 0.18 * x3[N]             - 2.0 * u2[N] + 2.00));
+equation dyna_equ4(N);
+dyna_equ4(NM1(N)).. sum(sameas(N_,N+1),x4(N_)) =e= ((0.55 * x2[N] - 0.25 * x3[N] + 0.27 * x4[N]            + 2.65));
+equation dyna_equ5(N);
+dyna_equ5(N).. u1[N] =e= k11 * x1[N] + k12 * x2[N] + k13 * x3[N] + k14 * x4[N] + d1;
+equation dyna_equ6(N);
+dyna_equ6(N).. u2[N] =e= k21 * x1[N] + k22 * x2[N] + k23 * x3[N] + k24 * x4[N] + d2;
+equation dyna_equ7(N);
+dyna_equ7(NM1(N)).. sum(sameas(N_,N+1),J(N_)) =e= ((J[N] + 0.5 * (sqr(x1[N]-5) + sqr(x2[N]-7) + sqr(x3[N]-5) + sqr(x4[N]-7) + 100*sqr(u1[N]) + 100*sqr(u2[N]))));
+equation dyna_obj; dyna_obj.. dyna_ksi =e= sum(NF(N_),J(N_));
+dyna_ksi.l = sum(NF(N_),J(N_));
+model tutor_j /
+dyna_equ1
+dyna_equ2
+dyna_equ3
+dyna_equ4
+dyna_equ5
+dyna_equ6
+dyna_equ7
+dyna_obj
+/;
+tutor_j.optfile=0;
+tutor_j.bratio$(dyna_iter>1)=0;
+scalar dyna_ksi_L_;
+scalar k11_L_;
+scalar k12_L_;
+scalar k13_L_;
+scalar k14_L_;
+scalar d1_L_;
+scalar k21_L_;
+scalar k22_L_;
+scalar k23_L_;
+scalar k24_L_;
+scalar d2_L_;
+parameter x1_L_[*];
+parameter x3_L_[*];
+parameter x2_L_[*];
+parameter x4_L_[*];
+parameter u1_L_[*];
+parameter u2_L_[*];
+parameter J_L_[*];
+execute 'echo Optimization launched (N=20) Discrete Time Model';
+option NLP=CONOPT;
+solve tutor_j minimizing dyna_ksi using NLP;
+if((tutor_j.modelstat ne 1) and (tutor_j.modelstat ne 2) and (tutor_j.modelstat ne 8),
+  option NLP=SNOPT;
+  solve tutor_j minimizing dyna_ksi using NLP);
+display ts;
+display k11.l,k12.l,k13.l,k14.l,d1.l,k21.l,k22.l,k23.l,k24.l,d2.l;
+file f_csv_ /$$tutor-j.20.csv/;
+put f_csv_ '"_N_"';
+f_csv_.pc = 5; f_csv_.nw = 13; f_csv_.nd = 6; f_csv_.nr = 2; f_csv_.pw = 32767;
+put f_csv_ 'Time'
+'x1'
+'x3'
+'x2'
+'x4'
+'u1'
+'u2'
+'J'
+/;
+loop(N, put f_csv_ N.tl:0
+(ts*(ord(N)-1))
+x1.l[N]
+x3.l[N]
+x2.l[N]
+x4.l[N]
+u1.l[N]
+u2.l[N]
+J.l[N]
+/);
+putclose;
+set NN / N0*N40 /;
+scalars dyna_ksi_S1_,dyna_ksi_S2_;
+dyna_ksi_S1_ = dyna_ksi.l; dyna_ksi_S2_ = dyna_ksi.l;
+scalars k11_S1_,k11_S2_;
+k11_S1_ = k11.l; k11_S2_ = k11.l;
+scalars k12_S1_,k12_S2_;
+k12_S1_ = k12.l; k12_S2_ = k12.l;
+scalars k13_S1_,k13_S2_;
+k13_S1_ = k13.l; k13_S2_ = k13.l;
+scalars k14_S1_,k14_S2_;
+k14_S1_ = k14.l; k14_S2_ = k14.l;
+scalars d1_S1_,d1_S2_;
+d1_S1_ = d1.l; d1_S2_ = d1.l;
+scalars k21_S1_,k21_S2_;
+k21_S1_ = k21.l; k21_S2_ = k21.l;
+scalars k22_S1_,k22_S2_;
+k22_S1_ = k22.l; k22_S2_ = k22.l;
+scalars k23_S1_,k23_S2_;
+k23_S1_ = k23.l; k23_S2_ = k23.l;
+scalars k24_S1_,k24_S2_;
+k24_S1_ = k24.l; k24_S2_ = k24.l;
+scalars d2_S1_,d2_S2_;
+d2_S1_ = d2.l; d2_S2_ = d2.l;
+parameters x1_S1_[*],x1_S2_[*];
+x1_S1_[N] = x1.l[N];
+x1_S2_[NN] $ (mod(ord(NN),2)=1) = sum(N$(ord(NN)=2*ord(N)-1),x1.l[N]);
+x1_S2_[NN] $ (mod(ord(NN)-1,dyna_mpcy1)<>0) = sum(MP_$(dyna_mptab(MP_,"N")=mod(ord(NN)-1,dyna_mpcy2)),dyna_mptab(MP_,"P")*x1_S2_[NN-dyna_mptab(MP_,'L')] + (1-dyna_mptab(MP_,"P"))*x1_S2_[NN+dyna_mptab(MP_,'R')]);
+parameters x3_S1_[*],x3_S2_[*];
+x3_S1_[N] = x3.l[N];
+x3_S2_[NN] $ (mod(ord(NN),2)=1) = sum(N$(ord(NN)=2*ord(N)-1),x3.l[N]);
+x3_S2_[NN] $ (mod(ord(NN)-1,dyna_mpcy1)<>0) = sum(MP_$(dyna_mptab(MP_,"N")=mod(ord(NN)-1,dyna_mpcy2)),dyna_mptab(MP_,"P")*x3_S2_[NN-dyna_mptab(MP_,'L')] + (1-dyna_mptab(MP_,"P"))*x3_S2_[NN+dyna_mptab(MP_,'R')]);
+parameters x2_S1_[*],x2_S2_[*];
+x2_S1_[N] = x2.l[N];
+x2_S2_[NN] $ (mod(ord(NN),2)=1) = sum(N$(ord(NN)=2*ord(N)-1),x2.l[N]);
+x2_S2_[NN] $ (mod(ord(NN)-1,dyna_mpcy1)<>0) = sum(MP_$(dyna_mptab(MP_,"N")=mod(ord(NN)-1,dyna_mpcy2)),dyna_mptab(MP_,"P")*x2_S2_[NN-dyna_mptab(MP_,'L')] + (1-dyna_mptab(MP_,"P"))*x2_S2_[NN+dyna_mptab(MP_,'R')]);
+parameters x4_S1_[*],x4_S2_[*];
+x4_S1_[N] = x4.l[N];
+x4_S2_[NN] $ (mod(ord(NN),2)=1) = sum(N$(ord(NN)=2*ord(N)-1),x4.l[N]);
+x4_S2_[NN] $ (mod(ord(NN)-1,dyna_mpcy1)<>0) = sum(MP_$(dyna_mptab(MP_,"N")=mod(ord(NN)-1,dyna_mpcy2)),dyna_mptab(MP_,"P")*x4_S2_[NN-dyna_mptab(MP_,'L')] + (1-dyna_mptab(MP_,"P"))*x4_S2_[NN+dyna_mptab(MP_,'R')]);
+parameters u1_S1_[*],u1_S2_[*];
+u1_S1_[N] = u1.l[N];
+u1_S2_[NN] $ (mod(ord(NN),2)=1) = sum(N$(ord(NN)=2*ord(N)-1),u1.l[N]);
+u1_S2_[NN] $ (mod(ord(NN)-1,dyna_mpcy1)<>0) = sum(MP_$(dyna_mptab(MP_,"N")=mod(ord(NN)-1,dyna_mpcy2)),dyna_mptab(MP_,"P")*u1_S2_[NN-dyna_mptab(MP_,'L')] + (1-dyna_mptab(MP_,"P"))*u1_S2_[NN+dyna_mptab(MP_,'R')]);
+parameters u2_S1_[*],u2_S2_[*];
+u2_S1_[N] = u2.l[N];
+u2_S2_[NN] $ (mod(ord(NN),2)=1) = sum(N$(ord(NN)=2*ord(N)-1),u2.l[N]);
+u2_S2_[NN] $ (mod(ord(NN)-1,dyna_mpcy1)<>0) = sum(MP_$(dyna_mptab(MP_,"N")=mod(ord(NN)-1,dyna_mpcy2)),dyna_mptab(MP_,"P")*u2_S2_[NN-dyna_mptab(MP_,'L')] + (1-dyna_mptab(MP_,"P"))*u2_S2_[NN+dyna_mptab(MP_,'R')]);
+parameters J_S1_[*],J_S2_[*];
+J_S1_[N] = J.l[N];
+J_S2_[NN] $ (mod(ord(NN),2)=1) = sum(N$(ord(NN)=2*ord(N)-1),J.l[N]);
+J_S2_[NN] $ (mod(ord(NN)-1,dyna_mpcy1)<>0) = sum(MP_$(dyna_mptab(MP_,"N")=mod(ord(NN)-1,dyna_mpcy2)),dyna_mptab(MP_,"P")*J_S2_[NN-dyna_mptab(MP_,'L')] + (1-dyna_mptab(MP_,"P"))*J_S2_[NN+dyna_mptab(MP_,'R')]);
+execute_unload '$$tutor-j.20.gdx'
+,dyna_ksi_S1_=dyna_ksi
+,k11_S1_=k11
+,k12_S1_=k12
+,k13_S1_=k13
+,k14_S1_=k14
+,d1_S1_=d1
+,k21_S1_=k21
+,k22_S1_=k22
+,k23_S1_=k23
+,k24_S1_=k24
+,d2_S1_=d2
+,x1_S1_=x1
+,x3_S1_=x3
+,x2_S1_=x2
+,x4_S1_=x4
+,u1_S1_=u1
+,u2_S1_=u2
+,J_S1_=J
+;
+execute_unload '$$tutor-j.40.gdx'
+,dyna_ksi_S2_=dyna_ksi
+,k11_S2_=k11
+,k12_S2_=k12
+,k13_S2_=k13
+,k14_S2_=k14
+,d1_S2_=d1
+,k21_S2_=k21
+,k22_S2_=k22
+,k23_S2_=k23
+,k24_S2_=k24
+,d2_S2_=d2
+,x1_S2_=x1
+,x3_S2_=x3
+,x2_S2_=x2
+,x4_S2_=x4
+,u1_S2_=u1
+,u2_S2_=u2
+,J_S2_=J
+;
+file f_nfo_ /$$tutor-j.20.nfo/;
+put f_nfo_
+  'ifile,model,cd,cf,cm,qm,n,iter,numvar,numdvar,numequ,numnz,numnlins,numnlnz,solvestat,modelstat,resusd,iterusd,objval,objest'/
+  '.\examples\tutor-j.dyn,tutor_j,D,IL,L3A4,1,20,1,'
+  tutor_j.numvar:0:0 ',' tutor_j.numdvar:0:0 ',' tutor_j.numequ:0:0 ',' tutor_j.numnz:0:0 ',' tutor_j.numnlins:0:0 ',' tutor_j.numnlnz:0:0 ','
+  tutor_j.Tsolstat:0:0 ',' tutor_j.Tmodstat:0:0 ',' (1000*tutor_j.resusd):0:0 ',' tutor_j.iterusd:0:0 ',';
+f_nfo_.nw = 13; f_nfo_.nd = 6; f_nfo_.nr = 2
+put f_nfo_ tutor_j.objval ',' tutor_j.objest/;
+putclose f_nfo_;
+</code></pre> 
+</body> 
+</html> 

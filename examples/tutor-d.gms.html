@@ -1,0 +1,210 @@
+<html> 
+<head> 
+<script type="text/javascript" language="javascript" src="https://www.gams.com/latest/docs/style/prism.js"></script> 
+<link href="https://www.gams.com/latest/docs/style/prism.css" rel="stylesheet" type="text/css" /> 
+<style> 
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;} 
+:not(pre) > code[class*="language-"],pre[class*="language-"] {background-color: white; border: none;} 
+</style> 
+</head> 
+<h1 align="center" style="color:#7EAEAC">TUTOR-D - Gams model</h1> 
+<pre><code class="language-gams"> 
+* Dyna-to-Gams Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved.
+* Translated from .\examples\tutor-d.dyn on 26 Dec 2021 at 19:14:29
+$offlisting
+$if not set DEBUG $set DEBUG 0
+$if %DEBUG%==1 $onlisting
+$if not set HOME $set HOME "d:\dyna2gams"
+$if not set N $set N 48
+$if not set CM $set CM L3A4
+$if not set QM $set QM 1
+$if not set IN $set IN 4
+$if not set SS $set SS ""
+$if not set DFGDX $set DFGDX 1
+$if not set CF $set CF IL
+$set SF SH
+$set MODEL tutor_d
+$set TF tf
+$set T0 ""
+$set TS ts
+$if not set MULTI $set MULTI YES
+$if not set ITER $set ITER 1
+$set TIMDL C
+$if not set SM $set SM DP853
+$if not set GOPT $set GOPT 
+$if not set OCTAVE $set OCTAVE "d:\octave-5.1.0.0\mingw64\bin\octave-cli.exe"
+$log [DYNA] Model name: %model%
+$log [DYNA] Model type: NLP
+$log [DYNA] Number of parameters: 24
+$log [DYNA] Number of timed parameters: 2
+$log [DYNA] Number of dynamic variables: 12
+$log [DYNA] Number of static variables: 2
+$log [DYNA] Number of named equations: 2
+$log [DYNA] Number of equations: 12
+$log [DYNA] List of parameters: A11 A12 A21 A22 B1 B2 Q11 Q12 Q21 Q22 R K1 K2 S11 S12 S21 S22 t1 t2 Y11 Y12 Y21 Y22 tf
+$log [DYNA] List of timed parameters: eta1 eta2
+$log [DYNA] List of dynamic variables: t x1 x2 u J lambda1 lambda2 y1 y2 v mu1 mu2
+$log [DYNA] List of static variables: uK1 uK2
+$log [DYNA] List of named equations: e1 e2
+$ifi %TIMDL%==C $libinclude dyna-continuous
+$ifi %TIMDL%==D $libinclude dyna-discrete
+$ifi %TIMDL%==N $libinclude dyna-none
+$libinclude dyna-utilities
+$if setglobal NRESET $set N %NRESET%
+$set dyna_ifile .\examples\tutor-d.dyn
+$set dyna_ifnam tutor-d
+$set objective dyna_ksi
+variable %objective%;
+option limrow=0,limcol=0,solvelink=5,threads=0,solprint=off,nlp=conopt,minlp=bonmin;
+$onlisting
+scalar A11; A11 = 0;
+scalar A12; A12 = 1;
+scalar A21; A21 = 2;
+scalar A22; A22 = -1;
+scalar B1; B1 = 0;
+scalar B2; B2 = 1;
+scalar Q11; Q11 = 2;
+scalar Q12; Q12 = 0;
+scalar Q21; Q21 = 0;
+scalar Q22; Q22 = 1;
+scalar R; R = 0.5;
+scalar K1; K1 = 4.8284;
+scalar K2; K2 = 2.5576;
+scalar S11; S11 = 6.0313;
+scalar S12; S12 = 2.4142;
+scalar S21; S21 = 2.4142;
+scalar S22; S22 = 1.2788;
+scalar t1; t1 = 0.83378;
+scalar t2; t2 = 0.42404;
+scalar Y11; Y11 = -4.68805;
+scalar Y12; Y12 = 0.68805;
+scalar Y21; Y21 = 5.62263;
+scalar Y22; Y22 = -1.62263;
+scalar tf; tf = 99;
+variable uK1; uK1.l$NO = 0;
+variable uK2; uK2.l$NO = 0;
+variable t[N]; t.l[N]$NO = 0;
+variable x1[N]; x1.l[N]$NO = 0;
+variable x2[N]; x2.l[N]$NO = 0;
+variable u[N]; u.l[N]$NO = 0;
+variable J[N]; J.l[N]$NO = 0;
+variable lambda1[N]; lambda1.l[N]$NO = 0;
+variable lambda2[N]; lambda2.l[N]$NO = 0;
+variable y1[N]; y1.l[N]$NO = 0;
+variable y2[N]; y2.l[N]$NO = 0;
+variable v[N]; v.l[N]$NO = 0;
+variable mu1[N]; mu1.l[N]$NO = 0;
+variable mu2[N]; mu2.l[N]$NO = 0;
+uK1.lo = 1; uK1.up = 10; uK1.l = midpoint((uK1.lo),(uK1.up));
+uK2.lo = 1; uK2.up = 10; uK2.l = midpoint((uK2.lo),(uK2.up));
+t.lo[N] = 0; t.up[N] = +inf; t.l[N] = midpoint((t.lo[N]),(t.up[N]));
+$ondotL
+$if not %N%==0 t.fx[N0(N)] = 0;
+$if not %N%==0 t.l[N0(N)] = midpoint((t.lo[N]),(t.up[N]));
+$if     %N%==0 t.l[N0(N)] = 0;
+$if not %N%==0 x1.fx[N0(N)] = -4;
+$if not %N%==0 x1.l[N0(N)] = midpoint((x1.lo[N]),(x1.up[N]));
+$if     %N%==0 x1.l[N0(N)] = -4;
+$if not %N%==0 x2.fx[N0(N)] = 4;
+$if not %N%==0 x2.l[N0(N)] = midpoint((x2.lo[N]),(x2.up[N]));
+$if     %N%==0 x2.l[N0(N)] = 4;
+$if not %N%==0 J.fx[N0(N)] = 0;
+$if not %N%==0 J.l[N0(N)] = midpoint((J.lo[N]),(J.up[N]));
+$if     %N%==0 J.l[N0(N)] = 0;
+$offdotL
+$ondotL
+$if not %N%==0 lambda1.fx[NF(N)] = 0;
+$if not %N%==0 lambda1.l[NF(N)] = midpoint((lambda1.lo[N]),(lambda1.up[N]));
+$if     %N%==0 lambda1.l[NF(N)] = 0;
+$if not %N%==0 lambda2.fx[NF(N)] = 0;
+$if not %N%==0 lambda2.l[NF(N)] = midpoint((lambda2.lo[N]),(lambda2.up[N]));
+$if     %N%==0 lambda2.l[NF(N)] = 0;
+$offdotL
+equation dyna_equ1(N);
+$macro m_1_(N) (1)
+dyna_equ1(NM1(N)).. derivative(t(N_),N) =e= integral(m_1_,N);
+equation e1(N);
+$macro m_2_(N) ((A11*x1[N] + A12*x2[N] + B1*u[N]))
+e1(NM1(N)).. derivative(x1(N_),N) =e= integral(m_2_,N);
+equation e2(N);
+$macro m_3_(N) ((A21*x1[N] + A22*x2[N] + B2*u[N]))
+e2(NM1(N)).. derivative(x2(N_),N) =e= integral(m_3_,N);
+equation dyna_equ4(N);
+$macro m_4_(N) (0.5*(Q11*sqr(x1[N]) + (Q12+Q21)*x1[N]*x2[N] + Q22*sqr(x2[N]) + R*sqr(u[N])))
+dyna_equ4(NM1(N)).. derivative(J(N_),N) =e= integral(m_4_,N);
+equation dyna_equ5(N);
+dyna_equ5(N).. u[N] =e= - uK1*x1[N] - uK2*x2[N];
+equation dyna_equ6(N);
+$macro m_6_(N) (- Q11*x1[N] - Q12*x2[N] - A11*lambda1[N] - A21*lambda2[N])
+dyna_equ6(NM1(N)).. derivative(lambda1(N_),N) =e= integral(m_6_,N);
+equation dyna_equ7(N);
+$macro m_7_(N) (- Q21*x1[N] - Q22*x2[N] - A12*lambda1[N] - A22*lambda2[N])
+dyna_equ7(NM1(N)).. derivative(lambda2(N_),N) =e= integral(m_7_,N);
+equation dyna_equ8(N);
+dyna_equ8(N).. y1[N] =e= Y11*exp(-t[N]/t1) + Y12*exp(-t[N]/t2);
+equation dyna_equ9(N);
+dyna_equ9(N).. y2[N] =e= Y21*exp(-t[N]/t1) + Y22*exp(-t[N]/t2);
+equation dyna_equ10(N);
+dyna_equ10(N).. v[N] =e= - K1*y1[N] - K2*y2[N];
+equation dyna_equ11(N);
+dyna_equ11(N).. mu1[N] =e= S11*y1[N] + S12*y2[N];
+equation dyna_equ12(N);
+dyna_equ12(N).. mu2[N] =e= S21*y1[N] + S22*y2[N];
+equation dyna_obj; dyna_obj.. %objective% =e= final(J(N_),N);
+$ondotL
+%objective%.l = final(J(N_),N);
+$offdotL
+model %model% /
+dyna_equ1
+e1
+e2
+dyna_equ4
+dyna_equ5
+dyna_equ6
+dyna_equ7
+dyna_equ8
+dyna_equ9
+dyna_equ10
+dyna_equ11
+dyna_equ12
+dyna_obj
+/;
+%model%.optfile=0;
+%model%.bratio$(dyna_iter>1)=0;
+$batinclude "%gams.ldir%dyna-gdx-load" @open %objective% uK1 uK2 t[N] x1[N] x2[N] u[N] J[N] lambda1[N] lambda2[N] y1[N] y2[N] v[N] mu1[N] mu2[N] @close
+$ifi '%TIMDL%'=='C' $ifi not '%CF%'=='NA'  execute 'echo Optimization launched (N=%N%^|CM=%CM%^|CF=%CF%)';
+$ifi '%TIMDL%'=='C' $ifi '%CF%%QM%'=='NA0' execute 'echo Optimization launched (N=%N%^|QM=Rectangle)';
+$ifi '%TIMDL%'=='C' $ifi '%CF%%QM%'=='NA1' execute 'echo Optimization launched (N=%N%^|QM=Trapeze)';
+$ifi '%TIMDL%'=='D' execute 'echo Optimization launched (N=%N%) Discrete Time Model';
+solve %model% minimizing %objective% using NLP;
+$onecho > $tmp$$.sed
+$offecho
+$set UTF8
+$batinclude "%gams.ldir%dyna-csv-save" #open
+$ setglobal PZP POLY
+$ ifi "%CF%"=="IG" $abort [DYNA] @COSTATES not defined for collocation families %CF%.
+$ ifi "%CF%"=="DG" $abort [DYNA] @COSTATES not defined for collocation families %CF%.
+$ if not declared costate_e1_ parameter dyna_costate_e1[N];
+  dualvars_(N) = e1.m[N];
+  solve mcostate_ minimizing codummy_ using lp;
+$ ondotL
+  dyna_costate_e1[N] = costate_(N)/dTime;
+$ offdotL
+$ if not declared costate_e2_ parameter dyna_costate_e2[N];
+  dualvars_(N) = e2.m[N];
+  solve mcostate_ minimizing codummy_ using lp;
+$ ondotL
+  dyna_costate_e2[N] = costate_(N)/dTime;
+$ offdotL
+  parameter eta1[N]; eta1[N] = costate(e1(N_),N);
+  parameter eta2[N]; eta2[N] = costate(e2(N_),N);
+$ batinclude "%gams.ldir%dyna-csv-save" eta1[N] eta2[N]
+display A11,A12,A21,A22,B1,B2,Q11,Q12,Q21,Q22,R,K1,K2,S11,S12,S21,S22,t1,t2,Y11,Y12,Y21,Y22,tf;
+display uK1.l,uK2.l;
+$batinclude "%gams.ldir%dyna-csv-save" t.l[N] x1.l[N] x2.l[N] u.l[N] J.l[N] lambda1.l[N] lambda2.l[N] y1.l[N] y2.l[N] v.l[N] mu1.l[N] mu2.l[N] e1.m[N] e2.m[N] #close
+$if not declared NN $batinclude "%gams.ldir%dyna-gdx-save" @open %objective% uK1 uK2 t[N] x1[N] x2[N] u[N] J[N] lambda1[N] lambda2[N] y1[N] y2[N] v[N] mu1[N] mu2[N] @close
+$libinclude dyna-info-optimization
+$libinclude dyna-housekeeping
+</code></pre> 
+</body> 
+</html> 

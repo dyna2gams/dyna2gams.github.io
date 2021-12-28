@@ -1,0 +1,256 @@
+<html> 
+<head> 
+<script type="text/javascript" language="javascript" src="https://www.gams.com/latest/docs/style/prism.js"></script> 
+<link href="https://www.gams.com/latest/docs/style/prism.css" rel="stylesheet" type="text/css" /> 
+<style> 
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;} 
+:not(pre) > code[class*="language-"],pre[class*="language-"] {background-color: white; border: none;} 
+</style> 
+</head> 
+<h1 align="center" style="color:#7EAEAC">TUTOR-F - Gams model</h1> 
+<pre><code class="language-gams"> 
+* Dyna-to-Gams Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved.
+* Translated from .\examples\tutor-f.dyn on 26 Dec 2021 at 19:14:54
+$offlisting
+$if not set DEBUG $set DEBUG 0
+$if %DEBUG%==1 $onlisting
+$if not set HOME $set HOME "d:\dyna2gams"
+$if not set N $set N 48
+$if not set CM $set CM L3A4
+$if not set QM $set QM 1
+$if not set IN $set IN 4
+$if not set SS $set SS ""
+$if not set DFGDX $set DFGDX 1
+$if not set CF $set CF IL
+$set SF SH
+$set MODEL tutor_f
+$set TF tf
+$set T0 ""
+$set TS ts
+$if not set MULTI $set MULTI YES
+$if not set ITER $set ITER 1
+$set TIMDL C
+$if not set SM $set SM DP853
+$if not set GOPT $set GOPT 
+$if not set OCTAVE $set OCTAVE "d:\octave-5.1.0.0\mingw64\bin\octave-cli.exe"
+$log [DYNA] Model name: %model%
+$log [DYNA] Model type: NLP
+$log [DYNA] Number of parameters: 1
+$log [DYNA] Number of dynamic variables: 3
+$log [DYNA] Number of static variables: 5
+$log [DYNA] Number of equations: 3
+$log [DYNA] List of parameters: tf
+$log [DYNA] List of dynamic variables: x1 x2 x3
+$log [DYNA] List of static variables: theta1 theta2 theta3 theta4 theta5
+$ifi %TIMDL%==C $libinclude dyna-continuous
+$ifi %TIMDL%==D $libinclude dyna-discrete
+$ifi %TIMDL%==N $libinclude dyna-none
+$libinclude dyna-utilities
+$if setglobal NRESET $set N %NRESET%
+$set dyna_ifile .\examples\tutor-f.dyn
+$set dyna_ifnam tutor-f
+$set objective dyna_ksi
+variable %objective%;
+option limrow=0,limcol=0,solvelink=5,threads=0,solprint=off,nlp=conopt,minlp=bonmin;
+$onlisting
+set obs_s_(*) /0*255/; alias(obs_s_,obs_s__,Observation);
+scalar tf; tf = 1.122;
+variable theta1; theta1.l$NO = 0;
+variable theta2; theta2.l$NO = 0;
+variable theta3; theta3.l$NO = 0;
+variable theta4; theta4.l$NO = 0;
+variable theta5; theta5.l$NO = 0;
+variable x1[N]; x1.l[N]$NO = 0;
+variable x2[N]; x2.l[N]$NO = 0;
+variable x3[N]; x3.l[N]$NO = 0;
+$onmulti
+parameter obs_data_(*,obs_s_,*) /
+$offlisting
+$if %DEBUG%==1 $onlisting
+'x1(N_)'.0.T 0.000
+'x1(N_)'.0.V 1.0000
+'x2(N_)'.0.T 0.000
+'x2(N_)'.0.V 0.0000
+'x3(N_)'.0.T 0.000
+'x3(N_)'.0.V 0.0000
+'x1(N_)'.1.T 0.050
+'x1(N_)'.1.V 0.7085
+'x2(N_)'.1.T 0.050
+'x2(N_)'.1.V 0.1621
+'x3(N_)'.1.T 0.050
+'x3(N_)'.1.V 0.0811
+'x1(N_)'.2.T 0.065
+'x1(N_)'.2.V 0.5971
+'x2(N_)'.2.T 0.065
+'x2(N_)'.2.V 0.1855
+'x3(N_)'.2.T 0.065
+'x3(N_)'.2.V 0.0965
+'x1(N_)'.3.T 0.080
+'x1(N_)'.3.V 0.5537
+'x2(N_)'.3.T 0.080
+'x2(N_)'.3.V 0.1989
+'x3(N_)'.3.T 0.080
+'x3(N_)'.3.V 0.1198
+'x1(N_)'.4.T 0.123
+'x1(N_)'.4.V 0.3684
+'x2(N_)'.4.T 0.123
+'x2(N_)'.4.V 0.2845
+'x3(N_)'.4.T 0.123
+'x3(N_)'.4.V 0.1535
+'x1(N_)'.5.T 0.233
+'x1(N_)'.5.V 0.1712
+'x2(N_)'.5.T 0.233
+'x2(N_)'.5.V 0.3491
+'x3(N_)'.5.T 0.233
+'x3(N_)'.5.V 0.2097
+'x1(N_)'.6.T 0.273
+'x1(N_)'.6.V 0.1198
+'x2(N_)'.6.T 0.273
+'x2(N_)'.6.V 0.3098
+'x3(N_)'.6.T 0.273
+'x3(N_)'.6.V 0.2628
+'x1(N_)'.7.T 0.354
+'x1(N_)'.7.V 0.0747
+'x2(N_)'.7.T 0.354
+'x2(N_)'.7.V 0.3576
+'x3(N_)'.7.T 0.354
+'x3(N_)'.7.V 0.2467
+'x1(N_)'.8.T 0.397
+'x1(N_)'.8.V 0.0529
+'x2(N_)'.8.T 0.397
+'x2(N_)'.8.V 0.3347
+'x3(N_)'.8.T 0.397
+'x3(N_)'.8.V 0.2884
+'x1(N_)'.9.T 0.418
+'x1(N_)'.9.V 0.0415
+'x2(N_)'.9.T 0.418
+'x2(N_)'.9.V 0.3388
+'x3(N_)'.9.T 0.418
+'x3(N_)'.9.V 0.2757
+'x1(N_)'.10.T 0.502
+'x1(N_)'.10.V 0.0261
+'x2(N_)'.10.T 0.502
+'x2(N_)'.10.V 0.3557
+'x3(N_)'.10.T 0.502
+'x3(N_)'.10.V 0.3167
+'x1(N_)'.11.T 0.553
+'x1(N_)'.11.V 0.0208
+'x2(N_)'.11.T 0.553
+'x2(N_)'.11.V 0.3483
+'x3(N_)'.11.T 0.553
+'x3(N_)'.11.V 0.2954
+'x1(N_)'.12.T 0.681
+'x1(N_)'.12.V 0.0085
+'x2(N_)'.12.T 0.681
+'x2(N_)'.12.V 0.3836
+'x3(N_)'.12.T 0.681
+'x3(N_)'.12.V 0.2950
+'x1(N_)'.13.T 0.750
+'x1(N_)'.13.V 0.0053
+'x2(N_)'.13.T 0.750
+'x2(N_)'.13.V 0.3611
+'x3(N_)'.13.T 0.750
+'x3(N_)'.13.V 0.2937
+'x1(N_)'.14.T 0.916
+'x1(N_)'.14.V 0.0019
+'x2(N_)'.14.T 0.916
+'x2(N_)'.14.V 0.3609
+'x3(N_)'.14.T 0.916
+'x3(N_)'.14.V 0.2831
+'x1(N_)'.15.T 0.937
+'x1(N_)'.15.V 0.0018
+'x2(N_)'.15.T 0.937
+'x2(N_)'.15.V 0.3485
+'x3(N_)'.15.T 0.937
+'x3(N_)'.15.V 0.2846
+'x1(N_)'.16.T 1.122
+'x1(N_)'.16.V 0.0006
+'x2(N_)'.16.T 1.122
+'x2(N_)'.16.V 0.3698
+'x3(N_)'.16.T 1.122
+'x3(N_)'.16.V 0.2899
+'x1(N_)'.0.C 17
+'x2(N_)'.0.C 17
+'x3(N_)'.0.C 17
+$onlisting
+/;
+$offmulti
+theta1.lo = 0; theta1.up = 3; theta1.l = midpoint((theta1.lo),(theta1.up));
+theta2.lo = 0; theta2.up = 3; theta2.l = midpoint((theta2.lo),(theta2.up));
+theta3.lo = 0; theta3.up = 3; theta3.l = midpoint((theta3.lo),(theta3.up));
+theta4.lo = 0; theta4.up = 3; theta4.l = midpoint((theta4.lo),(theta4.up));
+theta5.lo = 0; theta5.up = 3; theta5.l = midpoint((theta5.lo),(theta5.up));
+x1.lo[N] = 0; x1.up[N] = 2; x1.l[N] = midpoint((x1.lo[N]),(x1.up[N]));
+x2.lo[N] = 0; x2.up[N] = 2; x2.l[N] = midpoint((x2.lo[N]),(x2.up[N]));
+x3.lo[N] = 0; x3.up[N] = 2; x3.l[N] = midpoint((x3.lo[N]),(x3.up[N]));
+$ondotL
+$if not %N%==0 x1.fx[N0(N)] = 1.0;
+$if not %N%==0 x1.l[N0(N)] = midpoint((x1.lo[N]),(x1.up[N]));
+$if     %N%==0 x1.l[N0(N)] = 1.0;
+$if not %N%==0 x2.fx[N0(N)] = 0.0;
+$if not %N%==0 x2.l[N0(N)] = midpoint((x2.lo[N]),(x2.up[N]));
+$if     %N%==0 x2.l[N0(N)] = 0.0;
+$if not %N%==0 x3.fx[N0(N)] = 0.0;
+$if not %N%==0 x3.l[N0(N)] = midpoint((x3.lo[N]),(x3.up[N]));
+$if     %N%==0 x3.l[N0(N)] = 0.0;
+$offdotL
+$ondotL
+x1.l[N] = min(max(ObservedVal(x1(N_),N),x1.lo[N]),x1.up[N]);
+x2.l[N] = min(max(ObservedVal(x2(N_),N),x2.lo[N]),x2.up[N]);
+x3.l[N] = min(max(ObservedVal(x3(N_),N),x3.lo[N]),x3.up[N]);
+theta1.l = min(max(1,theta1.lo),theta1.up);
+theta2.l = min(max(1,theta2.lo),theta2.up);
+theta3.l = min(max(1,theta3.lo),theta3.up);
+theta4.l = min(max(1,theta4.lo),theta4.up);
+theta5.l = min(max(1,theta5.lo),theta5.up);
+$offdotL
+equation dyna_equ1(N);
+$macro m_1_(N) (-(2*theta2-(theta1*x2[N])/((theta2+theta5)*x1[N]+x2[N])+theta3+theta4)*x1[N])
+dyna_equ1(NM1(N)).. derivative(x1(N_),N) =e= integral(m_1_,N);
+equation dyna_equ2(N);
+$macro m_2_(N) ((theta1*x1[N]*(theta2*x1[N]-x2[N]))/((theta2+theta5)*x1[N]+x2[N])+theta3*x1[N])
+dyna_equ2(NM1(N)).. derivative(x2(N_),N) =e= integral(m_2_,N);
+equation dyna_equ3(N);
+$macro m_3_(N) ((theta1*x1[N]*(x2[N]+theta5*x1[N]))/((theta2+theta5)*x1[N]+x2[N])+theta4*x1[N])
+dyna_equ3(NM1(N)).. derivative(x3(N_),N) =e= integral(m_3_,N);
+equation dyna_obj; dyna_obj.. %objective% =e= ((ObservedSSE(x1(N_),N))+(ObservedSSE(x2(N_),N))+(ObservedSSE(x3(N_),N)));
+$ondotL
+%objective%.l = ((ObservedSSE(x1(N_),N))+(ObservedSSE(x2(N_),N))+(ObservedSSE(x3(N_),N)));
+$offdotL
+model %model% /
+dyna_equ1
+dyna_equ2
+dyna_equ3
+dyna_obj
+/;
+%model%.optfile=0;
+%model%.bratio$(dyna_iter>1)=0;
+$batinclude "%gams.ldir%dyna-gdx-load" @open %objective% theta1 theta2 theta3 theta4 theta5 x1[N] x2[N] x3[N] @close
+$ifi '%TIMDL%'=='C' $ifi not '%CF%'=='NA'  execute 'echo Optimization launched (N=%N%^|CM=%CM%^|CF=%CF%)';
+$ifi '%TIMDL%'=='C' $ifi '%CF%%QM%'=='NA0' execute 'echo Optimization launched (N=%N%^|QM=Rectangle)';
+$ifi '%TIMDL%'=='C' $ifi '%CF%%QM%'=='NA1' execute 'echo Optimization launched (N=%N%^|QM=Trapeze)';
+$ifi '%TIMDL%'=='D' execute 'echo Optimization launched (N=%N%) Discrete Time Model';
+solve %model% minimizing %objective% using NLP;
+$onecho > $tmp$$.sed
+$offecho
+$set UTF8
+$batinclude "%gams.ldir%dyna-csv-save" #open
+  parameter report(*,*);
+  set o(Observation);
+  ObservedSet(x1(N_),o,N);
+  ObservedSet(x2(N_),o,N);
+  ObservedSet(x3(N_),o,N);
+$ ondotL
+  report(o,'x1') = ObservedGap(x1(N_),o,N);
+  report(o,'x2') = ObservedGap(x2(N_),o,N);
+  report(o,'x3') = ObservedGap(x3(N_),o,N);
+  display report;
+display tf;
+display theta1.l,theta2.l,theta3.l,theta4.l,theta5.l;
+$batinclude "%gams.ldir%dyna-csv-save" x1.l[N] x2.l[N] x3.l[N] #close
+$if not declared NN $batinclude "%gams.ldir%dyna-gdx-save" @open %objective% theta1 theta2 theta3 theta4 theta5 x1[N] x2[N] x3[N] @close
+$libinclude dyna-info-optimization
+$libinclude dyna-housekeeping
+</code></pre> 
+</body> 
+</html> 

@@ -1,0 +1,407 @@
+<html> 
+<head> 
+<script type="text/javascript" language="javascript" src="https://www.gams.com/latest/docs/style/prism.js"></script> 
+<link href="https://www.gams.com/latest/docs/style/prism.css" rel="stylesheet" type="text/css" /> 
+<style> 
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;} 
+:not(pre) > code[class*="language-"],pre[class*="language-"] {background-color: white; border: none;} 
+</style> 
+</head> 
+<h1 align="center" style="color:#7EAEAC">TUTOR-K-ODE - Gams model</h1> 
+<pre><code class="language-gams"> 
+* Dyna-to-Gams Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved.
+* Translated from .\examples\tutor-k-ode.dyn on 26 Dec 2021 at 19:30:27
+$offlisting
+$if not set DEBUG $set DEBUG 0
+$if %DEBUG%==1 $onlisting
+$if not set HOME $set HOME "d:\dyna2gams"
+$if not set N $set N 48
+$if not set CM $set CM L3A4
+$if not set QM $set QM 1
+$if not set IN $set IN 4
+$if not set SS $set SS ""
+$if not set DFGDX $set DFGDX 1
+$if not set CF $set CF IL
+$set SF SH
+$set MODEL tutor_k_ode
+$set TF tf
+$set T0 ""
+$set TS ts
+$if not set MULTI $set MULTI YES
+$if not set ITER $set ITER 1
+$set TIMDL C
+$if not set SM $set SM DP853
+$if not set GOPT $set GOPT 
+$if not set OCTAVE $set OCTAVE "d:\octave-5.1.0.0\mingw64\bin\octave-cli.exe"
+$log [DYNA] Model name: %model%
+$log [DYNA] Number of parameters: 3
+$log [DYNA] Number of symbolic variables: 2
+$log [DYNA] Number of dynamic variables: 4
+$log [DYNA] List of parameters: mu muc tf
+$log [DYNA] List of symbolic variables: D1 D2
+$log [DYNA] List of dynamic variables: y1 y2 y3 y4
+$ifi %TIMDL%==C $libinclude dyna-continuous
+$ifi %TIMDL%==D $libinclude dyna-discrete
+$ifi %TIMDL%==N $libinclude dyna-none
+$libinclude dyna-utilities
+$if setglobal NRESET $set N %NRESET%
+$set dyna_ifile .\examples\tutor-k-ode.dyn
+$set dyna_ifnam tutor-k-ode
+$set objective dyna_ksi
+variable %objective%;
+option limrow=0,limcol=0,solvelink=5,threads=0,solprint=off,nlp=conopt,minlp=bonmin;
+$onlisting
+$macro D1(N) ((sqr(y1[N]+mu) + sqr(y2[N]))**(3/2))
+$macro D2(N) ((sqr(y1[N]-muc) + sqr(y2[N]))**(3/2))
+scalar mu; mu = 0.012277471;
+scalar muc; muc = 1 - mu;
+scalar tf; tf = 2*17.06521656016;
+variable y1[N]; y1.l[N]$NO = 0;
+variable y2[N]; y2.l[N]$NO = 0;
+variable y3[N]; y3.l[N]$NO = 0;
+variable y4[N]; y4.l[N]$NO = 0;
+$ondotL
+$if not %N%==0 y1.fx[N0(N)] = 0.994;
+$if not %N%==0 y1.l[N0(N)] = midpoint((y1.lo[N]),(y1.up[N]));
+$if     %N%==0 y1.l[N0(N)] = 0.994;
+$if not %N%==0 y2.fx[N0(N)] = 0.0;
+$if not %N%==0 y2.l[N0(N)] = midpoint((y2.lo[N]),(y2.up[N]));
+$if     %N%==0 y2.l[N0(N)] = 0.0;
+$if not %N%==0 y3.fx[N0(N)] = 0.0;
+$if not %N%==0 y3.l[N0(N)] = midpoint((y3.lo[N]),(y3.up[N]));
+$if     %N%==0 y3.l[N0(N)] = 0.0;
+$if not %N%==0 y4.fx[N0(N)] = -2.001585106379;
+$if not %N%==0 y4.l[N0(N)] = midpoint((y4.lo[N]),(y4.up[N]));
+$if     %N%==0 y4.l[N0(N)] = -2.001585106379;
+$offdotL
+$ifi '%TIMDL%'=='C' execute 'echo Simulation launched (N=%N%^|SM=%SM%^|SF=%SF%)';
+$ifi '%TIMDL%'=='D' execute 'echo Simulation launched (N=%N%) Discrete Time Model';
+$ondotl
+$ifi not '%CF%'=='NA' Tick_(N) = sum(N1_$sameas(N,N1_),ord(N1_)-1)/%N%;
+$if %DEBUG%==1 parameters tr_SimDT_[N],tr_ERR_[N];
+scalars SimT_,SimT0_,SimDT_,SimDT0_,SimAbsTol_,SimRelTol_,SimI_,SimF_/0/,SimRC_/1/,SimEvent_/no/,SimEventArg_/NA/;
+SimAbsTol_ = 1E-6; SimRelTol_ = 1E-6; SimEvent_ = no; SimEventArg_ = NA;
+loop(N$N0(N),
+SimDT0_ = (Time(N+1)-Time(N))/1; SimDT_ = SimDT0_; SimT0_ = Time(N); SimT_ = SimT0_;
+display$%DEBUG% SimDT0_;
+y1.l[N] = y1.lo['N0'];
+y2.l[N] = y2.lo['N0'];
+y3.l[N] = y3.lo['N0'];
+y4.l[N] = y4.lo['N0'];
+SimF_ = SimF_ + 1;
+y1.m[N] = y3[N];
+y2.m[N] = y4[N];
+y3.m[N] = y1[N] + 2*y4[N] - muc*(y1[N]+mu)/D1(N) - mu*(y1[N]-muc)/D2(N);
+y4.m[N] = y2[N] - 2*y3[N] - muc*y2[N]/D1(N) - mu*y2[N]/D2(N);
+y1.up['N0'] = y1.m[N];
+y2.up['N0'] = y2.m[N];
+y3.up['N0'] = y3.m[N];
+y4.up['N0'] = y4.m[N];
+$if %DEBUG%==1 tr_SimDT_[N] = NA; tr_ERR_[N] = NA;
+);
+loop(N9_$(ord(N9_) ge 2),
+dp853v_('expo1') = 1/8 - dp853p_('beta')*0.2; dp853v_('facc1') = 1 / dp853p_('fac1'); dp853v_('facc2') = 1 / dp853p_('fac2');
+dp853v_('facold') = 1.0E-4; dp853v_('hlamb') = 0; dp853v_('iasti') = 0; dp853v_('naccpt') = 0; dp853v_('nrejct') = 0; dp853v_('reject') = 0;
+SimDT_ = SimDT0_;
+repeat(
+SimI_ = 1000;
+repeat(
+SimI_ = SimI_ - 1;
+if(SimT0_+SimDT_ > Time(N9_)+(1+SimRelTol_)*SimDT_, SimDT_ = Time(N9_) - SimT0_);
+SimT_ = SimT0_ + SimDT_*dp853p_('_C2');
+loop(N$sameas(N,N9_),
+y1.l[N] = y1.lo['N0'] + SimDT_*(dp853p_('_A21')*y1.up['N0']);
+y2.l[N] = y2.lo['N0'] + SimDT_*(dp853p_('_A21')*y2.up['N0']);
+y3.l[N] = y3.lo['N0'] + SimDT_*(dp853p_('_A21')*y3.up['N0']);
+y4.l[N] = y4.lo['N0'] + SimDT_*(dp853p_('_A21')*y4.up['N0']);
+y1.m[N] = y3[N];
+y2.m[N] = y4[N];
+y3.m[N] = y1[N] + 2*y4[N] - muc*(y1[N]+mu)/D1(N) - mu*(y1[N]-muc)/D2(N);
+y4.m[N] = y2[N] - 2*y3[N] - muc*y2[N]/D1(N) - mu*y2[N]/D2(N);
+y1.up['N1'] = y1.m[N];
+y2.up['N1'] = y2.m[N];
+y3.up['N1'] = y3.m[N];
+y4.up['N1'] = y4.m[N];
+);
+SimT_ = SimT0_ + SimDT_*dp853p_('_C3');
+loop(N$sameas(N,N9_),
+y1.l[N] = y1.lo['N0'] + SimDT_*(dp853p_('_A31')*y1.up['N0']+dp853p_('_A32')*y1.up['N1']);
+y2.l[N] = y2.lo['N0'] + SimDT_*(dp853p_('_A31')*y2.up['N0']+dp853p_('_A32')*y2.up['N1']);
+y3.l[N] = y3.lo['N0'] + SimDT_*(dp853p_('_A31')*y3.up['N0']+dp853p_('_A32')*y3.up['N1']);
+y4.l[N] = y4.lo['N0'] + SimDT_*(dp853p_('_A31')*y4.up['N0']+dp853p_('_A32')*y4.up['N1']);
+y1.m[N] = y3[N];
+y2.m[N] = y4[N];
+y3.m[N] = y1[N] + 2*y4[N] - muc*(y1[N]+mu)/D1(N) - mu*(y1[N]-muc)/D2(N);
+y4.m[N] = y2[N] - 2*y3[N] - muc*y2[N]/D1(N) - mu*y2[N]/D2(N);
+y1.up['N2'] = y1.m[N];
+y2.up['N2'] = y2.m[N];
+y3.up['N2'] = y3.m[N];
+y4.up['N2'] = y4.m[N];
+);
+SimT_ = SimT0_ + SimDT_*dp853p_('_C4');
+loop(N$sameas(N,N9_),
+y1.l[N] = y1.lo['N0'] + SimDT_*(dp853p_('_A41')*y1.up['N0']+dp853p_('_A43')*y1.up['N2']);
+y2.l[N] = y2.lo['N0'] + SimDT_*(dp853p_('_A41')*y2.up['N0']+dp853p_('_A43')*y2.up['N2']);
+y3.l[N] = y3.lo['N0'] + SimDT_*(dp853p_('_A41')*y3.up['N0']+dp853p_('_A43')*y3.up['N2']);
+y4.l[N] = y4.lo['N0'] + SimDT_*(dp853p_('_A41')*y4.up['N0']+dp853p_('_A43')*y4.up['N2']);
+y1.m[N] = y3[N];
+y2.m[N] = y4[N];
+y3.m[N] = y1[N] + 2*y4[N] - muc*(y1[N]+mu)/D1(N) - mu*(y1[N]-muc)/D2(N);
+y4.m[N] = y2[N] - 2*y3[N] - muc*y2[N]/D1(N) - mu*y2[N]/D2(N);
+y1.up['N3'] = y1.m[N];
+y2.up['N3'] = y2.m[N];
+y3.up['N3'] = y3.m[N];
+y4.up['N3'] = y4.m[N];
+);
+SimT_ = SimT0_ + SimDT_*dp853p_('_C5');
+loop(N$sameas(N,N9_),
+y1.l[N] = y1.lo['N0'] + SimDT_*(dp853p_('_A51')*y1.up['N0']+dp853p_('_A53')*y1.up['N2']+dp853p_('_A54')*y1.up['N3']);
+y2.l[N] = y2.lo['N0'] + SimDT_*(dp853p_('_A51')*y2.up['N0']+dp853p_('_A53')*y2.up['N2']+dp853p_('_A54')*y2.up['N3']);
+y3.l[N] = y3.lo['N0'] + SimDT_*(dp853p_('_A51')*y3.up['N0']+dp853p_('_A53')*y3.up['N2']+dp853p_('_A54')*y3.up['N3']);
+y4.l[N] = y4.lo['N0'] + SimDT_*(dp853p_('_A51')*y4.up['N0']+dp853p_('_A53')*y4.up['N2']+dp853p_('_A54')*y4.up['N3']);
+y1.m[N] = y3[N];
+y2.m[N] = y4[N];
+y3.m[N] = y1[N] + 2*y4[N] - muc*(y1[N]+mu)/D1(N) - mu*(y1[N]-muc)/D2(N);
+y4.m[N] = y2[N] - 2*y3[N] - muc*y2[N]/D1(N) - mu*y2[N]/D2(N);
+y1.up['N4'] = y1.m[N];
+y2.up['N4'] = y2.m[N];
+y3.up['N4'] = y3.m[N];
+y4.up['N4'] = y4.m[N];
+);
+SimT_ = SimT0_ + SimDT_*dp853p_('_C6');
+loop(N$sameas(N,N9_),
+y1.l[N] = y1.lo['N0'] + SimDT_*(dp853p_('_A61')*y1.up['N0']+dp853p_('_A64')*y1.up['N3']+dp853p_('_A65')*y1.up['N4']);
+y2.l[N] = y2.lo['N0'] + SimDT_*(dp853p_('_A61')*y2.up['N0']+dp853p_('_A64')*y2.up['N3']+dp853p_('_A65')*y2.up['N4']);
+y3.l[N] = y3.lo['N0'] + SimDT_*(dp853p_('_A61')*y3.up['N0']+dp853p_('_A64')*y3.up['N3']+dp853p_('_A65')*y3.up['N4']);
+y4.l[N] = y4.lo['N0'] + SimDT_*(dp853p_('_A61')*y4.up['N0']+dp853p_('_A64')*y4.up['N3']+dp853p_('_A65')*y4.up['N4']);
+y1.m[N] = y3[N];
+y2.m[N] = y4[N];
+y3.m[N] = y1[N] + 2*y4[N] - muc*(y1[N]+mu)/D1(N) - mu*(y1[N]-muc)/D2(N);
+y4.m[N] = y2[N] - 2*y3[N] - muc*y2[N]/D1(N) - mu*y2[N]/D2(N);
+y1.up['N5'] = y1.m[N];
+y2.up['N5'] = y2.m[N];
+y3.up['N5'] = y3.m[N];
+y4.up['N5'] = y4.m[N];
+);
+SimT_ = SimT0_ + SimDT_*dp853p_('_C7');
+loop(N$sameas(N,N9_),
+y1.l[N] = y1.lo['N0'] + SimDT_*(dp853p_('_A71')*y1.up['N0']+dp853p_('_A74')*y1.up['N3']+dp853p_('_A75')*y1.up['N4']+dp853p_('_A76')*y1.up['N5']);
+y2.l[N] = y2.lo['N0'] + SimDT_*(dp853p_('_A71')*y2.up['N0']+dp853p_('_A74')*y2.up['N3']+dp853p_('_A75')*y2.up['N4']+dp853p_('_A76')*y2.up['N5']);
+y3.l[N] = y3.lo['N0'] + SimDT_*(dp853p_('_A71')*y3.up['N0']+dp853p_('_A74')*y3.up['N3']+dp853p_('_A75')*y3.up['N4']+dp853p_('_A76')*y3.up['N5']);
+y4.l[N] = y4.lo['N0'] + SimDT_*(dp853p_('_A71')*y4.up['N0']+dp853p_('_A74')*y4.up['N3']+dp853p_('_A75')*y4.up['N4']+dp853p_('_A76')*y4.up['N5']);
+y1.m[N] = y3[N];
+y2.m[N] = y4[N];
+y3.m[N] = y1[N] + 2*y4[N] - muc*(y1[N]+mu)/D1(N) - mu*(y1[N]-muc)/D2(N);
+y4.m[N] = y2[N] - 2*y3[N] - muc*y2[N]/D1(N) - mu*y2[N]/D2(N);
+y1.up['N6'] = y1.m[N];
+y2.up['N6'] = y2.m[N];
+y3.up['N6'] = y3.m[N];
+y4.up['N6'] = y4.m[N];
+);
+SimT_ = SimT0_ + SimDT_*dp853p_('_C8');
+loop(N$sameas(N,N9_),
+y1.l[N] = y1.lo['N0'] + SimDT_*(dp853p_('_A81')*y1.up['N0']+dp853p_('_A84')*y1.up['N3']+dp853p_('_A85')*y1.up['N4']+dp853p_('_A86')*y1.up['N5']+dp853p_('_A87')*y1.up['N6']);
+y2.l[N] = y2.lo['N0'] + SimDT_*(dp853p_('_A81')*y2.up['N0']+dp853p_('_A84')*y2.up['N3']+dp853p_('_A85')*y2.up['N4']+dp853p_('_A86')*y2.up['N5']+dp853p_('_A87')*y2.up['N6']);
+y3.l[N] = y3.lo['N0'] + SimDT_*(dp853p_('_A81')*y3.up['N0']+dp853p_('_A84')*y3.up['N3']+dp853p_('_A85')*y3.up['N4']+dp853p_('_A86')*y3.up['N5']+dp853p_('_A87')*y3.up['N6']);
+y4.l[N] = y4.lo['N0'] + SimDT_*(dp853p_('_A81')*y4.up['N0']+dp853p_('_A84')*y4.up['N3']+dp853p_('_A85')*y4.up['N4']+dp853p_('_A86')*y4.up['N5']+dp853p_('_A87')*y4.up['N6']);
+y1.m[N] = y3[N];
+y2.m[N] = y4[N];
+y3.m[N] = y1[N] + 2*y4[N] - muc*(y1[N]+mu)/D1(N) - mu*(y1[N]-muc)/D2(N);
+y4.m[N] = y2[N] - 2*y3[N] - muc*y2[N]/D1(N) - mu*y2[N]/D2(N);
+y1.up['N7'] = y1.m[N];
+y2.up['N7'] = y2.m[N];
+y3.up['N7'] = y3.m[N];
+y4.up['N7'] = y4.m[N];
+);
+SimT_ = SimT0_ + SimDT_*dp853p_('_C9');
+loop(N$sameas(N,N9_),
+y1.l[N] = y1.lo['N0'] + SimDT_*(dp853p_('_A91')*y1.up['N0']+dp853p_('_A94')*y1.up['N3']+dp853p_('_A95')*y1.up['N4']+dp853p_('_A96')*y1.up['N5']+dp853p_('_A97')*y1.up['N6']+dp853p_('_A98')*y1.up['N7']);
+y2.l[N] = y2.lo['N0'] + SimDT_*(dp853p_('_A91')*y2.up['N0']+dp853p_('_A94')*y2.up['N3']+dp853p_('_A95')*y2.up['N4']+dp853p_('_A96')*y2.up['N5']+dp853p_('_A97')*y2.up['N6']+dp853p_('_A98')*y2.up['N7']);
+y3.l[N] = y3.lo['N0'] + SimDT_*(dp853p_('_A91')*y3.up['N0']+dp853p_('_A94')*y3.up['N3']+dp853p_('_A95')*y3.up['N4']+dp853p_('_A96')*y3.up['N5']+dp853p_('_A97')*y3.up['N6']+dp853p_('_A98')*y3.up['N7']);
+y4.l[N] = y4.lo['N0'] + SimDT_*(dp853p_('_A91')*y4.up['N0']+dp853p_('_A94')*y4.up['N3']+dp853p_('_A95')*y4.up['N4']+dp853p_('_A96')*y4.up['N5']+dp853p_('_A97')*y4.up['N6']+dp853p_('_A98')*y4.up['N7']);
+y1.m[N] = y3[N];
+y2.m[N] = y4[N];
+y3.m[N] = y1[N] + 2*y4[N] - muc*(y1[N]+mu)/D1(N) - mu*(y1[N]-muc)/D2(N);
+y4.m[N] = y2[N] - 2*y3[N] - muc*y2[N]/D1(N) - mu*y2[N]/D2(N);
+y1.up['N8'] = y1.m[N];
+y2.up['N8'] = y2.m[N];
+y3.up['N8'] = y3.m[N];
+y4.up['N8'] = y4.m[N];
+);
+SimT_ = SimT0_ + SimDT_*dp853p_('_C10');
+loop(N$sameas(N,N9_),
+y1.l[N] = y1.lo['N0'] + SimDT_*(dp853p_('_A101')*y1.up['N0']+dp853p_('_A104')*y1.up['N3']+dp853p_('_A105')*y1.up['N4']+dp853p_('_A106')*y1.up['N5']+dp853p_('_A107')*y1.up['N6']+dp853p_('_A108')*y1.up['N7']+dp853p_('_A109')*y1.up['N8']);
+y2.l[N] = y2.lo['N0'] + SimDT_*(dp853p_('_A101')*y2.up['N0']+dp853p_('_A104')*y2.up['N3']+dp853p_('_A105')*y2.up['N4']+dp853p_('_A106')*y2.up['N5']+dp853p_('_A107')*y2.up['N6']+dp853p_('_A108')*y2.up['N7']+dp853p_('_A109')*y2.up['N8']);
+y3.l[N] = y3.lo['N0'] + SimDT_*(dp853p_('_A101')*y3.up['N0']+dp853p_('_A104')*y3.up['N3']+dp853p_('_A105')*y3.up['N4']+dp853p_('_A106')*y3.up['N5']+dp853p_('_A107')*y3.up['N6']+dp853p_('_A108')*y3.up['N7']+dp853p_('_A109')*y3.up['N8']);
+y4.l[N] = y4.lo['N0'] + SimDT_*(dp853p_('_A101')*y4.up['N0']+dp853p_('_A104')*y4.up['N3']+dp853p_('_A105')*y4.up['N4']+dp853p_('_A106')*y4.up['N5']+dp853p_('_A107')*y4.up['N6']+dp853p_('_A108')*y4.up['N7']+dp853p_('_A109')*y4.up['N8']);
+y1.m[N] = y3[N];
+y2.m[N] = y4[N];
+y3.m[N] = y1[N] + 2*y4[N] - muc*(y1[N]+mu)/D1(N) - mu*(y1[N]-muc)/D2(N);
+y4.m[N] = y2[N] - 2*y3[N] - muc*y2[N]/D1(N) - mu*y2[N]/D2(N);
+y1.up['N9'] = y1.m[N];
+y2.up['N9'] = y2.m[N];
+y3.up['N9'] = y3.m[N];
+y4.up['N9'] = y4.m[N];
+);
+SimT_ = SimT0_ + SimDT_*dp853p_('_C11');
+loop(N$sameas(N,N9_),
+y1.l[N] = y1.lo['N0'] + SimDT_*(dp853p_('_A111')*y1.up['N0']+dp853p_('_A114')*y1.up['N3']+dp853p_('_A115')*y1.up['N4']+dp853p_('_A116')*y1.up['N5']+dp853p_('_A117')*y1.up['N6']+dp853p_('_A118')*y1.up['N7']+dp853p_('_A119')*y1.up['N8']+dp853p_('_A1110')*y1.up['N9']);
+y2.l[N] = y2.lo['N0'] + SimDT_*(dp853p_('_A111')*y2.up['N0']+dp853p_('_A114')*y2.up['N3']+dp853p_('_A115')*y2.up['N4']+dp853p_('_A116')*y2.up['N5']+dp853p_('_A117')*y2.up['N6']+dp853p_('_A118')*y2.up['N7']+dp853p_('_A119')*y2.up['N8']+dp853p_('_A1110')*y2.up['N9']);
+y3.l[N] = y3.lo['N0'] + SimDT_*(dp853p_('_A111')*y3.up['N0']+dp853p_('_A114')*y3.up['N3']+dp853p_('_A115')*y3.up['N4']+dp853p_('_A116')*y3.up['N5']+dp853p_('_A117')*y3.up['N6']+dp853p_('_A118')*y3.up['N7']+dp853p_('_A119')*y3.up['N8']+dp853p_('_A1110')*y3.up['N9']);
+y4.l[N] = y4.lo['N0'] + SimDT_*(dp853p_('_A111')*y4.up['N0']+dp853p_('_A114')*y4.up['N3']+dp853p_('_A115')*y4.up['N4']+dp853p_('_A116')*y4.up['N5']+dp853p_('_A117')*y4.up['N6']+dp853p_('_A118')*y4.up['N7']+dp853p_('_A119')*y4.up['N8']+dp853p_('_A1110')*y4.up['N9']);
+y1.m[N] = y3[N];
+y2.m[N] = y4[N];
+y3.m[N] = y1[N] + 2*y4[N] - muc*(y1[N]+mu)/D1(N) - mu*(y1[N]-muc)/D2(N);
+y4.m[N] = y2[N] - 2*y3[N] - muc*y2[N]/D1(N) - mu*y2[N]/D2(N);
+y1.up['N1'] = y1.m[N];
+y2.up['N1'] = y2.m[N];
+y3.up['N1'] = y3.m[N];
+y4.up['N1'] = y4.m[N];
+);
+SimT_ = SimT0_ + SimDT_;
+loop(N$sameas(N,N9_),
+y1.l[N] = y1.lo['N0'] + SimDT_*(dp853p_('_A121')*y1.up['N0']+dp853p_('_A124')*y1.up['N3']+dp853p_('_A125')*y1.up['N4']+dp853p_('_A126')*y1.up['N5']+dp853p_('_A127')*y1.up['N6']+dp853p_('_A128')*y1.up['N7']+dp853p_('_A129')*y1.up['N8']+dp853p_('_A1210')*y1.up['N9']+dp853p_('_A1211')*y1.up['N1']);
+y2.l[N] = y2.lo['N0'] + SimDT_*(dp853p_('_A121')*y2.up['N0']+dp853p_('_A124')*y2.up['N3']+dp853p_('_A125')*y2.up['N4']+dp853p_('_A126')*y2.up['N5']+dp853p_('_A127')*y2.up['N6']+dp853p_('_A128')*y2.up['N7']+dp853p_('_A129')*y2.up['N8']+dp853p_('_A1210')*y2.up['N9']+dp853p_('_A1211')*y2.up['N1']);
+y3.l[N] = y3.lo['N0'] + SimDT_*(dp853p_('_A121')*y3.up['N0']+dp853p_('_A124')*y3.up['N3']+dp853p_('_A125')*y3.up['N4']+dp853p_('_A126')*y3.up['N5']+dp853p_('_A127')*y3.up['N6']+dp853p_('_A128')*y3.up['N7']+dp853p_('_A129')*y3.up['N8']+dp853p_('_A1210')*y3.up['N9']+dp853p_('_A1211')*y3.up['N1']);
+y4.l[N] = y4.lo['N0'] + SimDT_*(dp853p_('_A121')*y4.up['N0']+dp853p_('_A124')*y4.up['N3']+dp853p_('_A125')*y4.up['N4']+dp853p_('_A126')*y4.up['N5']+dp853p_('_A127')*y4.up['N6']+dp853p_('_A128')*y4.up['N7']+dp853p_('_A129')*y4.up['N8']+dp853p_('_A1210')*y4.up['N9']+dp853p_('_A1211')*y4.up['N1']);
+y1.m[N] = y3[N];
+y2.m[N] = y4[N];
+y3.m[N] = y1[N] + 2*y4[N] - muc*(y1[N]+mu)/D1(N) - mu*(y1[N]-muc)/D2(N);
+y4.m[N] = y2[N] - 2*y3[N] - muc*y2[N]/D1(N) - mu*y2[N]/D2(N);
+y1.up['N2'] = y1.m[N];
+y2.up['N2'] = y2.m[N];
+y3.up['N2'] = y3.m[N];
+y4.up['N2'] = y4.m[N];
+);
+SimF_ = SimF_ + 11;
+y1.up['N3'] = dp853p_('_B1')*y1.up['N0']+dp853p_('_B6')*y1.up['N5']+dp853p_('_B7')*y1.up['N6']+dp853p_('_B8')*y1.up['N7']+dp853p_('_B9')*y1.up['N8']+dp853p_('_B10')*y1.up['N9']+dp853p_('_B11')*y1.up['N1']+dp853p_('_B12')*y1.up['N2'];
+y1.up['N4'] = y1.lo['N0'] + SimDT_*y1.up['N3'];
+y2.up['N3'] = dp853p_('_B1')*y2.up['N0']+dp853p_('_B6')*y2.up['N5']+dp853p_('_B7')*y2.up['N6']+dp853p_('_B8')*y2.up['N7']+dp853p_('_B9')*y2.up['N8']+dp853p_('_B10')*y2.up['N9']+dp853p_('_B11')*y2.up['N1']+dp853p_('_B12')*y2.up['N2'];
+y2.up['N4'] = y2.lo['N0'] + SimDT_*y2.up['N3'];
+y3.up['N3'] = dp853p_('_B1')*y3.up['N0']+dp853p_('_B6')*y3.up['N5']+dp853p_('_B7')*y3.up['N6']+dp853p_('_B8')*y3.up['N7']+dp853p_('_B9')*y3.up['N8']+dp853p_('_B10')*y3.up['N9']+dp853p_('_B11')*y3.up['N1']+dp853p_('_B12')*y3.up['N2'];
+y3.up['N4'] = y3.lo['N0'] + SimDT_*y3.up['N3'];
+y4.up['N3'] = dp853p_('_B1')*y4.up['N0']+dp853p_('_B6')*y4.up['N5']+dp853p_('_B7')*y4.up['N6']+dp853p_('_B8')*y4.up['N7']+dp853p_('_B9')*y4.up['N8']+dp853p_('_B10')*y4.up['N9']+dp853p_('_B11')*y4.up['N1']+dp853p_('_B12')*y4.up['N2'];
+y4.up['N4'] = y4.lo['N0'] + SimDT_*y4.up['N3'];
+dp853v_('err') = 0; dp853v_('err2') = 0; dp853v_('n') = 0;
+dp853v_('sk') = SimAbsTol_ + SimRelTol_*max(abs(y1.lo['N0']), abs(y1.up['N4']));
+dp853v_('erri') = y1.up['N3'] - dp853p_('_BHH1')*y1.up['N0'] - dp853p_('_BHH2')*y1.up['N8'] - dp853p_('_BHH3')*y1.up['N2'];
+dp853v_('sqr') = dp853v_('erri') / dp853v_('sk'); dp853v_('err2') = dp853v_('err2') + sqr(dp853v_('sqr'));
+dp853v_('erri') = dp853p_('_ER1')*y1.up['N0'] + dp853p_('_ER6')*y1.up['N5'] + dp853p_('_ER7')*y1.up['N6'] + dp853p_('_ER8')*y1.up['N7'] + dp853p_('_ER9')*y1.up['N8'] + dp853p_('_ER10')*y1.up['N9'] + dp853p_('_ER11')*y1.up['N1'] + dp853p_('_ER12')*y1.up['N2'];
+dp853v_('sqr') = dp853v_('erri') / dp853v_('sk'); dp853v_('err') = dp853v_('err') + sqr(dp853v_('sqr')); dp853v_('n') = dp853v_('n') + 1;
+dp853v_('sk') = SimAbsTol_ + SimRelTol_*max(abs(y2.lo['N0']), abs(y2.up['N4']));
+dp853v_('erri') = y2.up['N3'] - dp853p_('_BHH1')*y2.up['N0'] - dp853p_('_BHH2')*y2.up['N8'] - dp853p_('_BHH3')*y2.up['N2'];
+dp853v_('sqr') = dp853v_('erri') / dp853v_('sk'); dp853v_('err2') = dp853v_('err2') + sqr(dp853v_('sqr'));
+dp853v_('erri') = dp853p_('_ER1')*y2.up['N0'] + dp853p_('_ER6')*y2.up['N5'] + dp853p_('_ER7')*y2.up['N6'] + dp853p_('_ER8')*y2.up['N7'] + dp853p_('_ER9')*y2.up['N8'] + dp853p_('_ER10')*y2.up['N9'] + dp853p_('_ER11')*y2.up['N1'] + dp853p_('_ER12')*y2.up['N2'];
+dp853v_('sqr') = dp853v_('erri') / dp853v_('sk'); dp853v_('err') = dp853v_('err') + sqr(dp853v_('sqr')); dp853v_('n') = dp853v_('n') + 1;
+dp853v_('sk') = SimAbsTol_ + SimRelTol_*max(abs(y3.lo['N0']), abs(y3.up['N4']));
+dp853v_('erri') = y3.up['N3'] - dp853p_('_BHH1')*y3.up['N0'] - dp853p_('_BHH2')*y3.up['N8'] - dp853p_('_BHH3')*y3.up['N2'];
+dp853v_('sqr') = dp853v_('erri') / dp853v_('sk'); dp853v_('err2') = dp853v_('err2') + sqr(dp853v_('sqr'));
+dp853v_('erri') = dp853p_('_ER1')*y3.up['N0'] + dp853p_('_ER6')*y3.up['N5'] + dp853p_('_ER7')*y3.up['N6'] + dp853p_('_ER8')*y3.up['N7'] + dp853p_('_ER9')*y3.up['N8'] + dp853p_('_ER10')*y3.up['N9'] + dp853p_('_ER11')*y3.up['N1'] + dp853p_('_ER12')*y3.up['N2'];
+dp853v_('sqr') = dp853v_('erri') / dp853v_('sk'); dp853v_('err') = dp853v_('err') + sqr(dp853v_('sqr')); dp853v_('n') = dp853v_('n') + 1;
+dp853v_('sk') = SimAbsTol_ + SimRelTol_*max(abs(y4.lo['N0']), abs(y4.up['N4']));
+dp853v_('erri') = y4.up['N3'] - dp853p_('_BHH1')*y4.up['N0'] - dp853p_('_BHH2')*y4.up['N8'] - dp853p_('_BHH3')*y4.up['N2'];
+dp853v_('sqr') = dp853v_('erri') / dp853v_('sk'); dp853v_('err2') = dp853v_('err2') + sqr(dp853v_('sqr'));
+dp853v_('erri') = dp853p_('_ER1')*y4.up['N0'] + dp853p_('_ER6')*y4.up['N5'] + dp853p_('_ER7')*y4.up['N6'] + dp853p_('_ER8')*y4.up['N7'] + dp853p_('_ER9')*y4.up['N8'] + dp853p_('_ER10')*y4.up['N9'] + dp853p_('_ER11')*y4.up['N1'] + dp853p_('_ER12')*y4.up['N2'];
+dp853v_('sqr') = dp853v_('erri') / dp853v_('sk'); dp853v_('err') = dp853v_('err') + sqr(dp853v_('sqr')); dp853v_('n') = dp853v_('n') + 1;
+dp853v_('deno') = dp853v_('err') + 0.01 * dp853v_('err2');
+if(dp853v_('deno') <= 0, dp853v_('deno') = 1);
+dp853v_('err') = SimDT_*dp853v_('err')*sqrt(1/(dp853v_('deno')*dp853v_('n')));
+dp853v_('fac11') = dp853v_('err')**dp853v_('expo1');
+dp853v_('fac') = dp853v_('fac11') / dp853v_('facold')**dp853p_('beta');
+dp853v_('fac') = max(dp853v_('facc2'), min(dp853v_('facc1'),dp853v_('fac')/dp853p_('safe'))); dp853v_('hnew') = SimDT_ / dp853v_('fac');
+$onundf
+if(dp853v_('err') = UNDF,
+$offundf
+dp853v_('hnew') = SimDT_ / 2; dp853v_('reject') = 1; execerror = 0;
+if(dp853v_('naccpt') >= 1, dp853v_('nrejct') = dp853v_('nrejct') + 1);
+else
+if(dp853v_('err') <= 1,
+dp853v_('facold') = max(dp853v_('err'),1.0E-4); dp853v_('naccpt') = dp853v_('naccpt') + 1;
+loop(N$sameas(N,N9_),
+y1.up['N9'] = y1.l[N]; y1.l[N] = y1.up['N4'];
+y2.up['N9'] = y2.l[N]; y2.l[N] = y2.up['N4'];
+y3.up['N9'] = y3.l[N]; y3.l[N] = y3.up['N4'];
+y4.up['N9'] = y4.l[N]; y4.l[N] = y4.up['N4'];
+SimF_ = SimF_ + 1;
+y1.m[N] = y3[N];
+y2.m[N] = y4[N];
+y3.m[N] = y1[N] + 2*y4[N] - muc*(y1[N]+mu)/D1(N) - mu*(y1[N]-muc)/D2(N);
+y4.m[N] = y2[N] - 2*y3[N] - muc*y2[N]/D1(N) - mu*y2[N]/D2(N);
+y1.up['N3'] = y1.m[N];
+y2.up['N3'] = y2.m[N];
+y3.up['N3'] = y3.m[N];
+y4.up['N3'] = y4.m[N];
+);
+if(mod(dp853v_('naccpt'),dp853p_('nstiff')) = 0 or dp853v_('iasti') > 0,
+dp853v_('stnum') = 0; dp853v_('stden') = 0;
+dp853v_('sqr') = y1.up['N3'] - y1.up['N2']; dp853v_('stnum') = dp853v_('stnum') + sqr(dp853v_('sqr'));
+dp853v_('sqr') = y1.up['N4'] - y1.up['N9']; dp853v_('stden') = dp853v_('stden') + sqr(dp853v_('sqr'));
+dp853v_('sqr') = y2.up['N3'] - y2.up['N2']; dp853v_('stnum') = dp853v_('stnum') + sqr(dp853v_('sqr'));
+dp853v_('sqr') = y2.up['N4'] - y2.up['N9']; dp853v_('stden') = dp853v_('stden') + sqr(dp853v_('sqr'));
+dp853v_('sqr') = y3.up['N3'] - y3.up['N2']; dp853v_('stnum') = dp853v_('stnum') + sqr(dp853v_('sqr'));
+dp853v_('sqr') = y3.up['N4'] - y3.up['N9']; dp853v_('stden') = dp853v_('stden') + sqr(dp853v_('sqr'));
+dp853v_('sqr') = y4.up['N3'] - y4.up['N2']; dp853v_('stnum') = dp853v_('stnum') + sqr(dp853v_('sqr'));
+dp853v_('sqr') = y4.up['N4'] - y4.up['N9']; dp853v_('stden') = dp853v_('stden') + sqr(dp853v_('sqr'));
+if(dp853v_('stden') > 0, dp853v_('hlamb') = SimDT_ * sqrt(dp853v_('stnum')/dp853v_('stden')));
+if(dp853v_('hlamb') > 6.1,
+dp853v_('nonsti') = 0; dp853v_('iasti') = dp853v_('iasti') + 1;
+if(dp853v_('iasti') = 15, display 'SIMULATION','#### 4 The problem seems to become stiff','at time',SimT0_; SimRC_ = 2);
+else
+dp853v_('nonsti') = dp853v_('nonsti') + 1;
+if(dp853v_('nonsti') = 6, dp853v_('iasti') = 0);
+);
+);
+if(dp853v_('reject') = 1, dp853v_('hnew') = min(dp853v_('hnew'),SimDT_); dp853v_('reject') = 0);
+else
+dp853v_('hnew') = SimDT_ / min(dp853v_('facc1'),dp853v_('fac11')/dp853p_('safe')); dp853v_('reject') = 1;
+if(dp853v_('naccpt') >= 1, dp853v_('nrejct') = dp853v_('nrejct') + 1);
+));
+SimDT_ = dp853v_('hnew');
+display$%DEBUG% SimDT_,SimI_,dp853v_;
+until dp853v_('reject') = 0 or SimI_ < 0);
+abort$(SimI_<0) 'SIMULATION','#### 3 Solving has failed','The simulation exited at time',SimT0_,'Try increasing the number of loops';
+loop(N$sameas(N,N9_),
+y1.l[N] = y1.up['N4'];
+y2.l[N] = y2.up['N4'];
+y3.l[N] = y3.up['N4'];
+y4.l[N] = y4.up['N4'];
+SimF_ = SimF_ + 1;
+y1.m[N] = y3[N];
+y2.m[N] = y4[N];
+y3.m[N] = y1[N] + 2*y4[N] - muc*(y1[N]+mu)/D1(N) - mu*(y1[N]-muc)/D2(N);
+y4.m[N] = y2[N] - 2*y3[N] - muc*y2[N]/D1(N) - mu*y2[N]/D2(N);
+y1.lo['N0'] = y1.l[N];
+y1.up['N0'] = y1.m[N];
+y2.lo['N0'] = y2.l[N];
+y2.up['N0'] = y2.m[N];
+y3.lo['N0'] = y3.l[N];
+y3.up['N0'] = y3.m[N];
+y4.lo['N0'] = y4.l[N];
+y4.up['N0'] = y4.m[N];
+SimT0_ = SimT0_ + SimDT_
+);
+until SimT0_ >= Time(N9_) - SimRelTol_*SimDT_ or SimI_ < 0);
+SimDT0_ = (Time(N9_+1)-Time(N9_))/1; SimT0_ = Time(N9_);
+display$%DEBUG% SimDT0_;
+$if %DEBUG%==1 tr_SimDT_[N] = SimDT_; tr_ERR_[N] = dp853v_('err');
+);
+SimI_ = 0;
+SimI_ = SimI_ + sum(NF(N_),y1.l[N_]);
+SimI_ = SimI_ + sum(NF(N_),y2.l[N_]);
+SimI_ = SimI_ + sum(NF(N_),y3.l[N_]);
+SimI_ = SimI_ + sum(NF(N_),y4.l[N_]);
+display$(SimRC_=1) 'SIMULATION','#### 1 Solving looks successful',SimI_,SimF_;
+display$(SimRC_=2) 'SIMULATION','#### 2 Solving looks successful but problem seems to be stiff',SimI_,SimF_;
+$offdotl
+$onecho > $tmp$$.sed
+$offecho
+$set UTF8
+$batinclude "%gams.ldir%dyna-csv-save" #open
+display mu,muc,tf;
+$if %DEBUG%==1 $batinclude "%gams.ldir%dyna-csv-save" tr_SimDT_[N] tr_ERR_[N]
+$batinclude "%gams.ldir%dyna-csv-save" y1.l[N] y2.l[N] y3.l[N] y4.l[N] #close
+$libinclude dyna-info-simulation
+$libinclude dyna-housekeeping
+</code></pre> 
+</body> 
+</html> 

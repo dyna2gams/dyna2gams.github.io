@@ -1,0 +1,108 @@
+<html> 
+<head> 
+<script type="text/javascript" language="javascript" src="https://www.gams.com/latest/docs/style/prism.js"></script> 
+<link href="https://www.gams.com/latest/docs/style/prism.css" rel="stylesheet" type="text/css" /> 
+<style> 
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;} 
+:not(pre) > code[class*="language-"],pre[class*="language-"] {background-color: white; border: none;} 
+</style> 
+</head> 
+<h1 align="center" style="color:#7EAEAC">TUTOR-A - Gams model</h1> 
+<pre><code class="language-gams"> 
+* Dyna-to-Gams Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved.
+* Translated from .\examples\tutor-a.dyn on 26 Dec 2021 at 19:14:06
+$offlisting
+$if not set DEBUG $set DEBUG 0
+$if %DEBUG%==1 $onlisting
+$if not set HOME $set HOME "d:\dyna2gams"
+$if not set N $set N 48
+$if not set CM $set CM L3A4
+$if not set QM $set QM 1
+$if not set IN $set IN 4
+$if not set SS $set SS ""
+$if not set DFGDX $set DFGDX 1
+$if not set CF $set CF IL
+$set SF SH
+$set MODEL tutor_a
+$set TF tf
+$set T0 ""
+$set TS ts
+$if not set MULTI $set MULTI YES
+$if not set ITER $set ITER 1
+$set TIMDL C
+$if not set SM $set SM DP853
+$if not set GOPT $set GOPT 
+$if not set OCTAVE $set OCTAVE "d:\octave-5.1.0.0\mingw64\bin\octave-cli.exe"
+$log [DYNA] Model name: %model%
+$log [DYNA] Model type: DNLP
+$log [DYNA] Number of parameters: 1
+$log [DYNA] Number of dynamic variables: 4
+$log [DYNA] Number of equations: 3
+$log [DYNA] List of parameters: tf
+$log [DYNA] List of dynamic variables: y1 y2 J u
+$ifi %TIMDL%==C $libinclude dyna-continuous
+$ifi %TIMDL%==D $libinclude dyna-discrete
+$ifi %TIMDL%==N $libinclude dyna-none
+$libinclude dyna-utilities
+$if setglobal NRESET $set N %NRESET%
+$set dyna_ifile .\examples\tutor-a.dyn
+$set dyna_ifnam tutor-a
+$set objective dyna_ksi
+variable %objective%;
+option limrow=0,limcol=0,solvelink=5,threads=0,solprint=off,nlp=conopt,minlp=bonmin;
+$onlisting
+scalar tf; tf = 1;
+variable y1[N]; y1.l[N]$NO = 0;
+variable y2[N]; y2.l[N]$NO = 0;
+variable J[N]; J.l[N]$NO = 0;
+variable u[N]; u.l[N]$NO = 0;
+$ondotL
+$if not %N%==0 y1.fx[N0(N)] = 2;
+$if not %N%==0 y1.l[N0(N)] = midpoint((y1.lo[N]),(y1.up[N]));
+$if     %N%==0 y1.l[N0(N)] = 2;
+$if not %N%==0 y2.fx[N0(N)] = -2;
+$if not %N%==0 y2.l[N0(N)] = midpoint((y2.lo[N]),(y2.up[N]));
+$if     %N%==0 y2.l[N0(N)] = -2;
+$if not %N%==0 J.fx[N0(N)] = 0;
+$if not %N%==0 J.l[N0(N)] = midpoint((J.lo[N]),(J.up[N]));
+$if     %N%==0 J.l[N0(N)] = 0;
+$offdotL
+equation dyna_equ1(N);
+$macro m_1_(N) (y2[N])
+dyna_equ1(NM1(N)).. derivative(y1(N_),N) =e= integral(m_1_,N);
+equation dyna_equ2(N);
+$macro m_2_(N) (u[N] - y2[N]*y2[N]*sign(y2[N]))
+dyna_equ2(NM1(N)).. derivative(y2(N_),N) =e= integral(m_2_,N);
+equation dyna_equ3(N);
+$macro m_3_(N) (0.5 * (sqr(y1[N]) + sqr(y2[N]) + sqr(u[N])))
+dyna_equ3(NM1(N)).. derivative(J(N_),N) =e= integral(m_3_,N);
+equation dyna_obj; dyna_obj.. %objective% =e= final(J(N_),N);
+$ondotL
+%objective%.l = final(J(N_),N);
+$offdotL
+model %model% /
+dyna_equ1
+dyna_equ2
+dyna_equ3
+dyna_obj
+/;
+%model%.optfile=0;
+%model%.bratio$(dyna_iter>1)=0;
+$batinclude "%gams.ldir%dyna-gdx-load" @open %objective% y1[N] y2[N] J[N] u[N] @close
+$ifi '%TIMDL%'=='C' $ifi not '%CF%'=='NA'  execute 'echo Optimization launched (N=%N%^|CM=%CM%^|CF=%CF%)';
+$ifi '%TIMDL%'=='C' $ifi '%CF%%QM%'=='NA0' execute 'echo Optimization launched (N=%N%^|QM=Rectangle)';
+$ifi '%TIMDL%'=='C' $ifi '%CF%%QM%'=='NA1' execute 'echo Optimization launched (N=%N%^|QM=Trapeze)';
+$ifi '%TIMDL%'=='D' execute 'echo Optimization launched (N=%N%) Discrete Time Model';
+solve %model% minimizing %objective% using DNLP;
+$onecho > $tmp$$.sed
+$offecho
+$set UTF8
+$batinclude "%gams.ldir%dyna-csv-save" #open
+display tf;
+$batinclude "%gams.ldir%dyna-csv-save" y1.l[N] y2.l[N] J.l[N] u.l[N] #close
+$if not declared NN $batinclude "%gams.ldir%dyna-gdx-save" @open %objective% y1[N] y2[N] J[N] u[N] @close
+$libinclude dyna-info-optimization
+$libinclude dyna-housekeeping
+</code></pre> 
+</body> 
+</html> 

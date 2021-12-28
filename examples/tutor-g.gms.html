@@ -1,0 +1,206 @@
+<html> 
+<head> 
+<script type="text/javascript" language="javascript" src="https://www.gams.com/latest/docs/style/prism.js"></script> 
+<link href="https://www.gams.com/latest/docs/style/prism.css" rel="stylesheet" type="text/css" /> 
+<style> 
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;} 
+:not(pre) > code[class*="language-"],pre[class*="language-"] {background-color: white; border: none;} 
+</style> 
+</head> 
+<h1 align="center" style="color:#7EAEAC">TUTOR-G - Gams model</h1> 
+<pre><code class="language-gams"> 
+* Dyna-to-Gams Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved.
+* Translated from .\examples\tutor-g.dyn on 26 Dec 2021 at 19:15:02
+$offlisting
+$if not set DEBUG $set DEBUG 0
+$if %DEBUG%==1 $onlisting
+$if not set HOME $set HOME "d:\dyna2gams"
+$if not set N $set N 48
+$if not set CM $set CM L3A4
+$if not set QM $set QM 1
+$if not set IN $set IN 4
+$if not set SS $set SS ""
+$if not set DFGDX $set DFGDX 1
+$if not set CF $set CF IL
+$set SF SH
+$set MODEL tutor_g
+$set TF tf
+$set T0 ""
+$set TS ts
+$if not set MULTI $set MULTI YES
+$if not set ITER $set ITER 1
+$set TIMDL C
+$if not set SM $set SM DP853
+$if not set GOPT $set GOPT 
+$if not set OCTAVE $set OCTAVE "d:\octave-5.1.0.0\mingw64\bin\octave-cli.exe"
+$log [DYNA] Model name: %model%
+$log [DYNA] Model type: NLP
+$log [DYNA] Number of sets: 1
+$log [DYNA] Number of parameters: 9
+$log [DYNA] Number of symbolic variables: 1
+$log [DYNA] Number of dynamic variables: 7
+$log [DYNA] Number of static variables: 1
+$log [DYNA] Number of equations: 9
+$log [DYNA] List of sets: phase
+$log [DYNA] List of parameters: m J r g a L k mu tf
+$log [DYNA] List of symbolic variables: TimeDot
+$log [DYNA] List of dynamic variables: t x v y w u phi
+$log [DYNA] List of static variables: tlen
+$ifi %TIMDL%==C $libinclude dyna-continuous
+$ifi %TIMDL%==D $libinclude dyna-discrete
+$ifi %TIMDL%==N $libinclude dyna-none
+$libinclude dyna-utilities
+$if setglobal NRESET $set N %NRESET%
+$set dyna_ifile .\examples\tutor-g.dyn
+$set dyna_ifnam tutor-g
+$set objective dyna_ksi
+variable %objective%;
+option limrow=0,limcol=0,solvelink=5,threads=0,solprint=off,nlp=conopt,minlp=bonmin;
+$onlisting
+$macro TimeDot(N) (tlen[phase] / tf)
+set phase /ph1*ph2/;
+scalar m; m = 0.200;
+scalar J; J = 1e-4;
+scalar r; r = 0.010;
+scalar g; g = 9.81;
+scalar a; a = 1e-2;
+scalar L; L = 1.00;
+scalar k; k = J/(m*r*r+J);
+scalar mu; mu = 1.0 - k;
+scalar tf; tf = 1;
+variable tlen[phase]; tlen.l[phase]$NO = 0;
+variable t[phase,N]; t.l[phase,N]$NO = 0;
+variable x[phase,N]; x.l[phase,N]$NO = 0;
+variable v[phase,N]; v.l[phase,N]$NO = 0;
+variable y[phase,N]; y.l[phase,N]$NO = 0;
+variable w[phase,N]; w.l[phase,N]$NO = 0;
+variable u[phase,N]; u.l[phase,N]$NO = 0;
+variable phi[phase,N]; phi.l[phase,N]$NO = 0;
+tlen.lo[phase] = 0.1; tlen.up[phase] = 2; tlen.l[phase] = midpoint((tlen.lo[phase]),(tlen.up[phase]));
+u.lo[phase,N] = -10; u.up[phase,N] = 10; u.l[phase,N] = midpoint((u.lo[phase,N]),(u.up[phase,N]));
+$ondotL
+$if not %N%==0 t.fx['ph1',N0(N)] = 0;
+$if not %N%==0 t.l['ph1',N0(N)] = midpoint((t.lo['ph1',N]),(t.up['ph1',N]));
+$if     %N%==0 t.l['ph1',N0(N)] = 0;
+$if not %N%==0 x.fx['ph1',N0(N)] = 0;
+$if not %N%==0 x.l['ph1',N0(N)] = midpoint((x.lo['ph1',N]),(x.up['ph1',N]));
+$if     %N%==0 x.l['ph1',N0(N)] = 0;
+$if not %N%==0 v.fx['ph1',N0(N)] = 0;
+$if not %N%==0 v.l['ph1',N0(N)] = midpoint((v.lo['ph1',N]),(v.up['ph1',N]));
+$if     %N%==0 v.l['ph1',N0(N)] = 0;
+$if not %N%==0 y.fx['ph1',N0(N)] = 0;
+$if not %N%==0 y.l['ph1',N0(N)] = midpoint((y.lo['ph1',N]),(y.up['ph1',N]));
+$if     %N%==0 y.l['ph1',N0(N)] = 0;
+$if not %N%==0 w.fx['ph1',N0(N)] = 0;
+$if not %N%==0 w.l['ph1',N0(N)] = midpoint((w.lo['ph1',N]),(w.up['ph1',N]));
+$if     %N%==0 w.l['ph1',N0(N)] = 0;
+$if not %N%==0 phi.fx['ph1',N0(N)] = 0;
+$if not %N%==0 phi.l['ph1',N0(N)] = midpoint((phi.lo['ph1',N]),(phi.up['ph1',N]));
+$if     %N%==0 phi.l['ph1',N0(N)] = 0;
+$offdotL
+$ondotL
+$if not %N%==0 x.fx['ph2',NF(N)] = -0.1;
+$if not %N%==0 x.l['ph2',NF(N)] = midpoint((x.lo['ph2',N]),(x.up['ph2',N]));
+$if     %N%==0 x.l['ph2',NF(N)] = -0.1;
+$if not %N%==0 v.fx['ph2',NF(N)] = 0;
+$if not %N%==0 v.l['ph2',NF(N)] = midpoint((v.lo['ph2',N]),(v.up['ph2',N]));
+$if     %N%==0 v.l['ph2',NF(N)] = 0;
+$if not %N%==0 y.fx['ph2',NF(N)] = -0.1;
+$if not %N%==0 y.l['ph2',NF(N)] = midpoint((y.lo['ph2',N]),(y.up['ph2',N]));
+$if     %N%==0 y.l['ph2',NF(N)] = -0.1;
+$if not %N%==0 w.fx['ph2',NF(N)] = 0;
+$if not %N%==0 w.l['ph2',NF(N)] = midpoint((w.lo['ph2',N]),(w.up['ph2',N]));
+$if     %N%==0 w.l['ph2',NF(N)] = 0;
+$offdotL
+equation dyna_equ1(phase,N);
+$macro m_1_(N) (1)
+dyna_equ1(phase,NM1(N)).. derivative(t(phase,N_),N) / TimeDot(N) =e= integral(m_1_,N);
+equation dyna_equ2(phase,N);
+$macro m_2_(N) (v[phase,N])
+dyna_equ2(phase,NM1(N)).. derivative(x(phase,N_),N) / TimeDot(N) =e= integral(m_2_,N);
+equation dyna_equ3(phase,N);
+$macro m_3_(N) (u[phase,N])
+dyna_equ3(phase,NM1(N)).. derivative(v(phase,N_),N) / TimeDot(N) =e= integral(m_3_,N);
+equation dyna_equ4(phase,N);
+$macro m_4_(N) (w[phase,N])
+dyna_equ4(phase,NM1(N)).. derivative(y(phase,N_),N) / TimeDot(N) =e= integral(m_4_,N);
+equation dyna_equ5(phase,N);
+$macro m_5_(N) (-mu*g + k*u[phase,N] + a*(v[phase,N]-w[phase,N]))
+dyna_equ5(phase,NM1(N)).. derivative(w(phase,N_),N) / TimeDot(N) =e= integral(m_5_,N);
+equation dyna_equ6(phase,N);
+$macro m_6_(N) (sqr(u[phase,N]))
+dyna_equ6(phase,NM1(N)).. derivative(phi(phase,N_),N) / TimeDot(N) =e= integral(m_6_,N);
+*** Begin of phase linking equations ***
+equation dyna_equ7_1[phase,N];
+dyna_equ7_1[phase,N]$((ord(phase)<card(phase))$N0(N)).. final(t(phase,N_),N) =e= initial(t(phase+1,N_),N);
+equation dyna_equ7_2[phase,N];
+dyna_equ7_2[phase,N]$((ord(phase)<card(phase))$N0(N)).. final(x(phase,N_),N) =e= initial(x(phase+1,N_),N);
+equation dyna_equ7_3[phase,N];
+dyna_equ7_3[phase,N]$((ord(phase)<card(phase))$N0(N)).. final(v(phase,N_),N) =e= initial(v(phase+1,N_),N);
+equation dyna_equ7_4[phase,N];
+dyna_equ7_4[phase,N]$((ord(phase)<card(phase))$N0(N)).. final(y(phase,N_),N) =e= initial(y(phase+1,N_),N);
+equation dyna_equ7_5[phase,N];
+dyna_equ7_5[phase,N]$((ord(phase)<card(phase))$N0(N)).. final(u(phase,N_),N) =e= initial(u(phase+1,N_),N);
+equation dyna_equ7_6[phase,N];
+dyna_equ7_6[phase,N]$((ord(phase)<card(phase))$N0(N)).. final(phi(phase,N_),N) =e= initial(phi(phase+1,N_),N);
+***  End of phase linking equations  ***
+$log [DYNA] 6 phase linking equations added.
+equation dyna_equ8(phase);
+dyna_equ8(phase)$(ord(phase)<card(phase)).. 0 =e= - initial(w(phase+1,N_),N) + final(k*v(phase,N_) + sqrt(sqrt(sqr(sqr(k*v(phase,N_)) + k*(sqr(w(phase,N_))-2*w(phase,N_)*v(phase,N_))))),N);
+equation dyna_equ9;
+dyna_equ9.. L =e= final(x('ph1',N_),N) - final(y('ph1',N_),N);
+equation dyna_obj; dyna_obj.. %objective% =e= final(phi('ph2',N_),N);
+$ondotL
+%objective%.l = final(phi('ph2',N_),N);
+$offdotL
+*** Begin of control fixing equations ***
+equation dyna_gctrl1[phase,N];
+dyna_gctrl1[phase,N]$((sameas('%CF%','IG') or sameas('%CF%','DG'))$(mod(ord(N),%K%+1)=1)).. u[phase,N] =e= 
+sum(K1_,dyna_ufb('F',K1_)*sum(N_$sameas(N_,N+ord(K1_)),u[phase,N_]))$N0(N) + sum(K1_,dyna_ufb('B',K1_)*sum(N_$sameas(N_,N-ord(K1_)),u[phase,N_]))$NF(N) +
+0.5*sum(K1_,dyna_ufb('F',K1_)*sum(N_$sameas(N_,N+ord(K1_)),u[phase,N_])+dyna_ufb('B',K1_)*sum(N_$sameas(N_,N-ord(K1_)),u[phase,N_]))$((not(N0(N)+NF(N)))$((dyna_ufb('F','K1') ne 1)$(dyna_ufb('B','K1') ne 1))) +
+sum(N_$sameas(N_,N+1),u[phase,N_])$((not(N0(N)+NF(N)))$((dyna_ufb('F','K1') eq 1)$(dyna_ufb('B','K1') ne 1))) + sum(N_$sameas(N_,N-1),u[phase,N_])$((not(N0(N)+NF(N)))$((dyna_ufb('F','K1') ne 1)$(dyna_ufb('B','K1') eq 1))) +
+0.5*(sum(N_$sameas(N_,N+1),u[phase,N_])+sum(N_$sameas(N_,N-1),u[phase,N_]))$((not(N0(N)+NF(N)))$((dyna_ufb('F','K1') eq 1)$(dyna_ufb('B','K1') eq 1)));
+$setglobal PZP POLY
+equation dyna_rctrl1[phase,N];
+dyna_rctrl1[phase,N]$((sameas('%CF%','IR') or sameas('%CF%','DR'))$(NF(N))).. u[phase,N] =e= sum((K2_,N_)$sameas(N_,N-ord(K2_)),dyna_pzp('%PZP%',K2_)*u[phase,N_]);
+***  End of control fixing equations  ***
+model %model% /
+dyna_equ1
+dyna_equ2
+dyna_equ3
+dyna_equ4
+dyna_equ5
+dyna_equ6
+dyna_equ7_1
+dyna_equ7_2
+dyna_equ7_3
+dyna_equ7_4
+dyna_equ7_5
+dyna_equ7_6
+dyna_equ8
+dyna_equ9
+dyna_gctrl1
+dyna_rctrl1
+dyna_obj
+/;
+%model%.optfile=0;
+%model%.bratio$(dyna_iter>1)=0;
+$batinclude "%gams.ldir%dyna-gdx-load" @open %objective% tlen[phase] t[phase,N] x[phase,N] v[phase,N] y[phase,N] w[phase,N] u[phase,N] phi[phase,N] @close
+$ifi '%TIMDL%'=='C' $ifi not '%CF%'=='NA'  execute 'echo Optimization launched (N=%N%^|CM=%CM%^|CF=%CF%)';
+$ifi '%TIMDL%'=='C' $ifi '%CF%%QM%'=='NA0' execute 'echo Optimization launched (N=%N%^|QM=Rectangle)';
+$ifi '%TIMDL%'=='C' $ifi '%CF%%QM%'=='NA1' execute 'echo Optimization launched (N=%N%^|QM=Trapeze)';
+$ifi '%TIMDL%'=='D' execute 'echo Optimization launched (N=%N%) Discrete Time Model';
+solve %model% minimizing %objective% using NLP;
+$onecho > $tmp$$.sed
+$offecho
+$set UTF8
+$batinclude "%gams.ldir%dyna-csv-save" #open
+display m,J,r,g,a,L,k,mu,tf;
+display tlen.l;
+$batinclude "%gams.ldir%dyna-csv-save" t.l[phase,N] x.l[phase,N] v.l[phase,N] y.l[phase,N] w.l[phase,N] u.l[phase,N] phi.l[phase,N] #close
+$if not declared NN $batinclude "%gams.ldir%dyna-gdx-save" @open %objective% tlen[phase] t[phase,N] x[phase,N] v[phase,N] y[phase,N] w[phase,N] u[phase,N] phi[phase,N] @close
+$libinclude dyna-info-optimization
+$libinclude dyna-housekeeping
+</code></pre> 
+</body> 
+</html> 

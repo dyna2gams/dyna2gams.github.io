@@ -1,0 +1,206 @@
+<html> 
+<head> 
+<script type="text/javascript" language="javascript" src="https://www.gams.com/latest/docs/style/prism.js"></script> 
+<link href="https://www.gams.com/latest/docs/style/prism.css" rel="stylesheet" type="text/css" /> 
+<style> 
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;} 
+:not(pre) > code[class*="language-"],pre[class*="language-"] {background-color: white; border: none;} 
+</style> 
+</head> 
+<h1 align="center" style="color:#7EAEAC">TUTOR-I - Self-contained Gams file</h1>
+<pre><code class="language-gams"> 
+* Dyna-to-Gams Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved.
+* Translated from .\examples\tutor-i.dyn on 26 Dec 2021 at 19:15:21
+$ondotL
+set dyna_mpset /P,N,L,R/;
+set dyna_pzpset /POLY,ZERO,PREV/;
+set K0_ /K0*K4/; set K1_(K0_) /K1*K4/; set K2_(K1_) /K2*K4/;
+parameter dyna_irk(K2_,K0_);
+dyna_irk('K2','K0') = (5-sqrt(5))/10;
+dyna_irk('K3','K0') = (5+sqrt(5))/10;
+dyna_irk('K4','K0') = 1;
+dyna_irk('K2','K1') = (11+sqrt(5))/120;
+dyna_irk('K2','K2') = (25-sqrt(5))/120;
+dyna_irk('K2','K3') = (25-13*sqrt(5))/120;
+dyna_irk('K2','K4') = (-1+sqrt(5))/120;
+dyna_irk('K3','K1') = (11-sqrt(5))/120;
+dyna_irk('K3','K2') = (25+13*sqrt(5))/120;
+dyna_irk('K3','K3') = (25+sqrt(5))/120;
+dyna_irk('K3','K4') = (-1-sqrt(5))/120;
+dyna_irk('K4','K1') = 1/12;
+dyna_irk('K4','K2') = 5/12;
+dyna_irk('K4','K3') = 5/12;
+dyna_irk('K4','K4') = 1/12;
+scalar dyna_order /6/;
+set MP_ /P0*P4/;
+table dyna_mptab(MP_,dyna_mpset)
+    N  L  R
+P0  1  1  1
+P1  2  0  2
+P2  3  1  1
+P3  4  2  0
+P4  5  1  1;
+dyna_mptab('P0','P') = 0.5;
+dyna_mptab('P1','P') = dyna_irk('K3','K0')/(dyna_irk('K3','K0')-dyna_irk('K2','K0'))/2;
+dyna_mptab('P2','P') = (2*dyna_irk('K3','K0')-dyna_irk('K4','K0'))/(dyna_irk('K3','K0')-dyna_irk('K2','K0'))/2;
+dyna_mptab('P3','P') = (2*dyna_irk('K3','K0')-dyna_irk('K2','K0')-dyna_irk('K4','K0'))/(dyna_irk('K3','K0')-dyna_irk('K2','K0'))/2;
+dyna_mptab('P4','P') = 0.5;
+scalars dyna_mpcy1 /6/, dyna_mpcy2 /6/;
+table dyna_drk(K2_,K1_)
+     K1                    K2                    K3                    K4
+K2   6.74180828645789E-1   0                    -9.31694990624912E-1   2.57514161979123E-1
+K3  -2.57514161979123E-1   9.31694990624913E-1   0                    -6.74180828645790E-1
+K4   8.33333333333335E-2  -2.57514161979123E-1   6.74180828645789E-1   5.00000000000000E-1;
+table dyna_pzp(dyna_pzpset,K2_)
+       K2                 K3                 K4
+POLY   2.23606797749979  -2.23606797749979   1.00000000000000
+ZERO   0                  0                  0
+PREV   1                  0                  0;
+alias(K2___,K2__,K2_);
+set FB_ /F,B/;
+parameter dyna_ufb(FB_,K1_); dyna_ufb(FB_,K1_) = 0;
+set labels_cf_ /IL,IR,IG,DL,DR,DG,NA/;
+sets
+  N      / N0*N48 /
+  NM1(N) / N0*N47 /
+  N0(N)  / N0 /
+  NF(N)  / N48 /
+  NNZ(N,N),NNZ_(N,N)
+  NK2_(N,K2_)
+; alias(N,N_,N1_,N2_,N3_,N4_,N9_);
+NNZ(N,N_) $ (ord(N)-ord(N_)<3 and ord(N)-ord(N_)>=0 and mod(ord(N_)-1,3)=0) = yes; NNZ_(NNZ(N,N_)) = yes;
+NK2_(N,K2_) $ (mod(ord(N)-1,3)=ord(K2_)-1) = yes;
+parameter Tick_(N);
+Tick_(N) = (sum(NNZ_(N,N1_),ord(N1_))-1+3*sum(N1_$sameas(N1_+1,N),sum(NK2_(N1_,K2_)$(ord(K2_)<3),dyna_irk(K2_,'K0'))))/48;
+variables costate_(N),codummy_;
+equations eqcostate_(N),eqcofinal_(N),eqcodummy_;
+parameter dualvars_(N);
+eqcostate_(NM1(N)).. sum(K1_,sum(NK2_(N,K2_),dyna_drk(K2_,K1_))*sum(NNZ(N,N9_),costate_(N9_+(ord(K1_)-1)))) =e=
+dualvars_(N);
+eqcofinal_(NF(N)).. costate_(N) =e= sum(K2_,dyna_pzp("POLY",K2_)*costate_(N-ord(K2_)));
+eqcodummy_.. codummy_ =e= 0;
+model mcostate_ /eqcostate_,eqcofinal_,eqcodummy_/;
+scalar dyna_eps /1/; repeat (dyna_eps = dyna_eps/2; until 1+dyna_eps=1); dyna_eps = 2*dyna_eps;
+scalar dyna_pi; dyna_pi = arccos(-1);
+scalar dyna_iter /1/;
+scalar dyna_iter_max /4/;
+set CartesianCoordinates /x,y,z/;
+alias(c_c_,CartesianCoordinates);
+set SphericalCoordinates 'radial distance, inclination (or elevation), azimuth' /rho,tta,phi/;
+scalar smoothEPS; smoothEPS = dyna_eps;
+variable dyna_ksi;
+option limrow=0,limcol=0,solvelink=5,threads=0,solprint=off,nlp=conopt,minlp=bonmin;
+set x /x0*x20/;
+set xl(x) /x0/;
+set xx(x) /x1*x19/;
+set xr(x) /x20/;
+scalar DeltaX; DeltaX = 1/(card(x)-1);
+parameter TickX(x); TickX(x) = DeltaX*(ord(x)-1);
+scalar D; D = 1;
+scalar a; a = 1;
+scalar tf; tf = 1;
+variable z[x,N]; z.l[x,N]$NO = 0;
+z.fx[x,N0(N)]$xx[x] = a*sin(pi*TickX[x]);
+z.l[x,N0(N)]$xx[x] = ((((z.lo[x,N])*(1+1$((z.up[x,N])=+inf)))$((z.lo[x,N])<>-inf)+((z.up[x,N])*(1+1$((z.lo[x,N])=-inf)))$((z.up[x,N])<>+inf))/2);
+equation dyna_equ1(x,N);
+dyna_equ1(x,N)$xl[x].. z[x,N] =e= 0;
+equation dyna_equ2(x,N);
+dyna_equ2(x,NM1(N))$xx[x].. ((sum(sameas(N_,N+1),z(x,N_))-sum(NNZ(N,N_),z(x,N_)))/(tf/(48/3))) =e= (sum(K1_,sum(NK2_(N,K2_),dyna_irk(K2_,K1_))*sum(NNZ(N,N9_),(D * (z[x-1,N9_+(ord(K1_)-1)]-2*z[x,N9_+(ord(K1_)-1)]+z[x+1,N9_+(ord(K1_)-1)])/sqr(DeltaX)))));
+equation dyna_equ3(x,N);
+dyna_equ3(x,N)$xr[x].. z[x,N] =e= 0;
+equation dyna_obj; dyna_obj.. dyna_ksi =e= sum(N0(N_),z('x0',N_));
+dyna_ksi.l = sum(N0(N_),z('x0',N_));
+file f_gpl_ /$$tutor-i.48.gpl/; f_gpl_.pc = 5; f_gpl_.nw = 13; f_gpl_.nr = 2; f_gpl_.nd = 6; f_gpl_.pw = 32767; f_gpl_.ap = 0;
+scalar w_gpl_;
+put f_gpl_; put f_gpl_ 'TickX[x]'; loop(x, w_gpl_ = TickX(x); put w_gpl_); putclose /;
+model tutor_i /
+dyna_equ1
+dyna_equ2
+dyna_equ3
+dyna_obj
+/;
+tutor_i.optfile=0;
+tutor_i.bratio$(dyna_iter>1)=0;
+scalar dyna_ksi_L_;
+parameter z_L_[x,*];
+execute 'echo Optimization launched (N=48^|CM=L3A4^|CF=IL)';
+solve tutor_i minimizing dyna_ksi using LP;
+display DeltaX,TickX,D,a,tf;
+file f_csv_ /$$tutor-i.48.csv/;
+put f_csv_ '"_N_"';
+f_csv_.pc = 5; f_csv_.nw = 13; f_csv_.nd = 6; f_csv_.nr = 2; f_csv_.pw = 32767;
+put f_csv_ 'Time'
+'z[x0]'
+'z[x1]'
+'z[x2]'
+'z[x3]'
+'z[x4]'
+'z[x5]'
+'z[x6]'
+'z[x7]'
+'z[x8]'
+'z[x9]'
+'z[x10]'
+'z[x11]'
+'z[x12]'
+'z[x13]'
+'z[x14]'
+'z[x15]'
+'z[x16]'
+'z[x17]'
+'z[x18]'
+'z[x19]'
+'z[x20]'
+/;
+loop(N, put f_csv_ N.tl:0
+(Tick_(N)*tf)
+z.l['x0',N]
+z.l['x1',N]
+z.l['x2',N]
+z.l['x3',N]
+z.l['x4',N]
+z.l['x5',N]
+z.l['x6',N]
+z.l['x7',N]
+z.l['x8',N]
+z.l['x9',N]
+z.l['x10',N]
+z.l['x11',N]
+z.l['x12',N]
+z.l['x13',N]
+z.l['x14',N]
+z.l['x15',N]
+z.l['x16',N]
+z.l['x17',N]
+z.l['x18',N]
+z.l['x19',N]
+z.l['x20',N]
+/);
+putclose;
+set NN / N0*N96 /;
+scalars dyna_ksi_S1_,dyna_ksi_S2_;
+dyna_ksi_S1_ = dyna_ksi.l; dyna_ksi_S2_ = dyna_ksi.l;
+parameters z_S1_[x,*],z_S2_[x,*];
+z_S1_[x,N] = z.l[x,N];
+z_S2_[x,NN] $ (mod(ord(NN),2)=1) = sum(N$(ord(NN)=2*ord(N)-1),z.l[x,N]);
+z_S2_[x,NN] $ (mod(ord(NN)-1,dyna_mpcy1)<>0) = sum(MP_$(dyna_mptab(MP_,"N")=mod(ord(NN)-1,dyna_mpcy2)),dyna_mptab(MP_,"P")*z_S2_[x,NN-dyna_mptab(MP_,'L')] + (1-dyna_mptab(MP_,"P"))*z_S2_[x,NN+dyna_mptab(MP_,'R')]);
+execute_unload '$$tutor-i.48.gdx'
+,dyna_ksi_S1_=dyna_ksi
+,z_S1_=z
+;
+execute_unload '$$tutor-i.96.gdx'
+,dyna_ksi_S2_=dyna_ksi
+,z_S2_=z
+;
+file f_nfo_ /$$tutor-i.48.nfo/;
+put f_nfo_
+  'ifile,model,cd,cf,cm,qm,n,iter,numvar,numdvar,numequ,numnz,numnlins,numnlnz,solvestat,modelstat,resusd,iterusd,objval,objest'/
+  '.\examples\tutor-i.dyn,tutor_i,C,IL,L3A4,1,48,1,'
+  tutor_i.numvar:0:0 ',' tutor_i.numdvar:0:0 ',' tutor_i.numequ:0:0 ',' tutor_i.numnz:0:0 ',' tutor_i.numnlins:0:0 ',' tutor_i.numnlnz:0:0 ','
+  tutor_i.Tsolstat:0:0 ',' tutor_i.Tmodstat:0:0 ',' (1000*tutor_i.resusd):0:0 ',' tutor_i.iterusd:0:0 ',';
+f_nfo_.nw = 13; f_nfo_.nd = 6; f_nfo_.nr = 2
+put f_nfo_ tutor_i.objval ',' tutor_i.objest/;
+putclose f_nfo_;
+</code></pre> 
+</body> 
+</html> 
