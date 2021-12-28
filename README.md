@@ -1,7 +1,7 @@
 # DYNA2GAMS - optimal control with GAMS
 
 The __DYNA2GAMS__ project aims at solving optimal control problems with the help of the
-[GAMS](http://www.gams.com) modeling language.
+[GAMS](https://www.gams.com) modeling language.
 
 Optimal control deals with the problem of finding a control law for a given dynamical system
 governed by differential equations such that a certain optimality criterion is achieved.
@@ -12,7 +12,7 @@ trajectories, virtual test-driving, chassis control...), controller design (line
 regulator, model-predictive control...), process engineering (chemical processes...),
 fishing strategies, biology, etc.
 
-The General Algebraic Modeling System ([GAMS](http://www.gams.com)) is a high-level modeling
+The General Algebraic Modeling System ([GAMS](https://www.gams.com)) is a high-level modeling
 system for mathematical programming and optimization. It consists of a language compiler and a
 range of integrated high-performance solvers. GAMS is specifically designed for modeling
 linear, nonlinear and mixed integer optimization problems.
