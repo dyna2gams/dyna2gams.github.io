@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -19,7 +19,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <font color="red"><b>rem:</b></font> Optimal Growth Model
 </pre>
 <p>
-  This is the example demdp07 of [1] and [2]. 
+  This is the example demdp07 of [1] and [2].
 <p>
   Consider an economy that produces and consumes a single composite good. Each year
   begins with a predetermined amount of the good \(s\) in stock, of which an amount
@@ -77,7 +77,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   0 &lt;= s[scen] &lt;= 10
 
 <font color="red"><b>t=t0:</b></font>
-  s[scen] = 7.5
+  s[scen] = 5
   J = 0
 
 <font color="red"><b>equ:</b></font>
@@ -87,7 +87,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   J&acute; == J + <font color="#3D9970">sum</font>(scen, delta^<font color="#0074D9">Time</font>*u[scen])/<font color="#3D9970">card</font>(scen)
 
 <font color="red"><b>ini:</b></font>
-  x = 3.75
+  x = 2.5
 
 <font color="red"><b>obj:</b></font>
   <font color="#8A2BE2">maximize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp

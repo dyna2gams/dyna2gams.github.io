@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -189,17 +189,17 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   tf = 1
 
 <font color="red"><b>dyn:</b></font>
-  tim[phase]	<font color="#808080"><i># real time</i></font>
-  T[phase]	<font color="#808080"><i># tumor cell population (scaled i.e. b*T)</i></font>
-  <font color="#0074D9">N</font>[phase]	<font color="#808080"><i># total natural killer cell population (scaled i.e. a*a/(alpha*e)*N)</i></font>
-  L[phase]	<font color="#808080"><i># total CD8+T cell population (scaled i.e. b*L)</i></font>
-  C[phase]	<font color="#808080"><i># the number of circulating lymphocytes or white blood cells (scaled i.e. a/alpha*C)</i></font>
-  M[phase]	<font color="#808080"><i># the chemotherapeutic drug concentration in the blood stream</i></font>
-  I[phase]	<font color="#808080"><i># the immunotherapeutic drug concentration in the blood stream (scaled i.e. b*I)</i></font>
-  wL[phase]	<font color="#808080"><i># the administered amount of drugs in [0,1]</i></font>
-  wM[phase]	<font color="#808080"><i># the administered amount of drugs in [0,1]</i></font>
-  wI[phase]	<font color="#808080"><i># the administered amount of drugs in [0,1]</i></font>
-  J[phase]	<font color="#808080"><i># the criterion (scaled i.e. b*J)</i></font>
+  tim[phase]		<font color="#808080"><i># real time</i></font>
+  T[phase]		<font color="#808080"><i># tumor cell population (scaled i.e. b*T)</i></font>
+  <font color="#0074D9">N</font>[phase]		<font color="#808080"><i># total natural killer cell population (scaled i.e. a*a/(alpha*e)*N)</i></font>
+  L[phase]		<font color="#808080"><i># total CD8+T cell population (scaled i.e. b*L)</i></font>
+  C[phase]		<font color="#808080"><i># the number of circulating lymphocytes or white blood cells (scaled i.e. a/alpha*C)</i></font>
+  M[phase]		<font color="#808080"><i># the chemotherapeutic drug concentration in the blood stream</i></font>
+  I[phase]		<font color="#808080"><i># the immunotherapeutic drug concentration in the blood stream (scaled i.e. b*I)</i></font>
+  wL[phase] :: <font color="#7FDBFF">control</font>	<font color="#808080"><i># the administered amount of drugs in [0,1]</i></font>
+  wM[phase] :: <font color="#7FDBFF">control</font>	<font color="#808080"><i># the administered amount of drugs in [0,1]</i></font>
+  wI[phase] :: <font color="#7FDBFF">control</font>	<font color="#808080"><i># the administered amount of drugs in [0,1]</i></font>
+  J[phase]		<font color="#808080"><i># the criterion (scaled i.e. b*J)</i></font>
 
 <font color="red"><b>lim:</b></font>
   0 &lt;= T[phase] &lt;= 1e8   *b

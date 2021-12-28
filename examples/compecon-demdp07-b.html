@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -69,16 +69,16 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   ts = 1
 
 <font color="red"><b>dyn:</b></font>
-  s[ie]	<font color="#808080"><i># state</i></font>
+  s[ie]		<font color="#808080"><i># state</i></font>
   x:<font color="#3D9970">positive</font>	<font color="#808080"><i># action</i></font>
-  u[ie]	<font color="#808080"><i># utility</i></font>
+  u[ie]		<font color="#808080"><i># utility</i></font>
   J		<font color="#808080"><i># value function</i></font>
 
 <font color="red"><b>lim:</b></font>
   0 &lt;= s[ie] &lt;= 10
 
 <font color="red"><b>t=t0:</b></font>
-  s[ie] = 7.5
+  s[ie] = 5
   J = 0
 
 <font color="red"><b>equ:</b></font>
@@ -88,7 +88,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   J&acute; == J + <font color="#3D9970">sum</font>(ie, w[ie]*delta^<font color="#0074D9">Time</font>*u[ie])
 
 <font color="red"><b>ini:</b></font>
-  x = 3.75
+  x = 2.5
 
 <font color="red"><b>obj:</b></font>
   <font color="#8A2BE2">maximize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp

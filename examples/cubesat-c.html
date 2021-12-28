@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -36,37 +36,37 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <p>
 <pre>
 <font color="red"><b>mac:</b></font>
-  @QuatProd(r,op,p,q) \
-    &r0&op &p0*&q0-&p1*&q1-&p2*&q2-&p3*&q3; \
-    &r1&op &p0*&q1+&p1*&q0+&p2*&q3-&p3*&q2; \
-    &r2&op &p0*&q2+&p2*&q0+&p3*&q1-&p1*&q3; \
+  @QuatProd(r,op,p,q)
+    &r0&op &p0*&q0-&p1*&q1-&p2*&q2-&p3*&q3;
+    &r1&op &p0*&q1+&p1*&q0+&p2*&q3-&p3*&q2;
+    &r2&op &p0*&q2+&p2*&q0+&p3*&q1-&p1*&q3;
     &r3&op &p0*&q3+&p3*&q0+&p1*&q2-&p2*&q1;
 
   <font color="#808080"><i># This function finds the quaternion vector given the Euler angles</i></font>
-  @Euler2Quat(q,op,phi,theta,psi) \
-    &q0&op <font color="#2ECC40">cos</font>(&phi/2)*<font color="#2ECC40">cos</font>(&theta/2)*<font color="#2ECC40">cos</font>(&psi/2) + <font color="#2ECC40">sin</font>(&phi/2)*<font color="#2ECC40">sin</font>(&theta/2)*<font color="#2ECC40">sin</font>(&psi/2); \
-    &q1&op <font color="#2ECC40">sin</font>(&phi/2)*<font color="#2ECC40">cos</font>(&theta/2)*<font color="#2ECC40">cos</font>(&psi/2) - <font color="#2ECC40">cos</font>(&phi/2)*<font color="#2ECC40">sin</font>(&theta/2)*<font color="#2ECC40">sin</font>(&psi/2); \
-    &q2&op <font color="#2ECC40">cos</font>(&phi/2)*<font color="#2ECC40">sin</font>(&theta/2)*<font color="#2ECC40">cos</font>(&psi/2) + <font color="#2ECC40">sin</font>(&phi/2)*<font color="#2ECC40">cos</font>(&theta/2)*<font color="#2ECC40">sin</font>(&psi/2); \
+  @Euler2Quat(q,op,phi,theta,psi)
+    &q0&op <font color="#2ECC40">cos</font>(&phi/2)*<font color="#2ECC40">cos</font>(&theta/2)*<font color="#2ECC40">cos</font>(&psi/2) + <font color="#2ECC40">sin</font>(&phi/2)*<font color="#2ECC40">sin</font>(&theta/2)*<font color="#2ECC40">sin</font>(&psi/2);
+    &q1&op <font color="#2ECC40">sin</font>(&phi/2)*<font color="#2ECC40">cos</font>(&theta/2)*<font color="#2ECC40">cos</font>(&psi/2) - <font color="#2ECC40">cos</font>(&phi/2)*<font color="#2ECC40">sin</font>(&theta/2)*<font color="#2ECC40">sin</font>(&psi/2);
+    &q2&op <font color="#2ECC40">cos</font>(&phi/2)*<font color="#2ECC40">sin</font>(&theta/2)*<font color="#2ECC40">cos</font>(&psi/2) + <font color="#2ECC40">sin</font>(&phi/2)*<font color="#2ECC40">cos</font>(&theta/2)*<font color="#2ECC40">sin</font>(&psi/2);
     &q3&op <font color="#2ECC40">cos</font>(&phi/2)*<font color="#2ECC40">cos</font>(&theta/2)*<font color="#2ECC40">sin</font>(&psi/2) - <font color="#2ECC40">sin</font>(&phi/2)*<font color="#2ECC40">sin</font>(&theta/2)*<font color="#2ECC40">cos</font>(&psi/2);
 
-  @MtV(z,op,M,p) \
-    &z1&op &M11*&p1 + &M12*&p2 + &M13*&p3; \
-    &z2&op &M21*&p1 + &M22*&p2 + &M23*&p3; \
+  @MtV(z,op,M,p)
+    &z1&op &M11*&p1 + &M12*&p2 + &M13*&p3;
+    &z2&op &M21*&p1 + &M22*&p2 + &M23*&p3;
     &z3&op &M31*&p1 + &M32*&p2 + &M33*&p3;
 
-  @DYN1(z,op,J,p) \
-    &z1&op &J111*&p1 + &J212*&p2 + &J313*&p3; \
-    &z2&op &J121*&p1 + &J222*&p2 + &J323*&p3; \
+  @DYN1(z,op,J,p)
+    &z1&op &J111*&p1 + &J212*&p2 + &J313*&p3;
+    &z2&op &J121*&p1 + &J222*&p2 + &J323*&p3;
     &z3&op &J131*&p1 + &J232*&p2 + &J333*&p3;
 
-  @DYN2(z,op,p,J,q) \
-    &z1&op -&p3*(&J121*&q1+&J222*&q2+&J323*&q3) + &p2*(&J131*&q1+&J232*&q2+&J333*&q3); \
-    &z2&op  &p3*(&J111*&q1+&J212*&q2+&J313*&q3) - &p1*(&J131*&q1+&J232*&q2+&J333*&q3); \
+  @DYN2(z,op,p,J,q)
+    &z1&op -&p3*(&J121*&q1+&J222*&q2+&J323*&q3) + &p2*(&J131*&q1+&J232*&q2+&J333*&q3);
+    &z2&op  &p3*(&J111*&q1+&J212*&q2+&J313*&q3) - &p1*(&J131*&q1+&J232*&q2+&J333*&q3);
     &z3&op -&p2*(&J111*&q1+&J212*&q2+&J313*&q3) + &p1*(&J121*&q1+&J222*&q2+&J323*&q3);
 
-  @DYN3(z,op,J,p) \
-    &z1&op (-&p3*&J21+&p2*&J31)*&p1 + (-&p3*&J22+&p2*&J32)*&p2 + (-&p3*&J23+&p2*&J33)*&p3; \
-    &z2&op ( &p3*&J11-&p1*&J31)*&p1 + ( &p3*&J12-&p1*&J32)*&p2 + ( &p3*&J13-&p1*&J33)*&p3; \
+  @DYN3(z,op,J,p)
+    &z1&op (-&p3*&J21+&p2*&J31)*&p1 + (-&p3*&J22+&p2*&J32)*&p2 + (-&p3*&J23+&p2*&J33)*&p3;
+    &z2&op ( &p3*&J11-&p1*&J31)*&p1 + ( &p3*&J12-&p1*&J32)*&p2 + ( &p3*&J13-&p1*&J33)*&p3;
     &z3&op (-&p2*&J11+&p1*&J21)*&p1 + (-&p2*&J12+&p1*&J22)*&p2 + (-&p2*&J13+&p1*&J23)*&p3;
 
 <font color="red"><b>par:</b></font>
@@ -110,7 +110,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 		<font color="#808080"><i># - body angular velocity (3) [rad/s]</i></font>
 		<font color="#808080"><i># - attitude quaternion (4)</i></font>
   u{1:12}	<font color="#808080"><i># Controls:</i></font>
-		<font color="#808080"><i># - pseudo wheel acceleration (4 per real wheel, 2 per pseudo wheel) [rad/s^2]</i></font>
+		<font color="#808080"><i># - pseudo wheel acceleration (4 per real wheel, 2 per pseudo wheel) [rad/s&sup2;]</i></font>
   J		<font color="#808080"><i># Criterion</i></font>
 
 <font color="red"><b>lim:</b></font>

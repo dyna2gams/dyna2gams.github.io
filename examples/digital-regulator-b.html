@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -29,18 +29,18 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   <font color="#39CCCC">time-model</font> = Discrete
   <font color="#39CCCC">N</font> = 21
   <font color="#39CCCC">gams-option</font> = decimals=4
-  
+
 <font color="red"><b>par:</b></font>
   ts = 1			<font color="#808080"><i># sample time</i></font>
   yd = 1			<font color="#808080"><i># desired output</i></font>
   case = 1
- 
+
 <font color="red"><b>dyn:</b></font>
   J
-  
+
 <font color="red"><b>var:</b></font>
   a1 a0 b1 b0
-  
+
 <font color="red"><b>lim:</b></font>
   -1 &lt;= a1 &lt;= 1
   -1 &lt;= a0 &lt;= 1
@@ -49,20 +49,20 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 
 <font color="red"><b>k=k0:</b></font>
   J = 0
-  
-<font color="red"><b>ini:</b></font>  
+
+<font color="red"><b>ini:</b></font>
   a1 = 0.5
   a0 = 0.5
   b1 = 0.5
   b0 = 0.5
 
 <font color="red"><b>mac:</b></font>
-  @report(i) \
-    report('&i','a1') = a1.l; \
-    report('&i','a0') = a0.l; \
-    report('&i','b1') = b1.l; \
+  @report(i)
+    report('&i','a1') = a1.l;
+    report('&i','a0') = a0.l;
+    report('&i','b1') = b1.l;
     report('&i','b0') = b0.l;
-    
+
 <font color="red"><b>exp:</b></font>
   e == 1 - y
 
@@ -71,10 +71,10 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   J&acute; == J + <font color="#2ECC40">sqrt</font>(1e-6+<font color="#2ECC40">sqr</font>(e))$(case=1) + <font color="#2ECC40">sqr</font>(e)$(case=2) + <font color="#0074D9">Time</font>*<font color="#2ECC40">sqrt</font>(1e-6+<font color="#2ECC40">sqr</font>(e))$(case=3) + <font color="#0074D9">Time</font>*<font color="#2ECC40">sqr</font>(e)$(case=4)
 
 <font color="red"><b>obj:</b></font>
-  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp 
-  
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp
+
 <font color="red"><b>gms:</b></font>
-  <font color="#3D9970">parameter</font> report(*,*); 
+  <font color="#3D9970">parameter</font> report(*,*);
   @report(1)
   case = 2; <font color="#8A2BE2">@solve</font>; @report(2)
   case = 3; <font color="#8A2BE2">@solve</font>; @report(3)

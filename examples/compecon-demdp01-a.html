@@ -1,0 +1,140 @@
+<!-- Dyna-to-Html Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Timber Harvesting</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Timber Harvesting
+</pre>
+<p>
+  This is the example demdp01 of [1] and [2].
+<p>
+  At the beginning of each period \(t\), a timber stand owner observes the biomass of
+  his stand \(s_t\) and must decide whether to harvest and sell it, or allow it to
+  grow for another period.
+<p>
+  The revenue received per unit of harvested biomass is a constant \(p\) and the cost
+  of clearcutting and replanting is a constant \(\kappa\).
+<p>
+  A stand with biomass \(s_t\) that is not clearcut in period \(t\) will have biomass
+  \(s_{t+1} = h(s_t)\) the following period; a stand that is clearcut will have
+  biomass \(s_{t+1} = h(0) > 0\).
+<p>
+  What clearcutting policy maximizes the value of the stand?
+<p>
+  References:
+  <ol>
+  <li>M.J. Miranda and P.L. Fackler,
+  <em>Applied Computational Economics and Finance</em>,
+  University MIT Press, 2002.
+  <li>P.L. Fackler,
+  <em>CompEcon Toolbox for Matlab</em>,
+  https://github.com/PaulFackler/CompEcon
+  </ol>
+<p>
+<pre>
+<font color="red"><b>run:</b></font>
+  <font color="#39CCCC">time-model</font> = None
+  <font color="#39CCCC">include-libraries</font> = Chebyshev(32)
+
+<font color="red"><b>mac:</b></font>
+  @norm(z,l,u) ((&z-(&l+&u)/2)/((&u-&l)/2))
+
+<font color="red"><b>set:</b></font>
+  is = s1:s32
+  <font color="#8A2BE2">alias</font>(js,is)
+
+<font color="red"><b>par:</b></font>
+  price = 1	<font color="#808080"><i># unit price of biomass</i></font>
+  kappa = 0.2	<font color="#808080"><i># clearcut-replant cost</i></font>
+  gamma = 0.1	<font color="#808080"><i># biomass growth parameter</i></font>
+  delta = 0.9	<font color="#808080"><i># discount factor</i></font>
+  smaxi = 0.5	<font color="#808080"><i># stand carrying capacity</i></font>
+  slo = 0
+  sup = smaxi
+  sbar[is] = (slo+sup+(sup-slo)*<font color="#0074D9">ChebyshevQN</font>(is))/2
+
+<font color="red"><b>var:</b></font>
+  s[is]:<font color="#3D9970">positive</font>	<font color="#808080"><i># state</i></font>
+  x[is]:<font color="#3D9970">binary</font>		<font color="#808080"><i># action (0=grow 1=harvest)</i></font>
+  u[is]			<font color="#808080"><i># reward</i></font>
+  J[is]			<font color="#808080"><i># value function</i></font>
+  a[is]			<font color="#808080"><i># coef of Chebyshev series</i></font>
+  ksi
+
+<font color="red"><b>exp:</b></font>
+  h(z) == z + gamma*(smaxi-z)
+
+<font color="red"><b>equ:</b></font>
+  tran[is]..	s[is] == x[is]*h(0) + (1-x[is])*h(sbar[is])
+  udef[is]..	u[is] == x[is]*(price*sbar[is]-kappa)
+  Jdef[is]..	J[is] == u[is] + delta*<font color="#0074D9">SeriesOf</font>(<font color="#0074D9">Chebyshev</font>,@norm(s[is],slo,sup),a.l[js],js)
+  utility..	ksi == <font color="#3D9970">sum</font>(is, J[is])
+  lsq..		ksi == <font color="#3D9970">sum</font>(is, <font color="#2ECC40">sqr</font>(<font color="#0074D9">SeriesOf</font>(<font color="#0074D9">Chebyshev</font>,@norm(sbar[is],slo,sup),a[js],js) - J.l[is]))
+
+<font color="red"><b>ini:</b></font>
+  a[js] = <font color="#2ECC40">uniform</font>(0,1)
+
+<font color="red"><b>gms:</b></font>
+  <font color="#3D9970">execute</font> 'echo Value iteration launched...';
+  <font color="#3D9970">model</font> bellman /tran,udef,Jdef,utility/;
+  <font color="#3D9970">model</font> lsqr /lsq/;
+  bellman.solvelink = 2; lsqr.solvelink = 2;
+  <font color="#3D9970">set</font> iter /1*256/;
+  <font color="#3D9970">scalar</font> dev "Current deviation coefficient" /1/;
+  <font color="#3D9970">parameters</font> itlog "Iteration log", itlog2 "Iteration log";
+  <font color="#3D9970">options</font> optcr=0, optca=0;
+  <font color="#3D9970">loop</font>(iter$<font color="#2ECC40">round</font>(dev,6),
+    itlog(iter,"a",js) = a.l[js];
+    <font color="#3D9970">solve</font> lsqr minimizing ksi using nlp;
+    <font color="#3D9970">abort</font>$(lsqr.solvestat&lt;&gt;1 or lsqr.modelstat&gt;2) "LSQR does not solve.";
+    dev = <font color="#3D9970">sum</font>(js, <font color="#2ECC40">sqr</font>(a.l[js]-itlog(iter,"a",js)));
+    itlog2(iter,"dev") = dev;
+    itlog2(iter,"ksi") = ksi.l;
+    <font color="#3D9970">solve</font> bellman maximizing ksi using minlp;
+    <font color="#3D9970">abort</font>$(bellman.solvestat&lt;&gt;1 or bellman.modelstat&lt;&gt;8) "Bellman does not solve.";
+    );
+  <font color="#3D9970">display</font> itlog, itlog2;
+  <font color="#3D9970">execute</font> 'echo Value iteration ended.';
+
+<font color="red"><b>put:</b></font>
+  "<font color="#8A2BE2">%FN%</font>.<font color="#8A2BE2">%N%</font>.m&lt;"
+  <font color="#808080"><i># plot optimal policy</i></font>
+  figure(1);
+  s = ["sbar[is]:8:4"];
+  x = ["x.l[is]:8:4"];
+  plot(s,x);
+  title('Optimal Clearcut Policy');
+  legend('Chebyshev');
+  xlabel('Biomass');
+  ylabel('Clearcut decision');
+  <font color="#808080"><i># plot value function</i></font>
+  figure(2);
+  J = ["J.l[is]:8:4"];
+  plot(s,J);
+  title('Value Function');
+  legend('Chebyshev');
+  xlabel('Biomass');
+  ylabel('Value');
+  figure(3);
+  <font color="#808080"><i># plot log of sum of square deviations</i></font>
+  "`parameter lssd; lssd[iter]$itlog2[iter,'dev'] = log(itlog2[iter,'dev']);`"
+  lssd = ["lssd[iter]:9:3"];
+  plot(lssd(find(lssd)));
+  title('Log of Sum of Square Deviations');
+  xlabel('Number of iterations');
+</pre>
+</body>
+</html>

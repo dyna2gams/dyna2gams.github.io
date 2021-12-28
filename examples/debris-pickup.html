@@ -1,0 +1,76 @@
+<!-- Dyna-to-Html Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved. -->
+<html>
+<head>
+<style>
+body {font-family: Verdana, Geneva, sans-serif; font-size: 14px; background-color: white;}
+p {margin-left: 14px;}
+ol {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+ul {margin-top: -10px; margin-left: 15px; padding-left: 15px;}
+pre {display: block; font-family: monospace; white-space: pre; margin: 1em 0; font-size: 16px;}
+ol.ref {margin-top: -10px; margin-left: 36px; padding-left: 0; text-indent: -22px; list-style-position: outside; list-style-type: none; counter-reset: icnt;}
+ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;}
+</style>
+<script async="" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+</head>
+<body>
+<h1 align="center" style="color:#7EAEAC">Debris Pickup Problem</h1>
+<pre>
+<font color="red"><b>rem:</b></font> Debris Pickup Problem
+</pre>
+<p>
+  Reference:
+  <ol>
+  <li>https://github.com/haileeh/OptimalControl
+  </ol>
+<p>
+<p>
+<pre>
+<font color="red"><b>par:</b></font>
+  mu = 398601		<font color="#808080"><i># [km&sup3;/s&sup2;]</i></font>
+  T = 100		<font color="#808080"><i># [N]</i></font>
+  g0 = 9.80665		<font color="#808080"><i># [m/s&sup2;]</i></font>
+  Isp = 400		<font color="#808080"><i># [s]</i></font>
+  m0 = 1088		<font color="#808080"><i># [kg]</i></font>
+
+<font color="red"><b>var:</b></font>
+  tf
+
+<font color="red"><b>dyn:</b></font>
+  x y z
+  v{x y z}
+  m
+  u{x y z}
+
+<font color="red"><b>lim:</b></font>
+  0.1 &lt;= tf &lt;= 1000
+  -1 &lt;= u{x y z} &lt;= 1
+  -50 &lt;= {x y z} &lt;= 1000
+  -50 &lt;= v{x y z} &lt;= 100
+  1 &lt;= m &lt;= m0
+
+<font color="red"><b>t=t0:</b></font>
+  {x y z} = {300 180 0}
+  v{x y z} = 0
+  m = m0
+
+<font color="red"><b>t=tf:</b></font>
+  {x y z} = {195 350 0}
+  v{x y z} = {x y z}*<font color="#2ECC40">sqrt</font>(mu)/(<font color="#2ECC40">sqr</font>(x)+<font color="#2ECC40">sqr</font>(y)+<font color="#2ECC40">sqr</font>(z))^1.5
+
+<font color="red"><b>exp:</b></font>
+  grav{x y z} == -mu/50/r^3*{x y z}
+  thrust{x y z} == T*u{x y z}/m
+  r == <font color="#2ECC40">sqrt</font>(<font color="#2ECC40">sqr</font>(x)+<font color="#2ECC40">sqr</font>(y)+<font color="#2ECC40">sqr</font>(z))
+
+<font color="red"><b>equ:</b></font>
+  {x y z}&acute; == v{x y z}
+  v{x y z}&acute; == thrust{x y z} + grav{x y z}
+  <font color="#2ECC40">sqr</font>(ux) + <font color="#2ECC40">sqr</font>(uy) + <font color="#2ECC40">sqr</font>(uz) == 1
+  m&acute; == -T/g0/Isp
+
+<font color="red"><b>obj:</b></font>
+  <font color="#8A2BE2">maximize</font> <font color="#0074D9">final</font>(m) <font color="#8A2BE2">using</font> nlp
+</pre>
+</body>
+</html>

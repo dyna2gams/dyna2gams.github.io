@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -126,9 +126,9 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 
 <font color="red"><b>par:</b></font>
   m = 1000		<font color="#808080"><i># mass [kg]</i></font>
-  S = 1			<font color="#808080"><i># section area car [m^2]</i></font>
+  S = 1			<font color="#808080"><i># section area car [m&sup2;]</i></font>
   cd = 0.35		<font color="#808080"><i># drag coefficient [mini cooper 2008]</i></font>
-  rho = 1.23		<font color="#808080"><i># air density [kg/m^3]</i></font>
+  rho = 1.23		<font color="#808080"><i># air density [kg/m&sup3;]</i></font>
   Vmax = 50		<font color="#808080"><i># max velocity [m/s]</i></font>
   Fmax = 1000		<font color="#808080"><i># maximal force on the car [N]</i></font>
   tf = 1
@@ -146,8 +146,8 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   Fx[phase]		<font color="#808080"><i># Force x [N]</i></font>
   Fy[phase]		<font color="#808080"><i># Force y [N]</i></font>
   <font color="#808080"><i># controls</i></font>
-  dFx[phase]		<font color="#808080"><i># Rate of force x [N/s]</i></font>
-  dFy[phase]		<font color="#808080"><i># Rate of force y [N/s]</i></font>
+  dFx[phase] :: <font color="#7FDBFF">control</font>	<font color="#808080"><i># Rate of force x [N/s]</i></font>
+  dFy[phase] :: <font color="#7FDBFF">control</font>	<font color="#808080"><i># Rate of force y [N/s]</i></font>
 
 <font color="red"><b>lim:</b></font>
   0.1 &lt;= tlen[phase] &lt;= 600

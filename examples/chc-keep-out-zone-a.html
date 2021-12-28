@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.5 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -106,7 +106,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   y[phase]
   theta[phase]
   v[phase]
-  u[phase]
+  u[phase] :: <font color="#7FDBFF">control</font>
   J[phase]
 
 <font color="red"><b>lim:</b></font>
@@ -140,7 +140,7 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   v&acute;[phase] / TimeDot == a
   J&acute;[phase] == <font color="#2ECC40">sqr</font>(u[phase])
   $(1-chance).. <font color="#2ECC40">sqr</font>(x[phase]-xc) + <font color="#2ECC40">sqr</font>(y[phase]-yc) &gt;= <font color="#2ECC40">sqr</font>(<font color="#3D9970">smax</font>(scen,R+ksi[scen]))
-  [phase]$chance.. 1 - <font color="#3D9970">sum</font>(scen, <font color="#0074D9">Heaviside</font>((1e+2*(<font color="#2ECC40">sqr</font>(x[phase]-xc) + <font color="#2ECC40">sqr</font>(y[phase]-yc))/<font color="#2ECC40">sqr</font>(R+ksi[scen])-1))) / <font color="#3D9970">card</font>(scen) &lt;= epsilon + depsilon
+  [phase]$chance.. 1 - <font color="#3D9970">sum</font>(scen, <font color="#0074D9">smoothHeaviside</font>((1e+2*(<font color="#2ECC40">sqr</font>(x[phase]-xc) + <font color="#2ECC40">sqr</font>(y[phase]-yc))/<font color="#2ECC40">sqr</font>(R+ksi[scen])-1))) / <font color="#3D9970">card</font>(scen) &lt;= epsilon + depsilon
   <font color="#8A2BE2">@linkphases</font>
 
 <font color="red"><b>ini:</b></font>

@@ -14,27 +14,28 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
 </head>
 <body>
-<h1 align="center" style="color:#7EAEAC">Optimal Growth Model</h1>
+<h1 align="center" style="color:#7EAEAC">Renewable Resource Model</h1>
 <pre>
-<font color="red"><b>rem:</b></font> Optimal Growth Model
+<font color="red"><b>rem:</b></font> Renewable Resource Model
 </pre>
 <p>
-  This is the example demdp07 of [1] and [2].
+  This is the example demdp08 of [1] and [2].
 <p>
-  Consider an economy that produces and consumes a single composite good. Each year
-  begins with a predetermined amount of the good \(s\) in stock, of which an amount
-  \(x\) is invested and the remainder \(s-x\) is consumed, yielding a social benefit
-  \(u(s-x)\). The amount of good available at the beginning of each year is a
-  controlled Markov process:
+  A social planner wishes to maximize social benefits derived from harvesting a
+  publicly owned resource. Each year begins with a predetermined stock of the
+  resource \(s\), of which an amount \(x\) is harvested at a total cost \(c(x)\) and
+  sold at a market clearing price \(p(x)\). The remainder \(s-x\) is retained for
+  reproduction. The stock of resource available at the beginning of each period
+  follows a controlled deterministic process:
 <p>
   \[
-  s_{t+1} = \gamma x_t + \epsilon_{t+1} f(x_t)
+  s_{t+1} = g(s_t-x_t)
   \]
 <p>
-  where  \(\gamma\) is the capital survival rate (1 minus the depreciation rate),
-  \(f\) is the aggregate production function, and \(\epsilon\) is a positive
-  production shock with mean 1. What consumption-investment policy maximizes the sum
-  of current and expected future social benefits?
+  Assuming an inverse demand function \(p(x) = x^{-\gamma}\), a constant cost of
+  harvest \(k\), and a deterministic state transition function
+  \(g(s,x) = \alpha(s-x) - 0.5 \beta (s-x)^2\), what harvest policy maximizes the
+  sum of current and future net social surplus?
 <p>
   We tackle this problem by solving the Bellman&rsquo;s equation using a Chebyshev
   collocation method. In doing so, we use the DYNA features to solve ordinary
@@ -53,31 +54,27 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
 <pre>
 <font color="red"><b>run:</b></font>
   <font color="#39CCCC">time-model</font> = None
-  <font color="#39CCCC">include-libraries</font> = Hermite | Chebyshev
+  <font color="#39CCCC">include-library</font> = Chebyshev
 
 <font color="red"><b>mac:</b></font>
   @norm(z,l,u) ((&z-(&l+&u)/2)/((&u-&l)/2))
 
 <font color="red"><b>set:</b></font>
-  ie = e1:e3
   is = s1:s10
 
 <font color="red"><b>par:</b></font>
-  alpha = 0.2	<font color="#808080"><i># utility parameter</i></font>
-  beta  = 0.5	<font color="#808080"><i># production elasticity</i></font>
-  gamma = 0.9	<font color="#808080"><i># capital survival rate</i></font>
-  sigma = 0.1	<font color="#808080"><i># production shock volatility</i></font>
+  alpha = 4	<font color="#808080"><i># growth function parameter</i></font>
+  beta  = 1	<font color="#808080"><i># growth function parameter</i></font>
+  gamma = 0.5	<font color="#808080"><i># demand function parameter</i></font>
+  kappa = 0.2	<font color="#808080"><i># unit cost of harvest</i></font>
   delta = 0.9	<font color="#808080"><i># discount factor</i></font>
-  		<font color="#808080"><i># Gauss-Hermite quadrature nodes and weights for the lognormal shock</i></font>
-  e[ie] = <font color="#2ECC40">exp</font>(<font color="#2ECC40">sqrt</font>(2)*sigma*<font color="#0074D9">HermiteQN</font>(ie))
-  w[ie] = <font color="#0074D9">HermiteQW</font>(ie)/<font color="#2ECC40">sqrt</font>(pi)
 		<font color="#808080"><i># approximation space</i></font>
-  slo = 5
-  sup = 10
+  slo = 6
+  sup = 9
   sbar[is] = (slo+sup+(sup-slo)*<font color="#0074D9">ChebyshevQN</font>(is))/2
 
 <font color="red"><b>var:</b></font>
-  s[is,ie]:<font color="#3D9970">positive</font>	<font color="#808080"><i># state</i></font>
+  s[is]:<font color="#3D9970">positive</font>	<font color="#808080"><i># state</i></font>
   x[is]:<font color="#3D9970">positive</font>	<font color="#808080"><i># action</i></font>
   u[is]			<font color="#808080"><i># utility</i></font>
   J[is]			<font color="#808080"><i># value function</i></font>
@@ -85,12 +82,12 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   ksi
 
 <font color="red"><b>equ:</b></font>
-  utility..	  ksi == <font color="#3D9970">sum</font>(is, J[is])
-  market[is,ie].. s[is,ie] == gamma*x[is] + e[ie]*x[is]^beta
-  udef[is]..	  u[is] == (sbar[is]-x[is])^(1-alpha)/(1-alpha)
-  bound[is]..	  x[is] &lt;= sbar[is]
-  Jdef[is]..	  J[is] == u[is] + delta*<font color="#3D9970">sum</font>(ie, w[ie]*<font color="#0074D9">SeriesOf9</font>(<font color="#0074D9">Chebyshev</font>,@norm(s[is,ie],slo,sup),a9.l,a8.l,a7.l,a6.l,a5.l,a4.l,a3.l,a2.l,a1.l,a0.l))
-  lsq..		  ksi == <font color="#3D9970">sum</font>(is, <font color="#2ECC40">sqr</font>(<font color="#0074D9">SeriesOf9</font>(<font color="#0074D9">Chebyshev</font>,@norm(sbar[is],slo,sup),a9,a8,a7,a6,a5,a4,a3,a2,a1,a0) - J.l[is]))
+  utility..	ksi == <font color="#3D9970">sum</font>(is, J[is])
+  market[is]..	s[is] == alpha*(sbar[is]-x[is]) - 0.5*beta*(sbar[is]-x[is])^2
+  udef[is]..	u[is] == x[is]^(1-gamma)/(1-gamma) - kappa*x[is]
+  bound[is]..	x[is] &lt;= sbar[is]
+  Jdef[is]..	J[is] == u[is] + delta*<font color="#0074D9">SeriesOf9</font>(<font color="#0074D9">Chebyshev</font>,@norm(s[is],slo,sup),a9.l,a8.l,a7.l,a6.l,a5.l,a4.l,a3.l,a2.l,a1.l,a0.l)
+  lsq..		ksi == <font color="#3D9970">sum</font>(is, <font color="#2ECC40">sqr</font>(<font color="#0074D9">SeriesOf9</font>(<font color="#0074D9">Chebyshev</font>,@norm(sbar[is],slo,sup),a9,a8,a7,a6,a5,a4,a3,a2,a1,a0) - J.l[is]))
 
 <font color="red"><b>ini:</b></font>
   a{0:9} = <font color="#2ECC40">uniform</font>(0,1)
@@ -124,36 +121,31 @@ ol.ref li.ref::before {content: '[' counter(icnt) '] '; counter-increment: icnt;
   s = ["sbar[is]:8:4"];
   x = ["x.l[is]:8:4"];
   plot(s,x./s);
-  title('Optimal Investment Policy');
-  legend('Chebyshev');
-  xlabel('Wealth');
-  ylabel('Investment (% of Wealth)');
+  title('Optimal Harvest Policy');
+  xlabel('Available Stock');
+  ylabel('Harvest (% of Stock)');
   <font color="#808080"><i># plot value function</i></font>
   figure(2);
   J = ["J.l[is]:8:4"];
   plot(s,J);
   title('Value Function');
-  legend('Chebyshev');
-  xlabel('Wealth');
+  xlabel('Available Stock');
   ylabel('Value');
   <font color="#808080"><i># plot shadow price function</i></font>
   figure(3);
-  "`parameter p[is]; p[is] = (sbar[is]-x.l[is])^(-alpha);`"
+  "`parameter p[is]; p[is] = x.l[is]^(-gamma)-kappa;`"
   p = ["p[is]:8:4"];
   plot(s,p);
   title('Shadow Price Function');
-  legend('Chebyshev');
-  xlabel('Wealth');
+  xlabel('Available Stock');
   ylabel('Price');
-  <font color="#808080"><i># plot expected market price function</i></font>
+  <font color="#808080"><i># plot market price function</i></font>
   figure(4);
-  "`parameter ep[is]; ep[is] = sum(ie, w[ie]*market.m[is,ie]);`"
-  ep = ["ep[is]:8:4"];
-  plot(s,ep);
-  title('Expected Market Price Function');
-  legend('Chebyshev');
-  xlabel('Wealth');
-  ylabel('Expected Market Price');
+  m = ["market.m[is]:8:4"];
+  plot(s,m);
+  title('Market Price Function');
+  xlabel('Available Stock');
+  ylabel('Market Price');
   figure(5);
   "`parameter ssd; ssd[iter] = itlog[iter,'dev'];`"
   ssd = ["ssd[iter]:9:3"];
