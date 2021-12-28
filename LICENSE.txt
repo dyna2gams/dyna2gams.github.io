@@ -1,4 +1,4 @@
-Copyright (c) 2018 Alain J. Michiels
+Copyright (c) 2018-2021 Alain J. Michiels
 All rights reserved.
 
 CREATIVE COMMONS ATTRIBUTION-NONCOMMERCIAL-SHAREALIKE 4.0 INTERNATIONAL PUBLIC LICENSE

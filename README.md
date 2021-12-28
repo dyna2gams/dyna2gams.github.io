@@ -14,7 +14,7 @@ fishing strategies, biology, etc.
 
 The General Algebraic Modeling System ([GAMS](http://www.gams.com)) is a high-level modeling
 system for mathematical programming and optimization. It consists of a language compiler and a
-stable of integrated high-performance solvers. GAMS is specifically designed for modeling
+range of integrated high-performance solvers. GAMS is specifically designed for modeling
 linear, nonlinear and mixed integer optimization problems.
 
 In a nutshell, optimal control problems (OCP) are usually described by:
@@ -44,7 +44,7 @@ __DYNA2GAMS__ has been developed in the course of the year 2018 and is regularly
 then. It is available for download on this web site. On top, it comes with a very large set of
 examples borrowed from the literature and various academic or commercial OCP solvers.
 
-__DYNA2GAMS__ is free of charge for non-commercial use throughout the year 2021 at least. It is
+__DYNA2GAMS__ is free of charge for non-commercial use throughout the year 2022 at least. It is
 licensed under the
 [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International terms](https://creativecommons.org/licenses/by-nc-sa/4.0/).
 It is based on [Regina Rexx Interpreter](https://regina-rexx.sourceforge.io/).
@@ -54,4 +54,4 @@ Please visit our [website](https://dyna2gams.github.io/).
 
 Feel free to contact us for any questions you might have (dyna2gams@outlook.com).
 
-Copyright (c) 2018 Alain J. Michiels. All rights reserved.
+Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved.

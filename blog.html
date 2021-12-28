@@ -100,18 +100,43 @@
 
 							<p>&ldquo;Everything simple is false. Everything complex is unusable.&rdquo; &ndash; Paul Val&eacute;ry
 
+							<h3>DYNA2GAMS 1.6</h3>
+							<h4><i class="icon fa-calendar">&emsp;</i>28/12/2021</h4>
+							<p>The release 1.6 of DYNA2GAMS is out.
+							It encompasses the following new features:
+							<ul class="compact">
+							<li>smooth homotopy of non-diffferentiable functions (<i>smoothMin, smoothMax, ...</i>) are provided.
+							<i>Heaviside</i> is now non-differentiable (so was <i>Heavisided</i>, which has been suppressed) whereas <i>smoothHeaviside</i>
+							is its differentiable smooth counterpart;
+							<li>support for utf8 lowercase and uppercase Greek alphabet (&alpha;, &beta;, &gamma;, etc.) that can be mixed with the Latin alphabet;
+							<li>encapsulated interpolation functions (<i>Grid2Dim, Grid3Dim, Grid4Dim</i>) can tabulate large amount of data, up to
+							dimension four, that are stored on an external binary file. Preprocessing occurs offline and upstream of the optimization
+							or the simulation. At this moment, only gridded data are used but the framework will later feature scattered data and shape
+							preserving interpolation;
+							<li><i>dyna-dbf-init.exe</i> creates an encapsulated interpolation function; <i>dyna-dbf-dump.exe</i> dumps the content of the
+							binary file supporting the encapsulated function;
+							<li><i>@export</i> is a GAMS macro-code to export a variable to a text file for a downstream processing by the utility
+							<i>dyna-dbf-init.exe</i>;
+							<li><i>.{F X Y Z W 1 2 3 4}{LO UP}</i> are attributes for tabulated functions that return the minimum or the maximum of the function
+							or of any of its arguments;
+							<li>new compiler directive <i>@whennset</i> provide a <i>@case</i> choice when the required compiler variable has not been set;
+							<li>new examples and cosmetic changes to a few old ones.
+							</ul>
+							The package is available from the <a href="download.html">Download</a> page.
+							<p>
+
 							<h3>DYNA2GAMS 1.5</h3>
 							<h4><i class="icon fa-calendar">&emsp;</i>18/03/2021</h4>
 							<p>The version 1.5 of DYNA2GAMS has just been released for Spring 2021.
 							It encompasses a bunch of new features and related examples:
 							<ul class="compact">
-							<li>indexing braces now provide for up to 4 indices
-							<li>extended syntax of the sections <i>par</i> and <i>tpa</i>
-							<li>two new smoothing methods of time series
-							<li>additional goodness of fit functions and macros for the greybox identification of systems
-							<li>a Newton-Raphson scheme to deal with the dynamic simulation of a quasi-triangular system of equations
-							<li>additional tools to ease solving stochastic optimal control problems
-							<li>aesthetic changes to a few old examples
+							<li>indexing braces now provide for up to 4 indices;
+							<li>extended syntax of the sections <i>par</i> and <i>tpa</i>;
+							<li>two new smoothing methods of time series;
+							<li>additional goodness of fit functions and macros for the greybox identification of systems;
+							<li>a Newton-Raphson scheme to deal with the dynamic simulation of a quasi-triangular system of equations;
+							<li>additional tools to ease solving stochastic optimal control problems;
+							<li>aesthetic changes to a few old examples.
 							</ul>
 							The package is available from the <a href="download.html">Download</a> page.
 							<p>
@@ -121,18 +146,18 @@
 							<p>The coronavirus lockdown gave us plenty of time to work on release 1.4 of DYNA2GAMS which encompasses the
 							following new features and many examples to illustrate their use:
 							<ul class="compact">
-							<li>differential complementary systems
-							<li>stochastic differential equations
-							<li>stochastic optimal control (incl. Wiener process)
-							<li>chance constrained optimal control
-							<li>matlab-like or gams-like syntax to key in tabular data
-							<li>a <i>put</i> section to dynamically generate output files (Matlab/Octave, csv...)
-							<li>an entry <i>time-model=none</i> in the <i>run</i> section to allow for a customized optimization not related to optimal control
+							<li>differential complementary systems;
+							<li>stochastic differential equations;
+							<li>stochastic optimal control (incl. Wiener process);
+							<li>chance constrained optimal control;
+							<li>matlab-like or gams-like syntax to key in tabular data;
+							<li>a <i>put</i> section to dynamically generate output files (Matlab/Octave, csv...);
+							<li>an entry <i>time-model=none</i> in the <i>run</i> section to allow for a customized optimization not related to optimal control;
 							<li>a keyword <i>include-library</i> in the <i>run</i> section to offer access to a bunch of functions to approximate surfaces up
 							to 4 variables with Chebyshev, Hermite or Legendre polynomials, up to 9 variables with Chebyshev-Smolyak procedure,
-							and Tauchen to discretize AR1 processes
-							<li>$libinclude files to ease the implementation of a fractional laplacian or a hammersley pseudo-random sequence
-							<li>stochastic dynamic programming problems
+							and Tauchen to discretize AR1 processes;
+							<li>$libinclude files to ease the implementation of a fractional laplacian or a hammersley pseudo-random sequence;
+							<li>stochastic dynamic programming problems.
 							</ul>
 							The package is available from the <a href="download.html">Download</a> page.
 							<p>

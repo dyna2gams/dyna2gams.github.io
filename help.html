@@ -1,4 +1,4 @@
-<!-- Dyna-to-Html Version 1.4 - Copyright (c) 2018 Alain J. Michiels. All rights reserved. -->
+<!-- Dyna-to-Html Version 1.6 - Copyright (c) 2018-2021 Alain J. Michiels. All rights reserved. -->
 <html>
 <head>
 <style>
@@ -202,7 +202,7 @@ declares an object must appear before the sections that use the said object.
 </pre>
 <p>(*) Notes regarding the numerical values:
 <ul>
-<li>GridXY: the X values are tabulated in row, the Y&rsquo;s is column.
+<li>GridXY: the X values are tabulated in rows, the Y&rsquo;s in columns.
 <li>Spline3X: the coefficients \(C_3 \, C_2 \, C_1 \, C_0\) of a cubic spline \(C_3 x^3 + C_2 x^2 + C_1 x + C_0\).
 <li>PolyX: the coefficients \(C_n \, \dots \, C_2 \, C_1 \, C_0\) of a polynomial \(C_n x^n + \dots + C_2 x^2 + C_1 x + C_0\).
 The degree of the polynomial is deduced from the number of coefficients.
@@ -234,7 +234,7 @@ The degree of the polynomial is deduced from the number of coefficients.
   &lt;par&gt; {+|-|*|/}= &lt;exp&gt;						<font color="#808080"><i>Compound assignment</i></font>
   &lt;par&gt; = &lt;l-delim&gt; L,{L.{&lt;ident&gt;} &lt;val&gt;} &lt;r-delim&gt;			<font color="#808080"><i>Gams parameter format</i></font>
   &lt;par&gt; = &lt;ll-delim&gt; [&lt;EOL&gt;] &lt;Gams-<font color="#3D9970">table</font>-data&gt; [&lt;EOL&gt;] &lt;rr-delim&gt;	<font color="#808080"><i>Gams tabular format</i></font>
-  &lt;par&gt; = &lt;[&gt; L,{L{&lt;exp&gt;}} &lt;]&gt;						<font color="#808080"><i>Malab-like syntax (with comma instead of semicolon)</i></font>
+  &lt;par&gt; = &lt;[&gt; L,{L{&lt;exp&gt;}} &lt;]&gt;						<font color="#808080"><i>Matlab-like syntax (with comma instead of semicolon)</i></font>
   L{&lt;par&gt;}
 
 &lt;exp&gt; :- &lt;val&gt; | &lt;par&gt; | &lt;expression-thereof&gt;
@@ -472,8 +472,8 @@ Anyway, in case of doubt, the user can provide explicit indexes.
 He can also provide an explicit name for the equations, which is useful if attention is paid to the costate variables.
 <p>In addition, two keywords limit the scope of the time indexation:
 <ul>
-<li>$NT0: all over the time horizon but 0
-<li>$NTF: all over the time horizon but tf
+<li>$NT0: all over the time horizon but initial time
+<li>$NTF: all over the time horizon but final time
 </ul>
 <p>Note 1:
 Unknown symbols in @pid will be declared as static or dynamic variables.
@@ -543,8 +543,9 @@ when all the dependent variables are known.
 <p>In case of explicitly named arguments, use &&lt;argument&gt; in the piece of GAMS code.
 <p>Caution:
 <ul>
-<li>macro name and arguments are case sensitive
-<li>must always be invoked with () even if there isn&rsquo;t any argument.
+<li>macro name and arguments are case sensitive;
+<li>a macro must always be invoked with () even if there isn&rsquo;t any argument;
+<li>a lexical substitution occurs during the macro expansion, not a value substitution.
 </ul>
 
 <!------------------------------------------------------------->
@@ -558,6 +559,7 @@ when all the dependent variables are known.
   <font color="#8A2BE2">@csvmute</font> L{&lt;dyn&gt;|&lt;equ&gt;};				<font color="#808080"><i>Remove dynamic variables or equations from the CSV files</i></font>
   <font color="#8A2BE2">@csvsave</font> L{&lt;dyn&gt;};					<font color="#808080"><i>Save dynamic variables in the CSV files</i></font>
   <font color="#8A2BE2">@error</font> [L{&lt;dyn&gt;}];					<font color="#808080"><i>Estimate error of dynamic variables</i></font>
+  <font color="#8A2BE2">@export</font> L,{&lt;export-statement&gt;};			<font color="#808080"><i>Export a variable to a text file</i></font>
   <font color="#8A2BE2">@gdxsave</font> [&lt;gdx-statement&gt;];				<font color="#808080"><i>Save objects to a GDX file for a later warm restart</i></font>
   <font color="#8A2BE2">@observedrip</font> L{&lt;var&gt;};				<font color="#808080"><i>Insert report on identified parameters</i></font>
   <font color="#8A2BE2">@par</font> &lt;par&gt; [= &lt;exp&gt;];					<font color="#808080"><i>Declare and instantiate parameter</i></font>
@@ -574,6 +576,12 @@ when all the dependent variables are known.
   <font color="#8A2BE2">@solveloop</font> L,{&lt;solveloop-statement&gt;};			<font color="#808080"><i>Iterative solve after smoothing of some variables</i></font>
   <font color="#8A2BE2">@tpa</font> &lt;tpa&gt; [= &lt;tex&gt;];					<font color="#808080"><i>Declare and instantiate a time-dependent parameter</i></font>
   <font color="#8A2BE2">@verbatim</font> &lt;gams-statement&gt;;				<font color="#808080"><i>Instruct DYNA to keep statement untouched</i></font>
+
+&lt;export-statement&gt; :-
+  Grid = L{<font color="#0074D9">Time</font>|&lt;par&gt;}					<font color="#808080"><i>The abscissas, up to four</i></font>
+  Var = &lt;dyn&gt;|&lt;tpa&gt;|&lt;var&gt;|&lt;par&gt;				<font color="#808080"><i>Indexed variable (or parameter) to export</i></font>
+  <font color="#3D9970"><font color="#3D9970">File</font></font> = &lt;<font color="#3D9970"><font color="#3D9970">file</font></font>&gt;						<font color="#808080"><i>File name</i></font>
+  [Every = &lt;number&gt;]					<font color="#808080"><i>A divisor of <font color="#8A2BE2">%N%</font> (default is 1)</i></font>
 
 &lt;rank-statement&gt; :-
   iVar = &lt;dyn&gt;						<font color="#808080"><i>Input variable (or parameter)</i></font>
@@ -641,7 +649,7 @@ when all the dependent variables are known.
 <font color="red"><b>put:</b></font>
   "&lt;file&gt;&lt;[&lt;]"					<font color="#808080"><i>Write or append following lines to &lt;file&gt;</i></font>
   "&lt;[&lt;]"					<font color="#808080"><i>Close current file</i></font>
-  "&lt;var&gt;[&lt;index&gt;][']:m:n[&lt;c&gt;]"			<font color="#808080"><i>Write the value of &lt;var&gt; with GAMS format :m:n.</i></font>
+  "&lt;var&gt;[&lt;index&gt;]['][:m]:[n][&lt;c&gt;]"		<font color="#808080"><i>Write the value of &lt;var&gt; with GAMS format :m:n. (defaults are m=13 and n=5)</i></font>
 							<font color="#808080"><i>&lt;c&gt; is a one-character row delimiter (space by default)</i></font>
   "{&lt;file&gt;|*}&lt;[&lt;][+]&lt;var&gt;[&lt;index&gt;]"		<font color="#808080"><i>Write or append &lt;var&gt; values to &lt;file&gt; in csv format</i></font>
 							<font color="#808080"><i>* means previous csv &lt;file&gt;</i></font>
@@ -685,8 +693,10 @@ The table here below sets forth which section is valid in which mode.
 <tr><td>dyn:</td>	<td>Yes</td>		<td>Yes</td></tr>
 <tr><td>obs:</td>	<td>Yes</td>		<td>-</td></tr>
 <tr><td>lim:</td>	<td>Yes</td>		<td>-</td></tr>
-<tr><td>t=t{0,f}:</td>	<td>Yes</td>		<td>-</td></tr>
-<tr><td>k=k{0,f}:</td>	<td>Yes</td>		<td>-</td></tr>
+<tr><td>t=t0:</td>	<td>Yes</td>		<td>Yes</td></tr>
+<tr><td>t=tf:</td>	<td>Yes</td>		<td>-</td></tr>
+<tr><td>k=k0:</td>	<td>Yes</td>		<td>Yes</td></tr>
+<tr><td>k=kf:</td>	<td>Yes</td>		<td>-</td></tr>
 <tr><td>ini:</td>	<td>Yes</td>		<td>Yes(*)</td></tr>
 <tr><td>sca:</td>	<td>Yes</td>		<td>-</td></tr>
 <tr><td>exp:</td>	<td>Yes</td>		<td>Yes</td></tr>
@@ -725,12 +735,14 @@ $&lt;gams-$-directive&gt;
 <font color="#8B0000">@else</font>
 <font color="#8B0000">@endcase</font>
 <font color="#8B0000">@endif</font>
+<font color="#8B0000">@get</font> &lt;var&gt;[&lt;]&lt;file&gt;
 <font color="#8B0000">@ifdef</font> L{&lt;var&gt;}
 <font color="#8B0000">@ifndef</font> L{&lt;var&gt;}
 <font color="#8B0000">@macro</font> &lt;name&gt;[(L,{&lt;argument&gt;})] &lt;expression&gt;
 <font color="#8B0000">@otherwise</font>
 <font color="#8B0000">@set</font> &lt;var&gt;[=]&lt;token&gt;
 <font color="#8B0000">@when</font> L{[,]&lt;token&gt;}
+<font color="#8B0000">@whennset</font>
 </pre>
 <p>The @ sign must be in column one.
 
@@ -896,6 +908,7 @@ Here follows the list of function classes.
 <li><a href="#corf">Coordinates related functions</a></li>
 <li><a href="#trrf">Trigonometric related functions</a></li>
 <li><a href="#wafu">Waveform functions</a></li>
+<li><a href="#shfu">Smooth homotopy of non-differentiable functions</a></li>
 <li><a href="#mifu">Miscellaneous functions</a></li>
 <li><a href="#1dls">1-dimension interpolation - linear smooth</a></li>
 <li><a href="#1dln">1-dimension interpolation - linear non-smooth</a></li>
@@ -1017,11 +1030,22 @@ Here follows the list of function classes.
 <font color="#0074D9">Wavesquare</font>(x)
 <font color="#0074D9">Wavetriangle</font>(x)
 </pre>
+<h4 id="shfu">Smooth homotopy of non-differentiable functions</h4>
+<pre class="syntax">
+<font color="#0074D9">smoothAbs</font>(x)
+<font color="#0074D9">smoothEPS</font>
+<font color="#0074D9">smoothHeaviside</font>(x)
+<font color="#0074D9">smoothIfNeg</font>(x,y,z)
+<font color="#0074D9">smoothIfPos</font>(x,y,z)
+<font color="#0074D9">smoothMax</font>(x,y)
+<font color="#0074D9">smoothMin</font>(x,y)
+<font color="#0074D9">smoothSat</font>(x,lo,up)
+<font color="#0074D9">smoothSgn</font>(x)
+</pre>
 <h4 id="mifu">Miscellaneous functions</h4>
 <pre class="syntax">
 <font color="#0074D9">Heaviside</font>(x)
-<font color="#0074D9">Heavisided</font>(x)
-<font color="#0074D9">midpoint</font>(a,b)
+<font color="#0074D9">midpoint</font>(x,y)
 </pre>
 <h4 id="1dls">1-dimension interpolation - linear smooth</h4>
 <pre class="syntax">

@@ -667,7 +667,7 @@ Press any key to continue...
   <font color="#808080"><i># Bryson Minimum Time To Climb Aero Data</i></font>
   <font color="#808080"><i># U.S. 1976 Standard Atmosphere</i></font>
   <font color="#808080"><i># Column 1: Altitude (m)</i></font>
-  <font color="#808080"><i># Column 2: Atmospheric Density (kg/m^3)</i></font>
+  <font color="#808080"><i># Column 2: Atmospheric Density (kg/m&sup3;)</i></font>
   <font color="#808080"><i># Column 3: Speed of Sound (m/s)</i></font>
     ALT       &sect;AD       &sect;SS
   -2000 1.478e+00 3.479e+02
@@ -740,7 +740,7 @@ Press any key to continue...
 
   <font color="#808080"><i># Aerodynamic Data for Bryson Aircraft</i></font>
   <font color="#808080"><i># M: Mach number values</i></font>
-  <font color="#808080"><i># Clalpha: coefficient of lift values</i></font>
+  <font color="#808080"><i># CLalpha: coefficient of lift values</i></font>
   <font color="#808080"><i># CD0: zero-lift coefficient of drag values</i></font>
   <font color="#808080"><i># eta: load factors</i></font>
     M &sect;CLalpha  &sect;CD0   &sect;eta
@@ -968,27 +968,27 @@ Press any key to continue...
   phase = ph1:ph2
 
 <font color="red"><b>par:</b></font>
-  m = 0.200	<font color="#808080"><i># the mass of the jojo (200g)</i></font>
-  J = 1e-4	<font color="#808080"><i># the inertia of the jojo (1e-4kg*m^2)</i></font>
-  r = 0.010	<font color="#808080"><i># the coiling radius of the jojo (1cm)</i></font>
-  g = 9.81	<font color="#808080"><i># the gravitational constant (9.81m/s^2)</i></font>
-  a = 1e-2	<font color="#808080"><i># the coiling friction (1e-2/s)</i></font>
-  L = 1.00	<font color="#808080"><i># the length of the rope (1m)</i></font>
+  m = 0.200		<font color="#808080"><i># the mass of the jojo [kg]</i></font>
+  J = 1e-4		<font color="#808080"><i># the inertia of the jojo [kg*m&sup2;]</i></font>
+  r = 0.010		<font color="#808080"><i># the coiling radius of the jojo [m]</i></font>
+  g = 9.81		<font color="#808080"><i># the gravitational constant [m/s&sup2;]</i></font>
+  a = 1e-2		<font color="#808080"><i># the coiling friction [1/s]</i></font>
+  L = 1.00		<font color="#808080"><i># the length of the rope [m]</i></font>
   k  = J/(m*r*r+J)	<font color="#808080"><i># the jojo&rsquo;s damping ratio</i></font>
-  mu = 1.0 - k	<font color="#808080"><i># the effective mass ratio</i></font>
-  tf = 1	<font color="#808080"><i># simulation time</i></font>
+  mu = 1.0 - k		<font color="#808080"><i># the effective mass ratio</i></font>
+  tf = 1		<font color="#808080"><i># simulation time</i></font>
 
 <font color="red"><b>var:</b></font>
-  tlen[phase]	<font color="#808080"><i># the duration of the phases</i></font>
+  tlen[phase]		<font color="#808080"><i># the duration of the phases</i></font>
 
 <font color="red"><b>dyn:</b></font>
-  t[phase]	<font color="#808080"><i># the real time</i></font>
-  x[phase]	<font color="#808080"><i># the position of the &ldquo;hand&rdquo;</i></font>
-  v[phase]	<font color="#808080"><i># the velocity of the &ldquo;hand&rdquo;</i></font>
-  y[phase]	<font color="#808080"><i># the position of the jojo</i></font>
-  w[phase]	<font color="#808080"><i># the velocity of the jojo</i></font>
-  u[phase]	<font color="#808080"><i># the control action of the &ldquo;hand&rdquo;</i></font>
-  phi[phase]	<font color="#808080"><i># the cost functional</i></font>
+  t[phase]		<font color="#808080"><i># the real time</i></font>
+  x[phase]		<font color="#808080"><i># the position of the &ldquo;hand&rdquo;</i></font>
+  v[phase]		<font color="#808080"><i># the velocity of the &ldquo;hand&rdquo;</i></font>
+  y[phase]		<font color="#808080"><i># the position of the jojo</i></font>
+  w[phase]		<font color="#808080"><i># the velocity of the jojo</i></font>
+  u[phase] :: <font color="#7FDBFF">control</font>	<font color="#808080"><i># the control action of the &ldquo;hand&rdquo;</i></font>
+  phi[phase]		<font color="#808080"><i># the cost functional</i></font>
 
 <font color="red"><b>lim:</b></font>
   0.1 &lt;= tlen[phase] &lt;= 2
@@ -1021,9 +1021,9 @@ Press any key to continue...
   y&acute;[phase] / TimeDot == w[phase]
   w&acute;[phase] / TimeDot == -mu*g + k*u[phase] + a*(v[phase]-w[phase])
   phi&acute;[phase] / TimeDot == <font color="#2ECC40">sqr</font>(u[phase])
-  <font color="#8A2BE2">@linkphases</font> -x w	<font color="#808080"><i># link final and initial conditions across phases for state variables, except for variable w, which is given here after</i></font>
-  [phase]$((<font color="#3D9970">ord</font>(phase)&lt;<font color="#3D9970">card</font>(phase))<font color="#8A2BE2">$once</font>).. <font color="#0074D9">initial</font>(w[phase+1]) == <font color="#0074D9">final</font>(k*v[phase] + @ssqrt(<font color="#2ECC40">sqr</font>(k*v[phase]) + k*(<font color="#2ECC40">sqr</font>(w[phase])-2*w[phase]*v[phase])))
-  <font color="#8A2BE2">$once</font>.. <font color="#0074D9">final</font>(x['ph1'])-<font color="#0074D9">final</font>(y['ph1']) == L
+  <font color="#8A2BE2">@linkphases</font> -x w	<font color="#808080"><i># link final and initial conditions across phases for state and control variables, except for variable w, which is given here after</i></font>
+  [phase]$(<font color="#3D9970">ord</font>(phase)&lt;<font color="#3D9970">card</font>(phase)).. 0 == - <font color="#0074D9">initial</font>(w[phase+1]) + <font color="#0074D9">final</font>(k*v[phase] + @ssqrt(<font color="#2ECC40">sqr</font>(k*v[phase]) + k*(<font color="#2ECC40">sqr</font>(w[phase])-2*w[phase]*v[phase])))
+  L == <font color="#0074D9">final</font>(x['ph1']) - <font color="#0074D9">final</font>(y['ph1'])
 
 <font color="red"><b>obj:</b></font>
   <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(phi['ph2']) <font color="#8A2BE2">using</font> nlp
@@ -1206,7 +1206,7 @@ Press any key to continue...
   J&acute; == J + 0.5 * (<font color="#2ECC40">sqr</font>(x1-5) + <font color="#2ECC40">sqr</font>(x2-7) + <font color="#2ECC40">sqr</font>(x3-5) + <font color="#2ECC40">sqr</font>(x4-7) + 100*<font color="#2ECC40">sqr</font>(u1) + 100*<font color="#2ECC40">sqr</font>(u2))
 
 <font color="red"><b>obj:</b></font>
-  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp
+  <font color="#8A2BE2">minimize</font> <font color="#0074D9">final</font>(J) <font color="#8A2BE2">using</font> nlp <font color="#8A2BE2">with</font> conopt|snopt
 </pre>
 
 <!-- Tutorial K ---------------------------------------><p>
@@ -1258,7 +1258,7 @@ Press any key to continue...
 <pre class="console">
 [Dyna2Gams] D:\DYNA2GAMS>dyna-execute .\examples\tutor-k-ode.dyn
 Dyna-to-Gams Version 1.0 - Copyright (c) 2018 Alain J. Michiels. All rights reserved.
-Translating '.\examples\tutor-k.dyn'...
+Translating '.\examples\tutor-k-ode.dyn'...
 Model name: tutor_k
 Number of parameters: 3
 Number of symbolic variables: 2
@@ -1295,8 +1295,8 @@ $tutor-k-ode.lst
 							<p><p>The &ldquo;benchmark value&rdquo; is the sum of the end values of the state variables. It allows to compare the accuracy of the
 							integration across the simulations. By using finer time grids, we expect that the benchmark values would converge to some
 							number, which is not the case and unfortunately denotes some inaccuracy in the integration.
-							<p>In the versions tutor-k-dae and tutor-k-dae-multi-phase, we explicitly look for a periodic solution. The simulation of
-							the ODE version (tutor-k-ode) provides the initial guess. The objective of the non linear program is the period of the
+							<p>In the versions <i>tutor-k-dae</i> and <i>tutor-k-dae-multi-phase</i>, we explicitly look for a periodic solution. The simulation of
+							the ODE version (<i>tutor-k-ode</i>) provides the initial guess. The objective of the non linear program is the period of the
 							solution.
 
 <!-- reference manual ---------------------------------><p>
